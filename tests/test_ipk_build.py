@@ -52,7 +52,7 @@ class PackagingTests(unittest.TestCase):
                 self.assertTrue(any(x.name.endswith("/plugin.py") for x in members))
                 for icon, dimensions in (("plugin.png", (100, 60)), ("plugin_fhd.png", (150, 90))):
                     raw = tar.extractfile("./" + m.TARGET_PREFIX + "/images/" + icon).read()
-                    self.assertTrue(raw.startswith(b"\\x89PNG\\r\\n\\x1a\\n"))
+                    self.assertTrue(raw.startswith(b"\x89PNG\r\n\x1a\n"))
                     self.assertEqual(tuple(int.from_bytes(raw[i:i + 4], "big") for i in (16, 20)), dimensions)
 
     def test_hooks_are_non_destructive(self):

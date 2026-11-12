@@ -96,7 +96,7 @@ def build(output_dir):
                                ("plugin_fhd.png", (150, 90))):
         path = PKG_DIR / "images" / filename
         raw = path.read_bytes()
-        if (len(raw) > 100_000 or not raw.startswith(b"\\x89PNG\\r\\n\\x1a\\n")
+        if (len(raw) > 100_000 or not raw.startswith(b"\x89PNG\r\n\x1a\n")
                 or raw[12:16] != b"IHDR"
                 or tuple(int.from_bytes(raw[i:i + 4], "big") for i in (16, 20)) != expected):
             raise ValueError("Invalid Warder plugin icon: " + filename)
