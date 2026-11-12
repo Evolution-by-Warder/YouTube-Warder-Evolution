@@ -106,7 +106,7 @@ class ResolverTests(unittest.TestCase):
             calls.append((argv, kwargs))
             if len(calls) == 1:
                 return FakeCompleted("", returncode=1, stderr="ERROR: Requested format is not available")
-            return FakeCompleted(GOOGLEVIDEO + "\\n")
+            return FakeCompleted(GOOGLEVIDEO + "\n")
         url = resolver.resolve_video_url("abcdefghijk", runner=runner,
             which=lambda n: "/usr/bin/yt-dlp")
         self.assertEqual(url, GOOGLEVIDEO)
