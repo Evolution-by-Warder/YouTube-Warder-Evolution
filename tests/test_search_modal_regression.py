@@ -101,7 +101,7 @@ def load_search(api_key="configured-key", have_ytdlp=False):
         ),
         "_warder_modal.resolver": module(
             "_warder_modal.resolver", ResolverError=Exception,
-            is_available=lambda: have_ytdlp, resolve_video_url=no_network
+            is_available=lambda: have_ytdlp, resolve_video_streams=no_network
         ),
         "_warder_modal.settings": module(
             "_warder_modal.settings", WarderYouTubeSettings=fake_settings,

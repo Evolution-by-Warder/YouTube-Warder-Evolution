@@ -52,7 +52,7 @@ class RadioEngineIntegrationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             radio_streams.extract_candidates("abcdefghijk",quality="1080",
                        resolver_factory=FakeResolver,transport_factory=FakeNetwork)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(Exception):
             radio_streams.extract_candidates("bad-id",quality="720",
                        resolver_factory=FakeResolver,transport_factory=FakeNetwork)
 

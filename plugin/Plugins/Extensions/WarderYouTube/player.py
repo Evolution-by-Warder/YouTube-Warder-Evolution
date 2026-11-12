@@ -33,7 +33,7 @@ class WarderYouTubePlayer(MoviePlayer):
                               for s in streams):
             raise ValueError("Unsupported YouTube stream candidates")
         self.streams = streams
-        self.title = (title or "YouTube video")[:200]
+        self.video_title = (title or "YouTube video")[:200]
         self.previous_service = previous_service
         self.video_index = 0
         self.finished = False
@@ -55,7 +55,7 @@ class WarderYouTubePlayer(MoviePlayer):
 
     def make_reference(self, stream):
         ref = eServiceReference(stream["service_type"], 0, stream["url"])
-        ref.setName(self.title)
+        ref.setName(self.video_title)
         return ref
 
     def owns(self):

@@ -14,7 +14,7 @@ class PlaybackSourceTests(unittest.TestCase):
 
     def test_native_movieplayer_restoration(self):
         source = (PKG / "player.py").read_text(encoding="utf-8")
-        self.assertIn("fromMovieSelection=False", source)
+        self.assertIn('kwargs["fromMovieSelection"] = False', source)
         self.assertIn("eServiceReference", source)
         self.assertIn("WarderYouTubePlayer", source)
         self.assertIn("ServiceEventTracker", source)
