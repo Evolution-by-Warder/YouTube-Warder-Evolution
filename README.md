@@ -1,25 +1,35 @@
 # YouTube – Warder Evolution
 
-**Status: 0.0.1-dev (native Enigma2 UI prototype, not a working YouTube player).**
+**Status: 0.0.2-dev.** Lightweight blue YouTube-oriented plugin for Enigma2, currently in development.
 
-Our goal: a familiar YouTube desktop/Smart TV hybrid with a lightweight blue interface for OpenATV and OpenPLi. No heavy web browser, complex overlays, unnecessary renderers, or animated decoration.
+## What works in source
 
-- Background #08182D, panels #142C47, focus #087EC7, accent #36B9FF.
-- Native Enigma2 controls, 1920×1080 reference layout, remote-control-first navigation.
-- Independent UI, metadata/search, video resolver and playback modules.
-- Efficient thumbnails, bounded cache and zero blocking network calls on the GUI thread.
-- No stream extraction, login, video search, playback or IPK release yet.
+- Native Enigma2 menu, settings and video search screens; no web browser.
+- Enigma2 virtual keyboard for search.
+- **Real YouTube search** through official YouTube Data API v3 with **user-supplied API key**.
+- Fifteen results per page, video title and channel, next page navigation.
+- Network searches in Twisted worker thread, bounded responses and friendly error states.
 
-Development layout: plugin/ (native source), docs/ (architecture, assimilation and roadmap), tests/ and GitHub Actions (source checks only).
+**Not working yet:** actual playback, thumbnails/video grid, sign-in, subscriptions, history or playlists. This code has **not been tested on a receiver**, and there is **no IPK release**.
 
-Reference projects to assimilate where appropriate:
-- https://github.com/Taapat/enigma2-plugin-youtube
-- https://github.com/fairbird/Youtube-Opensource-DreamOS
-- YouTubeMod (canonical source to verify)
-- https://github.com/yt-dlp/yt-dlp
+## Approved design
 
-Use their strongest proven ideas and practical features while preserving source attributions and any applicable code-reuse conditions. For now, our scaffold is independent original code.
+- Hybrid familiarity of desktop YouTube and TV remote control, with flat blue colors.
+- Background #08182D, panel #142C47, selected focus #087EC7, accent #36B9FF.
+- Full HD reference design, no special C++ renderers, overlay animation or heavy raster decorations.
+- Target images: OpenATV 7.6/8.0.x/8.1 and OpenPLi 9.2, to be verified.
 
-Run developer checks: python3 -m unittest discover -s tests -v
+## Setup
 
-Host tests do not establish receiver compatibility. No published package or feed is present.
+Configure your own YouTube Data API key in **Settings**, then select **Search**. Read [search guide](docs/SEARCH.md) for details and the local-storage privacy note. Do not publish keys or account tokens in Git.
+
+## Development
+
+- Sources: `plugin/Plugins/Extensions/WarderYouTube`
+- API documentation: [docs/SEARCH.md](docs/SEARCH.md)
+- [Architecture](docs/ARCHITECTURE.md) | [Assimilation](docs/ASSIMILATION.md) | [Roadmap](docs/ROADMAP.md)
+- Test without Enigma2: `python3 -m unittest discover -s tests -v`
+
+Research references: [Taapat](https://github.com/Taapat/enigma2-plugin-youtube), [Fairbird](https://github.com/fairbird/Youtube-Opensource-DreamOS), YouTubeMod (to verify), [yt-dlp](https://github.com/yt-dlp/yt-dlp). Reuse practical ideas, preserve code provenance and attribution when incorporating upstream source.
+
+**No build artifact or production updater feed has been created.**
