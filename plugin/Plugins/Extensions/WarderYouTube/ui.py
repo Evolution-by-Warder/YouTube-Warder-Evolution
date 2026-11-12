@@ -16,21 +16,21 @@ class WarderYouTubeHome(Screen):
         Screen.__init__(self, session)
         self.sections = [
             ("Home", "Recommendations will be enabled after a catalogue is validated."),
-            ("Search", "Search YouTube using your API key or optional installed yt-dlp."),
+            ("Search", "Vyhľadávanie cez API kľúč alebo nainštalovaný yt-dlp."),
             ("Subscriptions", "Subscriptions need secure account authorization."),
             ("History", "Local viewing history will follow verified playback."),
             ("Playlists", "Playlist browsing is planned after search and playback."),
             ("Favourites", "Local favourite videos and channels are planned."),
-            ("Settings", "Optional Google API key; yt-dlp can search without one."),
-            ("Updates", "Check the verified Warder release channel.")
+            ("Settings", "Kvalita 360/720p a voliteľný API kľúč. Prehrávanie má vlastný resolver."),
+            ("Updates", "Skontrolovať overené novšie testovacie IPK. Bez automatickej inštalácie.")
         ]
         self["brand"] = Label("YouTube Warder Evolution")
         self["version"] = Label(CURRENT_VERSION + " / Enigma2")
         self["menu"] = MenuList([name for name, desc in self.sections])
         self["heading"] = Label("")
         self["description"] = Label("")
-        self["status"] = Label("Search: API key or yt-dlp. Native playback is experimental.")
-        self["footer"] = Label("UP/DOWN: Select      OK: Open      EXIT: Close")
+        self["status"] = Label("Vyhľadávanie: API/yt-dlp. Prehrávanie: vlastný resolver Warder Radio.")
+        self["footer"] = Label("HORE/DOLE: výber      OK: otvoriť      EXIT: zavrieť")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
             {"ok": self.open_section, "cancel": self.close, "red": self.close},

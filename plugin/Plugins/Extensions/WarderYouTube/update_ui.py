@@ -129,7 +129,7 @@ class WarderYouTubeUpdateCheck(Screen):
         self.disposed = False
         self.release = None
         self["title"] = Label("YouTube Warder Evolution / Aktualizácie")
-        self["status"] = Label("Kontrola dostupnosti aktualizácií...")
+        self["status"] = Label("Kontrola testovacieho aktualizačného kanála...")
         self["detail"] = Label("Aktuálna verzia: " + CURRENT_VERSION)
         self["footer"] = Label("EXIT: späť")
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {
@@ -151,7 +151,7 @@ class WarderYouTubeUpdateCheck(Screen):
             return
         self.release = release
         if release is None:
-            self["status"].setText("Nie je dostupná novšia overená verzia.")
+            self["status"].setText("Testovací kanál: používate najnovšiu dostupnú verziu.")
             self["detail"].setText("Nainštalovaná verzia: " + CURRENT_VERSION)
             self["footer"].setText("EXIT: späť")
         else:

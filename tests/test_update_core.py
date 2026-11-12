@@ -1,25 +1,129 @@
-"""Update channel/version guard regressions; no Enigma2 runtime required."""
+"""Offline regression tests for the opt-in YouTube update feed and IPK installer."""
 import importlib.util
-from pathlib import Path
+import hashlib
+import io
 import json
+from pathlib import Path
+import tempfile
+import types
 import unittest
-SRC = Path(__file__).resolve().parents[1] / "plugin/Plugins/Extensions/WarderYouTube/update_core.py"
+
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "plugin/Plugins/Extensions/WarderYouTube/update_core.py"
 spec = importlib.util.spec_from_file_location("warder_test_update", SRC)
 u = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(u)
+
+
+def valid_manifest(version):
+    return {
+        "schema": 1, "product": u.PRODUCT, "channel": "testing",
+        "release": {
+            "version": version,
+            "tag": "youtube-warder-v" + version.replace("~", "-"),
+            "url": u.expected_url(version),
+            "sha256": "a" * 64,
+            "bytes": 62210,
+            "notes": "Safe receiver-test candidate"
+        }
+    }
+
+
+class FakeResponse(io.BytesIO):
+    def __enter__(self):
+        return self
+    def __exit__(self, *args):
+        self.close()
+
+
 class UpdateCoreTests(unittest.TestCase):
-    def test_tilde_versions_and_tag(self):
+    def test_tilde_versions_and_github_normalized_asset_url(self):
         self.assertEqual(u.CURRENT_VERSION, "0.0.8~test5")
         self.assertEqual(u.channel_for_version(u.CURRENT_VERSION), "testing")
         self.assertLess(u.version_key("0.0.8~test4"), u.version_key("0.0.8~test5"))
         self.assertLess(u.version_key("0.0.8~test5"), u.version_key("0.0.8"))
         self.assertIn("/youtube-warder-v0.0.8-test5/", u.expected_url("0.0.8~test5"))
         self.assertIn("_0.0.8.test5_all.ipk", u.expected_url("0.0.8~test5"))
+
     def test_no_release_and_reject_unsigned(self):
         base = {"schema": 1, "product": u.PRODUCT, "channel": "testing", "release": None}
         self.assertIsNone(u.parse_manifest(json.dumps(base).encode(), u.CURRENT_VERSION))
         base["release"] = {"version": "0.0.8~test6"}
         with self.assertRaises(u.UpdateError):
             u.parse_manifest(json.dumps(base).encode(), u.CURRENT_VERSION)
+
+    def test_published_test5_manifest_matches_expected_asset(self):
+        feed = json.loads((ROOT / "update/testing.json").read_text(encoding="utf-8"))
+        rel = feed["release"]
+        self.assertEqual(rel["version"], u.CURRENT_VERSION)
+        self.assertEqual(rel["url"], u.expected_url(u.CURRENT_VERSION))
+        self.assertEqual(len(rel["sha256"]), 64)
+        self.assertEqual(rel["bytes"], 62210)
+        self.assertIsNone(u.parse_manifest(json.dumps(feed).encode(), u.CURRENT_VERSION))
+
+    def test_future_testing_update_is_offered_with_dotted_download_url(self):
+        future = valid_manifest("0.0.8~test6")
+        release = u.parse_manifest(json.dumps(future).encode(), u.CURRENT_VERSION)
+        self.assertEqual(release["version"], "0.0.8~test6")
+        self.assertEqual(release["url"], u.expected_url("0.0.8~test6"))
+        self.assertTrue(release["url"].endswith("_0.0.8.test6_all.ipk"))
+
+    def test_manifest_rejects_mismatched_tag_url_or_digest(self):
+        for change, value in [
+            ("tag", "youtube-warder-v0.0.8-test99"),
+            ("url", "https://attacker.invalid/plugin.ipk"),
+            ("url", u.expected_url("0.0.8~test6").replace(".test6", "~test6")),
+            ("sha256", "invalid"),
+            ("bytes", 0),
+        ]:
+            with self.subTest(field=change, value=value):
+                bad = valid_manifest("0.0.8~test6")
+                bad["release"][change] = value
+                with self.assertRaises(u.UpdateError):
+                    u.parse_manifest(json.dumps(bad).encode(), u.CURRENT_VERSION)
+
+    def test_check_update_uses_testing_feed_and_no_auto_install(self):
+        requested = []
+        future = json.dumps(valid_manifest("0.0.8~test6")).encode("utf-8")
+        def fake_open(url, timeout):
+            requested.append((url, timeout))
+            return FakeResponse(future)
+        result = u.check_update(u.CURRENT_VERSION, opener=fake_open)
+        self.assertEqual(result["version"], "0.0.8~test6")
+        self.assertEqual(requested, [(u.FEED_TESTING, 8)])
+
+    def test_verified_download_and_reject_corruption(self):
+        payload = b"ipk-bytes-from-test-only-backend"
+        info = {
+            "url": u.expected_url("0.0.8~test6"),
+            "sha256": hashlib.sha256(payload).hexdigest(),
+            "bytes": len(payload),
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            dest = Path(tmp) / "download.ipk"
+            progress = []
+            result = u.download_update(
+                info, dest, opener=lambda url, timeout: FakeResponse(payload),
+                progress=lambda *args: progress.append(args)
+            )
+            self.assertEqual(result.read_bytes(), payload)
+            self.assertIn(("download", len(payload), len(payload)), progress)
+            dest.unlink()
+            bad = dict(info, sha256="0" * 64)
+            with self.assertRaises(u.UpdateError):
+                u.download_update(bad, dest,
+                    opener=lambda url, timeout: FakeResponse(payload))
+            self.assertFalse(dest.exists())
+
+    def test_installed_package_status_exact_match(self):
+        status = "Package: other-plugin\nVersion: 0.0.8~test6\n\n" + (
+            "Package: " + u.PACKAGE + "\n"
+            "Version: 0.0.8~test6\nStatus: install ok installed\n")
+        self.assertEqual(u._installed_version(status),
+                         ("0.0.8~test6", "install ok installed"))
+        self.assertEqual(u._installed_version("Package: unrelated\nVersion: 1\n"),
+                         (None, None))
+
+
 if __name__ == "__main__":
     unittest.main()

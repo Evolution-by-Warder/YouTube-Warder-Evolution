@@ -40,19 +40,18 @@ class WarderYouTubeSettings(Screen):
         Screen.__init__(self, session)
         self["title"] = Label("YouTube Warder Evolution / Settings")
         self["description"] = Label(
-            "Search currently uses the official YouTube Data API. "
-            "API key is optional when yt-dlp is installed. "
-            "Playback is experimental and depends on installed yt-dlp."
+            "Vyhľadávanie: API kľúč alebo yt-dlp. "
+            "Prehrávanie: vlastný resolver Warder Radio; yt-dlp iba záloha."
         )
         self["key_state"] = Label("")
         self["quality"] = Label("")
         self["resolver_state"] = Label("")
         self["warning"] = Label(
-            "The key is stored in the receiver's Enigma2 settings without encryption. "
-            "Do not share screenshots while entering it."
+            "API kľúč je uložený v Enigma2 bez šifrovania. "
+            "Pri jeho zadávaní nezdieľajte snímky obrazovky."
         )
         self["footer"] = Label(
-            "OK/GREEN: API key   BLUE: quality 360/720   YELLOW: clear key   EXIT: back"
+            "OK/ZELENÉ: API kľúč   MODRÉ: 360/720p   ŽLTÉ: vymazať   EXIT: späť"
         )
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
@@ -66,12 +65,12 @@ class WarderYouTubeSettings(Screen):
 
     def refresh(self):
         self["key_state"].setText(
-            "API key: configured" if get_api_key() else "API key: not configured (yt-dlp alternative)"
+            "API kľúč: nastavený" if get_api_key() else "API kľúč: nenastavený (vyhľadávanie cez yt-dlp)"
         )
-        self["quality"].setText("Max. MP4 video quality: %sp" % get_quality())
+        self["quality"].setText("Preferovaná kvalita videa: %sp" % get_quality())
         self["resolver_state"].setText(
-            "yt-dlp: available" if is_available() else
-            "yt-dlp: not installed (optional)"
+            "yt-dlp: dostupný (vyhľadávanie aj záložné prehrávanie)" if is_available() else
+            "yt-dlp: nenainštalovaný (na prehrávanie nie je nutný)"
         )
 
     def toggle_quality(self):
@@ -85,7 +84,7 @@ class WarderYouTubeSettings(Screen):
         # Never reveal a stored key when opening the keyboard.
         self.session.openWithCallback(
             self.key_received, VirtualKeyboard,
-            title="Paste your YouTube Data API key (replaces existing)",
+            title="Vložte YouTube Data API kľúč (nahradí pôvodný)",
             text=""
         )
 
@@ -95,7 +94,7 @@ class WarderYouTubeSettings(Screen):
         value = value.strip()
         if not value or any(c.isspace() for c in value) or len(value) > 256:
             self.session.open(
-                MessageBox, "Invalid or empty key. Existing settings were kept.",
+                MessageBox, "Neplatný alebo prázdny kľúč. Pôvodný zostal zachovaný.",
                 type=MessageBox.TYPE_ERROR, timeout=5
             )
             return
@@ -107,7 +106,7 @@ class WarderYouTubeSettings(Screen):
     def confirm_clear(self):
         self.session.openWithCallback(
             self.clear_key, MessageBox,
-            "Remove the saved API key from this receiver?",
+            "Odstrániť uložený YouTube API kľúč z prijímača?",
             type=MessageBox.TYPE_YESNO, default=False
         )
 
