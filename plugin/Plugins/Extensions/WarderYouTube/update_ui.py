@@ -9,12 +9,13 @@ from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.ProgressBar import ProgressBar
 from Screens.Screen import Screen
+from Screens.MessageBox import MessageBox
 from Screens.Standby import TryQuitMainloop
 from twisted.internet import reactor
 from twisted.internet.threads import deferToThread
 
-from .skin import UPDATE_SKIN
-from .update_core import install_update
+from .skin import UPDATE_SKIN, UPDATE_CHECK_SKIN
+from .update_core import install_update, check_update, CURRENT_VERSION, UpdateError
 
 
 class WarderYouTubeUpdateProgress(Screen):
@@ -116,3 +117,69 @@ class WarderYouTubeUpdateProgress(Screen):
     def dispose(self):
         self.disposed = True
         self.restart_timer.stop()
+
+
+class WarderYouTubeUpdateCheck(Screen):
+    """Check in a worker; install only following explicit on-screen confirmation."""
+    skin = UPDATE_CHECK_SKIN
+
+    def __init__(self, session):
+        Screen.__init__(self, session)
+        self.started = False
+        self.disposed = False
+        self.release = None
+        self["title"] = Label("YouTube Warder Evolution / Aktualizácie")
+        self["status"] = Label("Kontrola dostupnosti aktualizácií...")
+        self["detail"] = Label("Aktuálna verzia: " + CURRENT_VERSION)
+        self["footer"] = Label("EXIT: späť")
+        self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {
+            "ok": self.ask_install, "green": self.ask_install,
+            "cancel": self.close, "red": self.close
+        }, -1)
+        self.onShown.append(self.begin_once)
+        self.onClose.append(self.dispose)
+
+    def begin_once(self):
+        if self.started or self.disposed:
+            return
+        self.started = True
+        work = deferToThread(check_update, CURRENT_VERSION)
+        work.addCallbacks(self.found, self.failed_check)
+
+    def found(self, release):
+        if self.disposed:
+            return
+        self.release = release
+        if release is None:
+            self["status"].setText("Nie je dostupná novšia overená verzia.")
+            self["detail"].setText("Nainštalovaná verzia: " + CURRENT_VERSION)
+            self["footer"].setText("EXIT: späť")
+        else:
+            self["status"].setText("Dostupná verzia: " + release["version"])
+            self["detail"].setText(release.get("notes") or "Oficiálne overená aktualizácia.")
+            self["footer"].setText("OK / ZELENÉ: aktualizovať    EXIT: späť")
+
+    def failed_check(self, failure):
+        if self.disposed:
+            return
+        problem = getattr(failure, "value", None)
+        self["status"].setText("Kontrola aktualizácie zlyhala.")
+        self["detail"].setText(str(problem) if isinstance(problem, UpdateError)
+                               else "Nepodarilo sa kontaktovať aktualizačný server.")
+        self["footer"].setText("EXIT: späť")
+
+    def ask_install(self):
+        if self.disposed or self.release is None:
+            return
+        self.session.openWithCallback(
+            self.install_confirmed, MessageBox,
+            "Nainštalovať overenú verziu %s? Po úspechu sa obnoví iba GUI Enigma2." % self.release["version"],
+            type=MessageBox.TYPE_YESNO, default=False
+        )
+
+    def install_confirmed(self, confirmed):
+        if confirmed and not self.disposed and self.release is not None:
+            self.session.open(WarderYouTubeUpdateProgress, self.release)
+
+    def dispose(self):
+        self.disposed = True

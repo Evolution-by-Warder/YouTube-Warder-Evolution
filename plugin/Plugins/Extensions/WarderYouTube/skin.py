@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Flat, native Enigma2 screens; no images, animation or custom renderer."""
 HOME_SKIN = """
-<screen name="WarderYouTubeHome" position="0,0" size="1920,1080" title="YouTube - Warder Evolution" flags="wfNoBorder" backgroundColor="#08182D">
+<screen name="WarderYouTubeHome" position="0,0" size="1920,1080" title="YouTube Warder Evolution" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,110" backgroundColor="#142C47"/>
   <widget name="brand" position="42,23" size="1100,60" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"/>
   <widget name="version" position="1260,28" size="595,52" font="Regular;28" foregroundColor="#36B9FF" backgroundColor="#142C47" halign="right" transparent="1"/>
@@ -16,7 +16,7 @@ HOME_SKIN = """
 """
 
 SEARCH_SKIN = """
-<screen name="WarderYouTubeSearch" position="0,0" size="1920,1080" title="YouTube - Warder Evolution / Search" flags="wfNoBorder" backgroundColor="#08182D">
+<screen name="WarderYouTubeSearch" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Search" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
   <widget name="title" position="45,23" size="1640,62" font="Regular;43" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"/>
   <widget name="query" position="55,134" size="1760,62" font="Regular;37" foregroundColor="#36B9FF" transparent="1"/>
@@ -29,7 +29,7 @@ SEARCH_SKIN = """
 """
 
 SETTINGS_SKIN = """
-<screen name="WarderYouTubeSettings" position="0,0" size="1920,1080" title="YouTube - Warder Evolution / Settings" flags="wfNoBorder" backgroundColor="#08182D">
+<screen name="WarderYouTubeSettings" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Settings" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
   <widget name="title" position="48,26" size="1750,62" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"/>
   <widget name="description" position="75,185" size="1760,150" font="Regular;35" foregroundColor="#B9D9F5" transparent="1"/>
@@ -44,7 +44,7 @@ SETTINGS_SKIN = """
 
 
 GRID_SKIN = """
-<screen name="WarderYouTubeGrid" position="0,0" size="1920,1080" title="YouTube - Warder Evolution / Videos" flags="wfNoBorder" backgroundColor="#08182D">
+<screen name="WarderYouTubeGrid" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Videos" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,104" backgroundColor="#142C47"/>
   <widget name="brand" position="36,20" size="1010,61" font="Regular;41" foregroundColor="#FFFFFF" transparent="1"/>
   <widget name="heading" position="1038,28" size="815,54" font="Regular;29" foregroundColor="#36B9FF" transparent="1" halign="right"/>
@@ -97,5 +97,31 @@ GRID_SKIN = """
   <widget name="status" position="358,953" size="1460,43" font="Regular;25" foregroundColor="#36B9FF" transparent="1"/>
   <eLabel position="0,999" size="1920,81" backgroundColor="#142C47"/>
   <widget name="footer" position="28,1014" size="1880,52" font="Regular;24" foregroundColor="#FFFFFF" transparent="1"/>
+</screen>
+"""
+
+
+UPDATE_CHECK_SKIN = """
+<screen name="WarderYouTubeUpdateCheck" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Updates" flags="wfNoBorder" backgroundColor="#08182D">
+  <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
+  <widget name="title" position="45,23" size="1800,62" font="Regular;42" foregroundColor="#FFFFFF" transparent="1"/>
+  <widget name="status" position="72,230" size="1750,110" font="Regular;37" foregroundColor="#36B9FF" transparent="1"/>
+  <widget name="detail" position="72,385" size="1750,185" font="Regular;30" foregroundColor="#B9D9F5" transparent="1"/>
+  <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
+  <widget name="footer" position="42,1013" size="1820,54" font="Regular;27" foregroundColor="#FFFFFF" transparent="1"/>
+</screen>
+"""
+
+UPDATE_SKIN = """
+<screen name="WarderYouTubeUpdateProgress" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Update progress" flags="wfNoBorder" backgroundColor="#08182D">
+  <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
+  <widget name="title" position="45,23" size="1770,62" font="Regular;42" foregroundColor="#FFFFFF" transparent="1"/>
+  <widget name="version" position="72,180" size="1650,62" font="Regular;37" foregroundColor="#36B9FF" transparent="1"/>
+  <widget name="phase" position="72,290" size="1670,66" font="Regular;33" foregroundColor="#FFFFFF" transparent="1"/>
+  <widget name="progress" position="72,405" size="1550,34" borderWidth="1"/>
+  <widget name="percentage" position="1660,390" size="160,62" font="Regular;31" foregroundColor="#36B9FF" transparent="1"/>
+  <widget name="detail" position="72,510" size="1720,170" font="Regular;30" foregroundColor="#B9D9F5" transparent="1"/>
+  <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
+  <widget name="footer" position="42,1013" size="1830,54" font="Regular;27" foregroundColor="#FFFFFF" transparent="1"/>
 </screen>
 """

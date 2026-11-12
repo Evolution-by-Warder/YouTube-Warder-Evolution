@@ -20,6 +20,7 @@ from urllib.request import Request, urlopen
 REPO = "Evolution-by-Warder/YouTube-Warder-Evolution"
 PACKAGE = "enigma2-plugin-extensions-youtube-warder-evolution"
 PRODUCT = "YouTube Warder Evolution"
+CURRENT_VERSION = "0.0.8~test2"
 FEED_TESTING = ("https://raw.githubusercontent.com/" + REPO +
                 "/feature/native-search-v002/update/testing.json")
 FEED_STABLE = ("https://raw.githubusercontent.com/" + REPO +
@@ -27,7 +28,7 @@ FEED_STABLE = ("https://raw.githubusercontent.com/" + REPO +
 MAX_MANIFEST = 32 * 1024
 MAX_IPK = 4 * 1024 * 1024
 PREFIX = "usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/"
-VERSION_PATTERN = re.compile(r"^(\d+)\.(\d+)\.(\d+)(?:-(test|beta|rc)(\d+))?$")
+VERSION_PATTERN = re.compile(r"^(\d+)\.(\d+)\.(\d+)(?:[~-](test|beta|rc)(\d+))?$")
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -48,11 +49,11 @@ def version_key(version):
 
 def channel_for_version(version):
     version_key(version)
-    return "testing" if "-" in version else "stable"
+    return "testing" if VERSION_PATTERN.fullmatch(version).group(4) else "stable"
 
 
 def expected_url(version):
-    tag = "youtube-warder-v" + version
+    tag = "youtube-warder-v" + version.replace("~", "-")
     filename = PACKAGE + "_" + version + "_all.ipk"
     return "https://github.com/" + REPO + "/releases/download/" + tag + "/" + filename
 
@@ -74,11 +75,11 @@ def parse_manifest(raw, current_version):
         raise UpdateError("Nesprávny záznam aktualizácie.")
     version = release.get("version")
     version_key(version)
-    if channel == "testing" and "-test" not in version:
+    if channel == "testing" and "~test" not in version:
         raise UpdateError("Nesprávna testovacia verzia.")
-    if channel == "stable" and "-" in version:
+    if channel == "stable" and VERSION_PATTERN.fullmatch(version).group(4):
         raise UpdateError("Vývojová verzia v stabilnom kanáli.")
-    if release.get("tag") != "youtube-warder-v" + version:
+    if release.get("tag") != "youtube-warder-v" + version.replace("~", "-"):
         raise UpdateError("Nesprávne označenie vydania.")
     if release.get("url") != expected_url(version):
         raise UpdateError("Aktualizačný balík nie je z oficiálneho zdroja.")
@@ -209,7 +210,7 @@ def validate_ipk(path, release):
                 names.append(name)
             if len(names) != len(set(names)) or len(names) < 12:
                 raise UpdateError("Balík je nekompletný.")
-            for required in ("plugin.py", "update_core.py", "update_ui.py", "plugin.png"):
+            for required in ("plugin.py", "update_core.py", "update_ui.py", "images/plugin.png", "images/plugin_fhd.png"):
                 if PREFIX + required not in names:
                     raise UpdateError("Aktualizácia neobsahuje všetky súbory.")
     except (tarfile.TarError, UnicodeError, OSError):

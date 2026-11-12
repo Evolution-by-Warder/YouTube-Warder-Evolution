@@ -1,15 +1,6 @@
 name: Build 0.0.8 test IPK (development only)
 
 on:
-  push:
-    branches: [feature/native-search-v002]
-    paths:
-      - tools/build_test_ipk.py
-      - tests/test_ipk_build.py
-      - tests/test_search_modal_regression.py
-      - plugin/Plugins/Extensions/WarderYouTube/search.py
-      - plugin/Plugins/Extensions/WarderYouTube/plugin.py
-      - .github/workflows/test-ipk.yml
   workflow_dispatch:
 
 permissions:

@@ -38,7 +38,7 @@ class WarderYouTubeSettings(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
-        self["title"] = Label("YouTube - Warder Evolution / Settings")
+        self["title"] = Label("YouTube Warder Evolution / Settings")
         self["description"] = Label(
             "Search currently uses the official YouTube Data API. "
             "API key is optional when yt-dlp is installed. "

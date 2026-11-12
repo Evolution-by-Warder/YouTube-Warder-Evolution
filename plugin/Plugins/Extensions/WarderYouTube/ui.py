@@ -6,6 +6,7 @@ from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.MenuList import MenuList
 from .skin import HOME_SKIN
+from .update_core import CURRENT_VERSION
 
 
 class WarderYouTubeHome(Screen):
@@ -20,10 +21,11 @@ class WarderYouTubeHome(Screen):
             ("History", "Local viewing history will follow verified playback."),
             ("Playlists", "Playlist browsing is planned after search and playback."),
             ("Favourites", "Local favourite videos and channels are planned."),
-            ("Settings", "Optional Google API key; yt-dlp can search without one.")
+            ("Settings", "Optional Google API key; yt-dlp can search without one."),
+            ("Updates", "Check the verified Warder release channel.")
         ]
-        self["brand"] = Label("YouTube - Warder Evolution")
-        self["version"] = Label("0.0.7-dev / Enigma2")
+        self["brand"] = Label("YouTube Warder Evolution")
+        self["version"] = Label(CURRENT_VERSION + " / Enigma2")
         self["menu"] = MenuList([name for name, desc in self.sections])
         self["heading"] = Label("")
         self["description"] = Label("")
@@ -51,6 +53,9 @@ class WarderYouTubeHome(Screen):
         elif index == 6:
             from .settings import WarderYouTubeSettings
             self.session.open(WarderYouTubeSettings)
+        elif index == 7:
+            from .update_ui import WarderYouTubeUpdateCheck
+            self.session.open(WarderYouTubeUpdateCheck)
         else:
             self.session.open(
                 MessageBox,

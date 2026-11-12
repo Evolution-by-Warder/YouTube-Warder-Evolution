@@ -2,7 +2,7 @@
 """Create a self-contained, SMALL, receiver-test-only Enigma2 .ipk.
 
 No downloader, yt-dlp, API key, videos, cache or other third-party files.
-The package only contains our native Enigma2 plugin's Python source.
+The package contains only native Enigma2 Python and two small logo PNGs.
 """
 from pathlib import Path
 import argparse
@@ -92,6 +92,16 @@ def build(output_dir):
             raise ValueError("Possible API key in source: " + source.name)
         data_files.append((TARGET_PREFIX + "/" + source.name, content, False))
 
+    for filename, expected in (("plugin.png", (100, 60)),
+                               ("plugin_fhd.png", (150, 90))):
+        path = PKG_DIR / "images" / filename
+        raw = path.read_bytes()
+        if (len(raw) > 100_000 or not raw.startswith(b"\\x89PNG\\r\\n\\x1a\\n")
+                or raw[12:16] != b"IHDR"
+                or tuple(int.from_bytes(raw[i:i + 4], "big") for i in (16, 20)) != expected):
+            raise ValueError("Invalid Warder plugin icon: " + filename)
+        data_files.append((TARGET_PREFIX + "/images/" + filename, raw, False))
+
     control_text = (
         "Package: %s\nVersion: %s\nArchitecture: all\n"
         "Section: extra\nPriority: optional\nMaintainer: Evolution by Warder\n"
@@ -114,7 +124,7 @@ def build(output_dir):
     (output_dir / (FILENAME + ".sha256")).write_text(
         digest + "  " + FILENAME + "\n", encoding="ascii"
     )
-    print("PASS: test IPK built (%d Python files, %d bytes)." %
+    print("PASS: test IPK built (%d Python files + 2 PNG icons, %d bytes)." %
           (len(data_files), len(ipk)))
     print("PASS: package SHA256:", digest)
     return path

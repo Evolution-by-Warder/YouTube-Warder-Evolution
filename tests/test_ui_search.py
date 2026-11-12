@@ -17,7 +17,7 @@ class UiTests(unittest.TestCase):
             for target in node.targets if isinstance(target, ast.Name)
             and target.id.endswith("_SKIN")
         }
-        self.assertEqual(set(values), {"HOME_SKIN", "SEARCH_SKIN", "SETTINGS_SKIN", "GRID_SKIN"})
+        self.assertEqual(set(values), {"HOME_SKIN", "SEARCH_SKIN", "SETTINGS_SKIN", "GRID_SKIN", "UPDATE_SKIN", "UPDATE_CHECK_SKIN"})
         for name, xml in values.items():
             screen = ET.fromstring(xml)
             self.assertEqual(screen.attrib["size"], "1920,1080")

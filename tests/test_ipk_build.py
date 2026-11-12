@@ -28,7 +28,7 @@ def ar_parts(data):
 
 
 class PackagingTests(unittest.TestCase):
-    def test_ipk_contains_python_only_and_hook_modes(self):
+    def test_ipk_contains_native_python_icons_and_hook_modes(self):
         with tempfile.TemporaryDirectory() as temp:
             path = m.build(Path(temp))
             contents = path.read_bytes()
@@ -47,9 +47,13 @@ class PackagingTests(unittest.TestCase):
                 members = tar.getmembers()
                 self.assertGreaterEqual(len(members), 10)
                 self.assertTrue(all(x.name.startswith("./" + m.TARGET_PREFIX + "/") for x in members))
-                self.assertTrue(all(x.name.endswith(".py") for x in members))
+                self.assertTrue(all(x.name.endswith((".py", ".png")) for x in members))
                 self.assertEqual(len({x.name for x in members}), len(members))
                 self.assertTrue(any(x.name.endswith("/plugin.py") for x in members))
+                for icon, dimensions in (("plugin.png", (100, 60)), ("plugin_fhd.png", (150, 90))):
+                    raw = tar.extractfile("./" + m.TARGET_PREFIX + "/images/" + icon).read()
+                    self.assertTrue(raw.startswith(b"\\x89PNG\\r\\n\\x1a\\n"))
+                    self.assertEqual(tuple(int.from_bytes(raw[i:i + 4], "big") for i in (16, 20)), dimensions)
 
     def test_hooks_are_non_destructive(self):
         for name, script in m.control_scripts().items():
