@@ -2,6 +2,10 @@ name: Build 0.0.8 test IPK (development only)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [feature/native-search-v002]
+    paths:
+      - .github/workflows/test-ipk.yml
 
 permissions:
   contents: read
