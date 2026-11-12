@@ -24,8 +24,11 @@ class Tests(unittest.TestCase):
         self.assertNotIn("ePixmap", xml)
 
     def test_no_fake_youtube(self):
-        self.assertIn("not a working YouTube player", (ROOT / "README.md").read_text())
-        self.assertIn("not implemented", (SRC / "ui.py").read_text())
+        readme = (ROOT / "README.md").read_text().lower()
+        self.assertIn("not working yet", readme)
+        self.assertIn("actual playback", readme)
+        self.assertIn("no ipk release", readme)
+        self.assertIn("this section is planned", (SRC / "ui.py").read_text().lower())
         self.assertIn("fairbird", (ROOT / "docs/ASSIMILATION.md").read_text())
 
 if __name__ == "__main__":
