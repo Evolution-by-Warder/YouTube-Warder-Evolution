@@ -24,13 +24,14 @@ SIDEBAR = ("Domov", "Hľadať", "Odbery", "História", "Playlisty", "Obľúbené
 class WarderYouTubeGrid(Screen):
     skin = GRID_SKIN
 
-    def __init__(self, session, items, query, has_next_page=False, on_play=None):
+    def __init__(self, session, items, query, has_next_page=False, on_play=None, on_info=None):
         Screen.__init__(self, session)
         self.items = list(items[:15])
         self.selected = 0 if self.items else -1
         self.query = str(query)[:70]
         self.has_next_page = bool(has_next_page)
         self.on_play = on_play
+        self.on_info = on_info
         self._ready = False
         self._closed = False
         self._epoch = 0
@@ -45,7 +46,7 @@ class WarderYouTubeGrid(Screen):
         self["status"] = Label("")
         self["footer"] = Label(
             "Šípky: výber    OK: prehrať    MODRÉ: nové hľadanie    "
-            "ZELENÉ: ďalšie    ŽLTÉ: späť    EXIT: zoznam"
+            "ZELENÉ: ďalšie    ŽLTÉ: späť    INFO: detaily    EXIT: zoznam"
         )
         for i, name in enumerate(SIDEBAR):
             self["side%d" % i] = Label(name)
@@ -56,11 +57,12 @@ class WarderYouTubeGrid(Screen):
             self["channel%d" % i] = Label("")
 
         self["actions"] = ActionMap(
-            ["NavigationActions", "OkCancelActions", "ColorActions"],
+            ["NavigationActions", "OkCancelActions", "ColorActions", "InfoActions"],
             {
                 "left": self.left, "right": self.right,
                 "up": self.up, "down": self.down,
-                "ok": self.play, "cancel": self.go_back, "red": self.go_back,
+                "ok": self.play, "info": self.show_info,
+                "cancel": self.go_back, "red": self.go_back,
                 "blue": self.new_search, "green": self.next_page,
                 "yellow": self.previous_page
             }, -1
@@ -88,6 +90,7 @@ class WarderYouTubeGrid(Screen):
         self._pending_downloads = []
         self._pending_decodes = []
         self.on_play = None
+        self.on_info = None
 
     def set_status(self, message):
         if not self._closed:
@@ -214,6 +217,10 @@ class WarderYouTubeGrid(Screen):
         if self.selected >= 0 and callable(self.on_play):
             self.set_status("Zisťujem dostupnosť videa...")
             self.on_play(self.items[self.selected])
+
+    def show_info(self):
+        if self.selected >= 0 and callable(self.on_info):
+            self.on_info(self.items[self.selected])
 
     def next_page(self):
         if not self.items:

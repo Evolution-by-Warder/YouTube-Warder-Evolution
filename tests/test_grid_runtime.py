@@ -173,6 +173,22 @@ class TestNativeGrid(unittest.TestCase):
         jobs[3][1].success("/tmp/later-image.jpg")
         self.assertEqual(len(jobs), scheduled_at_close)
 
+    def test_info_button_for_current_video(self):
+        jobs = []
+        mod = self.load_grid(jobs)
+        selected = []
+        grid = mod.WarderYouTubeGrid(
+            None, [self.video(0), self.video(1)], "test",
+            on_info=lambda video: selected.append(video["title"])
+        )
+        grid._layout_ready()
+        grid.right()
+        grid.show_info()
+        self.assertEqual(selected, ["Video 1"])
+        grid.close()
+        grid.show_info()
+        self.assertEqual(selected, ["Video 1"])
+
     def test_grid_next_page_emits_result(self):
         jobs = []
         m = self.load_grid(jobs)

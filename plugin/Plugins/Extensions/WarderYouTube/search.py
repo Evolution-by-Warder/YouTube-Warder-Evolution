@@ -21,6 +21,7 @@ from .api import SearchError, search_videos
 from .search_backend import SearchBackendError, search_with_ytdlp, select_backend
 from .resolver import ResolverError, is_available, resolve_video_url
 from .settings import WarderYouTubeSettings, get_api_key
+from .video_metadata import VideoInfoError, fetch_video_info
 from .skin import SEARCH_SKIN
 
 
@@ -49,8 +50,9 @@ class WarderYouTubeSearch(Screen):
             "GREEN: next page    YELLOW: settings    EXIT: back"
         )
         self["actions"] = ActionMap(
-            ["OkCancelActions", "ColorActions"],
-            {"ok": self.open_selected, "cancel": self.close,
+            ["OkCancelActions", "ColorActions", "InfoActions"],
+            {"ok": self.open_selected, "info": self.info_selected,
+             "cancel": self.close,
              "red": self.close, "blue": self.open_keyboard,
              "green": self.next_page, "yellow": self.open_settings},
             -1
@@ -183,7 +185,8 @@ class WarderYouTubeSearch(Screen):
             from .grid import WarderYouTubeGrid
             self.active_grid = self.session.openWithCallback(
                 self.grid_closed, WarderYouTubeGrid,
-                self.items, self.query, bool(self.next_page_token), self.play_video
+                self.items, self.query, bool(self.next_page_token),
+                self.play_video, self.info_video
             )
         except Exception:
             self.active_grid = None
@@ -215,6 +218,57 @@ class WarderYouTubeSearch(Screen):
             self.open_keyboard()
             return
         self.play_video(self.items[index])
+
+    def info_selected(self):
+        index = self["results"].getCurrentIndex()
+        if 0 <= index < len(self.items):
+            self.info_video(self.items[index])
+
+    def info_video(self, video):
+        if self.busy or self.closed:
+            return
+        api_key = get_api_key()
+        if not api_key:
+            self.session.open(
+                MessageBox,
+                "Názov: %s\nKanál: %s\n\n"
+                "Podrobné údaje vyžadujú vlastný YouTube Data API kľúč." %
+                (video.get("title") or "", video.get("channel") or ""),
+                type=MessageBox.TYPE_INFO
+            )
+            return
+        self.busy = True
+        self.request_version += 1
+        version = self.request_version
+        self.show_play_status("Načítavam podrobnosti videa...")
+        deferred = deferToThread(fetch_video_info, video["video_id"], api_key)
+        deferred.addCallbacks(
+            lambda details: self.info_ready(version, details),
+            lambda failure: self.info_failed(version, failure)
+        )
+
+    def info_ready(self, version, details):
+        if self.closed or version != self.request_version:
+            return
+        self.busy = False
+        description = (details.get("description") or "").replace("\r", "").strip()
+        message = (
+            "%s\n\nKanál: %s\nDĺžka: %s\nPozretia: %s\n\n%s" %
+            (details["title"], details["channel"], details["duration"],
+             details["views"], description[:420])
+        )
+        self.show_play_status("Podrobnosti videa načítané.")
+        self.session.open(MessageBox, message, type=MessageBox.TYPE_INFO)
+
+    def info_failed(self, version, failure):
+        if self.closed or version != self.request_version:
+            return
+        self.busy = False
+        error = getattr(failure, "value", None)
+        if isinstance(error, VideoInfoError):
+            self.show_play_status(str(error))
+        else:
+            self.show_play_status("Nepodarilo sa načítať podrobnosti videa.")
 
     def play_video(self, video):
         if self.busy or self.closed:
