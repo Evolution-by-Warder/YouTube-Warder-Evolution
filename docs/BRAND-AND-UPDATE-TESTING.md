@@ -64,3 +64,7 @@ User supplied three receiver screenshots after being given the 0.0.8~test5 recei
 **Remaining receiver checks:** audio actually plays; several different Adele videos play through to at least a few seconds; EXIT from MoviePlayer returns to the grid with the previous selection retained; EXIT from the grid returns to Home instead of the old text list; original DVB service restores when leaving the plugin; INFO and navigation remain responsive; Settings > Updates checks the testing manifest but does not auto-install without on-screen permission. Note the small lone '>' glyph at upper left in the player screenshot for later cosmetic assessment; do not alter native skin until reproduced.
 
 **Do not claim** full functional PASS or stable-release readiness solely from these images. These are valuable hardware evidence of thumbnails and successful video-frame rendering, not complete audio/exit/updater verification. No further IPK, merge or stable release authorized.
+
+### Owner follow-up — audio and playback confirmed (2026-11-12)
+
+After the GigaBlue Quad 4K Pro / OpenATV 8.1 receiver screenshots, the owner explicitly confirmed that Adele's YouTube video **plays with sound and without issues so far**. Thus native video frame, audio output, and initial playback responsiveness are user-confirmed on real hardware; no objective long-duration stability, seek, multiple-video, network load, EXIT, DVB restore, or in-plugin updater tests have been reported. Retain Draft PR; do not infer production readiness, merge or release permission from this test feedback.
