@@ -111,6 +111,10 @@ def load_search(api_key="configured-key", have_ytdlp=False):
             "_warder_modal.video_metadata", VideoInfoError=Exception, fetch_video_info=no_network
         ),
         "_warder_modal.skin": module("_warder_modal.skin", SEARCH_SKIN="<screen/>"),
+        "_warder_modal.local_library": module(
+            "_warder_modal.local_library", LibraryError=ValueError,
+            toggle_favourite=lambda video: True, record_opened=lambda video: None
+        ),
     }
     fake_modules["_warder_modal"].__path__ = [str(SEARCH.parent)]
     fake_modules["Components"].__path__ = []

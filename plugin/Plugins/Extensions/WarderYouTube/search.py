@@ -23,6 +23,7 @@ from .resolver import ResolverError, is_available, resolve_video_streams
 from .settings import WarderYouTubeSettings, get_api_key, get_quality
 from .video_metadata import VideoInfoError, fetch_video_info
 from .skin import SEARCH_SKIN
+from .local_library import toggle_favourite, record_opened, LibraryError
 
 
 class WarderYouTubeSearch(Screen):
@@ -54,8 +55,9 @@ class WarderYouTubeSearch(Screen):
             "GREEN: next page    YELLOW: settings    EXIT: back"
         )
         self["actions"] = ActionMap(
-            ["OkCancelActions", "ColorActions", "InfoActions"],
+            ["OkCancelActions", "ColorActions", "InfoActions", "MenuActions"],
             {"ok": self.open_selected, "info": self.info_selected,
+             "menu": self.favorite_selected,
              "cancel": self.close,
              "red": self.close, "blue": self.open_keyboard,
              "green": self.next_page, "yellow": self.open_settings},
@@ -197,7 +199,7 @@ class WarderYouTubeSearch(Screen):
             self.active_grid = self.session.openWithCallback(
                 self.grid_closed, WarderYouTubeGrid,
                 self.video_items, self.query, bool(self.next_page_token),
-                self.play_video, self.info_video
+                self.play_video, self.info_video, self.toggle_favourite
             )
         except Exception:
             self.active_grid = None
@@ -232,6 +234,23 @@ class WarderYouTubeSearch(Screen):
             self.open_keyboard()
             return
         self.play_video(self.video_items[index])
+
+    def favorite_selected(self):
+        index = self["results"].getCurrentIndex()
+        if 0 <= index < len(self.video_items):
+            self.toggle_favourite(self.video_items[index])
+
+    def toggle_favourite(self, video):
+        if self.busy or self.closed or self.playback_active:
+            return
+        try:
+            saved = toggle_favourite(video)
+        except LibraryError as error:
+            self.show_play_status(str(error))
+            return
+        self.show_play_status(
+            "Pridané do obľúbených. MENU: odobrať." if saved
+            else "Video odstránené z obľúbených.")
 
     def info_selected(self):
         index = self["results"].getCurrentIndex()
@@ -319,6 +338,12 @@ class WarderYouTubeSearch(Screen):
                 self.session, streams, video["title"],
                 on_close=self.playback_finished
             )
+            # Only a successfully opened player is added to recent videos.
+            try:
+                record_opened(video)
+            except LibraryError:
+                # History write failure must never interrupt video playback.
+                pass
         except Exception:
             self.playback_active = False
             # Do not leak URLs or upstream errors into GUI messages or logs.

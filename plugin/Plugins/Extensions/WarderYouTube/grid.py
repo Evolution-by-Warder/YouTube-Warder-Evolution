@@ -24,7 +24,7 @@ SIDEBAR = ("Domov", "Hľadať", "Odbery", "História", "Playlisty", "Obľúbené
 class WarderYouTubeGrid(Screen):
     skin = GRID_SKIN
 
-    def __init__(self, session, items, query, has_next_page=False, on_play=None, on_info=None):
+    def __init__(self, session, items, query, has_next_page=False, on_play=None, on_info=None, on_favorite=None):
         Screen.__init__(self, session)
         self.video_items = list(items[:15])
         self.selected = 0 if self.video_items else -1
@@ -32,6 +32,7 @@ class WarderYouTubeGrid(Screen):
         self.has_next_page = bool(has_next_page)
         self.on_play = on_play
         self.on_info = on_info
+        self.on_favorite = on_favorite
         self._ready = False
         self._closed = False
         self._epoch = 0
@@ -57,7 +58,7 @@ class WarderYouTubeGrid(Screen):
         self["status"] = Label("")
         self["footer"] = Label(
             "Šípky: výber    OK: prehrať    MODRÉ: nové hľadanie    "
-            "ZELENÉ: ďalšie    ŽLTÉ: predch. strana    INFO: detaily    EXIT: domov"
+            "ZELENÉ: ďalšie    ŽLTÉ: predch. strana    INFO: detaily    MENU: obľúbené    EXIT: domov"
         )
         for i, name in enumerate(SIDEBAR):
             self["side%d" % i] = Label(name)
@@ -68,11 +69,11 @@ class WarderYouTubeGrid(Screen):
             self["channel%d" % i] = Label("")
 
         self["actions"] = ActionMap(
-            ["NavigationActions", "OkCancelActions", "ColorActions", "InfoActions"],
+            ["NavigationActions", "OkCancelActions", "ColorActions", "InfoActions", "MenuActions"],
             {
                 "left": self.left, "right": self.right,
                 "up": self.up, "down": self.down,
-                "ok": self.play, "info": self.show_info,
+                "ok": self.play, "info": self.show_info, "menu": self.save_favourite,
                 "cancel": self.go_back, "red": self.go_back,
                 "blue": self.new_search, "green": self.next_page,
                 "yellow": self.previous_page
@@ -151,6 +152,7 @@ class WarderYouTubeGrid(Screen):
         self._picload = None
         self.on_play = None
         self.on_info = None
+        self.on_favorite = None
 
     def set_status(self, message, override=False):
         if not self._closed:
@@ -343,6 +345,10 @@ class WarderYouTubeGrid(Screen):
     def show_info(self):
         if self.selected >= 0 and callable(self.on_info):
             self.on_info(self.video_items[self.selected])
+
+    def save_favourite(self):
+        if self.selected >= 0 and callable(self.on_favorite):
+            self.on_favorite(self.video_items[self.selected])
 
     def next_page(self):
         if not self.video_items:

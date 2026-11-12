@@ -271,6 +271,21 @@ class TestNativeGrid(unittest.TestCase):
         jobs[3][1].success("/tmp/later-image.jpg")
         self.assertEqual(len(jobs), scheduled_at_close)
 
+    def test_menu_key_toggles_favourite_callback_without_touching_playback(self):
+        jobs = []
+        mod = self.load_grid(jobs)
+        toggled = []
+        g = mod.WarderYouTubeGrid(None, [self.video(0), self.video(1)], "test",
+            on_favorite=lambda video: toggled.append(video["title"]))
+        g._layout_ready()
+        g.save_favourite()
+        g.right()
+        g.save_favourite()
+        self.assertEqual(toggled, ["Video 0", "Video 1"])
+        g.close()
+        g.save_favourite()
+        self.assertEqual(len(toggled), 2)
+
     def test_info_button_for_current_video(self):
         jobs = []
         mod = self.load_grid(jobs)

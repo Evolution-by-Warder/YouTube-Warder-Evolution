@@ -125,3 +125,15 @@ UPDATE_SKIN = """
   <widget name="footer" position="42,1013" size="1830,54" font="Regular;27" foregroundColor="#FFFFFF" transparent="1"/>
 </screen>
 """
+
+LIBRARY_SKIN = """
+<screen name="WarderYouTubeLibrary" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Saved videos" flags="wfNoBorder" backgroundColor="#08182D">
+  <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
+  <widget name="title" position="45,23" size="1750,62" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"/>
+  <widget name="subtitle" position="55,132" size="1740,65" font="Regular;32" foregroundColor="#36B9FF" transparent="1"/>
+  <widget name="results" position="50,218" size="1810,625" font="Regular;30" itemHeight="62" foregroundColor="#FFFFFF" backgroundColor="#142C47" scrollbarMode="showOnDemand"/>
+  <widget name="status" position="55,874" size="1790,93" font="Regular;28" foregroundColor="#B9D9F5" transparent="1"/>
+  <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
+  <widget name="footer" position="38,1013" size="1840,54" font="Regular;25" foregroundColor="#FFFFFF" transparent="1"/>
+</screen>
+"""

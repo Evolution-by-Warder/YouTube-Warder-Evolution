@@ -18,9 +18,9 @@ class WarderYouTubeHome(Screen):
             ("Home", "Recommendations will be enabled after a catalogue is validated."),
             ("Search", "Vyhľadávanie cez API kľúč alebo nainštalovaný yt-dlp."),
             ("Subscriptions", "Subscriptions need secure account authorization."),
-            ("History", "Local viewing history will follow verified playback."),
+            ("History", "História videí otvorených v prehrávači Enigma2."),
             ("Playlists", "Playlist browsing is planned after search and playback."),
-            ("Favourites", "Local favourite videos and channels are planned."),
+            ("Favourites", "Uložené obľúbené videá aj bez API kľúča."),
             ("Settings", "Kvalita 360/720p a voliteľný API kľúč. Prehrávanie má vlastný resolver."),
             ("Updates", "Skontrolovať overené novšie testovacie IPK. Bez automatickej inštalácie.")
         ]
@@ -50,6 +50,9 @@ class WarderYouTubeHome(Screen):
         if index == 1:
             from .search import WarderYouTubeSearch
             self.session.open(WarderYouTubeSearch)
+        elif index in (3, 5):
+            from .library_ui import WarderYouTubeLibrary
+            self.session.open(WarderYouTubeLibrary, "history" if index == 3 else "favourites")
         elif index == 6:
             from .settings import WarderYouTubeSettings
             self.session.open(WarderYouTubeSettings)
