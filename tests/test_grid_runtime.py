@@ -121,6 +121,7 @@ class TestNativeGrid(unittest.TestCase):
         with patch.dict(sys.modules, modules):
             spec.loader.exec_module(module)
             # Ensure module globals have been imported while mocks are available.
+        module._test_avswitch = avswitch
         return module
 
     def video(self, n):
@@ -145,7 +146,8 @@ class TestNativeGrid(unittest.TestCase):
         jobs = []
         mod = self.load_grid(jobs, framebuffer=(4, 3))
         g = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
-        g._layout_ready()
+        with patch.dict(sys.modules, {"Components.AVSwitch": mod._test_avswitch}):
+            g._layout_ready()
         self.assertEqual(g._picload.parameters[:4], (476, 249, 4, 3))
         self.assertTrue(callable(g.items))
 
@@ -153,7 +155,8 @@ class TestNativeGrid(unittest.TestCase):
         jobs = []
         mod = self.load_grid(jobs, framebuffer=(0, -1))
         g = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
-        g._layout_ready()
+        with patch.dict(sys.modules, {"Components.AVSwitch": mod._test_avswitch}):
+            g._layout_ready()
         self.assertEqual(g._picload.parameters[:4], (476, 249, 1, 1))
 
     def test_visible_six_and_stale_callback_discard(self):
