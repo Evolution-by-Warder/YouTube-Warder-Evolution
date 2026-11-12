@@ -2,7 +2,7 @@
 """Small blue settings screen; no account tokens or keys are committed to Git."""
 from Components.ActionMap import ActionMap
 from Components.Label import Label
-from Components.config import ConfigSubsection, ConfigText, config, configfile
+from Components.config import ConfigSelection, ConfigSubsection, ConfigText, config, configfile
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
@@ -17,10 +17,19 @@ if not hasattr(config.plugins, "warderyoutube"):
     config.plugins.warderyoutube = ConfigSubsection()
 if not hasattr(config.plugins.warderyoutube, "api_key"):
     config.plugins.warderyoutube.api_key = ConfigText(default="", fixed_size=False)
+if not hasattr(config.plugins.warderyoutube, "max_quality"):
+    config.plugins.warderyoutube.max_quality = ConfigSelection(
+        choices=[("360", "360p"), ("720", "720p")], default="720"
+    )
 
 
 def get_api_key():
     return config.plugins.warderyoutube.api_key.value.strip()
+
+
+def get_quality():
+    value = config.plugins.warderyoutube.max_quality.value
+    return value if value in ("360", "720") else "720"
 
 
 class WarderYouTubeSettings(Screen):
@@ -35,15 +44,19 @@ class WarderYouTubeSettings(Screen):
             "Playback is experimental and depends on installed yt-dlp."
         )
         self["key_state"] = Label("")
+        self["quality"] = Label("")
         self["warning"] = Label(
             "The key is stored in the receiver's Enigma2 settings without encryption. "
             "Do not share screenshots while entering it."
         )
-        self["footer"] = Label("OK/GREEN: Enter or replace key     YELLOW: Clear key     EXIT: Back")
+        self["footer"] = Label(
+            "OK/GREEN: API key   BLUE: quality 360/720   YELLOW: clear key   EXIT: back"
+        )
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
             {"ok": self.prompt_key, "green": self.prompt_key,
-             "yellow": self.confirm_clear, "red": self.close,
+             "yellow": self.confirm_clear, "blue": self.toggle_quality,
+             "red": self.close,
              "cancel": self.close},
             -1
         )
@@ -53,6 +66,14 @@ class WarderYouTubeSettings(Screen):
         self["key_state"].setText(
             "API key: configured" if get_api_key() else "API key: not configured (yt-dlp alternative)"
         )
+        self["quality"].setText("Max. MP4 video quality: %sp" % get_quality())
+
+    def toggle_quality(self):
+        setting = config.plugins.warderyoutube.max_quality
+        setting.value = "360" if get_quality() == "720" else "720"
+        setting.save()
+        configfile.save()
+        self.refresh()
 
     def prompt_key(self):
         # Never reveal a stored key when opening the keyboard.

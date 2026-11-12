@@ -20,7 +20,7 @@ from twisted.internet.threads import deferToThread
 from .api import SearchError, search_videos
 from .search_backend import SearchBackendError, search_with_ytdlp, select_backend
 from .resolver import ResolverError, is_available, resolve_video_url
-from .settings import WarderYouTubeSettings, get_api_key
+from .settings import WarderYouTubeSettings, get_api_key, get_quality
 from .video_metadata import VideoInfoError, fetch_video_info
 from .skin import SEARCH_SKIN
 
@@ -282,7 +282,9 @@ class WarderYouTubeSearch(Screen):
         self.request_version += 1
         version = self.request_version
         self.show_play_status("Resolving compatible MP4 stream in background...")
-        deferred = deferToThread(resolve_video_url, video["video_id"])
+        deferred = deferToThread(
+            resolve_video_url, video["video_id"], quality=get_quality()
+        )
         deferred.addCallbacks(
             lambda url: self.play_resolved(version, video, url),
             lambda failure: self.play_failed(version, failure)

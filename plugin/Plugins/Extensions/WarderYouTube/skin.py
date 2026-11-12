@@ -35,6 +35,7 @@ SETTINGS_SKIN = """
   <widget name="description" position="75,185" size="1760,150" font="Regular;35" foregroundColor="#B9D9F5" transparent="1"/>
   <widget name="key_state" position="75,385" size="1740,72" font="Regular;39" foregroundColor="#36B9FF" transparent="1"/>
   <widget name="warning" position="75,555" size="1730,150" font="Regular;29" foregroundColor="#B9D9F5" transparent="1"/>
+  <widget name="quality" position="75,760" size="1710,58" font="Regular;33" foregroundColor="#36B9FF" transparent="1"/>
   <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
   <widget name="footer" position="42,1013" size="1840,53" font="Regular;27" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"/>
 </screen>
