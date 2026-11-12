@@ -1,12 +1,9 @@
 name: yt-dlp live stream resolver smoke (no credentials)
 
+# Manual diagnostic only. GitHub datacenter IPs may fail YouTube anti-bot
+# verification even when the same video works on a residential receiver.
+# This is not a required source CI check; failed extraction remains visible.
 on:
-  push:
-    branches: [feature/native-search-v002]
-    paths:
-      - .github/workflows/live-stream-smoke.yml
-      - tests/live_stream_smoke.py
-      - plugin/Plugins/Extensions/WarderYouTube/resolver.py
   workflow_dispatch:
 
 permissions:
