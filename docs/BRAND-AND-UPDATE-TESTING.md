@@ -34,3 +34,7 @@ Exclude the package's `YouTube.key`, OAuth flows, upstream resume-position `eval
 ## Thumbnail native pointer / signal compatibility fix (source-only)
 
 Both OpenATV's legacy ePicLoad PictureData.get().append and newer PictureData.connect callback patterns are now supported with proper disconnect on screen close. The receiver-proven Warder Radio pattern passes the native ePtr returned by ePicLoad.getData() unchanged to Pixmap.setPixmap rather than calling __deref__() on it. This may resolve GigaBlue 8.1 blank tiles; it remains to be tested on physical hardware. Decoder read errors fail softly without crashes, custom renderers, or extra dependencies. New host tests cover modern signal binding, pointer identity, error handling and disconnect.
+
+## Thumbnail failure diagnostics / playback status protection (source-only)
+
+A page may contain 0–6 thumbnails. The native grid now reports download failures separately from ePicLoad decoder failures, including partial success counts (for example `Náhľady 1/2 (sieť: 1, dekodér: 0)`). No URLs, signatures, exception reprs or API keys are exposed. A late thumbnail failure cannot overwrite an active video-resolution/playback/INFO message. User navigation resets the temporary override. Worker limits and native ePicLoad policy are unchanged. Added three mocked regression tests; receiver hardware remains unverified. No new IPK was generated.

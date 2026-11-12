@@ -219,7 +219,7 @@ class WarderYouTubeSearch(Screen):
     def show_play_status(self, message):
         self["status"].setText(message)
         if self.active_grid is not None and not self.active_grid._closed:
-            self.active_grid.set_status(message)
+            self.active_grid.set_status(message, override=True)
 
     def open_selected(self):
         if self.busy:

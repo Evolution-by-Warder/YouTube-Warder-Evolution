@@ -297,6 +297,41 @@ class TestNativeGrid(unittest.TestCase):
         self.assertIn("Náhľady sa nepodarilo", grid["status"].text)
         self.assertNotIn("secrets", grid["status"].text)
 
+    def test_late_thumbnail_failure_does_not_override_video_status(self):
+        jobs = []
+        mod = self.load_grid(jobs)
+        g = mod.WarderYouTubeGrid(None, [self.video(0)], "test",
+            on_play=lambda video: None)
+        g._layout_ready()
+        g.play()
+        self.assertIn("Zisťujem", g["status"].text)
+        jobs[0][1].failure(Exception("https://private.example/?sig=secret"))
+        self.assertIn("Zisťujem", g["status"].text)
+        self.assertNotIn("secret", g["status"].text)
+
+    def test_partial_thumbnail_failures_show_safe_counts(self):
+        jobs = []
+        mod = self.load_grid(jobs)
+        g = mod.WarderYouTubeGrid(None, [self.video(0), self.video(1)], "test")
+        g._layout_ready()
+        jobs[0][1].failure(Exception("private token"))
+        jobs[1][1].success("/tmp/good.jpg")
+        g._decode_finished()
+        self.assertIn("Náhľady 1/2", g["status"].text)
+        self.assertIn("sieť: 1", g["status"].text)
+        self.assertNotIn("private", g["status"].text)
+
+    def test_download_error_distinguishes_decoder_failure(self):
+        jobs = []
+        mod = self.load_grid(jobs)
+        g = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
+        g._layout_ready()
+        jobs[0][1].success("/tmp/malformed.jpg")
+        g._picload.getData = lambda: None
+        g._decode_finished()
+        self.assertIn("dekodér: 1", g["status"].text)
+        self.assertIn("sieť: 0", g["status"].text)
+
     def test_grid_next_page_emits_result(self):
         jobs = []
         m = self.load_grid(jobs)

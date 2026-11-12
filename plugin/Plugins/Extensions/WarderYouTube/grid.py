@@ -45,6 +45,10 @@ class WarderYouTubeGrid(Screen):
         self._thumb_failures = 0
         self._thumb_shown = 0
         self._thumb_expected = 0
+        self._thumb_network_failures = 0
+        self._thumb_decode_failures = 0
+        # Playback/status messages must not be overwritten by late images.
+        self._status_override = False
 
         self["brand"] = Label("YouTube Warder Evolution")
         self["heading"] = Label("Hľadanie: " + self.query)
@@ -146,8 +150,10 @@ class WarderYouTubeGrid(Screen):
         self.on_play = None
         self.on_info = None
 
-    def set_status(self, message):
+    def set_status(self, message, override=False):
         if not self._closed:
+            if override:
+                self._status_override = True
             self["status"].setText(message)
 
     def _render_page(self):
@@ -160,6 +166,9 @@ class WarderYouTubeGrid(Screen):
         self._thumb_failures = 0
         self._thumb_shown = 0
         self._thumb_expected = 0
+        self._thumb_network_failures = 0
+        self._thumb_decode_failures = 0
+        self._status_override = False
         start = page_number(self.selected) * VISIBLE_TILES
 
         for slot in range(VISIBLE_TILES):
@@ -221,6 +230,10 @@ class WarderYouTubeGrid(Screen):
                 self._start_decode()
             else:
                 self._thumb_failures += 1
+                if local_path:
+                    self._thumb_decode_failures += 1
+                else:
+                    self._thumb_network_failures += 1
         self._pump_downloads()
         self._check_thumbnails()
 
@@ -240,6 +253,7 @@ class WarderYouTubeGrid(Screen):
                 return
             self._decoding = None
             self._thumb_failures += 1
+            self._thumb_decode_failures += 1
 
     def _decode_finished(self, *args):
         request = self._decoding
@@ -251,6 +265,7 @@ class WarderYouTubeGrid(Screen):
             pixmap_ptr = self._picload.getData() if self._picload else None
             if pixmap_ptr is None:
                 self._thumb_failures += 1
+                self._thumb_decode_failures += 1
             else:
                 # Pixmap.setPixmap delegates to ePixmap.setPixmap. Keep the
                 # original native ePtr<gPixmap>, as Warder Radio does; do not
@@ -262,15 +277,27 @@ class WarderYouTubeGrid(Screen):
         except (AttributeError, TypeError, ValueError, RuntimeError):
             # A decode error must not cause a GUI crash.
             self._thumb_failures += 1
+            self._thumb_decode_failures += 1
         self._start_decode()
         self._check_thumbnails()
 
     def _check_thumbnails(self):
-        if (not self._closed and self._ready and self._thumb_expected
-                and self._thumb_failures >= self._thumb_expected
-                and not self._pending_downloads and not self._active_downloads
-                and not self._pending_decodes and self._decoding is None):
-            self.set_status("Náhľady sa nepodarilo načítať. Výber a INFO naďalej fungujú.")
+        # A late download must not erase player or INFO progress messages.
+        if self._closed or not self._ready or self._status_override:
+            return
+        finished = (self._thumb_expected
+                    and self._thumb_shown + self._thumb_failures >= self._thumb_expected
+                    and not self._pending_downloads and not self._active_downloads
+                    and not self._pending_decodes and self._decoding is None)
+        if not finished or not self._thumb_failures:
+            return
+        info = "sieť: %d, dekodér: %d" % (
+            self._thumb_network_failures, self._thumb_decode_failures)
+        if self._thumb_failures >= self._thumb_expected:
+            self.set_status("Náhľady sa nepodarilo načítať (%s)." % info)
+        else:
+            self.set_status("Náhľady %d/%d (%s)." % (
+                self._thumb_shown, self._thumb_expected, info))
 
     def _move(self, direction):
         if self._closed or not self.video_items:
@@ -283,6 +310,9 @@ class WarderYouTubeGrid(Screen):
         if page_number(next_index) != old_page:
             self._render_page()
         else:
+            # Moving focus is a deliberate user action, so normal status
+            # updates become active again.
+            self._status_override = False
             self._update_focus()
 
     def left(self):
@@ -299,7 +329,7 @@ class WarderYouTubeGrid(Screen):
 
     def play(self):
         if self.selected >= 0 and callable(self.on_play):
-            self.set_status("Zisťujem dostupnosť videa...")
+            self.set_status("Zisťujem dostupnosť videa...", override=True)
             self.on_play(self.video_items[self.selected])
 
     def show_info(self):
