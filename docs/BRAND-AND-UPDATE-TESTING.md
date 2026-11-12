@@ -68,3 +68,7 @@ User supplied three receiver screenshots after being given the 0.0.8~test5 recei
 ### Owner follow-up — audio and playback confirmed (2026-11-12)
 
 After the GigaBlue Quad 4K Pro / OpenATV 8.1 receiver screenshots, the owner explicitly confirmed that Adele's YouTube video **plays with sound and without issues so far**. Thus native video frame, audio output, and initial playback responsiveness are user-confirmed on real hardware; no objective long-duration stability, seek, multiple-video, network load, EXIT, DVB restore, or in-plugin updater tests have been reported. Retain Draft PR; do not infer production readiness, merge or release permission from this test feedback.
+
+### Owner follow-up — EXIT navigation (2026-11-12)
+
+The owner explicitly reports that returning after EXIT is **working so far** on the GigaBlue Quad 4K Pro / OpenATV 8.1. This is a positive real-device navigation observation in addition to confirmed Adele video, sound and preview thumbnails. The exact EXIT sequence/destination and restoration of the original live DVB service were not specified, so mark those finer details as **not independently confirmed**. Keep prolonged stability and in-plugin update check pending. No new IPK or stable release authorized.
