@@ -100,6 +100,32 @@ class ResolverTests(unittest.TestCase):
         self.assertNotIn(secret, str(e.exception))
         self.assertNotIn("googlevideo", str(e.exception))
 
+    def test_missing_muxed_mp4_retries_android_public_client(self):
+        calls = []
+        def runner(argv, **kwargs):
+            calls.append((argv, kwargs))
+            if len(calls) == 1:
+                return FakeCompleted("", returncode=1, stderr="ERROR: Requested format is not available")
+            return FakeCompleted(GOOGLEVIDEO + "\\n")
+        url = resolver.resolve_video_url("abcdefghijk", runner=runner,
+            which=lambda n: "/usr/bin/yt-dlp")
+        self.assertEqual(url, GOOGLEVIDEO)
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[1][0][-2:], ["--", "https://www.youtube.com/watch?v=abcdefghijk"])
+        self.assertIn("youtube:player-client=android", calls[1][0])
+        self.assertLessEqual(calls[1][1]["timeout"], 18)
+
+    def test_private_video_does_not_retry_or_leak_errors(self):
+        calls = []
+        def runner(argv, **kwargs):
+            calls.append(argv)
+            return FakeCompleted("", returncode=1, stderr="Sign in to confirm you're not a bot SECRET")
+        with self.assertRaises(resolver.ResolverError) as raised:
+            resolver.resolve_video_url("abcdefghijk", runner=runner,
+                which=lambda n: "/usr/bin/yt-dlp")
+        self.assertEqual(len(calls), 1)
+        self.assertNotIn("SECRET", str(raised.exception))
+
     def test_timeout(self):
         def runner(args, **kwargs):
             raise subprocess.TimeoutExpired(cmd=args, timeout=kwargs["timeout"])

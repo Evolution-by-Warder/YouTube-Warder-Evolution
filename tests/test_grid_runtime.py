@@ -178,7 +178,7 @@ class TestNativeGrid(unittest.TestCase):
         # Closing screen prohibits future image updates.
         g.go_back()
         self.assertTrue(g._closed)
-        self.assertIsNone(g.closed_args[0])
+        self.assertEqual(g.closed_args[0], "home")
         scheduled_at_close = len(jobs)
         jobs[3][1].success("/tmp/later-image.jpg")
         self.assertEqual(len(jobs), scheduled_at_close)
@@ -198,6 +198,16 @@ class TestNativeGrid(unittest.TestCase):
         grid.close()
         grid.show_info()
         self.assertEqual(selected, ["Video 1"])
+
+    def test_failed_thumbnails_show_safe_status(self):
+        jobs = []
+        mod = self.load_grid(jobs)
+        grid = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
+        grid._layout_ready()
+        self.assertEqual(len(jobs), 1)
+        jobs[0][1].failure(Exception("Network failure with secrets"))
+        self.assertIn("Náhľady sa nepodarilo", grid["status"].text)
+        self.assertNotIn("secrets", grid["status"].text)
 
     def test_grid_next_page_emits_result(self):
         jobs = []

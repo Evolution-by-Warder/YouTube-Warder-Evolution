@@ -66,6 +66,12 @@ class Tests(unittest.TestCase):
                 with self.assertRaises(mod.SearchBackendError):
                     mod.search_with_ytdlp(bad, which=lambda _: "/usr/bin/yt-dlp")
 
+    def test_flat_webp_thumbnail_uses_supported_jpeg(self):
+        video = "abcdefghijk"
+        webp = "https://i.ytimg.com/vi_webp/%s/hqdefault.webp" % video
+        self.assertEqual(mod.image_url(webp, video),
+            "https://i.ytimg.com/vi/abcdefghijk/mqdefault.jpg")
+
     def test_safe_image_and_video_ids(self):
         d = sample(2)
         d["entries"][0]["id"] = "invalid"

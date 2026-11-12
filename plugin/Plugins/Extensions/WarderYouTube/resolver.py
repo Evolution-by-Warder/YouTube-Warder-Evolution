@@ -99,10 +99,39 @@ def resolve_video_url(video_id, runner=subprocess.run, which=shutil.which,
         raise ResolverError("The yt-dlp executable could not be started.")
 
     if output.returncode:
-        raise ResolverError(
-            "Unable to resolve a playable video. The video may be restricted, "
-            "unsupported or the resolver may need updating."
-        )
+        diagnostic = (output.stderr or "").lower()
+        # In 2026 yt-dlp often cannot see YouTube's pre-merged MP4 (itag 18).
+        # Retry with a different public player client only for that exact
+        # failure; do not retry age/private/geo restrictions or auth failures.
+        if "requested format is not available" in diagnostic:
+            retry_argv = argv[:-2] + [
+                "--extractor-args", "youtube:player-client=android",
+                "--", watch_url
+            ]
+            try:
+                output = runner(
+                    retry_argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    text=True, timeout=min(timeout, 18), check=False
+                )
+            except subprocess.TimeoutExpired:
+                raise ResolverError("Záložné získanie MP4 prekročilo časový limit.")
+            except OSError:
+                raise ResolverError("Záložný prehrávací klient sa nepodarilo spustiť.")
+            if output.returncode:
+                raise ResolverError(
+                    "YouTube neponúka kompatibilný spoločný MP4 stream. "
+                    "Skúste kvalitu 360p alebo iné video."
+                )
+        elif "sign in to confirm" in diagnostic or "not a bot" in diagnostic:
+            raise ResolverError(
+                "YouTube požaduje overenie prehrávania. Bez prihlásenia nie je dostupné."
+            )
+        elif "private video" in diagnostic or "video unavailable" in diagnostic:
+            raise ResolverError("Vybrané video je nedostupné alebo súkromné.")
+        else:
+            raise ResolverError(
+                "Získanie videa zlyhalo. Skúste iné video alebo kvalitu 360p."
+            )
     stdout = output.stdout
     if not isinstance(stdout, str) or len(stdout) > MAX_STDOUT_CHARS:
         raise ResolverError("Unexpected response from the resolver.")

@@ -41,7 +41,7 @@ class WarderYouTubeSearch(Screen):
         self.search_backend = None
         self._did_initial_prompt = False
 
-        self["title"] = Label("YouTube - Warder Evolution / Search")
+        self["title"] = Label("YouTube Warder Evolution / Search")
         self["query"] = Label("Search videos")
         self["results"] = MenuList([])
         self["details"] = Label("")
@@ -212,6 +212,9 @@ class WarderYouTubeSearch(Screen):
             self.open_keyboard()
         elif not self.closed and action == "next":
             self.next_page()
+        elif not self.closed and action == "home":
+            # EXIT from the visual cards skips the redundant underlying list.
+            self.close()
 
     def show_play_status(self, message):
         self["status"].setText(message)
@@ -289,7 +292,7 @@ class WarderYouTubeSearch(Screen):
         self.busy = True
         self.request_version += 1
         version = self.request_version
-        self.show_play_status("Resolving compatible MP4 stream in background...")
+        self.show_play_status("Hľadám kompatibilný MP4 stream (najviac 720p)...")
         deferred = deferToThread(
             resolve_video_url, video["video_id"], quality=get_quality()
         )

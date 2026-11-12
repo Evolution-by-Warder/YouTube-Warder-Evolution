@@ -40,13 +40,16 @@ class WarderYouTubeGrid(Screen):
         self._pending_decodes = []
         self._decoding = None
         self._picload = None
+        self._thumb_failures = 0
+        self._thumb_shown = 0
+        self._thumb_expected = 0
 
-        self["brand"] = Label("YouTube - Warder Evolution")
+        self["brand"] = Label("YouTube Warder Evolution")
         self["heading"] = Label("Hľadanie: " + self.query)
         self["status"] = Label("")
         self["footer"] = Label(
             "Šípky: výber    OK: prehrať    MODRÉ: nové hľadanie    "
-            "ZELENÉ: ďalšie    ŽLTÉ: späť    INFO: detaily    EXIT: zoznam"
+            "ZELENÉ: ďalšie    ŽLTÉ: predch. strana    INFO: detaily    EXIT: domov"
         )
         for i, name in enumerate(SIDEBAR):
             self["side%d" % i] = Label(name)
@@ -103,6 +106,9 @@ class WarderYouTubeGrid(Screen):
         epoch = self._epoch
         self._pending_downloads = []
         self._pending_decodes = []
+        self._thumb_failures = 0
+        self._thumb_shown = 0
+        self._thumb_expected = 0
         start = page_number(self.selected) * VISIBLE_TILES
 
         for slot in range(VISIBLE_TILES):
@@ -118,6 +124,7 @@ class WarderYouTubeGrid(Screen):
             self["channel%d" % slot].setText(str(video.get("channel") or "")[:55])
             url = video.get("thumbnail_url")
             if url:
+                self._thumb_expected += 1
                 self._pending_downloads.append((epoch, slot, url))
 
         self._update_focus()
@@ -157,11 +164,14 @@ class WarderYouTubeGrid(Screen):
     def _download_done(self, request, local_path):
         self._active_downloads = max(0, self._active_downloads - 1)
         epoch, slot, _url = request
-        if (not self._closed and self._picload is not None
-                and epoch == self._epoch and local_path):
-            self._pending_decodes.append((epoch, slot, local_path))
-            self._start_decode()
+        if not self._closed and epoch == self._epoch:
+            if self._picload is not None and local_path:
+                self._pending_decodes.append((epoch, slot, local_path))
+                self._start_decode()
+            else:
+                self._thumb_failures += 1
         self._pump_downloads()
+        self._check_thumbnails()
 
     def _start_decode(self):
         if self._closed or self._picload is None or self._decoding is not None:
@@ -171,9 +181,14 @@ class WarderYouTubeGrid(Screen):
             if request[0] != self._epoch:
                 continue
             self._decoding = request
-            if self._picload.startDecode(request[2]) == 0:
+            try:
+                started = self._picload.startDecode(request[2]) == 0
+            except Exception:
+                started = False
+            if started:
                 return
             self._decoding = None
+            self._thumb_failures += 1
 
     def _decode_finished(self, *args):
         request = self._decoding
@@ -186,7 +201,18 @@ class WarderYouTubeGrid(Screen):
                       if hasattr(pixmap_ptr, "__deref__") else pixmap_ptr)
             self["thumb%d" % slot].setPixmap(pixmap)
             self["thumb%d" % slot].show()
+            self._thumb_shown += 1
+        elif request and not self._closed and request[0] == self._epoch:
+            self._thumb_failures += 1
         self._start_decode()
+        self._check_thumbnails()
+
+    def _check_thumbnails(self):
+        if (not self._closed and self._ready and self._thumb_expected
+                and self._thumb_failures >= self._thumb_expected
+                and not self._pending_downloads and not self._active_downloads
+                and not self._pending_decodes and self._decoding is None):
+            self.set_status("Náhľady sa nepodarilo načítať. Výber a INFO naďalej fungujú.")
 
     def _move(self, direction):
         if self._closed or not self.video_items:
@@ -241,7 +267,8 @@ class WarderYouTubeGrid(Screen):
             self.set_status("Toto je prvá stránka.")
 
     def go_back(self):
-        self.close(None)
+        # Skip the hidden text-result dialog and return to YouTube home.
+        self.close("home")
 
     def new_search(self):
         self.close("search")

@@ -37,17 +37,14 @@ def page_offset(token):
 
 
 def image_url(url, video_id):
-    if isinstance(url, str) and len(url) < 2048:
-        try:
-            u = urlsplit(url)
-            if (u.scheme == "https"
-                    and u.hostname in ("i.ytimg.com", "img.youtube.com")
-                    and u.port in (None, 443)
-                    and not u.username and not u.password
-                    and u.path.startswith(("/vi/", "/vi_webp/"))):
-                return url
-        except ValueError:
-            pass
+    """Prefer standard JPEG for Enigma2 ePicLoad.
+
+    yt-dlp flat search often supplies a WebP thumbnail. Older Enigma2
+    decoders cannot handle that format. The canonical 320x180 JPEG thumbnail
+    is enough for this bounded preview without adding image libraries.
+    """
+    if not isinstance(video_id, str) or not VIDEO_ID.fullmatch(video_id):
+        raise SearchBackendError("Invalid YouTube ID.")
     return "https://i.ytimg.com/vi/%s/mqdefault.jpg" % video_id
 
 
