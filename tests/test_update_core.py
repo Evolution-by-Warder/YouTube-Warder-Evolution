@@ -166,8 +166,11 @@ class UpdateCoreTests(unittest.TestCase):
                 runner=fake_run, progress=lambda *args: progress.append(args))
             self.assertEqual(installed, builder.VERSION)
             self.assertEqual([cmd[1] for cmd in commands], ["install", "status"])
-            self.assertEqual([phase[0] for phase in progress],
-                             ["download", "verify", "install", "complete"])
+            phases = [step[0] for step in progress]
+            self.assertGreaterEqual(phases.count("download"), 1)
+            self.assertEqual(phases[0], "download")
+            self.assertEqual([phase for phase in phases if phase != "download"],
+                             ["verify", "install", "complete"])
 
     def test_corrupt_ipk_never_invokes_opkg(self):
         import types

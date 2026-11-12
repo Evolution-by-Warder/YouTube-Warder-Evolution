@@ -95,7 +95,6 @@ class WarderYouTubeUpdateProgress(Screen):
         self.failed = True
         # Never display Twisted Failure repr; it could contain a request URL.
         safe_type = getattr(failure, "value", None)
-        from .update_core import UpdateError
         detail = str(safe_type) if isinstance(safe_type, UpdateError) else (
             "Nepodarilo sa dokončiť aktualizáciu."
         )
