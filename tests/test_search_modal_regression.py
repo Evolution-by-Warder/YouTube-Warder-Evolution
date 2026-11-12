@@ -125,6 +125,14 @@ def load_search(api_key="configured-key", have_ytdlp=False):
 
 
 class SearchModalRegressionTests(unittest.TestCase):
+    def test_screen_items_method_remains_callable_on_openatv76(self):
+        # OpenATV 7.6 Screen.deleteGUIScreen calls list(self.items()).
+        source = load_search(api_key="", have_ytdlp=False)
+        screen = source.WarderYouTubeSearch(FakeSession())
+        self.assertTrue(callable(screen.items))
+        self.assertEqual(screen.items(), [])
+        self.assertEqual(screen.video_items, [])
+
     def test_keyboard_is_never_opened_during_layout(self):
         source = load_search()
         session = FakeSession()

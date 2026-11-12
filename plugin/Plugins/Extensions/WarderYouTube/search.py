@@ -31,7 +31,7 @@ class WarderYouTubeSearch(Screen):
     def __init__(self, session):
         Screen.__init__(self, session)
         self.query = ""
-        self.items = []
+        self.video_items = []
         self.page_token = ""
         self.next_page_token = ""
         self.busy = False
@@ -106,7 +106,7 @@ class WarderYouTubeSearch(Screen):
         self.search_backend = select_backend(get_api_key(), is_available())
         self.page_token = ""
         self.next_page_token = ""
-        self.items = []
+        self.video_items = []
         self["results"].setList([])
         self["details"].setText("")
         self._load_page("")
@@ -147,19 +147,19 @@ class WarderYouTubeSearch(Screen):
         self.busy = False
         self.page_token = page_token
         self.next_page_token = response["next_page_token"]
-        self.items = response["items"]
+        self.video_items = response["items"]
         self["results"].setList([
             item["title"][:80] +
             ("  |  " + item["channel"][:35] if item["channel"] else "")
-            for item in self.items
+            for item in self.video_items
         ])
         self.selection_changed()
-        if not self.items:
+        if not self.video_items:
             self["status"].setText("No videos found. Press BLUE to search again.")
         else:
             suffix = "  |  GREEN: next page" if self.next_page_token else ""
             self["status"].setText(
-                "%d video(s) found%s" % (len(self.items), suffix)
+                "%d video(s) found%s" % (len(self.video_items), suffix)
             )
             self.open_grid()
 
@@ -177,8 +177,8 @@ class WarderYouTubeSearch(Screen):
 
     def selection_changed(self):
         index = self["results"].getCurrentIndex()
-        if 0 <= index < len(self.items):
-            item = self.items[index]
+        if 0 <= index < len(self.video_items):
+            item = self.video_items[index]
             self["details"].setText(
                 "%s   |   %s" % (item["channel"], item["published_at"])
             )
@@ -186,14 +186,14 @@ class WarderYouTubeSearch(Screen):
             self["details"].setText("")
 
     def open_grid(self):
-        if self.closed or not self.items or self.active_grid is not None:
+        if self.closed or not self.video_items or self.active_grid is not None:
             return
         # Imports stay lazy: graphics stay optional on older Enigma2 images.
         try:
             from .grid import WarderYouTubeGrid
             self.active_grid = self.session.openWithCallback(
                 self.grid_closed, WarderYouTubeGrid,
-                self.items, self.query, bool(self.next_page_token),
+                self.video_items, self.query, bool(self.next_page_token),
                 self.play_video, self.info_video
             )
         except Exception:
@@ -222,15 +222,15 @@ class WarderYouTubeSearch(Screen):
         if self.busy:
             return
         index = self["results"].getCurrentIndex()
-        if not (0 <= index < len(self.items)):
+        if not (0 <= index < len(self.video_items)):
             self.open_keyboard()
             return
-        self.play_video(self.items[index])
+        self.play_video(self.video_items[index])
 
     def info_selected(self):
         index = self["results"].getCurrentIndex()
-        if 0 <= index < len(self.items):
-            self.info_video(self.items[index])
+        if 0 <= index < len(self.video_items):
+            self.info_video(self.video_items[index])
 
     def info_video(self, video):
         if self.busy or self.closed:

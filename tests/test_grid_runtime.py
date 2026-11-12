@@ -128,6 +128,16 @@ class TestNativeGrid(unittest.TestCase):
             "video_id": "abcdefghijk",
         }
 
+    def test_screen_items_method_remains_callable_on_openatv76(self):
+        # Screen.deleteGUIScreen relies on the dict.items() method.
+        mod = self.load_grid([])
+        grid = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
+        self.assertTrue(callable(grid.items))
+        self.assertEqual(grid.items(), [])
+        self.assertEqual(len(grid.video_items), 1)
+        grid.close()
+        self.assertTrue(callable(grid.items))
+
     def test_visible_six_and_stale_callback_discard(self):
         jobs = []
         grid_module = self.load_grid(jobs)

@@ -26,8 +26,8 @@ class WarderYouTubeGrid(Screen):
 
     def __init__(self, session, items, query, has_next_page=False, on_play=None, on_info=None):
         Screen.__init__(self, session)
-        self.items = list(items[:15])
-        self.selected = 0 if self.items else -1
+        self.video_items = list(items[:15])
+        self.selected = 0 if self.video_items else -1
         self.query = str(query)[:70]
         self.has_next_page = bool(has_next_page)
         self.on_play = on_play
@@ -108,12 +108,12 @@ class WarderYouTubeGrid(Screen):
         for slot in range(VISIBLE_TILES):
             absolute = start + slot
             self["thumb%d" % slot].hide()
-            if absolute >= len(self.items):
+            if absolute >= len(self.video_items):
                 self["title%d" % slot].setText("")
                 self["channel%d" % slot].setText("")
                 self["focus%d" % slot].hide()
                 continue
-            video = self.items[absolute]
+            video = self.video_items[absolute]
             self["title%d" % slot].setText(str(video.get("title") or "")[:88])
             self["channel%d" % slot].setText(str(video.get("channel") or "")[:55])
             url = video.get("thumbnail_url")
@@ -129,7 +129,7 @@ class WarderYouTubeGrid(Screen):
         active = local_slot(self.selected) if self.selected >= 0 else -1
         first = page_number(self.selected) * VISIBLE_TILES
         for slot in range(VISIBLE_TILES):
-            if slot == active and first + slot < len(self.items):
+            if slot == active and first + slot < len(self.video_items):
                 self["focus%d" % slot].show()
             else:
                 self["focus%d" % slot].hide()
@@ -139,7 +139,7 @@ class WarderYouTubeGrid(Screen):
         else:
             self.set_status(
                 "Video %d/%d  |  strana %d  |  obrázky iba pre viditeľné videá" %
-                (self.selected + 1, len(self.items), page_number(self.selected) + 1)
+                (self.selected + 1, len(self.video_items), page_number(self.selected) + 1)
             )
 
     def _pump_downloads(self):
@@ -189,9 +189,9 @@ class WarderYouTubeGrid(Screen):
         self._start_decode()
 
     def _move(self, direction):
-        if self._closed or not self.items:
+        if self._closed or not self.video_items:
             return
-        next_index = move_index(self.selected, direction, len(self.items))
+        next_index = move_index(self.selected, direction, len(self.video_items))
         if next_index == self.selected:
             return
         old_page = page_number(self.selected)
@@ -216,16 +216,16 @@ class WarderYouTubeGrid(Screen):
     def play(self):
         if self.selected >= 0 and callable(self.on_play):
             self.set_status("Zisťujem dostupnosť videa...")
-            self.on_play(self.items[self.selected])
+            self.on_play(self.video_items[self.selected])
 
     def show_info(self):
         if self.selected >= 0 and callable(self.on_info):
-            self.on_info(self.items[self.selected])
+            self.on_info(self.video_items[self.selected])
 
     def next_page(self):
-        if not self.items:
+        if not self.video_items:
             return
-        if self.selected + VISIBLE_TILES < len(self.items):
+        if self.selected + VISIBLE_TILES < len(self.video_items):
             self.selected += VISIBLE_TILES
             self._render_page()
         elif self.has_next_page:
