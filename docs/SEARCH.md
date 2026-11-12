@@ -25,3 +25,19 @@ The HTTP response parser ignores malformed items and does not include raw YouTub
 No working playback, yt-dlp bundle, user login, subscriptions, local playlists, thumbnails or genuine Home recommendations. No IPK build/release and no guarantee of OpenATV/OpenPLi runtime compatibility until receiver testing.
 
 Reference: https://developers.google.com/youtube/data/reference/rest/v3/search/list
+
+
+## Optional public search without a Google API key (0.0.5-dev)
+
+With no personal API key and a compatible pre-installed **yt-dlp CLI** available,
+Search uses yt-dlp's flat `ytsearchN:phrase` mode in a background worker.
+It returns the same result structure as the Data API without introducing a
+browser, large visual renderer or packaged extractor. The search is limited to
+60 items across four pages of 15; fetching later pages may repeat part of the
+search and can be slower. The official API remains preferred when an API key
+is configured.
+
+The plugin does not install yt-dlp or promise this mode works on all receiver
+images. YouTube changes, runtime dependencies, throttling and regional
+restrictions may cause a clean search failure. Host tests use mock responses,
+not live video searches.

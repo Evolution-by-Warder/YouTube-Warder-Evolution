@@ -28,6 +28,7 @@ class UiTests(unittest.TestCase):
         source = (PKG / "search.py").read_text(encoding="utf-8")
         self.assertIn("deferToThread(", source)
         self.assertIn("search_videos, self.query", source)
+        self.assertIn("search_with_ytdlp, self.query", source)
         self.assertIn("self.closed", source)
         self.assertIn("request_version", source)
 

@@ -31,7 +31,8 @@ class WarderYouTubeSettings(Screen):
         self["title"] = Label("YouTube - Warder Evolution / Settings")
         self["description"] = Label(
             "Search currently uses the official YouTube Data API. "
-            "A personal API key is required. Playback is not implemented."
+            "API key is optional when yt-dlp is installed. "
+            "Playback is experimental and depends on installed yt-dlp."
         )
         self["key_state"] = Label("")
         self["warning"] = Label(
@@ -50,7 +51,7 @@ class WarderYouTubeSettings(Screen):
 
     def refresh(self):
         self["key_state"].setText(
-            "API key: configured" if get_api_key() else "API key: not configured"
+            "API key: configured" if get_api_key() else "API key: not configured (yt-dlp alternative)"
         )
 
     def prompt_key(self):

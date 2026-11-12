@@ -1,11 +1,11 @@
 # YouTube – Warder Evolution
 
-**Status: 0.0.4-dev.** Lightweight blue YouTube plugin for Enigma2, under active development.
+**Status: 0.0.5-dev.** Lightweight blue YouTube plugin for Enigma2, under active development.
 
 ## What is implemented in source
 
 - Native Enigma2 Home, Search, Settings and search results; no web browser or heavy renderer.
-- Keyboard-based search through YouTube Data API v3 with the user's own API key.
+- Keyboard-based search via your own YouTube Data API v3 key, or optional installed yt-dlp **without** a key.
 - 15 real video titles/channels per page; next-page and error handling.
 - Asynchronous resolver: **optional external yt-dlp** converts a video ID to a single muxed MP4 stream URL off the GUI thread, when available.
 - An experimental native Enigma2 MoviePlayer adapter attempts playback of resolved HTTPS streams and returns to the previous TV service on exit.
@@ -23,7 +23,7 @@
 
 ## Setup / developer validation
 
-- Search currently requires your own YouTube Data API key (Settings). Enigma2 stores it **unencrypted**, so do not share settings files.
+- Search uses your own API key when configured. Without a key, the already-installed yt-dlp command can search up to 60 results (4 × 15). No shared key or extractor is shipped. Enigma2 stores any configured key **unencrypted**, so do not share settings files.
 - Playback additionally requires yt-dlp installed separately and accessible on PATH, plus compatible codecs.
 - [Thumbnail guide](docs/THUMBNAILS.md) · [Search guide](docs/SEARCH.md) · [Playback guide](docs/PLAYBACK.md) · [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
 - Run: python3 -m unittest discover -s tests -v

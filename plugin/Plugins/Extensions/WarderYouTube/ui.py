@@ -15,19 +15,19 @@ class WarderYouTubeHome(Screen):
         Screen.__init__(self, session)
         self.sections = [
             ("Home", "Recommendations will be enabled after a catalogue is validated."),
-            ("Search", "Search real YouTube videos with the native Enigma2 keyboard."),
+            ("Search", "Search YouTube using your API key or optional installed yt-dlp."),
             ("Subscriptions", "Subscriptions need secure account authorization."),
             ("History", "Local viewing history will follow verified playback."),
             ("Playlists", "Playlist browsing is planned after search and playback."),
             ("Favourites", "Local favourite videos and channels are planned."),
-            ("Settings", "Set or remove your YouTube Data API key here.")
+            ("Settings", "Optional Google API key; yt-dlp can search without one.")
         ]
         self["brand"] = Label("YouTube - Warder Evolution")
-        self["version"] = Label("0.0.2-dev / Enigma2")
+        self["version"] = Label("0.0.5-dev / Enigma2")
         self["menu"] = MenuList([name for name, desc in self.sections])
         self["heading"] = Label("")
         self["description"] = Label("")
-        self["status"] = Label("Real search available with API key. Playback not implemented.")
+        self["status"] = Label("Search: API key or yt-dlp. Native playback is experimental.")
         self["footer"] = Label("UP/DOWN: Select      OK: Open      EXIT: Close")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],

@@ -14,7 +14,8 @@
 - [x] API key entry/clear in settings
 - [ ] Validate on OpenATV 7.6/8.1 and OpenPLi 9.2
 - [ ] Internationalize user-visible text via locale catalogues
-- [ ] Evaluate lower-friction catalogue backends
+- [x] Implement optional yt-dlp public search without a Google API key
+- [ ] Validate no-key search with an installed yt-dlp on supported receivers
 
 ## Phase 2 — graphics and usability
 - [x] Native 3 × 2 thumbnail grid with blue remote focus (source implementation only)
