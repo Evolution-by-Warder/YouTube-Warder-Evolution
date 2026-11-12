@@ -133,7 +133,7 @@ class TestNativeGrid(unittest.TestCase):
         mod = self.load_grid([])
         grid = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
         self.assertTrue(callable(grid.items))
-        self.assertEqual(grid.items(), [])
+        self.assertIn("brand", dict(grid.items()))
         self.assertEqual(len(grid.video_items), 1)
         grid.close()
         self.assertTrue(callable(grid.items))

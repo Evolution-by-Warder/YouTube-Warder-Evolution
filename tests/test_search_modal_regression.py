@@ -130,7 +130,7 @@ class SearchModalRegressionTests(unittest.TestCase):
         source = load_search(api_key="", have_ytdlp=False)
         screen = source.WarderYouTubeSearch(FakeSession())
         self.assertTrue(callable(screen.items))
-        self.assertEqual(screen.items(), [])
+        self.assertIn("results", dict(screen.items()))
         self.assertEqual(screen.video_items, [])
 
     def test_keyboard_is_never_opened_during_layout(self):
