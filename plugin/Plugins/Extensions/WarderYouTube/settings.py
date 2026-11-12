@@ -12,6 +12,7 @@ except ImportError:
     from Screens.VirtualKeyBoard import VirtualKeyBoard as VirtualKeyboard
 
 from .skin import SETTINGS_SKIN
+from .resolver import is_available
 
 if not hasattr(config.plugins, "warderyoutube"):
     config.plugins.warderyoutube = ConfigSubsection()
@@ -45,6 +46,7 @@ class WarderYouTubeSettings(Screen):
         )
         self["key_state"] = Label("")
         self["quality"] = Label("")
+        self["resolver_state"] = Label("")
         self["warning"] = Label(
             "The key is stored in the receiver's Enigma2 settings without encryption. "
             "Do not share screenshots while entering it."
@@ -67,6 +69,10 @@ class WarderYouTubeSettings(Screen):
             "API key: configured" if get_api_key() else "API key: not configured (yt-dlp alternative)"
         )
         self["quality"].setText("Max. MP4 video quality: %sp" % get_quality())
+        self["resolver_state"].setText(
+            "yt-dlp: available" if is_available() else
+            "yt-dlp: not installed (optional)"
+        )
 
     def toggle_quality(self):
         setting = config.plugins.warderyoutube.max_quality
