@@ -30,48 +30,17 @@ jobs:
           ar p dist/*.ipk control.tar.gz | tar -tzf -
           ar p dist/*.ipk data.tar.gz | tar -tzf -
           cd dist && sha256sum -c *.sha256
-      - name: Publish opt-in test4 prerelease for in-plugin updater
+      - name: Restore exact test4 release asset filename for installed updater
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -eu
-          # This branch-only one-off job publishes only test4; main and
-          # stable feed remain untouched. Package is validated above.
-          TAG="youtube-warder-v0.0.8-test4"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Release already exists; refusing to replace its package."
-            exit 1
-          fi
-          gh release create "$TAG" dist/*.ipk dist/*.sha256 \
-            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
-            --title "YouTube Warder Evolution 0.0.8-test4 (receiver test)" \
-            --notes "Opt-in receiver test: Radio-derived playback, native thumbnail fixes, EXIT navigation. No stable release; unverified on receiver." \
-            --prerelease
-          python3 - <<'PY'
-          import hashlib, json
-          from pathlib import Path
-          package = next(Path("dist").glob("*.ipk"))
-          version = "0.0.8~test4"
-          tag = "youtube-warder-v0.0.8-test4"
-          url = "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/" + tag + "/" + package.name
-          release = {
-              "schema": 1, "product": "YouTube Warder Evolution",
-              "channel": "testing",
-              "release": {
-                  "version": version, "tag": tag, "url": url,
-                  "sha256": hashlib.sha256(package.read_bytes()).hexdigest(),
-                  "bytes": package.stat().st_size,
-                  "notes": "Test4: natívne prehrávanie cez rádio/HLS/DASH, náhľady a EXIT. Testované v CI, nie na prijímači."
-              }
-          }
-          Path("/tmp/warder-testing-release.json").write_text(
-              json.dumps(release, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-          PY
-          SHA="$(gh api "repos/$GITHUB_REPOSITORY/contents/update/testing.json?ref=feature/native-search-v002" --jq .sha)"
-          B64="$(base64 -w 0 /tmp/warder-testing-release.json)"
-          gh api --method PUT "repos/$GITHUB_REPOSITORY/contents/update/testing.json" \
-            -f message="Publish opt-in test4 update metadata on testing branch only" \
-            -f branch="feature/native-search-v002" -f sha="$SHA" -f content="$B64" >/dev/null
+          ASSET=740732471
+          EXPECTED="enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test4_all.ipk"
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/assets/$ASSET" -f name="$EXPECTED" >/dev/null
+          GOT="$(gh api "repos/$GITHUB_REPOSITORY/releases/assets/$ASSET" --jq .name)"
+          echo "Release asset name: $GOT"
+          test "$GOT" = "$EXPECTED"
       - uses: actions/upload-artifact@v4
         with:
           name: WarderYouTube-0.0.8-test4-IPK
