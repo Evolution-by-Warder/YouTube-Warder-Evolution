@@ -26,7 +26,7 @@ def display_duration(duration):
     if not isinstance(duration, str) or not duration:
         return "Neznáma"
     match = DURATION.fullmatch(duration)
-    if match is None:
+    if match is None or not any(v is not None for v in match.groups()):
         return "Neznáma"
     days, hours, minutes, seconds = (int(v or "0") for v in match.groups())
     total = days * 86400 + hours * 3600 + minutes * 60 + seconds
