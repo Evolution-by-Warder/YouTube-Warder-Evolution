@@ -47,7 +47,9 @@ class PackagingTests(unittest.TestCase):
                 members = tar.getmembers()
                 self.assertGreaterEqual(len(members), 10)
                 self.assertTrue(all(x.name.startswith("./" + m.TARGET_PREFIX + "/") for x in members))
-                self.assertTrue(all(x.name.endswith((".py", ".png")) for x in members))
+                self.assertTrue(all(x.name.endswith((".py", ".png", "/NOTICE", "/COPYING.GPLv2")) for x in members))
+                self.assertTrue(any(x.name.endswith("/youtube_engine/extractor.py") for x in members))
+                self.assertTrue(any(x.name.endswith("/youtube_engine/COPYING.GPLv2") for x in members))
                 self.assertEqual(len({x.name for x in members}), len(members))
                 self.assertTrue(any(x.name.endswith("/plugin.py") for x in members))
                 for icon, dimensions in (("plugin.png", (100, 60)), ("plugin_fhd.png", (150, 90))):

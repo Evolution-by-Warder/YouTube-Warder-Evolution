@@ -16,14 +16,16 @@ class PlaybackSourceTests(unittest.TestCase):
         source = (PKG / "player.py").read_text(encoding="utf-8")
         self.assertIn("fromMovieSelection=False", source)
         self.assertIn("eServiceReference", source)
-        self.assertIn("SERVICE_TYPE_GSTREAMER = 4097", source)
+        self.assertIn("WarderYouTubePlayer", source)
+        self.assertIn("ServiceEventTracker", source)
+        self.assertIn("service_type", source)
         self.assertNotIn("subprocess", source)
         self.assertNotIn("urlopen", source)
 
     def test_background_ytdlp_and_lifecycle(self):
         source = (PKG / "search.py").read_text(encoding="utf-8")
         self.assertIn("deferToThread(", source)
-        self.assertIn("resolve_video_url, video", source)
+        self.assertIn("resolve_video_streams, video", source)
         self.assertIn("quality=get_quality()", source)
         self.assertIn("self.request_version", source)
         self.assertIn("self.closed", source)

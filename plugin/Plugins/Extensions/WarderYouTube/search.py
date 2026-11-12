@@ -19,7 +19,7 @@ from twisted.internet.threads import deferToThread
 
 from .api import SearchError, search_videos
 from .search_backend import SearchBackendError, search_with_ytdlp, select_backend
-from .resolver import ResolverError, is_available, resolve_video_url
+from .resolver import ResolverError, is_available, resolve_video_streams
 from .settings import WarderYouTubeSettings, get_api_key, get_quality
 from .video_metadata import VideoInfoError, fetch_video_info
 from .skin import SEARCH_SKIN
@@ -284,24 +284,22 @@ class WarderYouTubeSearch(Screen):
     def play_video(self, video):
         if self.busy or self.closed:
             return
-        if not is_available():
-            self.show_play_status(
-                "Playback unavailable: yt-dlp is not installed on this receiver."
-            )
-            return
+        # The bundled Warder Radio resolver also works without yt-dlp.
         self.busy = True
         self.request_version += 1
         version = self.request_version
         self.show_play_status("Hľadám kompatibilný MP4 stream (najviac 720p)...")
+        from .player import dash_available
         deferred = deferToThread(
-            resolve_video_url, video["video_id"], quality=get_quality()
+            resolve_video_streams, video["video_id"],
+            quality=get_quality(), dash=dash_available()
         )
         deferred.addCallbacks(
-            lambda url: self.play_resolved(version, video, url),
+            lambda streams: self.play_resolved(version, video, streams),
             lambda failure: self.play_failed(version, failure)
         )
 
-    def play_resolved(self, version, video, stream_url):
+    def play_resolved(self, version, video, streams):
         if self.closed or version != self.request_version:
             return
         self.busy = False
@@ -312,7 +310,7 @@ class WarderYouTubeSearch(Screen):
             # Do not import MoviePlayer until a stream was actually resolved.
             from .player import open_player
             open_player(
-                self.session, stream_url, video["title"],
+                self.session, streams, video["title"],
                 on_close=self.playback_finished
             )
         except Exception:

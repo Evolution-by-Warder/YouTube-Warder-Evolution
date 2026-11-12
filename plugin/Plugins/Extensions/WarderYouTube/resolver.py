@@ -139,3 +139,29 @@ def resolve_video_url(video_id, runner=subprocess.run, which=shutil.which,
     if len(lines) != 1:
         raise ResolverError("The resolver did not return exactly one media stream.")
     return validate_stream_url(lines[0])
+
+
+def resolve_video_streams(video_id, quality="720", dash=False):
+    """Reuse our Radio resolver's bounded multiple-stream playback policy.
+
+    The standalone yt-dlp muxed MP4 path remains a fallback; neither backend
+    installs dependencies or needs an account/API key. No signed URL is logged.
+    """
+    video_page_url(video_id)
+    if quality not in QUALITY_FORMATS:
+        raise ResolverError("Unsupported playback quality setting.")
+    try:
+        from .radio_streams import extract_candidates
+        return extract_candidates(video_id, quality=quality, dash=bool(dash))
+    except Exception:
+        # Radio's public client may be unavailable on a particular YouTube
+        # rollout. Try the already-installed yt-dlp, without exposing upstream
+        # URLs, cookies, signed tokens or raw exception text in the UI.
+        try:
+            url = resolve_video_url(video_id, quality=quality)
+            return [{"url": url, "service_type": 4097}]
+        except ResolverError as exc:
+            raise ResolverError(
+                "Video nemá dostupný kompatibilný stream (HLS/MP4/DASH). "
+                "Skúste iné video alebo kvalitu 360p."
+            ) from None

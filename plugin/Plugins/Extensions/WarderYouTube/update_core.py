@@ -205,12 +205,18 @@ def validate_ipk(path, release):
                     name = name[2:]
                 if (not entry.isfile() or name.startswith("/") or
                         ".." in Path(name).parts or not name.startswith(PREFIX)
-                        or not name.endswith((".py", ".png"))):
+                        or not (name.endswith((".py", ".png"))
+                                or name in (PREFIX + "youtube_engine/NOTICE",
+                                            PREFIX + "youtube_engine/COPYING.GPLv2"))):
                     raise UpdateError("Balík obsahuje súbory mimo pluginu.")
                 names.append(name)
             if len(names) != len(set(names)) or len(names) < 12:
                 raise UpdateError("Balík je nekompletný.")
-            for required in ("plugin.py", "update_core.py", "update_ui.py", "images/plugin.png", "images/plugin_fhd.png"):
+            for required in ("plugin.py", "update_core.py", "update_ui.py",
+                             "images/plugin.png", "images/plugin_fhd.png",
+                             "radio_streams.py", "youtube_engine/extractor.py",
+                             "youtube_engine/jsinterp.py", "youtube_engine/NOTICE",
+                             "youtube_engine/COPYING.GPLv2"):
                 if PREFIX + required not in names:
                     raise UpdateError("Aktualizácia neobsahuje všetky súbory.")
     except (tarfile.TarError, UnicodeError, OSError):

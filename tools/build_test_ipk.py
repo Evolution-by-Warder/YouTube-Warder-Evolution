@@ -2,7 +2,7 @@
 """Create a self-contained, SMALL, receiver-test-only Enigma2 .ipk.
 
 No downloader, yt-dlp, API key, videos, cache or other third-party files.
-The package contains only native Enigma2 Python and two small logo PNGs.
+The package includes the Radio-derived GPL-2.0 YouTube resolver sources and license.
 """
 from pathlib import Path
 import argparse
@@ -101,6 +101,15 @@ def build(output_dir):
                 or tuple(int.from_bytes(raw[i:i + 4], "big") for i in (16, 20)) != expected):
             raise ValueError("Invalid Warder plugin icon: " + filename)
         data_files.append((TARGET_PREFIX + "/images/" + filename, raw, False))
+
+    # Include our self-contained Radio-derived GPL-2.0 backend and license.
+    # No plugin dependency, downloader, credentials or third-party binaries.
+    engine = PKG_DIR / "youtube_engine"
+    for filename in ("__init__.py", "compat.py", "extractor.py", "jsinterp.py",
+                     "settings.py", "NOTICE", "COPYING.GPLv2"):
+        path = engine / filename
+        data_files.append((TARGET_PREFIX + "/youtube_engine/" + filename,
+                           path.read_bytes(), False))
 
     control_text = (
         "Package: %s\nVersion: %s\nArchitecture: all\n"
