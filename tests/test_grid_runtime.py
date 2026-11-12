@@ -361,7 +361,7 @@ class TestNativeGrid(unittest.TestCase):
         self.assertIsNotNone(g._decoding)
         g.next_page()
         jobs[1][1].failure(Exception("old page"))
-        new_jobs = [job for job in jobs[2:] if job[0][0].__name__ == "fetch_thumbnail"]
+        new_jobs = [job for job in jobs[2:] if job[0][1].endswith("?x=6")]
         self.assertTrue(new_jobs)
         new_jobs[0][1].success("/tmp/new.jpg")
         self.assertFalse(g["thumb0"].visible)
