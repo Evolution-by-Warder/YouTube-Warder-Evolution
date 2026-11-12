@@ -18,6 +18,7 @@ except ImportError:
 from twisted.internet.threads import deferToThread
 
 from .api import SearchError, search_videos
+from .search_backend import SearchBackendError, search_with_ytdlp, select_backend
 from .resolver import ResolverError, is_available, resolve_video_url
 from .settings import WarderYouTubeSettings, get_api_key
 from .skin import SEARCH_SKIN
@@ -36,6 +37,7 @@ class WarderYouTubeSearch(Screen):
         self.closed = False
         self.request_version = 0
         self.active_grid = None
+        self.search_backend = None
 
         self["title"] = Label("YouTube - Warder Evolution / Search")
         self["query"] = Label("Search videos")
@@ -58,11 +60,12 @@ class WarderYouTubeSearch(Screen):
         self.onClose.append(self.mark_closed)
 
     def first_open(self):
-        if get_api_key():
+        if select_backend(get_api_key(), is_available()):
             self.open_keyboard()
         else:
             self["status"].setText(
-                "Set your API key via YELLOW / Settings before searching."
+                "Search needs your API key or an installed yt-dlp. "
+                "Press YELLOW to configure Settings."
             )
 
     def mark_closed(self):
@@ -76,9 +79,9 @@ class WarderYouTubeSearch(Screen):
     def open_keyboard(self):
         if self.busy:
             return
-        if not get_api_key():
+        if not select_backend(get_api_key(), is_available()):
             self["status"].setText(
-                "Missing API key. Press YELLOW to open Settings."
+                "No search backend: set an API key or install yt-dlp."
             )
             return
         self.session.openWithCallback(
@@ -90,6 +93,7 @@ class WarderYouTubeSearch(Screen):
         if query is None or not query.strip():
             return
         self.query = query.strip()
+        self.search_backend = select_backend(get_api_key(), is_available())
         self.page_token = ""
         self.next_page_token = ""
         self.items = []
@@ -109,10 +113,19 @@ class WarderYouTubeSearch(Screen):
         version = self.request_version
         self["query"].setText("Search: " + self.query[:60])
         self["status"].setText("Loading real YouTube results...")
-        # No network activity or JSON decoding on the GUI thread.
-        deferred = deferToThread(
-            search_videos, self.query, get_api_key(), page_token
-        )
+        # Both backends run in workers. Never block the Enigma2 GUI thread.
+        if self.search_backend == "api":
+            deferred = deferToThread(
+                search_videos, self.query, get_api_key(), page_token
+            )
+        elif self.search_backend == "yt-dlp":
+            deferred = deferToThread(
+                search_with_ytdlp, self.query, page_token
+            )
+        else:
+            self.busy = False
+            self["status"].setText("No search backend is configured.")
+            return
         deferred.addCallbacks(
             lambda response: self.receive_results(version, page_token, response),
             lambda error: self.receive_error(version, error)
@@ -145,7 +158,7 @@ class WarderYouTubeSearch(Screen):
             return
         self.busy = False
         error = getattr(failure, "value", None)
-        if isinstance(error, SearchError):
+        if isinstance(error, (SearchError, SearchBackendError)):
             message = str(error)
         else:
             message = "Unexpected error. Please try another search."
