@@ -14,7 +14,7 @@ We inspected Taapat and Fairbird: both open Enigma2 MoviePlayer with an eService
 - Video may be restricted, unavailable, DRM-protected, use newer YouTube extraction requirements or be in an unsupported format. A valid URL does not guarantee GStreamer can decode it.
 - Timeouts and extraction errors are nonfatal and do not reveal signed URLs in GUI text.
 - Returned media URL must use HTTPS on a googlevideo.com hostname. It is transient and is **not stored in history, sent to logs or copied to Git**.
-- Native MoviePlayer from OpenATV 7.6 provides `fromMovieSelection=False` and restores the previous service when closed. OpenPLi and other image variations still require physical tests.
+- On OpenATV 7.6, `MoviePlayer(fromMovieSelection=False)` does **not** restore the previous service automatically. Our `player.py` adapter saves the current service first and explicitly restores it in the movie-player close callback, including error recovery. OpenPLi and other image variations still require physical tests.
 - No UI decorations or extra renderers are added. No permanent package or production updater is produced.
 
 ## Receiver test checklist
