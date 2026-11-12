@@ -14,17 +14,21 @@
 - [x] API key entry/clear in settings
 - [ ] Validate on OpenATV 7.6/8.1 and OpenPLi 9.2
 - [ ] Internationalize user-visible text via locale catalogues
-- [ ] Explore optional alternatives to user-provided API key without claiming reliability
+- [ ] Evaluate lower-friction catalogue backends
 
 ## Phase 2 — graphics and usability
 - [ ] 2–3 column video preview grid with bounded scaled thumbnails
 - [ ] Cache and cancellation for thumbnail downloads
 - [ ] Performance measurement on SF8008 and GigaBlue Quad 4K Pro
 
-## Phase 3 — real video playback
-- [ ] Compare Taapat, Fairbird, YouTubeMod, yt-dlp extractors
-- [ ] Modular resolver and Enigma2 player integration
-- [ ] Codec, DASH/HLS, quality, remote player controls and expiry recovery
+## Phase 3 — experimental playback
+- [x] Compare native player integration in Taapat and Fairbird
+- [x] Thin 4097/GStreamer MoviePlayer bridge (host-tested source only)
+- [x] Optional yt-dlp single-muxed-MP4 resolver; isolated worker, bounded timeout, no auto-install
+- [x] Tests for subprocess args, video IDs, URL validation and safe failures
+- [ ] Actual live test on receiver: **not validated**
+- [ ] Optional other stream backends or installation plan after footprint measurements
+- [ ] Codec, DASH/HLS, quality, remote player controls, expiry recovery
 
 ## Phase 4 — user features
 - [ ] Local watch history, favourites, playlists

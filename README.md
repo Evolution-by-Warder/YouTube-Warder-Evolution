@@ -1,35 +1,32 @@
 # YouTube – Warder Evolution
 
-**Status: 0.0.2-dev.** Lightweight blue YouTube-oriented plugin for Enigma2, currently in development.
+**Status: 0.0.3-dev.** Lightweight blue YouTube plugin for Enigma2, under active development.
 
-## What works in source
+## What is implemented in source
 
-- Native Enigma2 menu, settings and video search screens; no web browser.
-- Enigma2 virtual keyboard for search.
-- **Real YouTube search** through official YouTube Data API v3 with **user-supplied API key**.
-- Fifteen results per page, video title and channel, next page navigation.
-- Network searches in Twisted worker thread, bounded responses and friendly error states.
+- Native Enigma2 Home, Search, Settings and search results; no web browser or heavy renderer.
+- Keyboard-based search through YouTube Data API v3 with the user's own API key.
+- 15 real video titles/channels per page; next-page and error handling.
+- Asynchronous resolver: **optional external yt-dlp** converts a video ID to a single muxed MP4 stream URL off the GUI thread, when available.
+- An experimental native Enigma2 MoviePlayer adapter attempts playback of resolved HTTPS streams and returns to the previous TV service on exit.
+- Defensive input checks, bounded subprocess timeout, URL checks and automated mocked tests.
 
-**Not working yet:** actual playback, thumbnails/video grid, sign-in, subscriptions, history or playlists. This code has **not been tested on a receiver**, and there is **no IPK release**.
+**Not working yet or unverified:** nothing has been tested on a physical receiver; playback is experimental and depends on a compatible yt-dlp executable, Enigma2/GStreamer support and the video format. There is no bundled resolver, no automatic installation, no thumbnail grid, no account login or subscriptions, no IPK release.
 
-## Approved design
+## Design
 
-- Hybrid familiarity of desktop YouTube and TV remote control, with flat blue colors.
-- Background #08182D, panel #142C47, selected focus #087EC7, accent #36B9FF.
-- Full HD reference design, no special C++ renderers, overlay animation or heavy raster decorations.
-- Target images: OpenATV 7.6/8.0.x/8.1 and OpenPLi 9.2, to be verified.
+- YouTube desktop navigation + TV remote usability.
+- Blue palette: #08182D background, #142C47 panels, #087EC7 selection, #36B9FF accents.
+- Full HD reference layout, minimal CPU and flash-space cost, native widgets, no graphic overload.
+- Target OpenATV 7.6, 8.0.x, 8.1, and OpenPLi 9.2: **compatibility pending real tests**.
 
-## Setup
+## Setup / developer validation
 
-Configure your own YouTube Data API key in **Settings**, then select **Search**. Read [search guide](docs/SEARCH.md) for details and the local-storage privacy note. Do not publish keys or account tokens in Git.
+- Search currently requires your own YouTube Data API key (Settings). Enigma2 stores it **unencrypted**, so do not share settings files.
+- Playback additionally requires yt-dlp installed separately and accessible on PATH, plus compatible codecs.
+- [Search guide](docs/SEARCH.md) · [Playback guide](docs/PLAYBACK.md) · [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
+- Run: python3 -m unittest discover -s tests -v
 
-## Development
+Ideas to compare and assimilate: [Taapat](https://github.com/Taapat/enigma2-plugin-youtube), [Fairbird](https://github.com/fairbird/Youtube-Opensource-DreamOS), YouTubeMod and [yt-dlp](https://github.com/yt-dlp/yt-dlp). Source attribution and code redistribution requirements are respected.
 
-- Sources: `plugin/Plugins/Extensions/WarderYouTube`
-- API documentation: [docs/SEARCH.md](docs/SEARCH.md)
-- [Architecture](docs/ARCHITECTURE.md) | [Assimilation](docs/ASSIMILATION.md) | [Roadmap](docs/ROADMAP.md)
-- Test without Enigma2: `python3 -m unittest discover -s tests -v`
-
-Research references: [Taapat](https://github.com/Taapat/enigma2-plugin-youtube), [Fairbird](https://github.com/fairbird/Youtube-Opensource-DreamOS), YouTubeMod (to verify), [yt-dlp](https://github.com/yt-dlp/yt-dlp). Reuse practical ideas, preserve code provenance and attribution when incorporating upstream source.
-
-**No build artifact or production updater feed has been created.**
+**Development PR only. No IPK, updater feed or stable release.**
