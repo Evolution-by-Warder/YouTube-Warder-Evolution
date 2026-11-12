@@ -125,5 +125,91 @@ class UpdateCoreTests(unittest.TestCase):
                          (None, None))
 
 
+
+    def test_actual_ipk_offline_install_verification_no_real_opkg(self):
+        """Dry-run the complete install from the real test5 package builder."""
+        import sys
+        from unittest.mock import patch
+        import types
+        builder_file = ROOT / "tools/build_test_ipk.py"
+        builder_spec = importlib.util.spec_from_file_location(
+            "warder_ipk_builder_for_update_test", builder_file)
+        builder = importlib.util.module_from_spec(builder_spec)
+        builder_spec.loader.exec_module(builder)
+        with tempfile.TemporaryDirectory() as tmp:
+            package = builder.build(Path(tmp))
+            data = package.read_bytes()
+            release = {
+                "version": builder.VERSION,
+                "url": u.expected_url(builder.VERSION),
+                "sha256": hashlib.sha256(data).hexdigest(),
+                "bytes": len(data),
+            }
+            commands = []
+            progress = []
+            def fake_run(argv, **kwargs):
+                commands.append(argv)
+                if argv[1] == "install":
+                    self.assertTrue(Path(argv[2]).is_file())
+                    self.assertIn("warder-youtube-update-", argv[2])
+                    return types.SimpleNamespace(returncode=0, stdout="")
+                if argv[1] == "status":
+                    result = (
+                        "Package: " + u.PACKAGE + "\n"
+                        "Version: " + builder.VERSION + "\n"
+                        "Status: install ok installed\n"
+                    )
+                    return types.SimpleNamespace(returncode=0, stdout=result)
+                self.fail("Unexpected subprocess command")
+            installed = u.install_update(
+                release, opener=lambda url, timeout: FakeResponse(data),
+                runner=fake_run, progress=lambda *args: progress.append(args))
+            self.assertEqual(installed, builder.VERSION)
+            self.assertEqual([cmd[1] for cmd in commands], ["install", "status"])
+            self.assertEqual([phase[0] for phase in progress],
+                             ["download", "verify", "install", "complete"])
+
+    def test_corrupt_ipk_never_invokes_opkg(self):
+        import types
+        data = b"not-an-ipk"
+        release = {
+            "version": "0.0.8~test6",
+            "url": u.expected_url("0.0.8~test6"),
+            "sha256": hashlib.sha256(data).hexdigest(),
+            "bytes": len(data),
+        }
+        calls = []
+        with self.assertRaises(u.UpdateError):
+            u.install_update(release,
+                opener=lambda url, timeout: FakeResponse(data),
+                runner=lambda *args, **kwargs: calls.append(args))
+        self.assertEqual(calls, [])
+
+    def test_opkg_install_failure_stops_before_status_check(self):
+        import types
+        builder_file = ROOT / "tools/build_test_ipk.py"
+        builder_spec = importlib.util.spec_from_file_location(
+            "warder_ipk_builder_for_fail_test", builder_file)
+        builder = importlib.util.module_from_spec(builder_spec)
+        builder_spec.loader.exec_module(builder)
+        with tempfile.TemporaryDirectory() as tmp:
+            payload = builder.build(Path(tmp)).read_bytes()
+            release = {
+                "version": builder.VERSION,
+                "url": u.expected_url(builder.VERSION),
+                "sha256": hashlib.sha256(payload).hexdigest(),
+                "bytes": len(payload),
+            }
+            calls = []
+            def fake_run(cmd, **kwargs):
+                calls.append(cmd[1])
+                return types.SimpleNamespace(returncode=1, stdout="private output")
+            with self.assertRaisesRegex(u.UpdateError, "opkg.*1"):
+                u.install_update(release,
+                    opener=lambda url, timeout: FakeResponse(payload),
+                    runner=fake_run)
+            self.assertEqual(calls, ["install"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -86,3 +86,9 @@ After confirming that the tuned TV channel's audio continues while browsing YouT
 ## Update menu consistency and offline test feed regressions — 12 November 2026
 
 Home and Settings no longer claim playback depends on yt-dlp: search uses yt-dlp or an API key, while the bundled Warder Radio resolver handles video, with yt-dlp only as an optional fallback. Concise Slovak screen labels describe 360/720p quality, API key privacy, and that updates are opt-in. The in-plugin updater explicitly says the testing channel is up to date when CURRENT_VERSION equals the published testing feed. Offline tests verify the published test5 manifest points to GitHub's actual dotted asset name, future test6 offers a safe upgrade, the testing feed is selected, modified/unsigned manifests are rejected, content SHA256 is checked before download acceptance, and the exact opkg status name is matched. No new IPK or stable release.
+
+## Offline end-to-end updater safety tests (2026-11-12)
+
+Added mocked Enigma2 updater UI regression coverage, with no network or receiver required. The Update Check screen starts one background check (not twice on repeated onShown), displays the currently installed test version without installing, and only opens the installer after an explicit YES confirmation. Closing screens discards late worker callbacks. Progress updates use the GUI dispatch path; only a completed, verified installation schedules a GUI-only restart. Failures (including signed/private URL exceptions) show safe messages and never restart the receiver.
+
+Expanded core tests to build a real test5 IPK in an isolated temporary directory and simulate its complete verified download/validation/opkg-install/status-check pipeline. A corrupt IPK must never invoke opkg, and an opkg failure must not be reported as installed. All installation subprocesses are mocked; no actual opkg, network, YouTube video or hardware changes are made. No IPK release or merge requested.
