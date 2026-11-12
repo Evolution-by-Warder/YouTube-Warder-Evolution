@@ -169,8 +169,9 @@ class TestNativeGrid(unittest.TestCase):
         g.go_back()
         self.assertTrue(g._closed)
         self.assertIsNone(g.closed_args[0])
+        scheduled_at_close = len(jobs)
         jobs[3][1].success("/tmp/later-image.jpg")
-        self.assertEqual(len(jobs), 4)
+        self.assertEqual(len(jobs), scheduled_at_close)
 
     def test_grid_next_page_emits_result(self):
         jobs = []
