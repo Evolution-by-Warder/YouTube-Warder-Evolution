@@ -22,7 +22,9 @@ class PlaybackSourceTests(unittest.TestCase):
 
     def test_background_ytdlp_and_lifecycle(self):
         source = (PKG / "search.py").read_text(encoding="utf-8")
-        self.assertIn("deferToThread(resolve_video_url", source)
+        self.assertIn("deferToThread(", source)
+        self.assertIn("resolve_video_url, video", source)
+        self.assertIn("quality=get_quality()", source)
         self.assertIn("self.request_version", source)
         self.assertIn("self.closed", source)
         self.assertIn("on_close=self.playback_finished", source)
