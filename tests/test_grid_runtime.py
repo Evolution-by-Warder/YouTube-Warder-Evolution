@@ -59,6 +59,27 @@ class FakePicLoad:
         return "fake native pixmap"
 
 
+class FakeConnection:
+    def __init__(self, callbacks, callback):
+        self.callbacks = callbacks
+        self.callback = callback
+        self.disconnected = False
+
+    def disconnect(self):
+        if not self.disconnected:
+            self.disconnected = True
+            self.callbacks.remove(self.callback)
+
+
+class FakeModernSignal:
+    def __init__(self, callbacks):
+        self.callbacks = callbacks
+
+    def connect(self, callback):
+        self.callbacks.append(callback)
+        return FakeConnection(self.callbacks, callback)
+
+
 class FakeDeferred:
     def addCallbacks(self, success, failure):
         self.success = success
@@ -66,9 +87,14 @@ class FakeDeferred:
 
 
 class TestNativeGrid(unittest.TestCase):
-    def load_grid(self, requests, framebuffer=(1, 1)):
+    def load_grid(self, requests, framebuffer=(1, 1), signal_style="get"):
         fake_enigma = types.ModuleType("enigma")
-        fake_enigma.ePicLoad = FakePicLoad
+        def decoder_factory():
+            decoder = FakePicLoad()
+            if signal_style == "connect":
+                decoder.PictureData = FakeModernSignal(decoder.callbacks)
+            return decoder
+        fake_enigma.ePicLoad = decoder_factory
 
         components = types.ModuleType("Components")
         avswitch = types.ModuleType("Components.AVSwitch")
@@ -158,6 +184,47 @@ class TestNativeGrid(unittest.TestCase):
         with patch.dict(sys.modules, {"Components.AVSwitch": mod._test_avswitch}):
             g._layout_ready()
         self.assertEqual(g._picload.parameters[:4], (476, 249, 1, 1))
+
+    def test_modern_signal_connect_and_disconnect(self):
+        jobs = []
+        mod = self.load_grid(jobs, signal_style="connect")
+        grid = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
+        grid._layout_ready()
+        self.assertEqual(len(grid._picload.callbacks), 1)
+        self.assertIsNotNone(grid._picload_connection)
+        decoder = grid._picload
+        jobs[0][1].success("/tmp/modern.jpg")
+        decoder.callbacks[0]()
+        self.assertEqual(grid["thumb0"].image, "fake native pixmap")
+        grid.close()
+        self.assertEqual(decoder.callbacks, [])
+        self.assertIsNone(grid._picload)
+
+    def test_original_native_pixmap_pointer_is_not_dereferenced(self):
+        jobs = []
+        mod = self.load_grid(jobs)
+        grid = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
+        grid._layout_ready()
+        class NativePointer:
+            def __deref__(self):
+                raise AssertionError("Native ePtr must not be dereferenced")
+        ptr = NativePointer()
+        grid._picload.getData = lambda: ptr
+        jobs[0][1].success("/tmp/native.jpg")
+        grid._decode_finished()
+        self.assertIs(grid["thumb0"].image, ptr)
+
+    def test_decoder_read_error_fails_softly(self):
+        jobs = []
+        mod = self.load_grid(jobs)
+        grid = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
+        grid._layout_ready()
+        def bad_data():
+            raise RuntimeError("Decoder detached")
+        grid._picload.getData = bad_data
+        jobs[0][1].success("/tmp/bad.jpg")
+        grid._decode_finished()
+        self.assertIn("Náhľady sa nepodarilo", grid["status"].text)
 
     def test_visible_six_and_stale_callback_discard(self):
         jobs = []

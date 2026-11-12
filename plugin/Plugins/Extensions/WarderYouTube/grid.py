@@ -40,6 +40,8 @@ class WarderYouTubeGrid(Screen):
         self._pending_decodes = []
         self._decoding = None
         self._picload = None
+        self._picload_connection = None
+        self._picload_signal = None
         self._thumb_failures = 0
         self._thumb_shown = 0
         self._thumb_expected = 0
@@ -79,11 +81,17 @@ class WarderYouTubeGrid(Screen):
         self._ready = True
         try:
             self._picload = ePicLoad()
-            self._picload.PictureData.get().append(self._decode_finished)
+            picture_data = self._picload.PictureData
+            if hasattr(picture_data, "get"):
+                self._picload_signal = picture_data.get()
+                self._picload_signal.append(self._decode_finished)
+            else:
+                # Modern Enigma2 signal bindings expose .connect().
+                self._picload_connection = picture_data.connect(self._decode_finished)
             self._picload.setPara(self._decode_parameters())
         except Exception:
-            # Titles and remote navigation still work when this image cannot
-            # initialize the built-in decoder. No extra renderer dependency.
+            # Titles and remote navigation still work without a decoder.
+            self._release_decoder()
             self._picload = None
         self._render_page()
 
@@ -113,11 +121,28 @@ class WarderYouTubeGrid(Screen):
             pass
         return (width, height, scale_x, scale_y, False, 1, "#00000000")
 
+    def _release_decoder(self):
+        """Disconnect on either Enigma2 signal API, including during teardown."""
+        connection, self._picload_connection = self._picload_connection, None
+        signal, self._picload_signal = self._picload_signal, None
+        if connection is not None:
+            try:
+                connection.disconnect()
+            except (AttributeError, RuntimeError):
+                pass
+        if signal is not None:
+            try:
+                signal.remove(self._decode_finished)
+            except (ValueError, AttributeError, RuntimeError):
+                pass
+
     def _mark_closed(self):
         self._closed = True
         self._epoch += 1
         self._pending_downloads = []
         self._pending_decodes = []
+        self._release_decoder()
+        self._picload = None
         self.on_play = None
         self.on_info = None
 
@@ -219,16 +244,23 @@ class WarderYouTubeGrid(Screen):
     def _decode_finished(self, *args):
         request = self._decoding
         self._decoding = None
-        pixmap_ptr = self._picload.getData() if self._picload else None
-        if (request and not self._closed and request[0] == self._epoch
-                and pixmap_ptr is not None):
-            slot = request[1]
-            pixmap = (pixmap_ptr.__deref__()
-                      if hasattr(pixmap_ptr, "__deref__") else pixmap_ptr)
-            self["thumb%d" % slot].setPixmap(pixmap)
-            self["thumb%d" % slot].show()
-            self._thumb_shown += 1
-        elif request and not self._closed and request[0] == self._epoch:
+        if not request or self._closed or request[0] != self._epoch:
+            self._start_decode()
+            return
+        try:
+            pixmap_ptr = self._picload.getData() if self._picload else None
+            if pixmap_ptr is None:
+                self._thumb_failures += 1
+            else:
+                # Pixmap.setPixmap delegates to ePixmap.setPixmap. Keep the
+                # original native ePtr<gPixmap>, as Warder Radio does; do not
+                # dereference it to an incompatible Python gPixmap object.
+                widget = self["thumb%d" % request[1]]
+                widget.setPixmap(pixmap_ptr)
+                widget.show()
+                self._thumb_shown += 1
+        except (AttributeError, TypeError, ValueError, RuntimeError):
+            # A decode error must not cause a GUI crash.
             self._thumb_failures += 1
         self._start_decode()
         self._check_thumbnails()

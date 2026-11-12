@@ -30,3 +30,7 @@ Exclude the package's `YouTube.key`, OAuth flows, upstream resume-position `eval
 - **Actual playback feedback:** native MoviePlayer final failure now reports that all candidate streams failed, instead of falsely showing a normal exit. Successful close and failure differ in the on-screen state. Video status now correctly mentions MP4/HLS/DASH rather than only MP4.
 - **Media URL guard:** reject nonstandard HTTPS ports from the yt-dlp fallback.
 - Source-only changes in Draft PR. Receiver testing remains required, no test IPK or stable release issued.
+
+## Thumbnail native pointer / signal compatibility fix (source-only)
+
+Both OpenATV's legacy ePicLoad PictureData.get().append and newer PictureData.connect callback patterns are now supported with proper disconnect on screen close. The receiver-proven Warder Radio pattern passes the native ePtr returned by ePicLoad.getData() unchanged to Pixmap.setPixmap rather than calling __deref__() on it. This may resolve GigaBlue 8.1 blank tiles; it remains to be tested on physical hardware. Decoder read errors fail softly without crashes, custom renderers, or extra dependencies. New host tests cover modern signal binding, pointer identity, error handling and disconnect.
