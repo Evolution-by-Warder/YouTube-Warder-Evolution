@@ -30,6 +30,8 @@
 - [x] Thin 4097/GStreamer MoviePlayer bridge (host-tested source only)
 - [x] Optional yt-dlp single-muxed-MP4 resolver; isolated worker, bounded timeout, no auto-install
 - [x] Tests for subprocess args, video IDs, URL validation and safe failures
+- [x] Real yt-dlp extraction attempted from GitHub Actions: inconclusive (anti-bot restriction on one public video), not a pass
+- [x] Native 360p/720p maximum quality setting with safe, muxed MP4 formats
 - [ ] Actual live test on receiver: **not validated**
 - [ ] Optional other stream backends or installation plan after footprint measurements
 - [ ] Codec, DASH/HLS, quality, remote player controls, expiry recovery

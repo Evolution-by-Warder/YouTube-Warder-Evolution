@@ -108,6 +108,27 @@ class ResolverTests(unittest.TestCase):
                 "abcdefghijk", which=lambda n: "/usr/bin/yt-dlp", runner=runner
             )
 
+    def test_bounded_video_quality(self):
+        self.assertEqual(set(resolver.QUALITY_FORMATS), {"360", "720"})
+        for quality in ("360", "720"):
+            format_string = resolver.QUALITY_FORMATS[quality]
+            self.assertIn("height<=" + quality, format_string)
+            self.assertNotIn("+", format_string)
+        seen = []
+        def runner(args, **kwargs):
+            seen.append(args)
+            return FakeCompleted(GOOGLEVIDEO + "\n")
+        result = resolver.resolve_video_url(
+            "abcdefghijk", quality="360", runner=runner,
+            which=lambda _: "/usr/bin/yt-dlp"
+        )
+        self.assertEqual(result, GOOGLEVIDEO)
+        self.assertIn("height<=360", seen[0][seen[0].index("-f") + 1])
+        with self.assertRaisesRegex(resolver.ResolverError, "quality"):
+            resolver.resolve_video_url("abcdefghijk", quality="1080",
+                runner=lambda *a, **kw: self.fail("must not execute"),
+                which=lambda _: "/usr/bin/yt-dlp")
+
     def test_format_is_muxed_not_dash_separate(self):
         self.assertIn("acodec!=none", resolver.MUXED_MP4_FORMAT)
         self.assertIn("height<=720", resolver.MUXED_MP4_FORMAT)

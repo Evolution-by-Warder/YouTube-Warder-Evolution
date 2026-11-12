@@ -1,6 +1,6 @@
 # YouTube – Warder Evolution
 
-**Status: 0.0.6-dev.** Lightweight blue YouTube plugin for Enigma2, under active development.
+**Status: 0.0.7-dev.** Lightweight blue YouTube plugin for Enigma2, under active development.
 
 ## What is implemented in source
 
@@ -10,6 +10,7 @@
 - On-demand **INFO** button for title, channel, video duration, views and description (YouTube videos.list; user API key required).
 - Asynchronous resolver: **optional external yt-dlp** converts a video ID to a single muxed MP4 stream URL off the GUI thread, when available.
 - An experimental native Enigma2 MoviePlayer adapter attempts playback of resolved HTTPS streams and returns to the previous TV service on exit.
+- **360p/720p maximum MP4 quality**, toggled by BLUE in Settings, with no additional renderer or dependencies.
 - Defensive input checks, bounded subprocess timeout, URL checks and automated mocked tests.
 - Native **3×2 video grid** with six static image widgets, blue focus, remote navigation, and bounded thumbnail downloads. Experimental and not receiver-validated.
 

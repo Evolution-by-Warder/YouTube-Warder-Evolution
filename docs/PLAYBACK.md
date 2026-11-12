@@ -29,3 +29,20 @@ We inspected Taapat and Fairbird: both open Enigma2 MoviePlayer with an eService
 8. Record startup time, remote key response, memory, CPU and source/installed size.
 
 Never suggest piping remote shell scripts into root as a prerequisite. Do not automatically install dependencies. Do not claim the plugin is production ready until hardware trials pass.
+
+
+## 0.0.7-dev: Quality policy and external extraction checkpoint
+
+BLUE in Settings switches the maximum muxed-MP4 video height between **360p and
+720p** (default 720p). The H.264-first format selector never intentionally
+requests a stream above the configured cap. Unsupported formats produce a
+clear error, not silent 1080p fallback or unbounded memory use.
+
+The real GitHub-hosted test on 12 November 2026 using yt-dlp 2026.10.26 did
+**not** obtain a playable stream. The first public candidate was blocked by
+YouTube anti-bot verification and a second failed for an unclassified reason:
+https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/actions/runs/43248897701
+
+**Status: INCONCLUSIVE; NOT a playback PASS.** Hosted-runner restrictions are
+not conclusive for a residential receiver. The test did not download media or
+log signed URLs. The receiver GStreamer path still requires live validation.
