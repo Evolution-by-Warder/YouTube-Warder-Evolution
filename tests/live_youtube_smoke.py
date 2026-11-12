@@ -45,6 +45,14 @@ def run():
             return 1
         print("PASS: real YouTube search returned %d valid videos." % len(videos))
 
+        metadata = load_module("video_metadata")
+        details = metadata.fetch_video_info(videos[0]["video_id"], key)
+        if (details.get("video_id") != videos[0]["video_id"]
+                or not details.get("title") or not details.get("duration")):
+            print("FAIL: real YouTube video metadata is incomplete.")
+            return 1
+        print("PASS: real video details resolved through YouTube videos.list.")
+
         image_urls = [item["thumbnail_url"] for item in videos if item.get("thumbnail_url")]
         if not image_urls:
             print("FAIL: search results returned no usable thumbnail URLs.")

@@ -11,6 +11,7 @@ on:
       - tests/live_youtube_smoke.py
       - plugin/Plugins/Extensions/WarderYouTube/api.py
       - plugin/Plugins/Extensions/WarderYouTube/thumbnails.py
+      - plugin/Plugins/Extensions/WarderYouTube/video_metadata.py
   workflow_dispatch:
 
 permissions:

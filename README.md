@@ -1,12 +1,13 @@
 # YouTube – Warder Evolution
 
-**Status: 0.0.5-dev.** Lightweight blue YouTube plugin for Enigma2, under active development.
+**Status: 0.0.6-dev.** Lightweight blue YouTube plugin for Enigma2, under active development.
 
 ## What is implemented in source
 
 - Native Enigma2 Home, Search, Settings and search results; no web browser or heavy renderer.
 - Keyboard-based search via your own YouTube Data API v3 key, or optional installed yt-dlp **without** a key.
 - 15 real video titles/channels per page; next-page and error handling.
+- On-demand **INFO** button for title, channel, video duration, views and description (YouTube videos.list; user API key required).
 - Asynchronous resolver: **optional external yt-dlp** converts a video ID to a single muxed MP4 stream URL off the GUI thread, when available.
 - An experimental native Enigma2 MoviePlayer adapter attempts playback of resolved HTTPS streams and returns to the previous TV service on exit.
 - Defensive input checks, bounded subprocess timeout, URL checks and automated mocked tests.
@@ -25,7 +26,7 @@
 
 - Search uses your own API key when configured. Without a key, the already-installed yt-dlp command can search up to 60 results (4 × 15). No shared key or extractor is shipped. Enigma2 stores any configured key **unencrypted**, so do not share settings files.
 - Playback additionally requires yt-dlp installed separately and accessible on PATH, plus compatible codecs.
-- [Thumbnail guide](docs/THUMBNAILS.md) · [Search guide](docs/SEARCH.md) · [Playback guide](docs/PLAYBACK.md) · [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
+- [Video metadata](docs/VIDEO_INFO.md) · [Thumbnail guide](docs/THUMBNAILS.md) · [Search guide](docs/SEARCH.md) · [Playback guide](docs/PLAYBACK.md) · [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
 - Run: python3 -m unittest discover -s tests -v
 
 Ideas to compare and assimilate: [Taapat](https://github.com/Taapat/enigma2-plugin-youtube), [Fairbird](https://github.com/fairbird/Youtube-Opensource-DreamOS), YouTubeMod and [yt-dlp](https://github.com/yt-dlp/yt-dlp). Source attribution and code redistribution requirements are respected.

@@ -15,6 +15,9 @@
 - [ ] Validate on OpenATV 7.6/8.1 and OpenPLi 9.2
 - [ ] Internationalize user-visible text via locale catalogues
 - [x] Implement optional yt-dlp public search without a Google API key
+- [x] On-demand INFO button: metadata from videos.list, async worker and native MessageBox
+- [x] Live search/thumbnail test with repository Actions secret
+- [ ] Receiver test for INFO and video metadata
 - [ ] Validate no-key search with an installed yt-dlp on supported receivers
 
 ## Phase 2 — graphics and usability
