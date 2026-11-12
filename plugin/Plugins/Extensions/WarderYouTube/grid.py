@@ -80,12 +80,38 @@ class WarderYouTubeGrid(Screen):
         try:
             self._picload = ePicLoad()
             self._picload.PictureData.get().append(self._decode_finished)
-            self._picload.setPara((THUMB_WIDTH, THUMB_HEIGHT, 1, 1, False, 1, "#00000000"))
+            self._picload.setPara(self._decode_parameters())
         except Exception:
             # Titles and remote navigation still work when this image cannot
             # initialize the built-in decoder. No extra renderer dependency.
             self._picload = None
         self._render_page()
+
+    def _decode_parameters(self):
+        """Follow the Enigma2 thumbnail pattern from Taapat YouTube.
+
+        Use the actual scaled Pixmap dimensions and AVSwitch framebuffer
+        ratio when present. Keep conservative defaults for older images.
+        """
+        width, height = THUMB_WIDTH, THUMB_HEIGHT
+        try:
+            widget = self["thumb0"]
+            actual = widget.getSize() if getattr(widget, "instance", None) else None
+            if (actual and len(actual) == 2 and 0 < actual[0] <= 4096
+                    and 0 < actual[1] <= 2160):
+                width, height = int(actual[0]), int(actual[1])
+        except (AttributeError, TypeError, ValueError, RuntimeError):
+            pass
+        scale_x, scale_y = 1, 1
+        try:
+            from Components.AVSwitch import AVSwitch
+            scale = AVSwitch().getFramebufferScale()
+            if (isinstance(scale, (tuple, list)) and len(scale) == 2
+                    and all(isinstance(n, int) and 0 < n <= 16 for n in scale)):
+                scale_x, scale_y = scale
+        except (ImportError, AttributeError, TypeError, ValueError, RuntimeError):
+            pass
+        return (width, height, scale_x, scale_y, False, 1, "#00000000")
 
     def _mark_closed(self):
         self._closed = True

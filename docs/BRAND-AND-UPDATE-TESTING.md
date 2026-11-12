@@ -13,3 +13,13 @@ On OpenATV 8.1, Search for "adel" succeeds and shows 15 items, but card thumbnai
 ## Warder Radio proven playback architecture reuse (source only)
 
 The Radio Warder Evolution receiver-confirmed YouTube implementation uses native MoviePlayer, backend 4097 (GStreamer), registered 5002 (Exteplayer3 DASH video+audio), HLS and up to eight candidate streams with safe return to previous service. Source adapted here as an **independent plugin implementation**, bundling the pinned GPL-2.0 extractor/interpreter, preserved COPYING.GPLv2 and NOTICE. Radio plugin itself is unmodified and is not a dependency. Primary resolution is the bounded Radio-derived extractor (360/720 MP4 preference, adaptive HLS fallback); installed yt-dlp remains a fallback when the Radio client fails. Only source is committed in Draft PR; no new IPK or public release and nothing is receiver-verified in YouTube Warder yet.
+
+## Third-party YouTube git1296 IPK audit (2026-11-12)
+
+User-supplied archive `enigma2-plugin-extensions-youtube_git1296_cortexa15hf-neon-vfpv4(1).ip` inspected offline only, never installed. Debian package `enigma2-plugin-extensions-youtube`, version `git1296+15a7fba0+15a7fba89b-r0`, architecture `cortexa15hf-neon-vfpv4`, declared license GPL-2.0-or-later. Its `data.tar.zst` bundles compiled Python modules (`YouTubeVideoUrl.pyc`, `YouTubeUi.pyc`, `YouTubeSearch.pyc`, etc.), PNG/SVG assets, 19 localization catalogues and `/etc/enigma2/YouTube.key` (not copied or disclosed).
+
+Source provenance matches pinned upstream `Taapat/enigma2-plugin-youtube` commit `15a7fba89b63476177ac083b032ee499262f64fb`, already used as source attribution by our Warder Radio YouTube engine. **Do not copy the compiled .pyc binaries**. Keep the Radio-derived GPL-2.0 source and notices already bundled in the development branch.
+
+Useful new Enigma2 detail: upstream `YouTubeUi.py` uses `AVSwitch().getFramebufferScale()` and the actual thumbnail Pixmap dimensions when invoking `ePicLoad.setPara`. Our video grid now follows that approach with bounded, safe defaults; JPEG thumbnail normalization is already in place. Screen source also documents localization, native playback controls, and backend selection; those require separate feature work and real-receiver validation.
+
+Exclude the package's `YouTube.key`, OAuth flows, upstream resume-position `eval`, download tasks, or incompatible configuration/skin overrides. No external dependencies installed, no production merge, and no new IPK. This is an offline source-review and development improvement, not a receiver playback/thumbnail PASS.

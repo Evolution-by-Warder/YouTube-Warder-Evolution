@@ -66,11 +66,13 @@ class FakeDeferred:
 
 
 class TestNativeGrid(unittest.TestCase):
-    def load_grid(self, requests):
+    def load_grid(self, requests, framebuffer=(1, 1)):
         fake_enigma = types.ModuleType("enigma")
         fake_enigma.ePicLoad = FakePicLoad
 
         components = types.ModuleType("Components")
+        avswitch = types.ModuleType("Components.AVSwitch")
+        avswitch.AVSwitch = lambda: types.SimpleNamespace(getFramebufferScale=lambda: framebuffer)
         components.__path__ = []
         action = types.ModuleType("Components.ActionMap")
         action.ActionMap = lambda *args, **kwargs: Widget()
@@ -101,6 +103,7 @@ class TestNativeGrid(unittest.TestCase):
         modules = {
             "enigma": fake_enigma,
             "Components": components,
+            "Components.AVSwitch": avswitch,
             "Components.ActionMap": action,
             "Components.Label": label,
             "Components.Pixmap": pixmap,
@@ -137,6 +140,21 @@ class TestNativeGrid(unittest.TestCase):
         self.assertEqual(len(grid.video_items), 1)
         grid.close()
         self.assertTrue(callable(grid.items))
+
+    def test_thumbnail_decode_uses_framebuffer_scale(self):
+        jobs = []
+        mod = self.load_grid(jobs, framebuffer=(4, 3))
+        g = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
+        g._layout_ready()
+        self.assertEqual(g._picload.parameters[:4], (476, 249, 4, 3))
+        self.assertTrue(callable(g.items))
+
+    def test_invalid_framebuffer_scale_falls_back_safely(self):
+        jobs = []
+        mod = self.load_grid(jobs, framebuffer=(0, -1))
+        g = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
+        g._layout_ready()
+        self.assertEqual(g._picload.parameters[:4], (476, 249, 1, 1))
 
     def test_visible_six_and_stale_callback_discard(self):
         jobs = []
