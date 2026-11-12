@@ -72,3 +72,9 @@ After the GigaBlue Quad 4K Pro / OpenATV 8.1 receiver screenshots, the owner exp
 ### Owner follow-up — EXIT navigation (2026-11-12)
 
 The owner explicitly reports that returning after EXIT is **working so far** on the GigaBlue Quad 4K Pro / OpenATV 8.1. This is a positive real-device navigation observation in addition to confirmed Adele video, sound and preview thumbnails. The exact EXIT sequence/destination and restoration of the original live DVB service were not specified, so mark those finer details as **not independently confirmed**. Keep prolonged stability and in-plugin update check pending. No new IPK or stable release authorized.
+
+### Owner follow-up — live TV service during plugin browsing (2026-11-12)
+
+On GigaBlue Quad 4K Pro / OpenATV 8.1, the owner reports: when opening YouTube Warder Evolution, the previously tuned **TV channel continues playing in the background and its audio remains audible while browsing the plugin**. When the plugin is closed, **that channel's video picture reappears**. This is real-device confirmation that closing the plugin returns to the existing live TV picture without requiring a retune. The background TV audio is an observed UX behavior, not evidence that video playback inside the plugin is broken, and not a requested behavior change.
+
+Do not mute/stop the TV service automatically without a separate product decision. In particular, avoid changing native MoviePlayer previous-service ownership/restoration. Video sound, thumbnails and EXIT had been reported working; longer-duration playback, multi-video transitions and the opt-in updater on a receiver remain pending. Keep Draft PR unmerged; no new IPK or stable release.
