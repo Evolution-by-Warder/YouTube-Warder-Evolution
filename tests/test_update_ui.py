@@ -171,14 +171,37 @@ class UpdateUiTests(unittest.TestCase):
         screen = ui.WarderYouTubeUpdateCheck(session)
         screen.found(sample_release())
         screen.ask_install()
+        screen.ask_install()  # double OK/green cannot open another confirmation
         self.assertEqual(len(session.modal_calls), 1)
         callback = session.modal_calls[0][0]
         callback(False)
         self.assertEqual(session.opens, [])
-        callback(True)
-        self.assertEqual(len(session.opens), 1)
-        self.assertIs(session.opens[0][0], ui.WarderYouTubeUpdateProgress)
-        self.assertEqual(session.opens[0][1][0]["version"], "0.0.8~test6")
+        callback(True)  # stale duplicate confirmation cannot install
+        self.assertEqual(len(session.modal_calls), 1)
+        screen.ask_install()
+        self.assertEqual(len(session.modal_calls), 2)
+        session.modal_calls[-1][0](True)
+        self.assertEqual(len(session.modal_calls), 3)
+        self.assertIs(session.modal_calls[-1][1], ui.WarderYouTubeUpdateProgress)
+        self.assertEqual(session.modal_calls[-1][2][0]["version"], "0.0.8~test6")
+        screen.ask_install()  # progress dialog already open; no second install
+        screen.install_confirmed(True)
+        self.assertEqual(len(session.modal_calls), 3)
+        session.modal_calls[-1][0]()  # progress window closed
+        self.assertFalse(screen.install_started)
+        screen.ask_install()  # now a future retry can ask again
+        self.assertEqual(len(session.modal_calls), 4)
+
+    def test_updater_confirmation_open_error_fails_without_install(self):
+        ui, jobs, _ = load_updater()
+        session = Session()
+        screen = ui.WarderYouTubeUpdateCheck(session)
+        screen.found(sample_release())
+        session.openWithCallback = lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("Secret URL"))
+        screen.ask_install()
+        self.assertFalse(screen.confirmation_open)
+        self.assertFalse(screen.install_started)
+        self.assertNotIn("Secret", screen["status"].text)
 
     def test_closed_check_rejects_late_worker_and_confirmation(self):
         ui, jobs, _ = load_updater()

@@ -188,6 +188,35 @@ class SearchModalRegressionTests(unittest.TestCase):
         screen.playback_finished(True)
         self.assertFalse(screen.playback_active)
 
+    def test_search_menu_toggles_favourite_without_remote_network(self):
+        source = load_search(api_key="", have_ytdlp=False)
+        screen = source.WarderYouTubeSearch(FakeSession())
+        screen.video_items = [{"video_id": "abcdefghijk", "title": "Adele", "channel": "Adele"}]
+        saved = []
+        source.toggle_favourite = lambda video: saved.append(video["video_id"]) or True
+        screen.favorite_selected()
+        self.assertEqual(saved, ["abcdefghijk"])
+        self.assertIn("Pridané do obľúbených", screen["status"].text)
+
+    def test_search_records_history_after_player_launch_not_on_error(self):
+        source = load_search()
+        screen = source.WarderYouTubeSearch(FakeSession())
+        recorded = []
+        source.record_opened = lambda video: recorded.append(video["video_id"])
+        video = {"video_id": "abcdefghijk", "title": "Adele"}
+        player = module("_warder_modal.player", open_player=lambda *args, **kwargs: None)
+        with patch.dict(sys.modules, {"_warder_modal.player": player}):
+            screen.play_resolved(0, video, [{"url": "https://rr1.googlevideo.com/file", "service_type": 4097}])
+        self.assertEqual(recorded, ["abcdefghijk"])
+        screen.playback_finished(False)
+        def fail(*args, **kwargs):
+            raise RuntimeError("Signed playback token")
+        player.open_player = fail
+        with patch.dict(sys.modules, {"_warder_modal.player": player}):
+            screen.play_resolved(0, video, [{"url": "https://rr1.googlevideo.com/file", "service_type": 4097}])
+        self.assertEqual(recorded, ["abcdefghijk"])
+        self.assertFalse(screen.playback_active)
+
     def test_keyboard_is_never_opened_during_layout(self):
         source = load_search()
         session = FakeSession()

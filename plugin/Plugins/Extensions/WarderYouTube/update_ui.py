@@ -127,6 +127,8 @@ class WarderYouTubeUpdateCheck(Screen):
         self.started = False
         self.disposed = False
         self.release = None
+        self.confirmation_open = False
+        self.install_started = False
         self["title"] = Label("YouTube Warder Evolution / Aktualizácie")
         self["status"] = Label("Kontrola testovacieho aktualizačného kanála...")
         self["detail"] = Label("Aktuálna verzia: " + CURRENT_VERSION)
@@ -168,17 +170,41 @@ class WarderYouTubeUpdateCheck(Screen):
         self["footer"].setText("EXIT: späť")
 
     def ask_install(self):
-        if self.disposed or self.release is None:
+        if (self.disposed or self.release is None or
+                self.confirmation_open or self.install_started):
             return
-        self.session.openWithCallback(
-            self.install_confirmed, MessageBox,
-            "Nainštalovať overenú verziu %s? Po úspechu sa obnoví iba GUI Enigma2." % self.release["version"],
-            type=MessageBox.TYPE_YESNO, default=False
-        )
+        self.confirmation_open = True
+        try:
+            self.session.openWithCallback(
+                self.install_confirmed, MessageBox,
+                "Nainštalovať overenú verziu %s? Po úspechu sa obnoví iba GUI Enigma2." % self.release["version"],
+                type=MessageBox.TYPE_YESNO, default=False
+            )
+        except Exception:
+            self.confirmation_open = False
+            self["status"].setText("Potvrdenie aktualizácie sa nepodarilo otvoriť.")
 
     def install_confirmed(self, confirmed):
-        if confirmed and not self.disposed and self.release is not None:
-            self.session.open(WarderYouTubeUpdateProgress, self.release)
+        if self.disposed or not self.confirmation_open:
+            return
+        self.confirmation_open = False
+        if not confirmed or self.release is None or self.install_started:
+            return
+        self.install_started = True
+        try:
+            # Prevent a second installation while the first progress dialog
+            # is still active; unlock only after that dialog actually closes.
+            self.session.openWithCallback(
+                self.progress_closed, WarderYouTubeUpdateProgress, self.release)
+        except Exception:
+            self.install_started = False
+            self["status"].setText("Inštalátor aktualizácie sa nepodarilo otvoriť.")
+
+    def progress_closed(self, *args):
+        self.install_started = False
+        if not self.disposed:
+            self["status"].setText("Inštalačné okno bolo zatvorené.")
 
     def dispose(self):
         self.disposed = True
+        self.confirmation_open = False
