@@ -2,6 +2,8 @@
 from pathlib import Path
 import sys
 import types
+import threading
+import time
 import unittest
 
 EXT = Path(__file__).resolve().parents[1] / "plugin/Plugins/Extensions"
@@ -40,6 +42,49 @@ class RadioEngineIntegrationTests(unittest.TestCase):
                           resolver_factory=FakeResolver,transport_factory=FakeNetwork)
         self.assertEqual(len(result),2)
         self.assertTrue(all(x["service_type"]==4097 for x in result))
+
+    def test_parallel_quality_requests_do_not_mix_settings(self):
+        from WarderYouTube.youtube_engine.settings import config
+        results = []
+        errors = []
+        initial = config.plugins.YouTube.maxResolution.value
+
+        def worker(quality, expected):
+            class Resolver:
+                playback_urls = []
+                def extract(self, video_id):
+                    before = config.plugins.YouTube.maxResolution.value
+                    time.sleep(0.02)
+                    after = config.plugins.YouTube.maxResolution.value
+                    results.append((expected, before, after))
+                    return "https://rr1.googlevideo.com/video"
+            try:
+                radio_streams.extract_candidates("abcdefghijk", quality=quality,
+                    resolver_factory=Resolver, transport_factory=FakeNetwork)
+            except Exception as exc:
+                errors.append(str(type(exc)))
+
+        one = threading.Thread(target=worker, args=("360", "18"))
+        two = threading.Thread(target=worker, args=("720", "22"))
+        one.start(); two.start()
+        one.join(timeout=2); two.join(timeout=2)
+        self.assertFalse(one.is_alive() or two.is_alive())
+        self.assertEqual(errors, [])
+        self.assertCountEqual([x[0] for x in results], ["18", "22"])
+        self.assertTrue(all(expected == before == after for expected, before, after in results))
+        self.assertEqual(config.plugins.YouTube.maxResolution.value, initial)
+
+    def test_resolver_exception_restores_original_quality(self):
+        from WarderYouTube.youtube_engine.settings import config
+        initial = config.plugins.YouTube.maxResolution.value
+        class BrokenResolver:
+            playback_urls = []
+            def extract(self, video_id):
+                raise RuntimeError("test-only failure")
+        with self.assertRaises(RuntimeError):
+            radio_streams.extract_candidates("abcdefghijk", quality="360",
+                resolver_factory=BrokenResolver, transport_factory=FakeNetwork)
+        self.assertEqual(config.plugins.YouTube.maxResolution.value, initial)
 
     def test_reject_url_and_quality(self):
         for u in ("http://rr1.googlevideo.com/video",

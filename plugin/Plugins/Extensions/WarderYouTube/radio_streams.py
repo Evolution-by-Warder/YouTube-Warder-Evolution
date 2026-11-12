@@ -7,6 +7,7 @@ under youtube_engine/. Called only from a worker, never from the GUI thread.
 import json
 import ssl
 import time
+from threading import Lock
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
@@ -15,6 +16,9 @@ from .youtube_engine.settings import config
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130.0 Safari/537.36"
 MAX_RESPONSE_BYTES = 3 * 1024 * 1024
 LIMIT = 8
+# The borrowed extractor uses global, plugin-local quality settings and a
+# global priority table. Serialize just extraction, never Enigma2 GUI work.
+EXTRACTOR_LOCK = Lock()
 
 
 def allowed_origin(url, media=False):
@@ -86,16 +90,17 @@ def extract_candidates(video_id, quality="720", dash=False,
     if resolver_factory is None:
         from .youtube_engine.extractor import YouTubeVideoUrl
         resolver_factory = YouTubeVideoUrl
-    previous_quality = config.plugins.YouTube.maxResolution.value
-    config.plugins.YouTube.maxResolution.value = "18" if quality == "360" else "22"
-    try:
-        resolver = resolver_factory()
-        resolver.enable_dash = bool(dash)
-        resolver._download_webpage = transport_factory().page
-        first = resolver.extract(video_id)
-        candidates = [first] + list(getattr(resolver, "playback_urls", []))
-    finally:
-        config.plugins.YouTube.maxResolution.value = previous_quality
+    with EXTRACTOR_LOCK:
+        previous_quality = config.plugins.YouTube.maxResolution.value
+        config.plugins.YouTube.maxResolution.value = "18" if quality == "360" else "22"
+        try:
+            resolver = resolver_factory()
+            resolver.enable_dash = bool(dash)
+            resolver._download_webpage = transport_factory().page
+            first = resolver.extract(video_id)
+            candidates = [first] + list(getattr(resolver, "playback_urls", []))
+        finally:
+            config.plugins.YouTube.maxResolution.value = previous_quality
     result, seen = [], set()
     for url in candidates:
         if not isinstance(url, str) or url in seen:

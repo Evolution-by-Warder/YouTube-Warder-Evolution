@@ -23,3 +23,10 @@ Source provenance matches pinned upstream `Taapat/enigma2-plugin-youtube` commit
 Useful new Enigma2 detail: upstream `YouTubeUi.py` uses `AVSwitch().getFramebufferScale()` and the actual thumbnail Pixmap dimensions when invoking `ePicLoad.setPara`. Our video grid now follows that approach with bounded, safe defaults; JPEG thumbnail normalization is already in place. Screen source also documents localization, native playback controls, and backend selection; those require separate feature work and real-receiver validation.
 
 Exclude the package's `YouTube.key`, OAuth flows, upstream resume-position `eval`, download tasks, or incompatible configuration/skin overrides. No external dependencies installed, no production merge, and no new IPK. This is an offline source-review and development improvement, not a receiver playback/thumbnail PASS.
+
+## Next source-only playback hardening (2026-11-12)
+
+- **Concurrent quality safety:** serialize the Radio-derived extractor while it temporarily changes plugin-local shared quality settings and its global format table. Restore the previous resolution even when resolution fails. Added paired worker regression tests for 360/720 and exception recovery; workers do not touch Enigma2 widgets.
+- **Actual playback feedback:** native MoviePlayer final failure now reports that all candidate streams failed, instead of falsely showing a normal exit. Successful close and failure differ in the on-screen state. Video status now correctly mentions MP4/HLS/DASH rather than only MP4.
+- **Media URL guard:** reject nonstandard HTTPS ports from the yt-dlp fallback.
+- Source-only changes in Draft PR. Receiver testing remains required, no test IPK or stable release issued.

@@ -58,7 +58,8 @@ def validate_stream_url(url):
         host = (parsed.hostname or "").lower()
         if (parsed.scheme.lower() != "https"
                 or not (host == "googlevideo.com" or host.endswith(".googlevideo.com"))
-                or parsed.username is not None or parsed.password is not None):
+                or parsed.username is not None or parsed.password is not None
+                or parsed.port not in (None, 443)):
             raise ResolverError("The resolver did not return a supported HTTPS video stream.")
     except ValueError:
         raise ResolverError("The resolver returned an invalid media URL.")

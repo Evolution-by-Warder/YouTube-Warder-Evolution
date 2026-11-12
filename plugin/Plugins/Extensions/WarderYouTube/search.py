@@ -288,7 +288,7 @@ class WarderYouTubeSearch(Screen):
         self.busy = True
         self.request_version += 1
         version = self.request_version
-        self.show_play_status("Hľadám kompatibilný MP4 stream (najviac 720p)...")
+        self.show_play_status("Hľadám video stream (MP4 / HLS / DASH)...")
         from .player import dash_available
         deferred = deferToThread(
             resolve_video_streams, video["video_id"],
@@ -304,7 +304,7 @@ class WarderYouTubeSearch(Screen):
             return
         self.busy = False
         self.show_play_status(
-            "Opening Enigma2 player (experimental); EXIT returns to search."
+            "Otváram prehrávač Enigma2. EXIT: návrat k videám."
         )
         try:
             # Do not import MoviePlayer until a stream was actually resolved.
@@ -331,8 +331,15 @@ class WarderYouTubeSearch(Screen):
                 "Unexpected stream resolution error. Try another video."
             )
 
-    def playback_finished(self, *args):
-        if not self.closed:
+    def playback_finished(self, failed=False, *args):
+        if self.closed:
+            return
+        if failed is True:
             self.show_play_status(
-                "Returned from player. Press OK for another video."
+                "Video sa nepodarilo prehrať ani záložnými streamami. "
+                "Skúste iné video alebo kvalitu 360p."
+            )
+        else:
+            self.show_play_status(
+                "Prehrávanie ukončené. OK: ďalšie video."
             )

@@ -133,6 +133,17 @@ class SearchModalRegressionTests(unittest.TestCase):
         self.assertIn("results", dict(screen.items()))
         self.assertEqual(screen.video_items, [])
 
+    def test_playback_failure_and_normal_exit_have_distinct_status(self):
+        source = load_search(api_key="", have_ytdlp=False)
+        screen = source.WarderYouTubeSearch(FakeSession())
+        screen.playback_finished(True)
+        self.assertIn("nepodarilo prehrať", screen["status"].text)
+        screen.playback_finished(False)
+        self.assertIn("Prehrávanie ukončené", screen["status"].text)
+        screen.mark_closed()
+        screen.playback_finished(True)
+        self.assertIn("Prehrávanie ukončené", screen["status"].text)
+
     def test_keyboard_is_never_opened_during_layout(self):
         source = load_search()
         session = FakeSession()

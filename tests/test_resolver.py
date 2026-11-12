@@ -70,6 +70,7 @@ class ResolverTests(unittest.TestCase):
             "http://rr1.googlevideo.com/test",
             "https://googlevideo.com.evil.example/watch",
             "https://localhost/test",
+            "https://rr1.googlevideo.com:8443/videoplayback",
             "https://127.0.0.1/videoplayback",
             "file:///etc/passwd",
             "https://example.com/video.mp4",
