@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test4",
-    "tag": "youtube-warder-v0.0.8-test4",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test4/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test4_all.ipk",
-    "sha256": "c220c38de26e3695adfb5958b1a111568a6df77b282adcaaabaebb31ff944fb8",
-    "bytes": 62206,
-    "notes": "Test4: natívne prehrávanie cez rádio/HLS/DASH, náhľady a EXIT. Testované v CI, nie na prijímači."
+    "version": "0.0.8~test5",
+    "tag": "youtube-warder-v0.0.8-test5",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test5/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test5_all.ipk",
+    "sha256": "1c172b9c968345c6cf35f1cfc13174641c04d20c7f98cabe3c929485410073ae",
+    "bytes": 62210,
+    "notes": "Test5: oprava priameho aktualizátora, HLS/DASH/MP4, náhľady a bezpečný EXIT. Test na prijímači ešte potrebný."
   }
 }
