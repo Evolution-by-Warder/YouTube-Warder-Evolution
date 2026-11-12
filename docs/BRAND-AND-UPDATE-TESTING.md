@@ -50,3 +50,17 @@ Search now tracks `playback_active` independently from worker `busy`. While the 
 ## In-plugin testing feed download fix
 
 GitHub Releases silently replaces `~` with `.` in uploaded release asset names. The installed 0.0.8~test3 updater expects `~`, so it cannot retrieve test4 from a prerelease even though the manifest and digest are correct. An update to 0.0.8~test5 uses the normalized dotted URL, while preserving the `~test5` version in the signed IPK control metadata and `opkg` version comparisons. This requires a one-time manual bridge install from test3 to test5; subsequent GitHub Releases-based opt-in testing updates will be recognized. The stable feed, skin and radio plugin are unchanged. Do not publish until package/CI verifications pass.
+
+## GigaBlue Quad 4K Pro / OpenATV 8.1 — receiver screenshots after test5 (2026-11-12)
+
+User supplied three receiver screenshots after being given the 0.0.8~test5 receiver package. The screenshots do not display the installed package version, so test5 is inferred from sequence, not independently read from device.
+
+**Confirmed visually:**
+- YouTube Search results for Adele rendered a 3x2 page of six actual JPEG thumbnails, correctly associated with titled video cards and working selection highlight. This resolves the previously observed empty preview cards in 0.0.8~test3.
+- Native Enigma2 MoviePlayer displayed the actual opening video image for "Adele - Someone Like You (Official Music Video)" and the skin's own playback InfoBar.
+- Native InfoBar reported 1920x1080 video, 16:9, a total duration of 4:44, and an AC3 indicator. A screenshot cannot independently confirm audible sound, continuous playback, seeking, or absence of buffering.
+- The video grid is also visible on the third screenshot. The sequence is consistent with returning to the results, but the precise key pressed, restoration of live TV service, and EXIT behavior are not independently proven by still images.
+
+**Remaining receiver checks:** audio actually plays; several different Adele videos play through to at least a few seconds; EXIT from MoviePlayer returns to the grid with the previous selection retained; EXIT from the grid returns to Home instead of the old text list; original DVB service restores when leaving the plugin; INFO and navigation remain responsive; Settings > Updates checks the testing manifest but does not auto-install without on-screen permission. Note the small lone '>' glyph at upper left in the player screenshot for later cosmetic assessment; do not alter native skin until reproduced.
+
+**Do not claim** full functional PASS or stable-release readiness solely from these images. These are valuable hardware evidence of thumbnails and successful video-frame rendering, not complete audio/exit/updater verification. No further IPK, merge or stable release authorized.
