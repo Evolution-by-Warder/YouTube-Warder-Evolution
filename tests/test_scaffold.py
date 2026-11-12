@@ -26,7 +26,7 @@ class Tests(unittest.TestCase):
     def test_no_fake_youtube(self):
         readme = (ROOT / "README.md").read_text().lower()
         self.assertIn("not working yet", readme)
-        self.assertIn("actual playback", readme)
+        self.assertIn("playback is experimental", readme)
         self.assertIn("no ipk release", readme)
         self.assertIn("this section is planned", (SRC / "ui.py").read_text().lower())
         self.assertIn("fairbird", (ROOT / "docs/ASSIMILATION.md").read_text())

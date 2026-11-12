@@ -26,7 +26,8 @@ class UiTests(unittest.TestCase):
 
     def test_worker_used_for_network(self):
         source = (PKG / "search.py").read_text(encoding="utf-8")
-        self.assertIn("deferToThread(search_videos", source)
+        self.assertIn("deferToThread(", source)
+        self.assertIn("search_videos, self.query", source)
         self.assertIn("self.closed", source)
         self.assertIn("request_version", source)
 
