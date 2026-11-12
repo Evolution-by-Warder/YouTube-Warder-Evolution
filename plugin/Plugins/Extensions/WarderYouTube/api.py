@@ -9,7 +9,7 @@ import json
 import re
 
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode, urlparse
+from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 SEARCH_ENDPOINT = "https://www.googleapis.com/youtube/v3/search"
@@ -43,14 +43,11 @@ def parse_search_response(payload):
         snippet = item.get("snippet")
         if not isinstance(snippet, dict):
             continue
-        images = snippet.get("thumbnails") or {}
-        thumb = images.get("medium") or images.get("default") or {}
-        thumb_url = thumb.get("url", "") if isinstance(thumb, dict) else ""
-        if not isinstance(thumb_url, str):
-            thumb_url = ""
-        parsed_url = urlparse(thumb_url)
-        if parsed_url.scheme != "https" or parsed_url.hostname not in ("i.ytimg.com", "img.youtube.com"):
-            thumb_url = ""
+        # Use a canonical JPEG on the official YouTube image host. Some API
+        # snippets return missing, redirected or WebP thumbnails which the
+        # receiver's native ePicLoad cannot reliably decode. A validated ID
+        # fixes the origin and avoids passing untrusted URLs to the downloader.
+        thumb_url = "https://i.ytimg.com/vi/%s/mqdefault.jpg" % video_id
         title = html.unescape(str(snippet.get("title") or "Untitled video"))[:200]
         channel = html.unescape(str(snippet.get("channelTitle") or ""))[:120]
         items.append({

@@ -38,3 +38,7 @@ Both OpenATV's legacy ePicLoad PictureData.get().append and newer PictureData.co
 ## Thumbnail failure diagnostics / playback status protection (source-only)
 
 A page may contain 0–6 thumbnails. The native grid now reports download failures separately from ePicLoad decoder failures, including partial success counts (for example `Náhľady 1/2 (sieť: 1, dekodér: 0)`). No URLs, signatures, exception reprs or API keys are exposed. A late thumbnail failure cannot overwrite an active video-resolution/playback/INFO message. User navigation resets the temporary override. Worker limits and native ePicLoad policy are unchanged. Added three mocked regression tests; receiver hardware remains unverified. No new IPK was generated.
+
+## Page-switch thumbnail consistency / API JPEG normalization — 12 Nov 2026
+
+Per-page thumbnail status now checks only active downloads belonging to the currently visible page. Old workers still count toward the global two-worker network limit but cannot suppress current-page completion/error diagnostics. Stale decodes from a previous page are discarded and only the single ePicLoad decoder is used. Official YouTube Data API search results now normalize thumbnails to `https://i.ytimg.com/vi/<validated-id>/mqdefault.jpg`, as the yt-dlp backend already does; this avoids untrusted/unsupported WebP sources and empty tiles when the snippet lacks a thumbnail URL. Added mock tests for rapid page switching, stale network/decode callbacks and canonical JPEG URL handling. No new IPK, release or merge.

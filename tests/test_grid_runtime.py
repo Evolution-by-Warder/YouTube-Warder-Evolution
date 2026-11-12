@@ -332,6 +332,47 @@ class TestNativeGrid(unittest.TestCase):
         self.assertIn("dekodér: 1", g["status"].text)
         self.assertIn("sieť: 0", g["status"].text)
 
+    def test_stale_network_worker_does_not_block_new_page_diagnostics(self):
+        jobs = []
+        mod = self.load_grid(jobs)
+        g = mod.WarderYouTubeGrid(None, [self.video(i) for i in range(7)], "test")
+        g._layout_ready()
+        self.assertEqual(len(jobs), 2)
+        g.next_page()
+        self.assertEqual(g.selected, 6)
+        self.assertEqual(len(jobs), 2)  # Two old workers still running.
+        jobs[0][1].failure(Exception("old failure"))
+        self.assertEqual(len(jobs), 3)
+        jobs[2][1].failure(Exception("new failure"))
+        self.assertIn("sieť: 1", g["status"].text)
+        self.assertEqual(g._thumb_network_failures, 1)
+        self.assertEqual(g._active_downloads, 1)  # Old worker remains counted.
+        previous = g["status"].text
+        jobs[1][1].failure(Exception("old failure"))
+        self.assertEqual(g["status"].text, previous)
+        self.assertEqual(g._active_downloads, 0)
+
+    def test_stale_decode_is_discarded_after_page_switch(self):
+        jobs = []
+        mod = self.load_grid(jobs)
+        g = mod.WarderYouTubeGrid(None, [self.video(i) for i in range(7)], "test")
+        g._layout_ready()
+        jobs[0][1].success("/tmp/old.jpg")
+        self.assertIsNotNone(g._decoding)
+        g.next_page()
+        jobs[1][1].failure(Exception("old page"))
+        new_jobs = [job for job in jobs[2:] if job[0][0].__name__ == "fetch_thumbnail"]
+        self.assertTrue(new_jobs)
+        new_jobs[0][1].success("/tmp/new.jpg")
+        self.assertFalse(g["thumb0"].visible)
+        self.assertEqual(g._decoding[0], 1)  # First page still decoding.
+        g._decode_finished()  # Old callback must not display in new page.
+        self.assertFalse(g["thumb0"].visible)
+        self.assertEqual(g._decoding[0], 2)
+        g._decode_finished()
+        self.assertTrue(g["thumb0"].visible)
+        self.assertEqual(g._thumb_shown, 1)
+
     def test_grid_next_page_emits_result(self):
         jobs = []
         m = self.load_grid(jobs)

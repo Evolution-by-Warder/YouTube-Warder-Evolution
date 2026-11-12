@@ -37,6 +37,8 @@ class WarderYouTubeGrid(Screen):
         self._epoch = 0
         self._pending_downloads = []
         self._active_downloads = 0
+        # Track per-page inflight requests without bypassing the global cap.
+        self._active_requests = []
         self._pending_decodes = []
         self._decoding = None
         self._picload = None
@@ -214,6 +216,7 @@ class WarderYouTubeGrid(Screen):
                and self._pending_downloads):
             request = self._pending_downloads.pop(0)
             self._active_downloads += 1
+            self._active_requests.append(request)
             # Worker performs disk/network I/O. It never manipulates Enigma2 widgets.
             deferred = deferToThread(fetch_thumbnail, request[2])
             deferred.addCallbacks(
@@ -223,6 +226,10 @@ class WarderYouTubeGrid(Screen):
 
     def _download_done(self, request, local_path):
         self._active_downloads = max(0, self._active_downloads - 1)
+        try:
+            self._active_requests.remove(request)
+        except ValueError:
+            pass
         epoch, slot, _url = request
         if not self._closed and epoch == self._epoch:
             if self._picload is not None and local_path:
@@ -287,7 +294,8 @@ class WarderYouTubeGrid(Screen):
             return
         finished = (self._thumb_expected
                     and self._thumb_shown + self._thumb_failures >= self._thumb_expected
-                    and not self._pending_downloads and not self._active_downloads
+                    and not self._pending_downloads
+                    and not any(req[0] == self._epoch for req in self._active_requests)
                     and not self._pending_decodes and self._decoding is None)
         if not finished or not self._thumb_failures:
             return

@@ -53,7 +53,20 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(api.parse_search_response(raw)["items"], [])
         raw = sample()
         raw["items"][0]["snippet"]["thumbnails"]["medium"]["url"] = "http://evil.example/test"
-        self.assertEqual(api.parse_search_response(raw)["items"][0]["thumbnail_url"], "")
+        self.assertEqual(api.parse_search_response(raw)["items"][0]["thumbnail_url"],
+                         "https://i.ytimg.com/vi/abcdefghijk/mqdefault.jpg")
+
+    def test_api_uses_canonical_jpeg_when_thumbnail_missing_or_webp(self):
+        for thumbnail in (None, {}, {"medium": {"url": "https://i.ytimg.com/vi_webp/abcdefghijk/hqdefault.webp"}}):
+            with self.subTest(thumbnail=thumbnail):
+                raw = sample()
+                if thumbnail is None:
+                    raw["items"][0]["snippet"].pop("thumbnails")
+                else:
+                    raw["items"][0]["snippet"]["thumbnails"] = thumbnail
+                video = api.parse_search_response(raw)["items"][0]
+                self.assertEqual(video["thumbnail_url"],
+                                 "https://i.ytimg.com/vi/abcdefghijk/mqdefault.jpg")
 
     def test_missing_items_is_error(self):
         with self.assertRaises(api.SearchError):
