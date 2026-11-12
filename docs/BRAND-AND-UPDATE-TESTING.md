@@ -46,3 +46,7 @@ Per-page thumbnail status now checks only active downloads belonging to the curr
 ## Native MoviePlayer lifetime guard — 12 Nov 2026 (source only)
 
 Search now tracks `playback_active` independently from worker `busy`. While the MoviePlayer dialog is active, a second play/INFO request is rejected, preventing duplicate playback/dialog races. On native callback (normal EXIT, EOF or final stream failure), the flag is cleared; dialog creation exceptions also clear it while hiding signed stream URLs. Host regressions cover duplicate calls, failed opens and a callback after the parent screen has been disposed. No new IPK, release or merge.
+
+## In-plugin testing feed download fix
+
+GitHub Releases silently replaces `~` with `.` in uploaded release asset names. The installed 0.0.8~test3 updater expects `~`, so it cannot retrieve test4 from a prerelease even though the manifest and digest are correct. An update to 0.0.8~test5 uses the normalized dotted URL, while preserving the `~test5` version in the signed IPK control metadata and `opkg` version comparisons. This requires a one-time manual bridge install from test3 to test5; subsequent GitHub Releases-based opt-in testing updates will be recognized. The stable feed, skin and radio plugin are unchanged. Do not publish until package/CI verifications pass.

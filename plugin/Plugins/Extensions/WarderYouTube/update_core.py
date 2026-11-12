@@ -20,7 +20,7 @@ from urllib.request import Request, urlopen
 REPO = "Evolution-by-Warder/YouTube-Warder-Evolution"
 PACKAGE = "enigma2-plugin-extensions-youtube-warder-evolution"
 PRODUCT = "YouTube Warder Evolution"
-CURRENT_VERSION = "0.0.8~test4"
+CURRENT_VERSION = "0.0.8~test5"
 FEED_TESTING = ("https://raw.githubusercontent.com/" + REPO +
                 "/feature/native-search-v002/update/testing.json")
 FEED_STABLE = ("https://raw.githubusercontent.com/" + REPO +
@@ -54,7 +54,7 @@ def channel_for_version(version):
 
 def expected_url(version):
     tag = "youtube-warder-v" + version.replace("~", "-")
-    filename = PACKAGE + "_" + version + "_all.ipk"
+    filename = PACKAGE + "_" + version.replace("~", ".") + "_all.ipk"
     return "https://github.com/" + REPO + "/releases/download/" + tag + "/" + filename
 
 
