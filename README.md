@@ -1,6 +1,6 @@
 # YouTube – Warder Evolution
 
-**Status: 0.0.3-dev.** Lightweight blue YouTube plugin for Enigma2, under active development.
+**Status: 0.0.4-dev.** Lightweight blue YouTube plugin for Enigma2, under active development.
 
 ## What is implemented in source
 
@@ -10,8 +10,9 @@
 - Asynchronous resolver: **optional external yt-dlp** converts a video ID to a single muxed MP4 stream URL off the GUI thread, when available.
 - An experimental native Enigma2 MoviePlayer adapter attempts playback of resolved HTTPS streams and returns to the previous TV service on exit.
 - Defensive input checks, bounded subprocess timeout, URL checks and automated mocked tests.
+- Native **3×2 video grid** with six static image widgets, blue focus, remote navigation, and bounded thumbnail downloads. Experimental and not receiver-validated.
 
-**Not working yet or unverified:** nothing has been tested on a physical receiver; playback is experimental and depends on a compatible yt-dlp executable, Enigma2/GStreamer support and the video format. There is no bundled resolver, no automatic installation, no thumbnail grid, no account login or subscriptions, no IPK release.
+**Not working yet or unverified:** nothing has been tested on a physical receiver; playback is experimental and depends on a compatible yt-dlp executable, Enigma2/GStreamer support and the video format. There is no bundled resolver, no automatic installation, no personalized recommendations, no account login or subscriptions, no IPK release.
 
 ## Design
 
@@ -24,7 +25,7 @@
 
 - Search currently requires your own YouTube Data API key (Settings). Enigma2 stores it **unencrypted**, so do not share settings files.
 - Playback additionally requires yt-dlp installed separately and accessible on PATH, plus compatible codecs.
-- [Search guide](docs/SEARCH.md) · [Playback guide](docs/PLAYBACK.md) · [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
+- [Thumbnail guide](docs/THUMBNAILS.md) · [Search guide](docs/SEARCH.md) · [Playback guide](docs/PLAYBACK.md) · [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
 - Run: python3 -m unittest discover -s tests -v
 
 Ideas to compare and assimilate: [Taapat](https://github.com/Taapat/enigma2-plugin-youtube), [Fairbird](https://github.com/fairbird/Youtube-Opensource-DreamOS), YouTubeMod and [yt-dlp](https://github.com/yt-dlp/yt-dlp). Source attribution and code redistribution requirements are respected.

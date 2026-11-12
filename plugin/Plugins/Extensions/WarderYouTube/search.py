@@ -35,6 +35,7 @@ class WarderYouTubeSearch(Screen):
         self.busy = False
         self.closed = False
         self.request_version = 0
+        self.active_grid = None
 
         self["title"] = Label("YouTube - Warder Evolution / Search")
         self["query"] = Label("Search videos")
@@ -137,6 +138,7 @@ class WarderYouTubeSearch(Screen):
             self["status"].setText(
                 "%d video(s) found%s" % (len(self.items), suffix)
             )
+            self.open_grid()
 
     def receive_error(self, version, failure):
         if self.closed or version != self.request_version:
@@ -160,6 +162,32 @@ class WarderYouTubeSearch(Screen):
         else:
             self["details"].setText("")
 
+    def open_grid(self):
+        if self.closed or not self.items or self.active_grid is not None:
+            return
+        # Imports stay lazy: the thumbnail decoder is loaded only if needed.
+        from .grid import WarderYouTubeGrid
+        self.active_grid = self.session.openWithCallback(
+            self.grid_closed, WarderYouTubeGrid,
+            self.items, self.query, bool(self.next_page_token), self.play_video
+        )
+
+    def grid_closed(self, action=None):
+        self.active_grid = None
+        # Invalidate video resolution if the card screen was dismissed.
+        if self.busy:
+            self.request_version += 1
+            self.busy = False
+        if not self.closed and action == "search":
+            self.open_keyboard()
+        elif not self.closed and action == "next":
+            self.next_page()
+
+    def show_play_status(self, message):
+        self["status"].setText(message)
+        if self.active_grid is not None and not self.active_grid._closed:
+            self.active_grid.set_status(message)
+
     def open_selected(self):
         if self.busy:
             return
@@ -167,29 +195,31 @@ class WarderYouTubeSearch(Screen):
         if not (0 <= index < len(self.items)):
             self.open_keyboard()
             return
+        self.play_video(self.items[index])
+
+    def play_video(self, video):
+        if self.busy or self.closed:
+            return
         if not is_available():
-            self["status"].setText(
+            self.show_play_status(
                 "Playback unavailable: yt-dlp is not installed on this receiver."
             )
             return
-        video = self.items[index]
         self.busy = True
         self.request_version += 1
         version = self.request_version
-        self["status"].setText(
-            "Resolving compatible MP4 stream in background..."
-        )
+        self.show_play_status("Resolving compatible MP4 stream in background...")
         deferred = deferToThread(resolve_video_url, video["video_id"])
         deferred.addCallbacks(
             lambda url: self.play_resolved(version, video, url),
-            lambda error: self.play_failed(version, error)
+            lambda failure: self.play_failed(version, failure)
         )
 
     def play_resolved(self, version, video, stream_url):
         if self.closed or version != self.request_version:
             return
         self.busy = False
-        self["status"].setText(
+        self.show_play_status(
             "Opening Enigma2 player (experimental); EXIT returns to search."
         )
         try:
@@ -201,7 +231,7 @@ class WarderYouTubeSearch(Screen):
             )
         except Exception:
             # Do not leak URLs or upstream errors into GUI messages or logs.
-            self["status"].setText(
+            self.show_play_status(
                 "Enigma2 could not open the player on this image."
             )
 
@@ -211,14 +241,14 @@ class WarderYouTubeSearch(Screen):
         self.busy = False
         error = getattr(failure, "value", None)
         if isinstance(error, ResolverError):
-            self["status"].setText(str(error))
+            self.show_play_status(str(error))
         else:
-            self["status"].setText(
+            self.show_play_status(
                 "Unexpected stream resolution error. Try another video."
             )
 
     def playback_finished(self, *args):
         if not self.closed:
-            self["status"].setText(
+            self.show_play_status(
                 "Returned from player. Press OK for another video."
             )

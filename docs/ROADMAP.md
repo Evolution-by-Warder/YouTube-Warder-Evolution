@@ -17,8 +17,8 @@
 - [ ] Evaluate lower-friction catalogue backends
 
 ## Phase 2 — graphics and usability
-- [ ] 2–3 column video preview grid with bounded scaled thumbnails
-- [ ] Cache and cancellation for thumbnail downloads
+- [x] Native 3 × 2 thumbnail grid with blue remote focus (source implementation only)
+- [x] Two worker downloads, single ePicLoad decoder, stale-result guards and bounded 4 MiB /tmp cache
 - [ ] Performance measurement on SF8008 and GigaBlue Quad 4K Pro
 
 ## Phase 3 — experimental playback
