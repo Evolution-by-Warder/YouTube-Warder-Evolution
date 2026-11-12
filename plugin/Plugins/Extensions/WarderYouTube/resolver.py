@@ -20,10 +20,15 @@ TIMEOUT_SECONDS = 28
 # Prefer AVC/H.264 with audio and <= 720p; fall back to a different muxed MP4.
 MUXED_MP4_FORMAT = (
     "b[ext=mp4][vcodec^=avc1][acodec!=none][height<=720]/"
-    "b[ext=mp4][vcodec^=avc1][acodec!=none]/"
-    "b[ext=mp4][acodec!=none][height<=720]/"
-    "b[ext=mp4][acodec!=none]"
+    "b[ext=mp4][acodec!=none][height<=720]"
 )
+QUALITY_FORMATS = {
+    "360": (
+        "b[ext=mp4][vcodec^=avc1][acodec!=none][height<=360]/"
+        "b[ext=mp4][acodec!=none][height<=360]"
+    ),
+    "720": MUXED_MP4_FORMAT,
+}
 
 
 class ResolverError(Exception):
@@ -63,13 +68,15 @@ def validate_stream_url(url):
 
 
 def resolve_video_url(video_id, runner=subprocess.run, which=shutil.which,
-                      timeout=TIMEOUT_SECONDS):
+                      timeout=TIMEOUT_SECONDS, quality="720"):
     """Resolve once using optional yt-dlp; call only off the UI thread.
 
     No shell, no credentials or log output; no auto-download or plugin update.
     The subprocess is bounded by timeout; failures never expose signed URLs.
     """
     watch_url = video_page_url(video_id)
+    if quality not in QUALITY_FORMATS:
+        raise ResolverError("Unsupported playback quality setting.")
     executable = which("yt-dlp")
     if not executable:
         raise ResolverError(
@@ -79,7 +86,7 @@ def resolve_video_url(video_id, runner=subprocess.run, which=shutil.which,
         executable, "--ignore-config", "--no-playlist", "--no-warnings",
         "--no-progress", "--no-cache-dir", "--socket-timeout", "8",
         "--retries", "1", "--extractor-retries", "1",
-        "-f", MUXED_MP4_FORMAT, "--get-url", "--", watch_url
+        "-f", QUALITY_FORMATS[quality], "--get-url", "--", watch_url
     ]
     try:
         output = runner(
