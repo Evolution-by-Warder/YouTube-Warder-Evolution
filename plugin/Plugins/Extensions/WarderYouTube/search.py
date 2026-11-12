@@ -39,6 +39,7 @@ class WarderYouTubeSearch(Screen):
         self.request_version = 0
         self.active_grid = None
         self.search_backend = None
+        self._did_initial_prompt = False
 
         self["title"] = Label("YouTube - Warder Evolution / Search")
         self["query"] = Label("Search videos")
@@ -58,10 +59,17 @@ class WarderYouTubeSearch(Screen):
             -1
         )
         self["results"].onSelectionChanged.append(self.selection_changed)
-        self.onLayoutFinish.append(self.first_open)
+        # onLayoutFinish runs during applySkin, before Session.in_exec is True.
+        # Modal VirtualKeyboard must open only after the screen enters exec.
+        self.onShown.append(self.first_open)
         self.onClose.append(self.mark_closed)
 
     def first_open(self):
+        # onShown fires again when returning from VirtualKeyboard or MoviePlayer.
+        # Only the first activation may open the initial keyboard.
+        if self.closed or self._did_initial_prompt:
+            return
+        self._did_initial_prompt = True
         if select_backend(get_api_key(), is_available()):
             self.open_keyboard()
         else:
