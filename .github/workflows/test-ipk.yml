@@ -6,6 +6,9 @@ on:
     paths:
       - tools/build_test_ipk.py
       - tests/test_ipk_build.py
+      - tests/test_search_modal_regression.py
+      - plugin/Plugins/Extensions/WarderYouTube/search.py
+      - plugin/Plugins/Extensions/WarderYouTube/plugin.py
       - .github/workflows/test-ipk.yml
   workflow_dispatch:
 
@@ -34,7 +37,7 @@ jobs:
           cd dist && sha256sum -c *.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: WarderYouTube-0.0.8-test1-IPK
+          name: WarderYouTube-0.0.8-test2-IPK
           path: |
             dist/*.ipk
             dist/*.sha256

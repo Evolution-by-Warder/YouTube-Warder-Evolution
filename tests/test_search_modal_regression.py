@@ -42,6 +42,10 @@ class FakeScreen(dict):
         self.onShown = []
         self.onClose = []
 
+    def close(self, *args):
+        for callback in self.onClose:
+            callback()
+
 
 class FakeSession:
     def __init__(self):
