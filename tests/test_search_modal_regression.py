@@ -144,6 +144,46 @@ class SearchModalRegressionTests(unittest.TestCase):
         screen.playback_finished(True)
         self.assertIn("Prehrávanie ukončené", screen["status"].text)
 
+    def test_movieplayer_active_prevents_duplicate_video_or_info(self):
+        source = load_search()
+        session = FakeSession()
+        screen = source.WarderYouTubeSearch(session)
+        opened = []
+        player = module("_warder_modal.player",
+                        open_player=lambda *args, **kwargs: opened.append((args, kwargs)))
+        video = {"video_id": "abcdefghijk", "title": "Test video"}
+        with patch.dict(sys.modules, {"_warder_modal.player": player}):
+            screen.play_resolved(0, video, [{"url": "https://rr1.googlevideo.com/video", "service_type": 4097}])
+        self.assertEqual(len(opened), 1)
+        self.assertTrue(screen.playback_active)
+        screen.play_video(video)  # No second deferToThread call.
+        screen.info_video(video)  # No second modal popup or network call.
+        self.assertTrue(screen.playback_active)
+        self.assertEqual(len(opened), 1)
+        self.assertEqual(session.modal_calls, [])
+        screen.playback_finished(False)
+        self.assertFalse(screen.playback_active)
+
+    def test_movieplayer_failure_clears_active_state_and_hides_signed_url(self):
+        source = load_search()
+        screen = source.WarderYouTubeSearch(FakeSession())
+        def fail_player(*args, **kwargs):
+            raise RuntimeError("https://rr1.googlevideo.com/?sig=SECRET")
+        player = module("_warder_modal.player", open_player=fail_player)
+        with patch.dict(sys.modules, {"_warder_modal.player": player}):
+            screen.play_resolved(0, {"title": "Video"}, [{"url": "https://rr1.googlevideo.com/video", "service_type": 4097}])
+        self.assertFalse(screen.playback_active)
+        self.assertIn("Enigma2 could not open", screen["status"].text)
+        self.assertNotIn("SECRET", screen["status"].text)
+
+    def test_movieplayer_close_after_parent_disposal_clears_active_state(self):
+        source = load_search()
+        screen = source.WarderYouTubeSearch(FakeSession())
+        screen.playback_active = True
+        screen.mark_closed()
+        screen.playback_finished(True)
+        self.assertFalse(screen.playback_active)
+
     def test_keyboard_is_never_opened_during_layout(self):
         source = load_search()
         session = FakeSession()

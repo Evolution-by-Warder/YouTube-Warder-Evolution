@@ -42,3 +42,7 @@ A page may contain 0–6 thumbnails. The native grid now reports download failur
 ## Page-switch thumbnail consistency / API JPEG normalization — 12 Nov 2026
 
 Per-page thumbnail status now checks only active downloads belonging to the currently visible page. Old workers still count toward the global two-worker network limit but cannot suppress current-page completion/error diagnostics. Stale decodes from a previous page are discarded and only the single ePicLoad decoder is used. Official YouTube Data API search results now normalize thumbnails to `https://i.ytimg.com/vi/<validated-id>/mqdefault.jpg`, as the yt-dlp backend already does; this avoids untrusted/unsupported WebP sources and empty tiles when the snippet lacks a thumbnail URL. Added mock tests for rapid page switching, stale network/decode callbacks and canonical JPEG URL handling. No new IPK, release or merge.
+
+## Native MoviePlayer lifetime guard — 12 Nov 2026 (source only)
+
+Search now tracks `playback_active` independently from worker `busy`. While the MoviePlayer dialog is active, a second play/INFO request is rejected, preventing duplicate playback/dialog races. On native callback (normal EXIT, EOF or final stream failure), the flag is cleared; dialog creation exceptions also clear it while hiding signed stream URLs. Host regressions cover duplicate calls, failed opens and a callback after the parent screen has been disposed. No new IPK, release or merge.

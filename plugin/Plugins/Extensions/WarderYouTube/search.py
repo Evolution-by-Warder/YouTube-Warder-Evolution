@@ -35,6 +35,9 @@ class WarderYouTubeSearch(Screen):
         self.page_token = ""
         self.next_page_token = ""
         self.busy = False
+        # A native MoviePlayer dialog remains active after stream resolution.
+        # Keep this independent of background worker busy state.
+        self.playback_active = False
         self.closed = False
         self.request_version = 0
         self.active_grid = None
@@ -236,7 +239,7 @@ class WarderYouTubeSearch(Screen):
             self.info_video(self.video_items[index])
 
     def info_video(self, video):
-        if self.busy or self.closed:
+        if self.busy or self.closed or self.playback_active:
             return
         api_key = get_api_key()
         if not api_key:
@@ -282,7 +285,7 @@ class WarderYouTubeSearch(Screen):
             self.show_play_status("Nepodarilo sa načítať podrobnosti videa.")
 
     def play_video(self, video):
-        if self.busy or self.closed:
+        if self.busy or self.closed or self.playback_active:
             return
         # The bundled Warder Radio resolver also works without yt-dlp.
         self.busy = True
@@ -303,6 +306,9 @@ class WarderYouTubeSearch(Screen):
         if self.closed or version != self.request_version:
             return
         self.busy = False
+        if self.playback_active:
+            return
+        self.playback_active = True
         self.show_play_status(
             "Otváram prehrávač Enigma2. EXIT: návrat k videám."
         )
@@ -314,6 +320,7 @@ class WarderYouTubeSearch(Screen):
                 on_close=self.playback_finished
             )
         except Exception:
+            self.playback_active = False
             # Do not leak URLs or upstream errors into GUI messages or logs.
             self.show_play_status(
                 "Enigma2 could not open the player on this image."
@@ -332,6 +339,7 @@ class WarderYouTubeSearch(Screen):
             )
 
     def playback_finished(self, failed=False, *args):
+        self.playback_active = False
         if self.closed:
             return
         if failed is True:
