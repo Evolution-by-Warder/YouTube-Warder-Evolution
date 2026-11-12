@@ -165,12 +165,18 @@ class WarderYouTubeSearch(Screen):
     def open_grid(self):
         if self.closed or not self.items or self.active_grid is not None:
             return
-        # Imports stay lazy: the thumbnail decoder is loaded only if needed.
-        from .grid import WarderYouTubeGrid
-        self.active_grid = self.session.openWithCallback(
-            self.grid_closed, WarderYouTubeGrid,
-            self.items, self.query, bool(self.next_page_token), self.play_video
-        )
+        # Imports stay lazy: graphics stay optional on older Enigma2 images.
+        try:
+            from .grid import WarderYouTubeGrid
+            self.active_grid = self.session.openWithCallback(
+                self.grid_closed, WarderYouTubeGrid,
+                self.items, self.query, bool(self.next_page_token), self.play_video
+            )
+        except Exception:
+            self.active_grid = None
+            self["status"].setText(
+                "Thumbnail grid not supported here; text results remain usable."
+            )
 
     def grid_closed(self, action=None):
         self.active_grid = None

@@ -72,9 +72,14 @@ class WarderYouTubeGrid(Screen):
         if self._closed:
             return
         self._ready = True
-        self._picload = ePicLoad()
-        self._picload.PictureData.get().append(self._decode_finished)
-        self._picload.setPara((THUMB_WIDTH, THUMB_HEIGHT, 1, 1, False, 1, "#00000000"))
+        try:
+            self._picload = ePicLoad()
+            self._picload.PictureData.get().append(self._decode_finished)
+            self._picload.setPara((THUMB_WIDTH, THUMB_HEIGHT, 1, 1, False, 1, "#00000000"))
+        except Exception:
+            # Titles and remote navigation still work when this image cannot
+            # initialize the built-in decoder. No extra renderer dependency.
+            self._picload = None
         self._render_page()
 
     def _mark_closed(self):
@@ -149,7 +154,8 @@ class WarderYouTubeGrid(Screen):
     def _download_done(self, request, local_path):
         self._active_downloads = max(0, self._active_downloads - 1)
         epoch, slot, _url = request
-        if not self._closed and epoch == self._epoch and local_path:
+        if (not self._closed and self._picload is not None
+                and epoch == self._epoch and local_path):
             self._pending_decodes.append((epoch, slot, local_path))
             self._start_decode()
         self._pump_downloads()
