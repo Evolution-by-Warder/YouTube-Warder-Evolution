@@ -23,7 +23,7 @@ class WarderYouTubeHome(Screen):
             ("Settings", "Optional Google API key; yt-dlp can search without one.")
         ]
         self["brand"] = Label("YouTube - Warder Evolution")
-        self["version"] = Label("0.0.5-dev / Enigma2")
+        self["version"] = Label("0.0.7-dev / Enigma2")
         self["menu"] = MenuList([name for name, desc in self.sections])
         self["heading"] = Label("")
         self["description"] = Label("")
@@ -54,6 +54,6 @@ class WarderYouTubeHome(Screen):
         else:
             self.session.open(
                 MessageBox,
-                "This section is planned. Search and API key Settings are currently implemented.",
+                "This section is planned. Search and Settings are available. Playback is experimental.",
                 type=MessageBox.TYPE_INFO, timeout=5
             )

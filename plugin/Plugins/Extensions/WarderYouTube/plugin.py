@@ -7,5 +7,5 @@ def main(session, **kwargs):
 
 def Plugins(**kwargs):
     return [PluginDescriptor(name="YouTube - Warder Evolution",
-                             description="Native blue UI prototype, no video playback",
+                             description="Native blue YouTube search and experimental playback",
                              where=PluginDescriptor.WHERE_PLUGINMENU, fnc=main)]
