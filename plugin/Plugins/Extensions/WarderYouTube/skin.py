@@ -530,11 +530,11 @@ NATIVE_SEARCH_KEYBOARD_SKIN = """
   <widget name="prompt" position="206,175" size="1500,65" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
   <eLabel position="206,256" size="1502,76" backgroundColor="#0C2038"/>
   <widget name="text" position="228,263" size="1455,64" font="Regular;37" foregroundColor="#FFFFFF" backgroundColor="#0C2038" transparent="1" zPosition="3"/>
-  <widget name="list" position="211,353" size="1495,476" font="Regular;29" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3" scrollbarMode="showNever"/>
-  <widget name="mode" position="215,859" size="150,49" font="Regular;27" foregroundColor="#6CCBFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
-  <widget name="locale" position="396,859" size="520,49" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#122C47" transparent="1" zPosition="3"/>
-  <widget name="language" position="919,859" size="730,49" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#122C47" transparent="1" zPosition="3"/>
-  <widget name="warder_key_hint" position="207,918" size="1200,34" font="Regular;23" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
+  <widget name="list" position="211,353" size="945,380" font="Regular;29" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="0" zPosition="3" scrollbarMode="showNever"/>
+  <widget name="mode" position="215,850" size="125,58" font="Regular;26" foregroundColor="#6CCBFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="locale" position="350,850" size="810,62" font="Regular;23" foregroundColor="#B9D9F5" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="language" position="1182,850" size="425,62" font="Regular;23" foregroundColor="#B9D9F5" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="warder_key_hint" position="207,918" size="1510,47" font="Regular;23" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="warder_key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
