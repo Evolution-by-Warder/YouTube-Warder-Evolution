@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Native in-plugin contextual actions for the current video selection."""
+from .header_ui import add_header
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.MenuList import MenuList
@@ -14,6 +15,7 @@ class WarderYouTubeContext(Screen):
 
     def __init__(self, session, video=None, is_favourite=False, mode="search"):
         Screen.__init__(self, session)
+        add_header(self)
         self.options = [
             ("play", _("Play video")),
             ("favorite", _("Remove from favourites") if is_favourite else _("Add to favourites")),
