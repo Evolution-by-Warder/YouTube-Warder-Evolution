@@ -120,6 +120,7 @@ class MaskedKeyTests(unittest.TestCase):
     def test_saved_key_stays_masked_and_requires_explicit_change(self):
         with environment(configured=self.OLD) as (mod, screen, session, key, cfgfile, confirm, keyboard):
             self.assertIn("********", screen["key_state"].text)
+            self.assertEqual(screen["key_green"].text, "Change API key")
             self.assertNotIn(self.OLD, screen["key_state"].text)
             screen.prompt_key()
             self.assertEqual(len(session.dialogs), 1)
@@ -150,11 +151,13 @@ class MaskedKeyTests(unittest.TestCase):
             self.assertEqual(key.saves, 1)
             self.assertEqual(cfgfile.saves, 1)
             self.assertIn("********", screen["key_state"].text)
+            self.assertEqual(screen["key_green"].text, "Change API key")
             self.assertNotIn(self.NEW, screen["key_state"].text)
             self.assertNotIn(self.OLD, screen["key_state"].text)
 
     def test_new_key_is_visible_only_during_first_edit(self):
         with environment() as (mod, screen, session, key, cfgfile, confirm, keyboard):
+            self.assertEqual(screen["key_green"].text, "API key")
             screen.prompt_key()
             self.assertEqual(len(session.dialogs), 1)
             self.assertIs(session.dialogs[-1][1], keyboard)
