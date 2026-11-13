@@ -22,7 +22,7 @@ class Tests(unittest.TestCase):
         self.assertTrue({"nav0", "nav7", "heading", "subtitle", "status", "preview_thumb0", "preview_thumb5", "preview_message"}.issubset(
             {w.attrib.get("name") for w in screen.findall("widget")}))
         self.assertIn("images/warder_header.png", xml)
-        self.assertEqual(xml.count("<ePixmap"), 1)
+        self.assertEqual(xml.count("<ePixmap"), 9)
         self.assertIn('name="hdr_clock"', xml)
         self.assertIn('name="hdr_version"', xml)
 
