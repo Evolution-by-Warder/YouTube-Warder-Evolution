@@ -113,6 +113,13 @@ class SystemKeyboardPane:
     def value(self):
         return self.input.getText()
 
+    def reset(self):
+        """Begin a new search using the original Enigma2 Input component."""
+        if hasattr(self.input, "deleteAllChars"):
+            self.input.deleteAllChars()
+        else:
+            self.input.setText("")
+
     def cleanup(self):
         sms = getattr(self.backend, "sms", None)
         if sms is not None:
