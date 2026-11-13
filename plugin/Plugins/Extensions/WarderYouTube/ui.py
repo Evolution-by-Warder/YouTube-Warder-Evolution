@@ -73,13 +73,13 @@ class WarderYouTubeHome(Screen):
         self["version"] = Label(CURRENT_VERSION + "  •  Enigma2")
         for i, (name, description) in enumerate(self.sections):
             self["nav%d" % i] = Label(name)
-            self["nav_focus%d" % i] = Label(" ")
+            self["nav_focus%d" % i] = Pixmap()
         self["heading"] = Label("")
         self["subtitle"] = Label("")
         self["preview_message"] = Label("")
         self["status"] = Label("")
         for i in range(VISIBLE_TILES):
-            self["preview_focus%d" % i] = Label(" ")
+            self["preview_focus%d" % i] = Pixmap()
             self["preview_panel%d" % i] = Label(" ")
             self["preview_border%d" % i] = Label(" ")
             self["preview_thumb%d" % i] = Pixmap()
@@ -289,7 +289,7 @@ class WarderYouTubeHome(Screen):
         self._clear_preview()
         self["heading"].setText(self.sections[self.index][0])
         self["subtitle"].setText(self.sections[self.index][1])
-        self["status"].setText(_("Up/Down: sections • Right: videos • OK: open"))
+        self["status"].setText("")
         if self.index == 0:
             if self._popular_cache:
                 self._show_tiles(self._popular_cache, "Popular in Slovakia")
@@ -402,7 +402,7 @@ class WarderYouTubeHome(Screen):
     def back(self):
         if self.focus_area == "tiles":
             self.focus_area = "nav"
-            self["status"].setText(_("Up/Down: sections • Right: videos • OK: open"))
+            self["status"].setText("")
             self._update_nav()
             self._update_tile_focus()
             self._update_keys()
