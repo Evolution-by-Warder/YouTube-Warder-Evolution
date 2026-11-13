@@ -8,6 +8,7 @@ import os
 
 MESSAGES = {
     "sk": {
+        "Yes":"Áno", "No":"Nie",
         "Home": "Domov", "Search": "Hľadať", "Subscriptions": "Odbery",
         "History": "História", "Playlists": "Playlisty",
         "Favourites": "Obľúbené", "Settings": "Nastavenia",
@@ -65,6 +66,7 @@ MESSAGES = {
         "Keep live TV audio": "Zvuk TV na pozadí zostáva zachovaný",
     },
     "cs": {
+        "Yes":"Ano", "No":"Ne",
         "Home":"Domů", "Search":"Hledat", "Subscriptions":"Odběry",
         "History":"Historie", "Playlists":"Playlisty",
         "Favourites":"Oblíbené", "Settings":"Nastavení",
@@ -107,6 +109,7 @@ MESSAGES = {
         "Keep live TV audio":"Zvuk TV na pozadí zůstává zachován",
     },
     "de": {
+        "Yes":"Ja", "No":"Nein",
         "Home":"Startseite", "Search":"Suche", "Subscriptions":"Abos",
         "History":"Verlauf", "Playlists":"Playlists",
         "Favourites":"Favoriten", "Settings":"Einstellungen", "Updates":"Updates",

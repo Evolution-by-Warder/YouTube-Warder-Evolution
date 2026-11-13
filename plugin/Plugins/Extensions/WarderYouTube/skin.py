@@ -424,3 +424,27 @@ CONTEXT_SKIN = """
 </screen>
 """
 
+
+
+CONFIRM_SKIN = """
+<screen name="WarderYouTubeConfirm" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Confirm" flags="wfNoBorder" backgroundColor="#08182D">
+  <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
+  <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
+  <widget name="brand" position="47,22" size="1710,69" font="Regular;42" foregroundColor="#FFFFFF" transparent="1"/>
+  <eLabel position="274,175" size="1372,725" backgroundColor="#122C47"/>
+  <eLabel position="274,175" size="1372,5" backgroundColor="#087EC7"/>
+  <widget name="heading" position="327,210" size="1260,72" font="Regular;43" foregroundColor="#6CCBFF" transparent="1"/>
+  <widget name="question" position="327,316" size="1250,175" font="Regular;32" foregroundColor="#FFFFFF" transparent="1"/>
+  <widget name="menu" position="550,570" size="830,180" font="Regular;34" itemHeight="72" foregroundColor="#FFFFFF" backgroundColor="#122C47" scrollbarMode="showOnDemand"/>
+  <widget name="hint" position="335,825" size="1200,49" font="Regular;28" foregroundColor="#B9D9F5" transparent="1"/>
+  <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
+  <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="6"/>
+  <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="6"/>
+  <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="6"/>
+  <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="6"/>
+</screen>
+"""
