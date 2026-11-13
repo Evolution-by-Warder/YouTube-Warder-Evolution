@@ -69,6 +69,7 @@ def load(name):
     screens = mod("Screens")
     screens.__path__ = []
     fake = {
+        "_test_warder_design.header_ui": mod("_test_warder_design.header_ui", add_header=lambda sc: sc.__setitem__("hdr_version", Label())),
         "_test_warder_design": package,
         "_test_warder_design.i18n": mod(
             "_test_warder_design.i18n", tr=lambda message: message,
