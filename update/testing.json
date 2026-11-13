@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test7",
-    "tag": "youtube-warder-v0.0.8-test7",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test7/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test7_all.ipk",
-    "sha256": "101e4505674ad3e8f04965a26c27e2902fda10ef19e87cd6d15b28381cbf42e6",
-    "bytes": 76434,
-    "notes": "Test7: novy Warder vzhlad Home, Search a Settings, vlastna klavesnica podla jazyka Enigma2, farebne tlacidla, MENU s ponukou akcii a upraveny aktualizator. Testovacia verzia na overenie na GigaBlue."
+    "version": "0.0.8~test12",
+    "tag": "youtube-warder-v0.0.8-test12",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test12/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test12_all.ipk",
+    "sha256": "65e35da4597e77455a675468a6f18cdadf82e5064e7f41b9141d6422106f7ece",
+    "bytes": 146146,
+    "notes": "Test12: jednotna Warder hlavicka s originalnou lebkou na 12 obrazovkach, zivy datum/cas/verzia, nove dvojpanelove Home s nahladmi videi a opravena navigacia a klavesnica. Testovacie vydanie pre GigaBlue / OpenATV 8.1; vizualne overenie na prijimaci este prebieha."
   }
 }
