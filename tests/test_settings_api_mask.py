@@ -73,6 +73,7 @@ def environment(configured="", file_key=""):
     screens = make_module("Screens")
     screens.__path__ = []
     modules = {
+        "_warder_settings_test.header_ui": make_module("_warder_settings_test.header_ui", add_header=lambda sc: sc.__setitem__("hdr_version", Widget())),
         "_warder_settings_test": package,
         "_warder_settings_test.skin": make_module(
             "_warder_settings_test.skin", SETTINGS_SKIN="<screen/>"),
