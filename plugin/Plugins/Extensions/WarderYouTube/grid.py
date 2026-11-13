@@ -19,6 +19,14 @@ from .i18n import tr as _
 THUMB_WIDTH = 476
 THUMB_HEIGHT = 249
 MAX_DOWNLOADS = 2
+CARD_TITLE_LIMIT = 52
+
+
+def card_title(value, limit=CARD_TITLE_LIMIT):
+    """Bound a card's two-line title without changing its full sidebar title."""
+    label = " ".join(str(value or "").split())
+    return label if len(label) <= limit else label[:limit - 1].rstrip() + "…"
+
 
 class WarderYouTubeGrid(Screen):
     skin = GRID_SKIN
@@ -187,7 +195,7 @@ class WarderYouTubeGrid(Screen):
                 self["focus%d" % slot].hide()
                 continue
             video = self.video_items[absolute]
-            self["title%d" % slot].setText(str(video.get("title") or "")[:88])
+            self["title%d" % slot].setText(card_title(video.get("title")))
             self["channel%d" % slot].setText(str(video.get("channel") or "")[:55])
             url = video.get("thumbnail_url")
             if url:
