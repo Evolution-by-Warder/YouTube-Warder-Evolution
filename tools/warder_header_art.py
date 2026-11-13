@@ -134,7 +134,7 @@ def render_header():
         full = tag + body
         return (struct.pack(">I", len(body)) + full +
                 struct.pack(">I", zlib.crc32(full) & 0xffffffff))
-    return (b"\x89PNG\\r\\n\x1a\\n" +
+    return (b"\x89PNG\r\n\x1a\n" +
             chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 3, 0, 0, 0)) +
             chunk(b"PLTE", bytes(palette)) +
             chunk(b"IDAT", zlib.compress(data, 9)) + chunk(b"IEND", b""))
