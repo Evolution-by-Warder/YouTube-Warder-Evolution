@@ -67,7 +67,7 @@ class WarderYouTubeHome(Screen):
 
         self["brand"] = Label("YouTube Warder Evolution")
         self["version"] = Label(CURRENT_VERSION + "  •  Enigma2")
-        for i, (name, _) in enumerate(self.sections):
+        for i, (name, description) in enumerate(self.sections):
             self["nav%d" % i] = Label(name)
             self["nav_focus%d" % i] = Label(" ")
         self["heading"] = Label("")
