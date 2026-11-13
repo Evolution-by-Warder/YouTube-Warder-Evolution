@@ -235,6 +235,35 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(len(screen.video_items), len(saved["history"]))
         self.assertEqual(len(jobs), 1)
 
+    def test_left_menu_wraps_endlessly_in_both_directions(self):
+        mod, key, saved, jobs = load()
+        screen, session = ready(mod)
+        self.assertEqual(screen.index, 0)
+
+        screen.up()  # Domov -> Aktualizacie
+        self.assertEqual(screen.index, 7)
+        self.assertEqual(screen["heading"].text, "Updates")
+        self.assertTrue(screen["nav_focus7"].visible)
+        self.assertFalse(screen["nav_focus0"].visible)
+
+        screen.down()  # Aktualizacie -> Domov
+        self.assertEqual(screen.index, 0)
+        self.assertEqual(screen["heading"].text, "Home")
+        self.assertTrue(screen["nav_focus0"].visible)
+        self.assertFalse(screen["nav_focus7"].visible)
+
+        for _ in range(len(screen.sections) * 3):
+            screen.down()
+        self.assertEqual(screen.index, 0)
+        for _ in range(len(screen.sections) * 2):
+            screen.up()
+        self.assertEqual(screen.index, 0)
+        self.assertEqual(screen.focus_area, "nav")
+        self.assertEqual(session.opens, [])
+        self.assertEqual(session.callbacks, [])
+        # Scrolling around never starts new network requests after initial Home.
+        self.assertEqual(len(jobs), 1)
+
     def test_arrow_right_enters_tiles_and_ok_is_not_automatic(self):
         mod, key, saved, jobs = load()
         screen, session = ready(mod)
