@@ -20,7 +20,7 @@ jobs:
         with:
           name: WarderYouTube-0.0.8-test13-IPK
           run-id: 43432520659
-          github-token: \${{ github.token }}
+          github-token: ${{ github.token }}
           path: dist
       - name: Verify digest, package control, images and absence of API secrets
         shell: bash
@@ -71,8 +71,8 @@ jobs:
       - name: Publish opt-in GitHub testing prerelease only
         shell: bash
         env:
-          GH_TOKEN: \${{ github.token }}
-          GH_REPO: \${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           test "$GITHUB_REF" = 'refs/heads/feature/native-search-v002'
