@@ -173,22 +173,36 @@ def ready(module):
 
 
 class HomeLivePreviewTests(unittest.TestCase):
+    def test_screen_items_method_survives_home_navigation_and_close(self):
+        # Enigma2 Screen.deleteGUIScreen calls list(self.items()); an instance
+        # attribute named "items" crashes GUI teardown after EXIT.
+        mod, key, storage, jobs = load()
+        screen, session = ready(mod)
+        self.assertTrue(callable(screen.items))
+        self.assertIn("heading", dict(screen.items()))
+        screen.down()
+        screen.down()
+        screen.down()
+        self.assertTrue(callable(screen.items))
+        screen.back()
+        self.assertTrue(screen.closed)
+
     def test_selection_changes_right_pane_without_modal(self):
         mod, key, saved, jobs = load()
         screen, session = ready(mod)
         self.assertTrue(screen["nav_focus0"].visible)
-        self.assertEqual(len(screen.items), 2)
+        self.assertEqual(len(screen.video_items), 2)
         self.assertEqual(screen["heading"].text, "Home")
         screen.down()  # Search
         self.assertEqual(screen["heading"].text, "Search")
         self.assertTrue(screen["preview_message"].visible)
-        self.assertEqual(len(screen.items), 0)
+        self.assertEqual(len(screen.video_items), 0)
         screen.down()  # Subscriptions
         self.assertIn("not supported", screen["preview_message"].text)
         screen.down()  # History
         self.assertEqual(screen["heading"].text, "History")
         self.assertEqual(screen["preview_title0"].text, saved["history"][0]["title"])
-        self.assertEqual(len(screen.items), 2)
+        self.assertEqual(len(screen.video_items), 2)
         self.assertFalse(screen["nav_focus0"].visible)
         self.assertTrue(screen["nav_focus3"].visible)
         self.assertEqual(session.opens, [])
@@ -224,7 +238,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         screen.down()
         screen.down()
         self.assertEqual(screen["heading"].text, "Favourites")
-        self.assertEqual(screen.items[0]["video_id"], video(2)["video_id"])
+        self.assertEqual(screen.video_items[0]["video_id"], video(2)["video_id"])
 
     def test_popular_feed_result_is_cached_when_navigating_away(self):
         mod, key, saved, jobs = load(key="test-key")
@@ -237,7 +251,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         jobs[0][2].success([video(3)])
         self.assertEqual(screen["heading"].text, "Search")
         screen.up()
-        self.assertEqual(screen.items[0]["video_id"], video(3)["video_id"])
+        self.assertEqual(screen.video_items[0]["video_id"], video(3)["video_id"])
         self.assertEqual(screen["subtitle"].text, "Popular in Slovakia")
         self.assertEqual(len(jobs), 1)
 
@@ -248,7 +262,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertTrue(screen.thumbs.closed)
         jobs[0][2].success([video(4)])
         self.assertTrue(screen._disposed)
-        self.assertEqual(screen.items, [])
+        self.assertEqual(screen.video_items, [])
 
 
 if __name__ == "__main__":
