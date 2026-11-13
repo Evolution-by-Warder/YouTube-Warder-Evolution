@@ -327,6 +327,42 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(screen["heading"].text, "Favourites")
         self.assertEqual(screen.video_items[0]["video_id"], video(2)["video_id"])
 
+    def test_live_home_pages_through_all_youtube_results_not_fixed_six(self):
+        mod, key, saved, jobs = load(key="configured-api-key")
+        screen, session = ready(mod)
+        jobs[0][2].success([video(i) for i in range(14)])
+        self.assertEqual(len(screen.video_items), 6)
+        self.assertEqual(screen.video_items[0]["video_id"], video(0)["video_id"])
+        self.assertIn("1 / 3", screen["page_info"].text)
+        screen.right()
+        screen.down()    # tile 0 -> tile 3
+        screen.down()    # beyond bottom row -> next real batch
+        self.assertEqual(screen.page_index, 1)
+        self.assertEqual(screen.video_items[0]["video_id"], video(6)["video_id"])
+        screen.down()
+        screen.down()
+        self.assertEqual(screen.page_index, 2)
+        self.assertEqual([v["video_id"] for v in screen.video_items],
+                         [video(12)["video_id"], video(13)["video_id"]])
+        screen.up()
+        self.assertEqual(screen.page_index, 1)
+        self.assertEqual(len(jobs), 1)  # Paging uses real buffered videos.
+
+    def test_live_feed_revalidates_after_ttl_without_erasing_current_cards(self):
+        mod, key, saved, jobs = load(key="configured-api-key")
+        screen, session = ready(mod)
+        jobs[0][2].success([video(i) for i in range(7)])
+        screen._version_checked = True
+        screen._popular_fetched_at = 0
+        with patch.object(mod, "monotonic", return_value=1000):
+            screen._on_shown()
+        self.assertEqual(len(jobs), 2)
+        self.assertEqual(screen.video_items[0]["video_id"], video(0)["video_id"])
+        jobs[1][2].success([video(7), video(8)])
+        self.assertEqual(screen.video_items[0]["video_id"], video(7)["video_id"])
+        self.assertEqual(screen["page_info"].text, "")
+        self.assertEqual(len(session.opens), 0)
+
     def test_popular_feed_result_is_cached_when_navigating_away(self):
         mod, key, saved, jobs = load(key="test-key")
         screen, session = ready(mod)
