@@ -78,7 +78,7 @@ class WarderYouTubeGrid(Screen):
         for i in range(7):
             self["side%d" % i] = Label("")
         for i in range(VISIBLE_TILES):
-            self["focus%d" % i] = Label("")
+            self["focus%d" % i] = Pixmap()
             self["thumb%d" % i] = Pixmap()
             self["title%d" % i] = Label("")
             self["channel%d" % i] = Label("")
