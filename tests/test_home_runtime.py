@@ -290,7 +290,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         # The remote help used to be rendered on every menu preview, directly
         # on top of the bottom frame. The status area is now reserved for
         # actual errors, loading and the focused video name.
-        self.assertEqual(screen["status"].text, "")
+        self.assertNotIn("Up/Down: sections", screen["status"].text)
         self.assertTrue(screen["nav_focus0"].visible)
         screen.right()
         self.assertTrue(screen["preview_focus0"].visible)
