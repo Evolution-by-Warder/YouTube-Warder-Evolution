@@ -350,7 +350,7 @@ class WarderNativeUiTests(unittest.TestCase):
             root = ET.fromstring(xml)
             lines = [item for item in root.findall("eLabel")
                      if item.attrib.get("size") == "195,3"
-                     and item.attrib.get("position", "").endswith(",1003")]
+                     and item.attrib.get("position", "").endswith(",1070")]
             self.assertEqual(len(lines), 4, root.attrib["name"])
             self.assertFalse(any(item.attrib.get("size") == "415,58"
                                  for item in root.findall("eLabel")))
@@ -362,6 +362,9 @@ class WarderNativeUiTests(unittest.TestCase):
                 self.assertEqual(keys[key].attrib["foregroundColor"], color)
                 self.assertEqual(keys[key].attrib["halign"], "center")
                 self.assertEqual(keys[key].attrib["transparent"], "1")
+                self.assertEqual(keys[key].attrib["backgroundColor"], "#08182D")
+                self.assertLess(int(keys[key].attrib["position"].split(",")[1]) +
+                                int(keys[key].attrib["size"].split(",")[1]), 1070)
 
     def test_context_and_confirm_use_opaque_native_selection_not_listbox(self):
         tree = ast.parse((ROOT / "skin.py").read_text(encoding="utf-8"))
