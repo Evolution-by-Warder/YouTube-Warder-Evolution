@@ -14,7 +14,7 @@ from .api import SearchError, MAX_RESPONSE_BYTES, VIDEO_ID
 
 POPULAR_ENDPOINT = "https://www.googleapis.com/youtube/v3/videos"
 REGION = "SK"
-MAX_RESULTS = 12
+MAX_RESULTS = 24
 
 
 def parse_popular_response(payload):
