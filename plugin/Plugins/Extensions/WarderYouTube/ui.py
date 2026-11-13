@@ -371,6 +371,9 @@ class WarderYouTubeHome(Screen):
         if self.focus_area == "tiles":
             if self.tile_index % 3 == 0:
                 self.focus_area = "nav"
+                # Do not leave the old video title under the menu when
+                # keyboard focus returns from the right-hand preview.
+                self["status"].setText("")
                 self._update_nav()
                 self._update_tile_focus()
                 self._update_keys()
