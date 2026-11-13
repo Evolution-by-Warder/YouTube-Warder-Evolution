@@ -18,17 +18,18 @@ MAX_STDOUT_CHARS = 16384
 TIMEOUT_SECONDS = 28
 # A single media stream is important for the first Enigma2/GStreamer test.
 # Prefer AVC/H.264 with audio and <= 720p; fall back to a different muxed MP4.
-MUXED_MP4_FORMAT = (
-    "b[ext=mp4][vcodec^=avc1][acodec!=none][height<=720]/"
-    "b[ext=mp4][acodec!=none][height<=720]"
-)
+# Prefer one muxed AVC MP4 stream on the plain 4097 fallback. UHD often
+# requires separate DASH video/audio and a working 5002 player instead.
+QUALITY_HEIGHTS = {"360": 360, "480": 480, "720": 720,
+                   "1080": 1080, "1440": 1440, "2160": 2160}
 QUALITY_FORMATS = {
-    "360": (
-        "b[ext=mp4][vcodec^=avc1][acodec!=none][height<=360]/"
-        "b[ext=mp4][acodec!=none][height<=360]"
-    ),
-    "720": MUXED_MP4_FORMAT,
+    name: (
+        "b[ext=mp4][vcodec^=avc1][acodec!=none][height<=%d]/"
+        "b[ext=mp4][acodec!=none][height<=%d]" % (height, height)
+    )
+    for name, height in QUALITY_HEIGHTS.items()
 }
+MUXED_MP4_FORMAT = QUALITY_FORMATS["720"]
 
 
 class ResolverError(Exception):
