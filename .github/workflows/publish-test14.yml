@@ -1,0 +1,61 @@
+name: One-shot publish verified test14 receiver IPK
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/publish-test14.yml]
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: warder-youtube-test14-verified
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/feature/native-search-v002'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: WarderYouTube-0.0.8-test14-IPK
+          run-id: 43440051031
+          github-token: ${{ github.token }}
+          path: dist
+      - name: Verify pinned IPK and opkg control
+        shell: bash
+        run: |
+          set -euo pipefail
+          ipk='dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test14_all.ipk'
+          test "$(stat -c %s "$ipk")" = 165096
+          echo "b6660188c0a096ef1975678b57ae52f2de58306eb033ee56034c939d9645e8fe  $ipk" | sha256sum -c -
+          cd dist
+          sha256sum -c *.sha256
+          ar p *.ipk control.tar.gz | tar -xzOf - ./control | grep -Fx 'Version: 0.0.8~test14'
+          ar p *.ipk control.tar.gz | tar -xzOf - ./control | grep -Fx 'Architecture: all'
+          ar p *.ipk data.tar.gz | tar -tzf - | grep -F 'images/nav_7.png'
+          ar p *.ipk data.tar.gz | tar -tzf - | grep -F 'images/video_focus.png'
+      - name: Publish testing prerelease; compare exact stored asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag='youtube-warder-v0.0.8-test14'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo 'Existing testing prerelease; validating its bytes'
+          else
+            gh release create "$tag" \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test14_all.ipk' \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test14_all.ipk.sha256' \
+              --target feature/native-search-v002 \
+              --title 'YouTube Warder Evolution 0.0.8~test14 (TEST ONLY)' \
+              --notes 'Opt-in GigaBlue/OpenATV receiver test. All 12 screens: thin red/green/yellow/blue lines and matching colored captions, no solid shortcut rectangles. Real YouTube home paging (up to 24 genuine videos), thumbnail restoration, opaque action/confirm selection, corrected Search and Update layout, updater actual-version checks. 188 offline tests PASS. Receiver visual verification pending; no stable release or main merge.' \
+              --prerelease
+          fi
+          test "$(gh release view "$tag" --json isPrerelease --jq '.isPrerelease')" = true
+          mkdir -p verify
+          gh release download "$tag" --dir verify --pattern '*.ipk'
+          cmp 'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test14_all.ipk' \
+            'verify/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test14_all.ipk'
+          echo 'PASS: published test14 asset byte-for-byte verified'
