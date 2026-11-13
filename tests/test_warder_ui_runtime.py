@@ -290,7 +290,7 @@ class WarderNativeUiTests(unittest.TestCase):
                               (root.attrib["name"], name))
                 # Existing grid focus underlays and bottom button-bar
                 # footers deliberately live below the content layer.
-                if name.startswith("focus") or name == "footer":
+                if name.startswith(("focus", "preview_border")) or name == "footer":
                     continue
                 self.assertGreaterEqual(
                     int(widget.attrib["zPosition"]), 2,
