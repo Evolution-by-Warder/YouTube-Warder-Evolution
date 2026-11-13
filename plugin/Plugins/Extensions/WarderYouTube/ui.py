@@ -30,6 +30,8 @@ class WarderYouTubeHome(Screen):
         self["nav_title"] = Label(_("Quick access").upper())
         self["overline"] = Label("WARDER  /  ENIGMA2")
         self["menu"] = MenuList([name for name, description in self.sections])
+        for index in range(len(self.sections)):
+            self["nav_focus%d" % index] = Label(" ")
         self["heading"] = Label("")
         self["description"] = Label("")
         self["card1_title"] = Label(_("Search").upper())
@@ -51,10 +53,17 @@ class WarderYouTubeHome(Screen):
             "blue": lambda: self.open_index(7),
         }, -1)
         self["menu"].onSelectionChanged.append(self.selection_changed)
+        self.onLayoutFinish.append(self.selection_changed)
         self.selection_changed()
 
     def selection_changed(self):
         index = self["menu"].getCurrentIndex()
+        for row in range(len(self.sections)):
+            focus = self["nav_focus%d" % row]
+            if row == index:
+                focus.show()
+            else:
+                focus.hide()
         if 0 <= index < len(self.sections):
             self["heading"].setText(self.sections[index][0])
             self["description"].setText(self.sections[index][1])
