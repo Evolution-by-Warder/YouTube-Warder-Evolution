@@ -114,11 +114,14 @@ class SystemKeyboardPane:
         return self.input.getText()
 
     def reset(self):
-        """Begin a new search using the original Enigma2 Input component."""
-        if hasattr(self.input, "deleteAllChars"):
-            self.input.deleteAllChars()
-        else:
-            self.input.setText("")
+        """Clear the real Enigma2 Input AND refresh its on-screen widget.
+
+        Enigma2 Input.deleteAllChars() only changes its internal buffer; it
+        does not call update(), so old text stays visible in the right pane.
+        Input.setText("") clears the value, resets the cursor and redraws
+        the widget on both OpenATV and OpenPLi.
+        """
+        self.input.setText("")
 
     def cleanup(self):
         sms = getattr(self.backend, "sms", None)
