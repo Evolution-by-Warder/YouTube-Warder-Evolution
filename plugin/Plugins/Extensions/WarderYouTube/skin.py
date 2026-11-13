@@ -1,17 +1,17 @@
 HOME_SKIN = """
 <screen name="WarderYouTubeHome" position="0,0" size="1920,1080" title="YouTube Warder Evolution" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="brand" position="0,0" size="1,1" font="Regular;44" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
   <widget name="version" position="0,0" size="1,1" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" halign="right" zPosition="4"/>
-  <eLabel position="22,135" size="351,843" backgroundColor="#122C47"/>
-  <eLabel position="22,135" size="351,5" backgroundColor="#087EC7"/>
+  <eLabel position="22,153" size="351,825" backgroundColor="#122C47"/>
+  <eLabel position="22,153" size="351,5" backgroundColor="#087EC7"/>
   <widget name="nav_focus0" position="35,171" size="328,72" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_focus.png" alphatest="on" zPosition="2"/>
   <widget name="nav0" position="120,180" size="234,55" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
   <widget name="nav_focus1" position="35,251" size="328,72" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_focus.png" alphatest="on" zPosition="2"/>
@@ -37,10 +37,10 @@ HOME_SKIN = """
   <ePixmap position="48,575" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_5.png" alphatest="on" zPosition="5"/>
   <ePixmap position="48,655" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_6.png" alphatest="on" zPosition="5"/>
   <ePixmap position="48,735" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_7.png" alphatest="on" zPosition="5"/>
-  <eLabel position="394,135" size="1490,843" backgroundColor="#10263E"/>
-  <eLabel position="394,135" size="1490,5" backgroundColor="#087EC7"/>
-  <widget name="heading" position="426,157" size="1050,63" font="Regular;45" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
-  <widget name="subtitle" position="427,225" size="1324,45" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" zPosition="4"/>
+  <eLabel position="394,153" size="1490,825" backgroundColor="#10263E"/>
+  <eLabel position="394,153" size="1490,5" backgroundColor="#087EC7"/>
+  <widget name="heading" position="426,167" size="1050,63" font="Regular;45" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
+  <widget name="subtitle" position="427,231" size="1324,45" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" zPosition="4"/>
   <widget name="preview_focus0" position="413,285" size="477,324" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
   <widget name="preview_panel0" position="418,290" size="467,314" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
   <widget name="preview_thumb0" position="446,295" size="410,230" zPosition="4"/>
@@ -89,15 +89,15 @@ HOME_SKIN = """
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
   <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
 
-  <eLabel position="22,135" size="351,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="22,153" size="351,2" backgroundColor="#168BAF" zPosition="2"/>
   <eLabel position="22,976" size="351,2" backgroundColor="#168BAF" zPosition="2"/>
-  <eLabel position="22,135" size="2,843" backgroundColor="#168BAF" zPosition="2"/>
-  <eLabel position="371,135" size="2,843" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="22,153" size="2,825" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="371,153" size="2,825" backgroundColor="#168BAF" zPosition="2"/>
 
-  <eLabel position="394,135" size="1490,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="394,153" size="1490,2" backgroundColor="#168BAF" zPosition="2"/>
   <eLabel position="394,976" size="1490,2" backgroundColor="#168BAF" zPosition="2"/>
-  <eLabel position="394,135" size="2,843" backgroundColor="#168BAF" zPosition="2"/>
-  <eLabel position="1882,135" size="2,843" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="394,153" size="2,825" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1882,153" size="2,825" backgroundColor="#168BAF" zPosition="2"/>
 
   <widget name="preview_border0" position="413,285" size="477,324" foregroundColor="#188EAB" backgroundColor="#188EAB" transparent="0" zPosition="1"/>
   <widget name="preview_border1" position="902,285" size="477,324" foregroundColor="#188EAB" backgroundColor="#188EAB" transparent="0" zPosition="1"/>
@@ -112,15 +112,15 @@ HOME_SKIN = """
 SEARCH_SKIN = """
 <screen name="WarderYouTubeSearch" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Search" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="title" position="0,0" size="1,1" font="Regular;43" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
-  <widget name="query" position="65,145" size="1755,57" font="Regular;35" foregroundColor="#65C7FF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="query" position="65,160" size="1755,57" font="Regular;35" foregroundColor="#65C7FF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="44,215" size="1832,636" backgroundColor="#122C47"/>
   <widget name="results" position="68,240" size="1778,570" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" itemHeight="60" scrollbarMode="showOnDemand" zPosition="3"/>
   <widget name="details" position="65,868" size="1730,44" font="Regular;26" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
@@ -145,15 +145,15 @@ SEARCH_SKIN = """
 SETTINGS_SKIN = """
 <screen name="WarderYouTubeSettings" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Settings" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="title" position="0,0" size="1,1" font="Regular;43" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
-  <widget name="description" position="61,144" size="1762,80" font="Regular;31" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="description" position="61,158" size="1762,80" font="Regular;31" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="49,251" size="878,370" backgroundColor="#122C47"/>
   <eLabel position="949,251" size="920,370" backgroundColor="#122C47"/>
   <eLabel position="49,251" size="878,5" backgroundColor="#087EC7"/>
@@ -199,20 +199,20 @@ SETTINGS_SKIN = """
 GRID_SKIN = """
 <screen name="WarderYouTubeGrid" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Videos" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="brand" position="0,0" size="1,1" font="Regular;41" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
-  <widget name="heading" position="1045,142" size="814,48" font="Regular;29" foregroundColor="#36B9FF" transparent="1" halign="right" zPosition="3"/>
-  <eLabel position="0,139" size="321,860" backgroundColor="#102A45"/>
+  <widget name="heading" position="1045,148" size="814,48" font="Regular;29" foregroundColor="#36B9FF" transparent="1" halign="right" zPosition="3"/>
+  <eLabel position="0,153" size="321,846" backgroundColor="#102A45"/>
   <eLabel position="18,157" size="288,6" backgroundColor="#087EC7"/>
   <eLabel position="18,337" size="288,2" backgroundColor="#315676"/>
   <eLabel position="18,640" size="288,2" backgroundColor="#315676"/>
-  <eLabel position="322,139" size="2,860" backgroundColor="#315676"/>
+  <eLabel position="322,153" size="2,846" backgroundColor="#315676"/>
   
     <widget name="side0" position="26,174" size="274,54" font="Regular;29" foregroundColor="#6CCBFF" backgroundColor="#102A45" transparent="1" zPosition="3"/>
   
@@ -305,15 +305,15 @@ GRID_SKIN = """
 UPDATE_CHECK_SKIN = """
 <screen name="WarderYouTubeUpdateCheck" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Updates" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
   <eLabel position="43,204" size="1834,748" backgroundColor="#122C47" zPosition="0"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="title" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <widget name="status" position="72,230" size="1750,110" font="Regular;37" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
   <widget name="detail" position="72,385" size="1750,185" font="Regular;30" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
@@ -338,15 +338,15 @@ UPDATE_CHECK_SKIN = """
 UPDATE_SKIN = """
 <screen name="WarderYouTubeUpdateProgress" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Update progress" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
   <eLabel position="43,204" size="1834,748" backgroundColor="#122C47" zPosition="0"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="title" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <widget name="version" position="72,180" size="1650,62" font="Regular;37" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
   <widget name="phase" position="72,290" size="1670,66" font="Regular;33" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
@@ -374,17 +374,17 @@ UPDATE_SKIN = """
 LIBRARY_SKIN = """
 <screen name="WarderYouTubeLibrary" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Saved videos" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
   <eLabel position="43,204" size="1834,748" backgroundColor="#122C47" zPosition="0"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="title" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="subtitle" position="55,132" size="1740,65" font="Regular;32" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
+  <widget name="subtitle" position="55,153" size="1740,45" font="Regular;32" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
   <widget name="results" position="50,218" size="1810,625" font="Regular;30" itemHeight="62" foregroundColor="#FFFFFF" backgroundColor="#142C47" scrollbarMode="showOnDemand" zPosition="3"/>
   <widget name="status" position="55,874" size="1790,93" font="Regular;28" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
   <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
@@ -408,16 +408,16 @@ LIBRARY_SKIN = """
 KEYBOARD_SKIN = """
 <screen name="WarderYouTubeKeyboard" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Keyboard" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="brand" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <eLabel position="197,141" size="1526,170" backgroundColor="#122C47"/>
-  <eLabel position="197,141" size="1526,5" backgroundColor="#087EC7"/>
+  <eLabel position="197,153" size="1526,158" backgroundColor="#122C47"/>
+  <eLabel position="197,153" size="1526,5" backgroundColor="#087EC7"/>
   <widget name="title" position="229,168" size="1456,62" font="Regular;34" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <widget name="input" position="235,247" size="1410,51" font="Regular;31" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <widget name="hint" position="210,326" size="1490,44" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
@@ -583,10 +583,10 @@ KEYBOARD_SKIN = """
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
   <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
 
-  <eLabel position="197,141" size="1526,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="197,153" size="1526,2" backgroundColor="#168BAF" zPosition="2"/>
   <eLabel position="197,309" size="1526,2" backgroundColor="#168BAF" zPosition="2"/>
-  <eLabel position="197,141" size="2,170" backgroundColor="#168BAF" zPosition="2"/>
-  <eLabel position="1721,141" size="2,170" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="197,153" size="2,158" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1721,153" size="2,158" backgroundColor="#168BAF" zPosition="2"/>
 
   <eLabel position="197,380" size="1526,2" backgroundColor="#168BAF" zPosition="2"/>
   <eLabel position="197,883" size="1526,2" backgroundColor="#168BAF" zPosition="2"/>
@@ -599,13 +599,13 @@ KEYBOARD_SKIN = """
 CONTEXT_SKIN = """
 <screen name="WarderYouTubeContext" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Actions" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="brand" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
   <eLabel position="288,155" size="1345,778" backgroundColor="#122C47"/>
   <eLabel position="288,155" size="1345,6" backgroundColor="#087EC7"/>
@@ -640,13 +640,13 @@ CONTEXT_SKIN = """
 CONFIRM_SKIN = """
 <screen name="WarderYouTubeConfirm" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Confirm" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="brand" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="274,175" size="1372,725" backgroundColor="#122C47"/>
   <eLabel position="274,175" size="1372,5" backgroundColor="#087EC7"/>
@@ -675,13 +675,13 @@ CONFIRM_SKIN = """
 INFO_SKIN = """
 <screen name="WarderYouTubeInfo" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Details" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="brand" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="72,161" size="1775,756" backgroundColor="#122C47"/>
   <eLabel position="72,161" size="1775,5" backgroundColor="#087EC7"/>
@@ -712,17 +712,17 @@ INFO_SKIN = """
 NATIVE_SEARCH_KEYBOARD_SKIN = """
 <screen name="WarderNativeSearchKeyboard" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Search" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
-  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
-  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_day" position="1125,28" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,88" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1398,38" size="261,86" font="Regular;51" valign="bottom" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,28" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,88" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
 
-  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <ePixmap position="0,0" size="1920,152" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
   <widget name="warder_brand" position="0,0" size="1,1" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <widget name="warder_caption" position="0,0" size="1,1" font="Regular;30" foregroundColor="#6CCBFF" transparent="1" halign="right" zPosition="3"/>
-  <eLabel position="168,142" size="1584,814" backgroundColor="#122C47"/>
-  <eLabel position="168,142" size="1584,6" backgroundColor="#087EC7"/>
+  <eLabel position="168,153" size="1584,803" backgroundColor="#122C47"/>
+  <eLabel position="168,153" size="1584,6" backgroundColor="#087EC7"/>
   <widget name="prompt" position="206,175" size="1500,65" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
   <eLabel position="206,256" size="1502,76" backgroundColor="#0C2038"/>
   <widget name="text" position="228,263" size="1455,64" font="Regular;37" foregroundColor="#FFFFFF" backgroundColor="#0C2038" transparent="1" zPosition="3"/>
@@ -741,9 +741,9 @@ NATIVE_SEARCH_KEYBOARD_SKIN = """
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
   <widget name="warder_key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
 
-  <eLabel position="168,142" size="1584,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="168,153" size="1584,2" backgroundColor="#168BAF" zPosition="2"/>
   <eLabel position="168,954" size="1584,2" backgroundColor="#168BAF" zPosition="2"/>
-  <eLabel position="168,142" size="2,814" backgroundColor="#168BAF" zPosition="2"/>
-  <eLabel position="1750,142" size="2,814" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="168,153" size="2,803" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1750,153" size="2,803" backgroundColor="#168BAF" zPosition="2"/>
 </screen>
 """
