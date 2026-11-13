@@ -611,12 +611,16 @@ CONTEXT_SKIN = """
   <eLabel position="288,155" size="1345,6" backgroundColor="#087EC7"/>
   <widget name="heading" position="333,193" size="1260,76" font="Regular;44" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
   <widget name="video" position="337,283" size="1250,123" font="Regular;29" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
-  <widget name="context_focus0" position="334,432" size="1250,72" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="context_focus1" position="334,504" size="1250,72" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="context_focus2" position="334,576" size="1250,72" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="context_focus3" position="334,648" size="1250,72" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="context_focus4" position="334,720" size="1250,72" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="menu" position="334,432" size="1250,314" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" itemHeight="72" scrollbarMode="showOnDemand" zPosition="3"/>
+  <widget name="context_focus0" position="334,432" size="1250,72" font="Regular;27" backgroundColor="#126BA5" transparent="0" zPosition="3"/>
+  <widget name="context_focus1" position="334,504" size="1250,72" font="Regular;27" backgroundColor="#126BA5" transparent="0" zPosition="3"/>
+  <widget name="context_focus2" position="334,576" size="1250,72" font="Regular;27" backgroundColor="#126BA5" transparent="0" zPosition="3"/>
+  <widget name="context_focus3" position="334,648" size="1250,72" font="Regular;27" backgroundColor="#126BA5" transparent="0" zPosition="3"/>
+  <widget name="context_focus4" position="334,720" size="1250,72" font="Regular;27" backgroundColor="#126BA5" transparent="0" zPosition="3"/>
+    <widget name="context_row0" position="354,439" size="1200,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="5"/>
+  <widget name="context_row1" position="354,511" size="1200,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="5"/>
+  <widget name="context_row2" position="354,583" size="1200,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="5"/>
+  <widget name="context_row3" position="354,655" size="1200,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="5"/>
+  <widget name="context_row4" position="354,727" size="1200,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="5"/>
   <widget name="hint" position="336,825" size="1230,60" font="Regular;28" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="150,1003" size="195,3" backgroundColor="#FF526A" zPosition="5"/>
@@ -652,7 +656,10 @@ CONFIRM_SKIN = """
   <eLabel position="274,175" size="1372,5" backgroundColor="#087EC7"/>
   <widget name="heading" position="327,210" size="1260,72" font="Regular;43" foregroundColor="#6CCBFF" transparent="1" zPosition="3"/>
   <widget name="question" position="327,316" size="1250,175" font="Regular;32" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
-  <widget name="menu" position="550,570" size="830,180" font="Regular;34" itemHeight="72" foregroundColor="#FFFFFF" backgroundColor="#122C47" scrollbarMode="showOnDemand" zPosition="3"/>
+    <widget name="confirm_focus0" position="550,570" size="830,70" font="Regular;30" backgroundColor="#126BA5" transparent="0" zPosition="3"/>
+  <widget name="confirm_row0" position="574,578" size="780,54" font="Regular;34" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="5"/>
+  <widget name="confirm_focus1" position="550,642" size="830,70" font="Regular;30" backgroundColor="#126BA5" transparent="0" zPosition="3"/>
+  <widget name="confirm_row1" position="574,650" size="780,54" font="Regular;34" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="5"/>
   <widget name="hint" position="335,825" size="1200,49" font="Regular;28" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="150,1003" size="195,3" backgroundColor="#FF526A" zPosition="5"/>
