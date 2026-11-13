@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test15",
-    "tag": "youtube-warder-v0.0.8-test15",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test15/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test15_all.ipk",
-    "sha256": "4a5e8386f09de33c9b46cd3fac42d30ad35859ff8d53c7f4d898044fca25d859",
-    "bytes": 165488,
-    "notes": "Test15: všetky video dlaždice majú tenké tmavé neaktívne rámiky a jasný tyrkysový rámik iba pri vybranom videu (Domov, História, Obľúbené, Hľadanie). Obsahuje aj test14: farebné texty a tenké čiary namiesto obdĺžnikov na 12 obrazovkách, viac živých YouTube videí, opravy náhľadov, menu a aktualizátora. Testovacia verzia na GigaBlue."
+    "version": "0.0.8~test16",
+    "tag": "youtube-warder-v0.0.8-test16",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test16/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test16_all.ipk",
+    "sha256": "ba43622f53b03985801fe938652af6607e68fc268110a243176c30ed640b1b49",
+    "bytes": 191446,
+    "notes": "Test16: originálna kompletná Warder lebka 384×429 so spodnou čeľusťou, bez záplat a odrezania, nahrádza pôvodný orezaný zdroj v spoločnej hlavičke všetkých 12 obrazoviek. Kovový názov YouTube Warder Evolution aj podpis by Warder sú proporčne väčšie podľa ostatných Warder pluginov. Obsahuje aj overené test15 rámiky videí, náhľady, stránkovanie Domov a tenké farebné popisy tlačidiel. Test na GigaBlue/OpenATV."
   }
 }
