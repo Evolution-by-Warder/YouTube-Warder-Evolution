@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test12",
-    "tag": "youtube-warder-v0.0.8-test12",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test12/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test12_all.ipk",
-    "sha256": "65e35da4597e77455a675468a6f18cdadf82e5064e7f41b9141d6422106f7ece",
-    "bytes": 146146,
-    "notes": "Test12: jednotna Warder hlavicka s originalnou lebkou na 12 obrazovkach, zivy datum/cas/verzia, nove dvojpanelove Home s nahladmi videi a opravena navigacia a klavesnica. Testovacie vydanie pre GigaBlue / OpenATV 8.1; vizualne overenie na prijimaci este prebieha."
+    "version": "0.0.8~test13",
+    "tag": "youtube-warder-v0.0.8-test13",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test13/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test13_all.ipk",
+    "sha256": "23809367a82d47cc36d39c4e99ba2fad2c712c35e03f7771b50f10c6ce17faf9",
+    "bytes": 164510,
+    "notes": "Test13: osem skutočných Warder PNG ikon v ľavom menu, výrazný fokus položky a videa v Domov/História/Obľúbené, odstránené opakované pokyny a pretekanie textu cez rám, vyšší spoločný panel s upravenou pôvodnou lebkou a väčšími hodinami. Vizuálne overenie na prijímači ešte čaká."
   }
 }
