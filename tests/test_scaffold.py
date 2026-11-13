@@ -39,10 +39,10 @@ class Tests(unittest.TestCase):
         for i in range(6):
             self.assertIn("/video_focus.png", widgets["preview_focus%d" % i].attrib["pixmap"])
             self.assertEqual(widgets["preview_focus%d" % i].attrib["zPosition"], "8")
-        self.assertEqual(widgets["status"].attrib["position"], "427,938")
+        self.assertEqual(widgets["status"].attrib["position"], "427,939")
         self.assertEqual(widgets["status"].attrib["size"], "1410,28")
-        self.assertEqual(widgets["hdr_clock"].attrib["font"], "Regular;51")
-        self.assertEqual(widgets["hdr_clock"].attrib["valign"], "bottom")
+        self.assertEqual(widgets["hdr_clock"].attrib["font"], "Regular;60")
+        self.assertEqual(widgets["hdr_clock"].attrib["valign"], "center")
 
     def test_inactive_video_borders_are_thin_dark_and_focus_is_bright(self):
         parsed = ast.parse((SRC / "skin.py").read_text(encoding="utf-8"))
@@ -74,7 +74,7 @@ class Tests(unittest.TestCase):
         subtle_borders = [item for item in grid.findall("eLabel")
                           if item.attrib.get("backgroundColor") == "#0D536F"]
         self.assertEqual(len(subtle_borders), 24)
-        self.assertTrue(all(item.attrib["size"].startswith(("491,1", "1,364"))
+        self.assertTrue(all(item.attrib["size"].startswith(("491,1", "1,355"))
                             for item in subtle_borders))
         self.assertNotIn('backgroundColor="#1AB4D5"', ET.tostring(grid, encoding="unicode"))
 
