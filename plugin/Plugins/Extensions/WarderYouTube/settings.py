@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Small blue settings screen; no account tokens or keys are committed to Git."""
+from .header_ui import add_header
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.config import ConfigSelection, ConfigSubsection, ConfigText, config, configfile
@@ -41,6 +42,7 @@ class WarderYouTubeSettings(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
+        add_header(self)
         self["title"] = Label("YouTube Warder Evolution / " + _("Settings"))
         self["section_search"] = Label(_("Search").upper())
         self["section_playback"] = Label(_("Playback").upper())
