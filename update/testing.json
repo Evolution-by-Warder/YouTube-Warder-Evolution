@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test5",
-    "tag": "youtube-warder-v0.0.8-test5",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test5/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test5_all.ipk",
-    "sha256": "1c172b9c968345c6cf35f1cfc13174641c04d20c7f98cabe3c929485410073ae",
-    "bytes": 62210,
-    "notes": "Test5: oprava priameho aktualizátora, HLS/DASH/MP4, náhľady a bezpečný EXIT. Test na prijímači ešte potrebný."
+    "version": "0.0.8~test6",
+    "tag": "youtube-warder-v0.0.8-test6",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test6/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test6_all.ipk",
+    "sha256": "7adcfc9afca8f57762d861321b996e25040ac0e6748b900613bfec8527ab6242",
+    "bytes": 66304,
+    "notes": "Test6: Obľúbené (MENU), História, prehrávanie uložených videí, ochrana aktualizátora pred dvojitou inštaláciou. Testovacia verzia na overenie na GigaBlue."
   }
 }
