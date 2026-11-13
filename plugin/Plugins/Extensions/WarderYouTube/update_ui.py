@@ -16,6 +16,7 @@ from twisted.internet.threads import deferToThread
 
 from .skin import UPDATE_SKIN, UPDATE_CHECK_SKIN
 from .update_core import install_update, check_update, CURRENT_VERSION, UpdateError
+from .i18n import tr as _
 
 
 class WarderYouTubeUpdateProgress(Screen):
@@ -28,7 +29,11 @@ class WarderYouTubeUpdateProgress(Screen):
         self.disposed = False
         self.finished = False
         self.failed = False
-        self["title"] = Label("YouTube Warder Evolution - aktualizácia")
+        self["title"] = Label("YouTube Warder Evolution  /  " + _("Updates"))
+        self["key_red"] = Label(_("Back"))
+        self["key_green"] = Label(_("Install"))
+        self["key_yellow"] = Label(_("Details"))
+        self["key_blue"] = Label(_("Refresh"))
         self["version"] = Label("Nová verzia: " + release["version"])
         self["phase"] = Label("Príprava overenej aktualizácie...")
         self["detail"] = Label("")
@@ -129,13 +134,20 @@ class WarderYouTubeUpdateCheck(Screen):
         self.release = None
         self.confirmation_open = False
         self.install_started = False
-        self["title"] = Label("YouTube Warder Evolution / Aktualizácie")
+        self["title"] = Label("YouTube Warder Evolution  /  " + _("Updates"))
+        self["key_red"] = Label(_("Back"))
+        self["key_green"] = Label(_("Install"))
+        self["key_yellow"] = Label(_("Details"))
+        self["key_blue"] = Label(_("Refresh"))
+        self._checking = False
+        self.details_visible = False
         self["status"] = Label("Kontrola testovacieho aktualizačného kanála...")
         self["detail"] = Label("Aktuálna verzia: " + CURRENT_VERSION)
         self["footer"] = Label("EXIT: späť")
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {
             "ok": self.ask_install, "green": self.ask_install,
-            "cancel": self.close, "red": self.close
+            "cancel": self.close, "red": self.close,
+            "yellow": self.toggle_details, "blue": self.refresh_check
         }, -1)
         self.onShown.append(self.begin_once)
         self.onClose.append(self.dispose)
@@ -144,12 +156,14 @@ class WarderYouTubeUpdateCheck(Screen):
         if self.started or self.disposed:
             return
         self.started = True
+        self._checking = True
         work = deferToThread(check_update, CURRENT_VERSION)
         work.addCallbacks(self.found, self.failed_check)
 
     def found(self, release):
         if self.disposed:
             return
+        self._checking = False
         self.release = release
         if release is None:
             self["status"].setText("Testovací kanál: používate najnovšiu dostupnú verziu.")
@@ -163,14 +177,32 @@ class WarderYouTubeUpdateCheck(Screen):
     def failed_check(self, failure):
         if self.disposed:
             return
+        self._checking = False
         problem = getattr(failure, "value", None)
         self["status"].setText("Kontrola aktualizácie zlyhala.")
         self["detail"].setText(str(problem) if isinstance(problem, UpdateError)
                                else "Nepodarilo sa kontaktovať aktualizačný server.")
         self["footer"].setText("EXIT: späť")
 
+    def toggle_details(self):
+        if self.disposed or self.release is None:
+            return
+        self.details_visible = not self.details_visible
+        self["detail"].setText(
+            (self.release.get("notes") or "") if self.details_visible
+            else _("Update found") + ": " + self.release["version"])
+
+    def refresh_check(self):
+        if self.disposed or self._checking or self.confirmation_open or self.install_started:
+            return
+        self.started = False
+        self.release = None
+        self.details_visible = False
+        self["status"].setText(_("Checking updates"))
+        self.begin_once()
+
     def ask_install(self):
-        if (self.disposed or self.release is None or
+        if (self.disposed or self._checking or self.release is None or
                 self.confirmation_open or self.install_started):
             return
         self.confirmation_open = True

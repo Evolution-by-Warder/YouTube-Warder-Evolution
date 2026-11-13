@@ -18,6 +18,7 @@ from .local_library import (
 )
 from .resolver import ResolverError, resolve_video_streams
 from .settings import get_quality
+from .i18n import tr as _
 
 
 class WarderYouTubeLibrary(Screen):
@@ -38,6 +39,10 @@ class WarderYouTubeLibrary(Screen):
         title = "Obľúbené videá" if kind == "favourites" else "História"
         self["title"] = Label("YouTube Warder Evolution / " + title)
         self["subtitle"] = Label("")
+        self["key_red"] = Label(_("Back"))
+        self["key_green"] = Label(_("Play video"))
+        self["key_yellow"] = Label(_("Delete"))
+        self["key_blue"] = Label(_("Clear"))
         self["results"] = MenuList([])
         self["status"] = Label("")
         self["footer"] = Label(
@@ -48,7 +53,8 @@ class WarderYouTubeLibrary(Screen):
             ["OkCancelActions", "ColorActions", "InfoActions", "MenuActions"],
             {
                 "ok": self.play_selected, "info": self.show_info,
-                "menu": self.save_favourite, "yellow": self.remove_selected,
+                "menu": self.open_actions, "green": self.play_selected,
+                "yellow": self.remove_selected,
                 "blue": self.confirm_clear, "cancel": self.close,
                 "red": self.close
             }, -1
@@ -109,6 +115,29 @@ class WarderYouTubeLibrary(Screen):
                 (item["title"], item["channel"], item["video_id"]),
                 type=MessageBox.TYPE_INFO
             )
+
+    def open_actions(self):
+        item = self._selected()
+        if item is None or self.busy or self.playback_active:
+            return
+        from .context_menu import WarderYouTubeContext
+        self.session.openWithCallback(
+            self.action_selected, WarderYouTubeContext, item,
+            self.kind == "favourites", self.kind)
+
+    def action_selected(self, action):
+        if self.disposed:
+            return
+        if action == "play":
+            self.play_selected()
+        elif action == "favorite":
+            self.save_favourite()
+        elif action == "info":
+            self.show_info()
+        elif action == "remove":
+            self.remove_selected()
+        elif action == "clear":
+            self.confirm_clear()
 
     def save_favourite(self):
         if self.busy or self.playback_active:

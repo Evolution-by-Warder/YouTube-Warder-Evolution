@@ -10,11 +10,6 @@ from Components.MenuList import MenuList
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
-try:
-    from Screens.VirtualKeyBoard import VirtualKeyboard
-except ImportError:
-    from Screens.VirtualKeyBoard import VirtualKeyBoard as VirtualKeyboard
-
 from twisted.internet.threads import deferToThread
 
 from .api import SearchError, search_videos
@@ -23,7 +18,8 @@ from .resolver import ResolverError, is_available, resolve_video_streams
 from .settings import WarderYouTubeSettings, get_api_key, get_quality
 from .video_metadata import VideoInfoError, fetch_video_info
 from .skin import SEARCH_SKIN
-from .local_library import toggle_favourite, record_opened, LibraryError
+from .local_library import toggle_favourite, record_opened, list_videos, LibraryError
+from .i18n import tr as _
 
 
 class WarderYouTubeSearch(Screen):
@@ -44,10 +40,15 @@ class WarderYouTubeSearch(Screen):
         self.active_grid = None
         self.search_backend = None
         self._did_initial_prompt = False
+        self.context_open = False
 
-        self["title"] = Label("YouTube Warder Evolution / Search")
-        self["query"] = Label("Search videos")
+        self["title"] = Label("YouTube Warder Evolution  /  " + _("Search"))
+        self["query"] = Label(_("Search videos"))
         self["results"] = MenuList([])
+        self["key_red"] = Label(_("Back"))
+        self["key_green"] = Label(_("Next"))
+        self["key_yellow"] = Label(_("Settings"))
+        self["key_blue"] = Label(_("New search"))
         self["details"] = Label("")
         self["status"] = Label("BLUE: search     YELLOW: settings")
         self["footer"] = Label(
@@ -92,16 +93,17 @@ class WarderYouTubeSearch(Screen):
             self.session.open(WarderYouTubeSettings)
 
     def open_keyboard(self):
-        if self.busy:
+        if self.busy or self.closed:
             return
         if not select_backend(get_api_key(), is_available()):
             self["status"].setText(
                 "No search backend: set an API key or install yt-dlp."
             )
             return
+        from .keyboard import WarderYouTubeKeyboard
         self.session.openWithCallback(
-            self.search_submitted, VirtualKeyboard,
-            title="Search YouTube videos", text=self.query
+            self.search_submitted, WarderYouTubeKeyboard,
+            value=self.query, title=_("Enter your YouTube search")
         )
 
     def search_submitted(self, query):
@@ -126,8 +128,8 @@ class WarderYouTubeSearch(Screen):
         self.busy = True
         self.request_version += 1
         version = self.request_version
-        self["query"].setText("Search: " + self.query[:60])
-        self["status"].setText("Loading real YouTube results...")
+        self["query"].setText(_("Search") + ": " + self.query[:60])
+        self["status"].setText(_("Internet search") + "...")
         # Both backends run in workers. Never block the Enigma2 GUI thread.
         if self.search_backend == "api":
             deferred = deferToThread(
@@ -199,7 +201,7 @@ class WarderYouTubeSearch(Screen):
             self.active_grid = self.session.openWithCallback(
                 self.grid_closed, WarderYouTubeGrid,
                 self.video_items, self.query, bool(self.next_page_token),
-                self.play_video, self.info_video, self.toggle_favourite
+                self.play_video, self.info_video, self.show_context
             )
         except Exception:
             self.active_grid = None
@@ -238,7 +240,38 @@ class WarderYouTubeSearch(Screen):
     def favorite_selected(self):
         index = self["results"].getCurrentIndex()
         if 0 <= index < len(self.video_items):
-            self.toggle_favourite(self.video_items[index])
+            self.show_context(self.video_items[index])
+
+    def show_context(self, video):
+        if self.busy or self.closed or self.playback_active or self.context_open:
+            return
+        try:
+            from .context_menu import WarderYouTubeContext
+            saved = any(x["video_id"] == video.get("video_id")
+                        for x in list_videos("favourites"))
+            self.context_open = True
+            self.session.openWithCallback(
+                lambda action: self.context_selected(action, video),
+                WarderYouTubeContext, video, saved)
+        except LibraryError as error:
+            self.context_open = False
+            self.show_play_status(str(error))
+        except Exception:
+            self.context_open = False
+            self.show_play_status(_("Video actions") + ": " + _("Cancel"))
+
+    def context_selected(self, action, video):
+        self.context_open = False
+        if self.closed or action is None:
+            return
+        if action == "play":
+            self.play_video(video)
+        elif action == "favorite":
+            self.toggle_favourite(video)
+        elif action == "info":
+            self.info_video(video)
+        elif action == "search":
+            self.open_keyboard()
 
     def toggle_favourite(self, video):
         if self.busy or self.closed or self.playback_active:
@@ -249,8 +282,8 @@ class WarderYouTubeSearch(Screen):
             self.show_play_status(str(error))
             return
         self.show_play_status(
-            "Pridané do obľúbených. MENU: odobrať." if saved
-            else "Video odstránené z obľúbených.")
+            _("Add to favourites") + " ✓" if saved
+            else _("Remove from favourites") + " ✓")
 
     def info_selected(self):
         index = self["results"].getCurrentIndex()
