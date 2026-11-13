@@ -24,6 +24,21 @@ class Tests(unittest.TestCase):
         self.assertIn("images/warder_header.png", xml)
         self.assertEqual(xml.count("<ePixmap"), 9)
         self.assertIn('name="hdr_clock"', xml)
+        # Search must display the actual system VirtualKeyBoard list/Input,
+        # not a second fake 50-letter matrix made from Warder Labels.
+        self.assertIn('name="kb_system_list"', xml)
+        self.assertIn('name="kb_system_input"', xml)
+        self.assertNotIn('name="kb_key0"', xml)
+        self.assertNotIn('name="kb_focus0"', xml)
+        self.assertNotIn('name="kb_input"', xml)
+        home_source = (SRC / "ui.py").read_text(encoding="utf-8")
+        system_source = (SRC / "system_keyboard_pane.py").read_text(encoding="utf-8")
+        self.assertIn("SystemKeyboardPane(", home_source)
+        self.assertNotIn("kb_characters", home_source)
+        self.assertIn("from Screens.VirtualKeyBoard import VirtualKeyBoard", system_source)
+        self.assertIn('backend["list"]', system_source)
+        self.assertIn('backend["text"]', system_source)
+        self.assertIn("backend.processSelect()", system_source)
         self.assertIn('name="hdr_version"', xml)
         icons = [p.attrib["pixmap"] for p in screen.findall("ePixmap")
                  if "/nav_" in p.attrib.get("pixmap", "")]
