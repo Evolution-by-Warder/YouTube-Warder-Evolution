@@ -171,7 +171,7 @@ def render_header():
     # Keep the original deep-navy/metallic shades. RGB332 turned almost
     # every dark blue into pure black and visibly damaged the Warder design.
     # Still ONE tiny static 1920x134 PNG decoded only once on the receiver.
-    data = b"".join(b"\\x00" + image[y*w*3:(y+1)*w*3] for y in range(h))
+    data = b"".join(b"\x00" + image[y*w*3:(y+1)*w*3] for y in range(h))
 
     def chunk(tag, body):
         full = tag + body
