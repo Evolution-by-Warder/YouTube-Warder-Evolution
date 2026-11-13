@@ -210,4 +210,11 @@ def language_code():
 
 
 def tr(message):
-    return MESSAGES.get(language_code(), {}).get(message, message)
+    selected = language_code()
+    if selected == "sk":
+        # A Slovak source message stays Slovak unless explicitly overridden.
+        return MESSAGES["sk"].get(message, message)
+    # Unsupported system languages fall back to English, not an accidental
+    # mixture of untranslated Slovak UI strings.
+    return MESSAGES.get(selected, {}).get(
+        message, MESSAGES.get("en", {}).get(message, message))
