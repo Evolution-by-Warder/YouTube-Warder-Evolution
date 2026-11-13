@@ -14,7 +14,7 @@ from .skin import HOME_SKIN
 from .i18n import tr as _
 from .update_core import CURRENT_VERSION
 from .grid_model import move_index
-from .home_feed import popular_videos
+from .home_feed import popular_videos, public_home_videos
 from .home_thumbs import HomeThumbs
 from .local_library import (
     LibraryError, list_videos, toggle_favourite, record_opened,
@@ -58,6 +58,7 @@ class WarderYouTubeHome(Screen):
         self._popular_loading = False
         self._popular_cache = None
         self._popular_error = False
+        self._popular_source = "api"
         self._busy = False
         self._playback_active = False
         self._context_open = False
@@ -227,22 +228,27 @@ class WarderYouTubeHome(Screen):
             self._show_tiles(saved, "Favourites (offline)")
             return
         self._show_message(
-            "Set an API key in Settings for popular videos; "
-            "your recently played and saved videos will appear here."
+            "Public YouTube videos are unavailable. "
+            "Recently played and saved videos will appear here."
         )
 
     def _request_popular(self):
         if self._popular_requested or self._disposed:
             return
         key = get_api_key()
-        if not key:
-            self._fallback_home()
-            return
+        self._popular_source = "api" if key else "public"
         self._popular_requested = True
         self._popular_loading = True
-        self._show_message("Loading popular videos for Slovakia…")
+        if key:
+            self._show_message("Loading popular videos for Slovakia…")
+        else:
+            # Show a useful local cache while public videos load. Never
+            # block Enigma2 or claim anonymous results are personalized.
+            self._fallback_home()
+            self["status"].setText(_("Loading public YouTube videos…"))
         try:
-            work = deferToThread(popular_videos, key)
+            work = (deferToThread(popular_videos, key) if key else
+                    deferToThread(public_home_videos))
             work.addCallbacks(self._popular_loaded, self._popular_failed)
         except Exception:
             self._popular_failed(None)
@@ -254,7 +260,9 @@ class WarderYouTubeHome(Screen):
         self._popular_cache = videos[:12] if isinstance(videos, list) else []
         if self.index == 0:
             if self._popular_cache:
-                self._show_tiles(self._popular_cache, "Popular in Slovakia")
+                self._show_tiles(self._popular_cache,
+                                 "Popular in Slovakia" if self._popular_source == "api"
+                                 else "Public YouTube selection (no API key)")
             else:
                 self._fallback_home()
 
@@ -265,7 +273,10 @@ class WarderYouTubeHome(Screen):
         self._popular_error = True
         if self.index == 0:
             self._fallback_home()
-            self["status"].setText(_("Popular videos are temporarily unavailable."))
+            self["status"].setText(
+                _("Popular videos are temporarily unavailable.") if self._popular_source == "api"
+                else _("Public YouTube list unavailable; showing local videos.")
+            )
 
     def _update_preview(self):
         if self._disposed or not self._mounted:
@@ -278,8 +289,12 @@ class WarderYouTubeHome(Screen):
             if self._popular_cache:
                 self._show_tiles(self._popular_cache, "Popular in Slovakia")
             elif self._popular_loading:
-                self._show_message("Loading popular videos for Slovakia…")
-            elif self._popular_error or not get_api_key():
+                if self._popular_source == "public":
+                    self._fallback_home()
+                    self["status"].setText(_("Loading public YouTube videos…"))
+                else:
+                    self._show_message("Loading popular videos for Slovakia…")
+            elif self._popular_error:
                 self._fallback_home()
             else:
                 self._request_popular()
