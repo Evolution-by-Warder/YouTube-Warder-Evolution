@@ -21,6 +21,12 @@ from .skin import SEARCH_SKIN
 from .local_library import toggle_favourite, record_opened, list_videos, LibraryError
 from .i18n import tr as _
 from .keyboard import WarderYouTubeKeyboard
+try:
+    from .native_keyboard import WarderNativeSearchKeyboard
+except ImportError:
+    # Image-specific Enigma2 keyboard builds may not expose VirtualKeyBoard.
+    # Retain the existing fully functional Warder keyboard as a fallback.
+    WarderNativeSearchKeyboard = None
 from .context_menu import WarderYouTubeContext
 from .info_ui import WarderYouTubeInfo
 
@@ -103,8 +109,9 @@ class WarderYouTubeSearch(Screen):
                 _("No search backend: set an API key or install yt-dlp.")
             )
             return
+        editor = WarderNativeSearchKeyboard or WarderYouTubeKeyboard
         self.session.openWithCallback(
-            self.search_submitted, WarderYouTubeKeyboard,
+            self.search_submitted, editor,
             value=self.query, title=_("Enter your YouTube search")
         )
 
