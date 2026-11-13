@@ -8,6 +8,7 @@ for older / vendor-specific images.
 from Components.Label import Label
 from Screens.VirtualKeyBoard import VirtualKeyBoard
 
+from .header_ui import add_header
 from .skin import NATIVE_SEARCH_KEYBOARD_SKIN
 from .i18n import tr as _
 
@@ -52,6 +53,7 @@ class WarderNativeSearchKeyboard(VirtualKeyBoard):
         # embedded skin. A unique name guarantees the blue Warder panel,
         # without altering any other Enigma2 keyboard or current GUI skin.
         self.skinName = ["WarderNativeSearchKeyboard"]
+        add_header(self)
         self["warder_brand"] = Label("YouTube Warder Evolution")
         self["warder_caption"] = Label(_("Search videos"))
         # Enigma2 uses StaticText sources for its native colour key labels.
