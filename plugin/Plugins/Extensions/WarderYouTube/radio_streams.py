@@ -19,6 +19,9 @@ LIMIT = 8
 # The borrowed extractor uses global, plugin-local quality settings and a
 # global priority table. Serialize just extraction, never Enigma2 GUI work.
 EXTRACTOR_LOCK = Lock()
+QUALITY_ITAGS = {"360": "18", "480": "35", "720": "22",
+                 "1080": "37", "1440": "38", "2160": "38"}
+QUALITY_HEIGHTS = {name: int(name) for name in QUALITY_ITAGS}
 
 
 def allowed_origin(url, media=False):
@@ -80,19 +83,21 @@ def extract_candidates(video_id, quality="720", dash=False,
                        resolver_factory=None, transport_factory=Transport):
     """Return up to eight validated playable sources, with native backends.
 
-    360/720 set the MP4 format ceiling. HLS is adaptive and may dynamically
-    choose another resolution; kept as a fallback rather than forced quality.
+    Video/DASH candidates obey the requested ceiling. HLS is adaptive and
+    may dynamically choose another resolution; it is not a hard cap.
     """
     from .resolver import video_page_url
     video_page_url(video_id)
-    if quality not in ("360", "720"):
+    if quality not in QUALITY_ITAGS:
         raise ValueError("Invalid quality")
     if resolver_factory is None:
         from .youtube_engine.extractor import YouTubeVideoUrl
         resolver_factory = YouTubeVideoUrl
     with EXTRACTOR_LOCK:
         previous_quality = config.plugins.YouTube.maxResolution.value
-        config.plugins.YouTube.maxResolution.value = "18" if quality == "360" else "22"
+        previous_height = config.plugins.YouTube.maxHeight.value
+        config.plugins.YouTube.maxResolution.value = QUALITY_ITAGS[quality]
+        config.plugins.YouTube.maxHeight.value = QUALITY_HEIGHTS[quality]
         try:
             resolver = resolver_factory()
             resolver.enable_dash = bool(dash)
@@ -101,6 +106,7 @@ def extract_candidates(video_id, quality="720", dash=False,
             candidates = [first] + list(getattr(resolver, "playback_urls", []))
         finally:
             config.plugins.YouTube.maxResolution.value = previous_quality
+            config.plugins.YouTube.maxHeight.value = previous_height
     result, seen = [], set()
     for url in candidates:
         if not isinstance(url, str) or url in seen:
