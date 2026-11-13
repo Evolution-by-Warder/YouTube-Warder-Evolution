@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PKG_DIR = ROOT / "plugin/Plugins/Extensions/WarderYouTube"
 TARGET_PREFIX = "usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube"
 PACKAGE = "enigma2-plugin-extensions-youtube-warder-evolution"
-VERSION = "0.0.8~test12"
+VERSION = "0.0.8~test13"
 FILENAME = "%s_%s_all.ipk" % (PACKAGE, VERSION)
 SENSITIVE = re.compile(rb"AIza[0-9A-Za-z_-]{20,}")
 
@@ -102,7 +102,29 @@ def build(output_dir):
             raise ValueError("Invalid Warder plugin icon: " + filename)
         data_files.append((TARGET_PREFIX + "/images/" + filename, raw, False))
 
-    # One pre-rendered 1920x134 PNG shared across all embedded Enigma2
+    # Pre-render all eight native menu icons and two focus states at build
+    # time. Receiver sees only ePixmap/Pixmap PNGs, no Python drawing.
+    import importlib.util
+    art_file = ROOT / "tools" / "warder_nav_art.py"
+    art_spec = importlib.util.spec_from_file_location("_warder_nav_art", str(art_file))
+    art = importlib.util.module_from_spec(art_spec)
+    art_spec.loader.exec_module(art)
+    accents = [("nav_%d.png" % i, art.render_icon(i), (64, 64))
+               for i in range(art.ICON_COUNT)]
+    accents += [
+        ("nav_focus.png", art.render_nav_focus(), art.NAV_FOCUS_SIZE),
+        ("video_focus.png", art.render_video_focus(), art.VIDEO_FOCUS_SIZE)
+    ]
+    for filename, png, expected in accents:
+        if (not png.startswith(b"\x89PNG\r\n\x1a\n") or
+                png[12:16] != b"IHDR" or png[25] != 6 or
+                tuple(int.from_bytes(png[i:i+4], "big") for i in (16, 20)) != expected or
+                not 0 < len(png) < 150_000):
+            raise ValueError("Invalid Warder navigation artwork: " + filename)
+        data_files.append((TARGET_PREFIX + "/images/" + filename, png, False))
+
+    # One pre-rendered shared static header; zero drawing on the receiver.
+
     # screens. Generated at build time only; ZERO GPU/Python drawing at run.
     # Import by explicit build-script path: unit tests load this builder via
     # importlib with sys.path that does not contain tools/.
@@ -114,7 +136,7 @@ def build(output_dir):
     header_png = source.render_header()
     if not (header_png[:8] == bytes((137, 80, 78, 71, 13, 10, 26, 10))
             and int.from_bytes(header_png[16:20], "big") == 1920
-            and int.from_bytes(header_png[20:24], "big") == 134
+            and int.from_bytes(header_png[20:24], "big") == 152
             and len(header_png) < 350_000):
         raise ValueError("Invalid Warder shared header PNG (bytes=%d, signature=%r, size=%d,%d)" % (len(header_png), header_png[:8], int.from_bytes(header_png[16:20], "big"), int.from_bytes(header_png[20:24], "big")))
     data_files.append((TARGET_PREFIX + "/images/warder_header.png",
