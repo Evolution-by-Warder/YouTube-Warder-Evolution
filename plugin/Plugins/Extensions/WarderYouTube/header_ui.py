@@ -59,9 +59,8 @@ class HeaderController:
         self.connection = None
         self.timeout_callbacks = None
         self.closed = False
-        screen["hdr_name"] = Label("YouTube Warder")
-        screen["hdr_evolution"] = Label("Evolution")
-        screen["hdr_by"] = Label("by Warder")
+        # Product name and by-Warder signature are baked into the single
+        # approved static banner. Only live values need native widgets.
         screen["hdr_day"] = Label("")
         screen["hdr_date"] = Label("")
         screen["hdr_clock"] = Label("")
