@@ -483,3 +483,38 @@ INFO_SKIN = """
   <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
 </screen>
 """
+
+
+
+# Only the outer shell is Warder-specific. The "list" is Enigma2's real
+# VirtualKeyBoardList and retains its firmware-defined keys and navigation.
+# This screen never replaces VirtualKeyBoard globally in the active GUI skin.
+NATIVE_SEARCH_KEYBOARD_SKIN = """
+<screen name="WarderNativeSearchKeyboard" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Search" flags="wfNoBorder" backgroundColor="#08182D">
+  <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
+  <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
+  <widget name="warder_brand" position="44,22" size="1380,68" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="warder_caption" position="1465,32" size="410,54" font="Regular;30" foregroundColor="#6CCBFF" transparent="1" halign="right" zPosition="3"/>
+  <eLabel position="168,142" size="1584,814" backgroundColor="#122C47"/>
+  <eLabel position="168,142" size="1584,6" backgroundColor="#087EC7"/>
+  <widget name="prompt" position="206,175" size="1500,65" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <eLabel position="206,256" size="1502,76" backgroundColor="#0C2038"/>
+  <widget name="text" position="228,263" size="1455,64" font="Regular;37" foregroundColor="#FFFFFF" backgroundColor="#0C2038" transparent="1" zPosition="3"/>
+  <widget name="list" position="211,353" size="1495,476" font="Regular;29" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3" scrollbarMode="showNever"/>
+  <widget name="mode" position="215,859" size="150,49" font="Regular;27" foregroundColor="#6CCBFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="locale" position="396,859" size="520,49" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="language" position="919,859" size="730,49" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="key_info" position="207,918" size="125,32" font="Regular;22" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
+  <widget name="key_text" position="365,918" size="125,32" font="Regular;22" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
+  <widget name="key_help" position="525,918" size="125,32" font="Regular;22" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
+  <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
+  <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
+  <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
+  <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
+  <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+</screen>
+"""
