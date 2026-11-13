@@ -185,6 +185,47 @@ class UpdateCoreTests(unittest.TestCase):
             self.assertEqual([phase for phase in phases if phase != "download"],
                              ["verify", "install", "complete"])
 
+    def test_opkg_255_only_succeeds_when_exact_package_already_installed(self):
+        # OpenATV can reject reinstalling the same test release with code 255.
+        import types
+        builder_path = ROOT / "tools/build_test_ipk.py"
+        spec = importlib.util.spec_from_file_location("build_for_installed", builder_path)
+        builder = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(builder)
+        with tempfile.TemporaryDirectory() as tmp:
+            data = builder.build(Path(tmp)).read_bytes()
+            release = {"version": builder.VERSION,
+                       "url": u.expected_url(builder.VERSION),
+                       "sha256": hashlib.sha256(data).hexdigest(),
+                       "bytes": len(data)}
+            calls = []
+            def runner(command, **kwargs):
+                calls.append(command[1])
+                if command[1] == "install":
+                    return types.SimpleNamespace(returncode=255, stdout="private error")
+                return types.SimpleNamespace(
+                    returncode=0,
+                    stdout="Package: " + u.PACKAGE + "\nVersion: " + builder.VERSION +
+                           "\nStatus: install ok installed\n"
+                )
+            progress = []
+            installed = u.install_update(
+                release, opener=lambda url, timeout: FakeResponse(data),
+                runner=runner, progress=lambda *args: progress.append(args))
+            self.assertEqual(installed, builder.VERSION)
+            self.assertEqual(calls, ["install", "status"])
+            self.assertEqual(progress[-1][0], "complete")
+            # A different package/version must never be accepted just on 255.
+            def wrong(command, **kwargs):
+                if command[1] == "install":
+                    return types.SimpleNamespace(returncode=255, stdout="")
+                return types.SimpleNamespace(returncode=0, stdout=(
+                    "Package: " + u.PACKAGE + "\nVersion: 0.0.8~test1\n"
+                    "Status: install ok installed\\n"))
+            with self.assertRaisesRegex(u.UpdateError, "255"):
+                u.install_update(release,
+                    opener=lambda url, timeout: FakeResponse(data), runner=wrong)
+
     def test_corrupt_ipk_never_invokes_opkg(self):
         import types
         data = b"not-an-ipk"
