@@ -158,6 +158,17 @@ class TestNativeGrid(unittest.TestCase):
             "video_id": "abcdefghijk",
         }
 
+    def test_result_card_title_is_bounded_but_selected_title_is_preserved(self):
+        mod = self.load_grid([])
+        full_title = "The Ultimate Adele Playlist 2026: Greatest Hits Collection of All Time"
+        video = self.video(0)
+        video["title"] = full_title
+        grid = mod.WarderYouTubeGrid(None, [video], "adele")
+        grid._layout_ready()
+        self.assertLessEqual(len(grid["title0"].text), mod.CARD_TITLE_LIMIT)
+        self.assertTrue(grid["title0"].text.endswith("…"))
+        self.assertEqual(grid["side3"].text, full_title)
+
     def test_screen_items_method_remains_callable_on_openatv76(self):
         # Screen.deleteGUIScreen relies on the dict.items() method.
         mod = self.load_grid([])
