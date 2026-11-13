@@ -57,6 +57,18 @@ class PackagingTests(unittest.TestCase):
                     self.assertTrue(raw.startswith(b"\x89PNG\r\n\x1a\n"))
                     self.assertEqual(tuple(int.from_bytes(raw[i:i + 4], "big") for i in (16, 20)), dimensions)
 
+                # Native PNG menu symbols and transparent selection frames
+                # are real IPK members, not just concept artwork.
+                accent_names = [("nav_%d.png" % i, (64, 64)) for i in range(8)]
+                accent_names += [("nav_focus.png", (328, 72)),
+                                 ("video_focus.png", (477, 324))]
+                for icon, dimensions in accent_names:
+                    raw = tar.extractfile("./" + m.TARGET_PREFIX + "/images/" + icon).read()
+                    self.assertEqual(raw[:8], b"\x89PNG\r\n\x1a\n")
+                    self.assertEqual(tuple(int.from_bytes(raw[i:i+4], "big")
+                                           for i in (16, 20)), dimensions)
+                    self.assertEqual(raw[25], 6)  # RGBA, alpha transparency
+
     def test_displayed_version_matches_control_package(self):
         """Prevent the Home header and opkg control version from drifting."""
         from ast import parse, Assign, Name, Constant
