@@ -2,6 +2,7 @@
 from Plugins.Plugin import PluginDescriptor
 from enigma import getDesktop
 from .ui import WarderYouTubeHome
+from .i18n import tr as _
 
 def main(session, **kwargs):
     session.open(WarderYouTubeHome)
@@ -17,5 +18,5 @@ def _plugin_icon():
 def Plugins(**kwargs):
     return [PluginDescriptor(icon=_plugin_icon(), needsRestart=False,
                              name="YouTube Warder Evolution",
-                             description="YouTube search and native Enigma2 video playback",
+                             description=_("YouTube search and native Enigma2 video playback"),
                              where=PluginDescriptor.WHERE_PLUGINMENU, fnc=main)]

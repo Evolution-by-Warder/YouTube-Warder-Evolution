@@ -38,7 +38,7 @@ class WarderYouTubeLibrary(Screen):
         self.confirmation_open = False
         self.request_version = 0
 
-        title = "Obľúbené videá" if kind == "favourites" else "História"
+        title = _("Favourites") if kind == "favourites" else _("History")
         self["title"] = Label("YouTube Warder Evolution / " + title)
         self["subtitle"] = Label("")
         self["key_red"] = Label(_("Back"))
@@ -88,10 +88,10 @@ class WarderYouTubeLibrary(Screen):
         self["subtitle"].setText("%s: %d videí" % (
             "Obľúbené" if self.kind == "favourites" else "Naposledy otvorené", len(items)))
         self["status"].setText(
-            "Zoznam je prázdny. V hľadaní stlač MENU na uloženie videa."
+            _("Zoznam je prázdny. V hľadaní stlač MENU na uloženie videa.")
             if not items and self.kind == "favourites" else
-            "História je prázdna. Otvor video z výsledkov hľadania."
-            if not items else "Vyber video a stlač OK. Prehrávanie nepotrebuje API kľúč."
+            _("História je prázdna. Otvor video z výsledkov hľadania.")
+            if not items else _("Vyber video a stlač OK. Prehrávanie nepotrebuje API kľúč.")
         )
 
     def _selected(self):

@@ -219,13 +219,13 @@ class WarderYouTubeGrid(Screen):
         if self.selected < 0:
             self["side3"].setText(_("No video selected"))
             self["side5"].setText("")
-            self.set_status("Žiadne videá.")
+            self.set_status(_("Žiadne videá."))
         else:
             video = self.video_items[self.selected]
             self["side3"].setText(str(video.get("title") or "")[:90])
             self["side5"].setText(str(video.get("channel") or "")[:56])
             self.set_status(
-                "Video %d/%d  |  strana %d  |  obrázky iba pre viditeľné videá" %
+                _("Video %d/%d  |  strana %d  |  obrázky iba pre viditeľné videá") %
                 (self.selected + 1, len(self.video_items), page_number(self.selected) + 1)
             )
 
@@ -320,9 +320,9 @@ class WarderYouTubeGrid(Screen):
         info = "sieť: %d, dekodér: %d" % (
             self._thumb_network_failures, self._thumb_decode_failures)
         if self._thumb_failures >= self._thumb_expected:
-            self.set_status("Náhľady sa nepodarilo načítať (%s)." % info)
+            self.set_status(_("Náhľady sa nepodarilo načítať (%s).") % info)
         else:
-            self.set_status("Náhľady %d/%d (%s)." % (
+            self.set_status(_("Náhľady %d/%d (%s).") % (
                 self._thumb_shown, self._thumb_expected, info))
 
     def _move(self, direction):

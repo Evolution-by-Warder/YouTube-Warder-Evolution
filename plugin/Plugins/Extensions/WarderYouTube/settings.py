@@ -69,12 +69,12 @@ class WarderYouTubeSettings(Screen):
 
     def refresh(self):
         self["key_state"].setText(
-            "API kľúč: nastavený" if get_api_key() else "API kľúč: nenastavený (vyhľadávanie cez yt-dlp)"
+            _("API kľúč: nastavený") if get_api_key() else _("API kľúč: nenastavený (vyhľadávanie cez yt-dlp)")
         )
-        self["quality"].setText("Preferovaná kvalita videa: %sp" % get_quality())
+        self["quality"].setText(_("Preferovaná kvalita videa") + ": %sp" % get_quality())
         self["resolver_state"].setText(
-            "yt-dlp: dostupný (vyhľadávanie aj záložné prehrávanie)" if is_available() else
-            "yt-dlp: nenainštalovaný (na prehrávanie nie je nutný)"
+            _("yt-dlp: dostupný (vyhľadávanie aj záložné prehrávanie)") if is_available() else
+            _("yt-dlp: nenainštalovaný (na prehrávanie nie je nutný)")
         )
 
     def toggle_quality(self):

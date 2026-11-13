@@ -167,11 +167,11 @@ class WarderYouTubeUpdateCheck(Screen):
         self._checking = False
         self.release = release
         if release is None:
-            self["status"].setText("Testovací kanál: používate najnovšiu dostupnú verziu.")
+            self["status"].setText(_("Testovací kanál: používate najnovšiu dostupnú verziu."))
             self["detail"].setText("Nainštalovaná verzia: " + CURRENT_VERSION)
             self["footer"].setText("EXIT: späť")
         else:
-            self["status"].setText("Dostupná verzia: " + release["version"])
+            self["status"].setText(_("Update found") + ": " + release["version"])
             self["detail"].setText(release.get("notes") or "Oficiálne overená aktualizácia.")
             self["footer"].setText("OK / ZELENÉ: aktualizovať    EXIT: späť")
 

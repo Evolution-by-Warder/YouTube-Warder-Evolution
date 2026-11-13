@@ -83,8 +83,8 @@ class WarderYouTubeSearch(Screen):
             self.open_keyboard()
         else:
             self["status"].setText(
-                "Search needs your API key or an installed yt-dlp. "
-                "Press YELLOW to configure Settings."
+                _("Search needs your API key or an installed yt-dlp. "
+                  "Press YELLOW to configure Settings.")
             )
 
     def mark_closed(self):
@@ -100,7 +100,7 @@ class WarderYouTubeSearch(Screen):
             return
         if not select_backend(get_api_key(), is_available()):
             self["status"].setText(
-                "No search backend: set an API key or install yt-dlp."
+                _("No search backend: set an API key or install yt-dlp.")
             )
             return
         self.session.openWithCallback(
@@ -164,11 +164,11 @@ class WarderYouTubeSearch(Screen):
         ])
         self.selection_changed()
         if not self.video_items:
-            self["status"].setText("No videos found. Press BLUE to search again.")
+            self["status"].setText(_("No videos found. Press BLUE to search again."))
         else:
             suffix = "  |  GREEN: next page" if self.next_page_token else ""
             self["status"].setText(
-                "%d video(s) found%s" % (len(self.video_items), suffix)
+                _("%d video(s) found%s") % (len(self.video_items), suffix)
             )
             self.open_grid()
 
