@@ -24,6 +24,7 @@ MESSAGES = {
         "Testovací kanál: používate najnovšiu dostupnú verziu.": "Testing channel: latest available version.",
     },
     "sk": {
+        "Change API key": "Zmeniť API kľúč",
         "Change saved API key?": "Zmeniť uložený API kľúč?",
         "manual file": "zo súboru",
 
@@ -129,6 +130,7 @@ MESSAGES = {
         "Keep live TV audio": "Zvuk TV na pozadí zostáva zachovaný",
     },
     "cs": {
+        "Change API key": "Změnit API klíč",
         "Change saved API key?": "Změnit uložený API klíč?",
         "manual file": "ze souboru",
 
@@ -228,6 +230,7 @@ MESSAGES = {
         "Keep live TV audio":"Zvuk TV na pozadí zůstává zachován",
     },
     "de": {
+        "Change API key": "API-Schlüssel ändern",
         "Change saved API key?": "Gespeicherten API-Schlüssel ändern?",
         "manual file": "aus Datei",
 
