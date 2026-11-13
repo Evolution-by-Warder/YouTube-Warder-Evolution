@@ -116,7 +116,7 @@ def build(output_dir):
             and int.from_bytes(header_png[16:20], "big") == 1920
             and int.from_bytes(header_png[20:24], "big") == 134
             and len(header_png) < 350_000):
-        raise ValueError("Invalid Warder shared header PNG")
+        raise ValueError("Invalid Warder shared header PNG (bytes=%d, signature=%r, size=%d,%d)" % (len(header_png), header_png[:8], int.from_bytes(header_png[16:20], "big"), int.from_bytes(header_png[20:24], "big")))
     data_files.append((TARGET_PREFIX + "/images/warder_header.png",
                        header_png, False))
 
