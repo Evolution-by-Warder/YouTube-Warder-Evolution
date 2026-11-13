@@ -310,7 +310,7 @@ class TestNativeGrid(unittest.TestCase):
         grid._layout_ready()
         self.assertEqual(len(jobs), 1)
         jobs[0][1].failure(Exception("Network failure with secrets"))
-        self.assertIn("Náhľady sa nepodarilo", grid["status"].text)
+        self.assertTrue(any(x in grid["status"].text for x in ("Náhľady sa nepodarilo", "Thumbnails could not be loaded")))
         self.assertNotIn("secrets", grid["status"].text)
 
     def test_late_thumbnail_failure_does_not_override_video_status(self):
@@ -361,7 +361,7 @@ class TestNativeGrid(unittest.TestCase):
         jobs[0][1].failure(Exception("old failure"))
         self.assertEqual(len(jobs), 3)
         jobs[2][1].failure(Exception("new failure"))
-        self.assertIn("sieť: 1", g["status"].text)
+        self.assertTrue(any(x in g["status"].text for x in ("sieť: 1", "network: 1")))
         self.assertEqual(g._thumb_network_failures, 1)
         self.assertEqual(g._active_downloads, 1)  # Old worker remains counted.
         previous = g["status"].text

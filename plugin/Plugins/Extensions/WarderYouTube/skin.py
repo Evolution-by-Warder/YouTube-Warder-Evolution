@@ -99,8 +99,8 @@ SETTINGS_SKIN = """
 GRID_SKIN = """
 <screen name="WarderYouTubeGrid" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Videos" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,104" backgroundColor="#142C47"/>
-  <widget name="brand" position="36,20" size="1010,61" font="Regular;41" foregroundColor="#FFFFFF" transparent="1"zPosition="3"/>
-  <widget name="heading" position="1038,28" size="815,54" font="Regular;29" foregroundColor="#36B9FF" transparent="1" halign="right"zPosition="3"/>
+  <widget name="brand" position="36,20" size="1010,61" font="Regular;41" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="heading" position="1038,28" size="815,54" font="Regular;29" foregroundColor="#36B9FF" transparent="1" halign="right" zPosition="3"/>
   <eLabel position="0,104" size="321,895" backgroundColor="#102A45"/>
   <eLabel position="18,155" size="288,6" backgroundColor="#087EC7"/>
   <eLabel position="18,337" size="288,2" backgroundColor="#315676"/>
@@ -188,7 +188,7 @@ UPDATE_SKIN = """
 <screen name="WarderYouTubeUpdateProgress" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Update progress" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
   <widget name="title" position="45,23" size="1770,62" font="Regular;42" foregroundColor="#FFFFFF" transparent="1"/>
-  <widget name="version" position="72,180" size="1650,62" font="Regular;37" foregroundColor="#36B9FF" transparent="1"zPosition="3"/>
+  <widget name="version" position="72,180" size="1650,62" font="Regular;37" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
   <widget name="phase" position="72,290" size="1670,66" font="Regular;33" foregroundColor="#FFFFFF" transparent="1"/>
   <widget name="progress" position="72,405" size="1550,34" borderWidth="1"/>
   <widget name="percentage" position="1660,390" size="160,62" font="Regular;31" foregroundColor="#36B9FF" transparent="1"/>
@@ -430,10 +430,10 @@ CONFIRM_SKIN = """
 <screen name="WarderYouTubeConfirm" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Confirm" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
   <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="brand" position="47,22" size="1710,69" font="Regular;42" foregroundColor="#FFFFFF" transparent="1"zPosition="3"/>
+  <widget name="brand" position="47,22" size="1710,69" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="274,175" size="1372,725" backgroundColor="#122C47"/>
   <eLabel position="274,175" size="1372,5" backgroundColor="#087EC7"/>
-  <widget name="heading" position="327,210" size="1260,72" font="Regular;43" foregroundColor="#6CCBFF" transparent="1"zPosition="3"/>
+  <widget name="heading" position="327,210" size="1260,72" font="Regular;43" foregroundColor="#6CCBFF" transparent="1" zPosition="3"/>
   <widget name="question" position="327,316" size="1250,175" font="Regular;32" foregroundColor="#FFFFFF" transparent="1"/>
   <widget name="menu" position="550,570" size="830,180" font="Regular;34" itemHeight="72" foregroundColor="#FFFFFF" backgroundColor="#122C47" scrollbarMode="showOnDemand"/>
   <widget name="hint" position="335,825" size="1200,49" font="Regular;28" foregroundColor="#B9D9F5" transparent="1"/>
@@ -454,7 +454,7 @@ INFO_SKIN = """
 <screen name="WarderYouTubeInfo" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Details" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
   <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="brand" position="45,22" size="1750,69" font="Regular;42" foregroundColor="#FFFFFF" transparent="1"zPosition="3"/>
+  <widget name="brand" position="45,22" size="1750,69" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="72,161" size="1775,756" backgroundColor="#122C47"/>
   <eLabel position="72,161" size="1775,5" backgroundColor="#087EC7"/>
   <widget name="title" position="116,197" size="1690,68" font="Regular;42" foregroundColor="#6CCBFF" transparent="1"/>
