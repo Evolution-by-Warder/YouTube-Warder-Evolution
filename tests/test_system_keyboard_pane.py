@@ -35,6 +35,18 @@ class Component:
     def getText(self):
         return self.text
 
+    def deleteAllChars(self):
+        # This is how the original OpenATV/OpenPLi Input behaves: it clears
+        # only its backing storage, leaving GUI text stale until update().
+        self.text = ""
+        # Deliberately do not update visible_text here.
+
+    def setText(self, text):
+        self.text = text
+        self.visible_text = text
+        self.cursor = len(text)
+        self.redraws = getattr(self, "redraws", 0) + 1
+
 
 class OriginalSystemKeyboard(dict):
     def __init__(self, session, title="", text="", maxSize=False):
@@ -152,6 +164,25 @@ class SystemKeyboardPaneTests(unittest.TestCase):
             self.assertEqual(canceled, [True])
             pane.cleanup()
             self.assertTrue(pane.backend.cleaned)
+
+    def test_blue_new_search_clears_visible_text_and_cursor_immediately(self):
+        # Reproduces real GigaBlue test23: the old implementation used
+        # deleteAllChars(), leaving the previous phrase painted on screen.
+        for constructor in load(OriginalSystemKeyboard):
+            pane = constructor(None, lambda x: None, lambda: None)
+            pane.input.setText("aladin")
+            self.assertEqual(pane.input.visible_text, "aladin")
+            before = pane.input.redraws
+            pane.reset()
+            self.assertEqual(pane.value(), "")
+            self.assertEqual(pane.input.visible_text, "")
+            self.assertEqual(pane.input.cursor, 0)
+            self.assertEqual(pane.input.redraws, before + 1)
+            pane.input.char("novy")
+            pane.input.setText("novy")
+            pane.reset()
+            self.assertEqual(pane.input.visible_text, "")
+            self.assertEqual(pane.value(), "")
 
     def test_openpli_original_builder_is_supported_without_reimplementing_keys(self):
         for constructor in load(OpenPliKeyboard):
