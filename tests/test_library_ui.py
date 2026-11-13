@@ -113,6 +113,12 @@ def load():
     internet.__path__ = []
     fake = {
         "_test_warder_library": package,
+        "_test_warder_library.i18n": mkmod(
+            "_test_warder_library.i18n", tr=lambda value: value
+        ),
+        "_test_warder_library.confirm_ui": mkmod(
+            "_test_warder_library.confirm_ui", WarderYouTubeConfirm=object
+        ),
         "_test_warder_library.skin": mkmod(
             "_test_warder_library.skin", LIBRARY_SKIN="<screen/>"
         ),

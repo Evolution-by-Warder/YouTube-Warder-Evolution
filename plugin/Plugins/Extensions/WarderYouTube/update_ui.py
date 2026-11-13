@@ -17,6 +17,7 @@ from twisted.internet.threads import deferToThread
 from .skin import UPDATE_SKIN, UPDATE_CHECK_SKIN
 from .update_core import install_update, check_update, CURRENT_VERSION, UpdateError
 from .i18n import tr as _
+from .confirm_ui import WarderYouTubeConfirm
 
 
 class WarderYouTubeUpdateProgress(Screen):
@@ -208,9 +209,9 @@ class WarderYouTubeUpdateCheck(Screen):
         self.confirmation_open = True
         try:
             self.session.openWithCallback(
-                self.install_confirmed, MessageBox,
-                "Nainštalovať overenú verziu %s? Po úspechu sa obnoví iba GUI Enigma2." % self.release["version"],
-                type=MessageBox.TYPE_YESNO, default=False
+                self.install_confirmed, WarderYouTubeConfirm,
+                _("Confirm update") + ": " + self.release["version"] +
+                " • GUI Enigma2"
             )
         except Exception:
             self.confirmation_open = False

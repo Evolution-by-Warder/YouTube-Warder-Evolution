@@ -9,6 +9,7 @@ from Screens.Screen import Screen
 from .skin import SETTINGS_SKIN
 from .resolver import is_available
 from .i18n import tr as _
+from .confirm_ui import WarderYouTubeConfirm
 
 if not hasattr(config.plugins, "warderyoutube"):
     config.plugins.warderyoutube = ConfigSubsection()
@@ -96,10 +97,7 @@ class WarderYouTubeSettings(Screen):
             return
         value = value.strip()
         if not value or any(c.isspace() for c in value) or len(value) > 256:
-            self.session.open(
-                MessageBox, "Neplatný alebo prázdny kľúč. Pôvodný zostal zachovaný.",
-                type=MessageBox.TYPE_ERROR, timeout=5
-            )
+            self["status"].setText(_("API key") + ": " + _("Cancel"))
             return
         config.plugins.warderyoutube.api_key.value = value
         config.plugins.warderyoutube.api_key.save()
@@ -108,9 +106,8 @@ class WarderYouTubeSettings(Screen):
 
     def confirm_clear(self):
         self.session.openWithCallback(
-            self.clear_key, MessageBox,
-            "Odstrániť uložený YouTube API kľúč z prijímača?",
-            type=MessageBox.TYPE_YESNO, default=False
+            self.clear_key, WarderYouTubeConfirm,
+            _("Delete saved key") + "?"
         )
 
     def clear_key(self, confirmed):

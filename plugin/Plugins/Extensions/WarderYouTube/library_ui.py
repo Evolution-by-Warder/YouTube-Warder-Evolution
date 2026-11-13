@@ -19,6 +19,7 @@ from .local_library import (
 from .resolver import ResolverError, resolve_video_streams
 from .settings import get_quality
 from .i18n import tr as _
+from .confirm_ui import WarderYouTubeConfirm
 
 
 class WarderYouTubeLibrary(Screen):
@@ -177,9 +178,8 @@ class WarderYouTubeLibrary(Screen):
         self.confirmation_open = True
         try:
             self.session.openWithCallback(
-                self.clear_confirmed, MessageBox,
-                "Naozaj vymazať všetky videá v tomto zozname?",
-                type=MessageBox.TYPE_YESNO, default=False
+                self.clear_confirmed, WarderYouTubeConfirm,
+                _("Clear") + " • " + self["title"].text + "?"
             )
         except Exception:
             self.confirmation_open = False

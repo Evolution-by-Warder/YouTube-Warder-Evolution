@@ -118,6 +118,12 @@ def load_updater():
             "_mock_warder_updates.skin", UPDATE_SKIN="<screen/>",
             UPDATE_CHECK_SKIN="<screen/>"
         ),
+        "_mock_warder_updates.i18n": make_module(
+            "_mock_warder_updates.i18n", tr=lambda value: value
+        ),
+        "_mock_warder_updates.confirm_ui": make_module(
+            "_mock_warder_updates.confirm_ui", WarderYouTubeConfirm=object
+        ),
         "_mock_warder_updates.update_core": make_module(
             "_mock_warder_updates.update_core",
             install_update=lambda *args, **kwargs: "0.0.8~test6",
