@@ -318,34 +318,38 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertFalse(screen["kb_system_input"].visible)
         self.assertFalse(screen["kb_system_list"].visible)
 
-    def test_inline_search_green_goes_to_actual_results_without_second_keyboard(self):
+    def test_inline_search_green_searches_from_home_without_intermediate_screen(self):
         mod, key, saved, jobs = load(key="available-key")
         screen, session = ready(mod)
-        screen.down()  # just highlighting Search shows entire keyboard
+        screen.down()  # highlighting Search shows actual inline system keyboard
         screen.right()
-        screen.activate()  # q
+        screen.activate()
         screen.right()
-        screen.activate()  # w
+        screen.activate()
         self.assertEqual(screen.inline_keyboard.value(), "qw")
-        pkg = fake("_warder_home")
-        pkg.__path__ = [str(ROOT)]
-        fake_results = fake("_warder_home.search",
-                            WarderYouTubeSearch=type("InlineResults", (), {}))
-        with patch.dict(sys.modules, {
-            "_warder_home": pkg, "_warder_home.search": fake_results
-        }):
+
+        class FakeHomeSearchFlow:
+            def __init__(self, home):
+                self.home = home
+                self.starts = []
+                self.grid_open = False
+
+            def start(self, query, page_token=""):
+                self.starts.append((query, page_token))
+
+        flow = fake("_warder_home.home_search_flow",
+                    HomeSearchFlow=FakeHomeSearchFlow)
+        with patch.dict(sys.modules, {"_warder_home.home_search_flow": flow}):
             screen.green()
-        self.assertEqual(len(session.opens), 1)
-        args, kwargs = session.opens[0]
-        self.assertEqual(args[0].__name__, "InlineResults")
-        self.assertEqual(kwargs, {"initial_query": "qw"})
+        self.assertEqual(screen._home_search_flow.starts, [("qw", "")])
+        # No legacy full-screen Search dialog, no keyboard modal or grid
+        # before the real network callback returns.
+        self.assertEqual(session.opens, [])
         self.assertEqual(session.callbacks, [])
-        # Returning to Home keeps Search keyboard in its right pane.
+
         screen._on_shown()
         self.assertTrue(screen["kb_system_input"].visible)
         self.assertEqual(screen.inline_keyboard.value(), "qw")
-        self.assertEqual(len(session.opens), 1)
-        # Left edge of keyboard gives focus back to the persistent left menu.
         screen.inline_keyboard.backend.selectedKey = 14
         screen.left()
         self.assertEqual(screen.focus_area, "nav")
