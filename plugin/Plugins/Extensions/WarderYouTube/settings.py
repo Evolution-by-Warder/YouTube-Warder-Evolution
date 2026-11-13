@@ -10,6 +10,9 @@ from .skin import SETTINGS_SKIN
 from .resolver import is_available
 from .i18n import tr as _
 from .confirm_ui import WarderYouTubeConfirm
+from .api_key_file import read_manual_key
+
+QUALITY_VALUES = ("360", "480", "720", "1080", "1440", "2160")
 
 if not hasattr(config.plugins, "warderyoutube"):
     config.plugins.warderyoutube = ConfigSubsection()
@@ -17,17 +20,20 @@ if not hasattr(config.plugins.warderyoutube, "api_key"):
     config.plugins.warderyoutube.api_key = ConfigText(default="", fixed_size=False)
 if not hasattr(config.plugins.warderyoutube, "max_quality"):
     config.plugins.warderyoutube.max_quality = ConfigSelection(
-        choices=[("360", "360p"), ("720", "720p")], default="720"
+        choices=[(value, value + "p") for value in QUALITY_VALUES], default="720"
     )
 
 
 def get_api_key():
-    return config.plugins.warderyoutube.api_key.value.strip()
+    # Enigma2 settings take precedence. A root-owned, mode 0600 manual file
+    # is read on demand when the GUI setting is empty (including at startup).
+    configured = config.plugins.warderyoutube.api_key.value.strip()
+    return configured or read_manual_key()
 
 
 def get_quality():
     value = config.plugins.warderyoutube.max_quality.value
-    return value if value in ("360", "720") else "720"
+    return value if value in QUALITY_VALUES else "720"
 
 
 class WarderYouTubeSettings(Screen):
@@ -55,7 +61,7 @@ class WarderYouTubeSettings(Screen):
             _("Keep live TV audio")
         )
         self["footer"] = Label(
-            "OK/ZELENÉ: API kľúč   MODRÉ: 360/720p   ŽLTÉ: vymazať   EXIT: späť"
+            _("OK/Green: API key   Blue: quality   Yellow: remove key   Exit: back")
         )
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
@@ -68,8 +74,12 @@ class WarderYouTubeSettings(Screen):
         self.refresh()
 
     def refresh(self):
+        in_config = bool(config.plugins.warderyoutube.api_key.value.strip())
+        in_file = bool(read_manual_key()) if not in_config else False
         self["key_state"].setText(
-            _("API kľúč: nastavený") if get_api_key() else _("API kľúč: nenastavený (vyhľadávanie cez yt-dlp)")
+            _("API key loaded from manual file") if in_file else
+            _("API kľúč: nastavený") if in_config else
+            _("API kľúč: nenastavený (vyhľadávanie cez yt-dlp)")
         )
         self["quality"].setText(_("Preferovaná kvalita videa") + ": %sp" % get_quality())
         self["resolver_state"].setText(
@@ -79,7 +89,10 @@ class WarderYouTubeSettings(Screen):
 
     def toggle_quality(self):
         setting = config.plugins.warderyoutube.max_quality
-        setting.value = "360" if get_quality() == "720" else "720"
+        current = get_quality()
+        setting.value = QUALITY_VALUES[
+            (QUALITY_VALUES.index(current) + 1) % len(QUALITY_VALUES)
+        ]
         setting.save()
         configfile.save()
         self.refresh()
@@ -116,3 +129,5 @@ class WarderYouTubeSettings(Screen):
             config.plugins.warderyoutube.api_key.save()
             configfile.save()
             self.refresh()
+            if read_manual_key():
+                self["status"].setText(_("Manual API key file remains active."))
