@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test17",
-    "tag": "youtube-warder-v0.0.8-test17",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test17/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test17_all.ipk",
-    "sha256": "7837c2c5b42689f60f2c37d5fe3562904dd2d9bafffbba400af63f5ee6713b7b",
-    "bytes": 238654,
-    "notes": "Test17: celý horný pás bol nanovo zhotovený ako JEDEN čistý PNG 1920×152, s kompletnou originálnou lebkou, kovovým názvom YouTube Warder Evolution a rukopisným podpisom by Warder v štýle rodiny GSU. Odstránené staré masky a presvitajúce artefakty. Dátum, čas a verzia zostávajú živé údaje Enigma2. Testovacia verzia; grafický výsledok treba potvrdiť na GigaBlue."
+    "version": "0.0.8~test24",
+    "tag": "youtube-warder-v0.0.8-test24",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test24/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test24_all.ipk",
+    "sha256": "b7692b1ecd681b60e653f894d062c06a5bbf08ab5363594ecf2a353d6e79f459",
+    "bytes": 552512,
+    "notes": "Test24: schválená originálna hlavička YouTube by Warder 1920×152 presne podľa GigaBlue, pôvodná systémová klávesnica Enigma2 vložená v pravom paneli Domov, priame vyhľadávanie bez prázdneho medzistupňa, modré Nové hľadanie sa vracia do dvojpanelovej obrazovky s vymazaným políčkom. Testované na GigaBlue Quad 4K Pro s OpenATV 8.1. Zdrojový GitHub build obsahuje totožné súbory ako schválený test24. Len testovací kanál; main/stabilná verzia nezmenená."
   }
 }
