@@ -9,25 +9,9 @@ from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Screens.Screen import Screen
 
-from .i18n import tr as _, language_code
+from .i18n import tr as _
+from .keyboard_layout import COLUMNS, KEYBOARDS, ROWS, keyboard_rows
 from .skin import KEYBOARD_SKIN
-
-COLUMNS = 10
-KEYBOARDS = {
-    "sk": ("1234567890", "qwertyuiop", "asdfghjkl-", "zxcvbnm.,?", "áčďéíľňšťž"),
-    "cs": ("1234567890", "qwertyuiop", "asdfghjkl-", "zxcvbnm.,?", "áčďéěíňřšť"),
-    "de": ("1234567890", "qwertzuiop", "asdfghjkl-", "yxcvbnm.,?", "äöüßéèàâêî"),
-    "en": ("1234567890", "qwertyuiop", "asdfghjkl-", "zxcvbnm.,?", "@#:/_()+*?"),
-}
-ROWS = KEYBOARDS["sk"]
-
-
-def keyboard_rows(locale=None):
-    """Five rows of ten letters selected by the Enigma2 interface language."""
-    selected = (locale or language_code()).split("_")[0].split("-")[0].lower()
-    return KEYBOARDS.get(selected, KEYBOARDS["en"])
-
-
 
 class WarderYouTubeKeyboard(Screen):
     skin = KEYBOARD_SKIN
