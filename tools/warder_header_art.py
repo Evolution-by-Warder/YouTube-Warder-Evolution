@@ -116,7 +116,10 @@ def render_header():
         raise ValueError("Unsupported Warder skull PNG filter")
     # One static compositing pass at build time. The receiver only decodes
     # the finalized shared 1920x152 PNG; no runtime scaling or rendering.
-    target_w, target_h, origin_x, origin_y = 150, 144, 18, 2
+    # Preserve the complete supplied skull within a larger banner instead
+    # of letting the bottom divider slice through its chin. The last few
+    # transparent antialiasing rows fade the original bitmap's hard edge.
+    target_w, target_h, origin_x, origin_y = 142, 134, 22, 5
     for iy in range(target_h):
         sy = iy * sh // target_h
         for ix in range(target_w):
@@ -124,6 +127,8 @@ def render_header():
             color_index = scanlines[sy*(sw+1)+1+sx]
             a = (alphas[color_index] / 255.0
                  if color_index < len(alphas) else 1.0)
+            # Do not crop the original silhouette with the bottom rule.
+            a *= min(1.0, max(0.0, (target_h - 1 - iy) / 12.0))
             pi = color_index*3
             rgb = tuple(palette[pi:pi+3])
             blend(origin_x+ix, origin_y+iy, rgb, a)
