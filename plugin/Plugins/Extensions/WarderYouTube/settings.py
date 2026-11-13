@@ -54,6 +54,7 @@ class WarderYouTubeSettings(Screen):
             _("About settings") + "\n" + _("Language from Enigma2")
         )
         self["key_state"] = Label("")
+        self._key_dialog_open = False
         self["quality"] = Label("")
         self["resolver_state"] = Label("")
         self["warning"] = Label(
@@ -76,9 +77,11 @@ class WarderYouTubeSettings(Screen):
     def refresh(self):
         in_config = bool(config.plugins.warderyoutube.api_key.value.strip())
         in_file = bool(read_manual_key()) if not in_config else False
+        # Never put a saved credential into a GUI Label, even when the user
+        # selects the API key row. Fixed-length stars do not expose key length.
         self["key_state"].setText(
-            _("API key loaded from manual file") if in_file else
-            _("API kľúč: nastavený") if in_config else
+            _("API key") + ": ********" + (" (" + _("manual file") + ")" if in_file else "")
+            if in_config or in_file else
             _("API kľúč: nenastavený (vyhľadávanie cez yt-dlp)")
         )
         self["quality"].setText(_("Maximum video quality") + ": %sp" % get_quality())
@@ -98,20 +101,49 @@ class WarderYouTubeSettings(Screen):
         self.refresh()
 
     def prompt_key(self):
-        # The owner can see and correct every character before pressing
-        # GREEN/Confirm. Never pre-fill or reveal an existing saved key.
+        if self._key_dialog_open:
+            return
+        # Show the saved value ONLY as asterisks. Changing it is an explicit
+        # second action; cancelling the confirmation leaves the key intact.
+        if get_api_key():
+            self._key_dialog_open = True
+            try:
+                self.session.openWithCallback(
+                    self._key_change_confirmed, WarderYouTubeConfirm,
+                    _("API key") + ": ********" + "\\n" +
+                    _("Change saved API key?"))
+            except Exception:
+                self._key_dialog_open = False
+        else:
+            self._open_key_editor()
+
+    def _key_change_confirmed(self, confirmed):
+        self._key_dialog_open = False
+        if confirmed:
+            self._open_key_editor()
+
+    def _open_key_editor(self):
+        if self._key_dialog_open:
+            return
+        # Newly typed text is visible and editable until GREEN/Confirm.
+        # The previously saved credential is never prefilled or shown.
         from .keyboard import WarderYouTubeKeyboard
         try:
             from .native_keyboard import WarderNativeSearchKeyboard
         except ImportError:
             WarderNativeSearchKeyboard = None
         editor = WarderNativeSearchKeyboard or WarderYouTubeKeyboard
-        self.session.openWithCallback(
-            self.key_received, editor,
-            value="", title=_("Enter API key"), secret=False, limit=160
-        )
+        self._key_dialog_open = True
+        try:
+            self.session.openWithCallback(
+                self.key_received, editor,
+                value="", title=_("Enter API key"), secret=False, limit=160
+            )
+        except Exception:
+            self._key_dialog_open = False
 
     def key_received(self, value):
+        self._key_dialog_open = False
         if value is None:
             return
         value = value.strip()
