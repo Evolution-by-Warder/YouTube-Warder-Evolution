@@ -112,7 +112,7 @@ def build(output_dir):
     source = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(source)
     header_png = source.render_header()
-    if not (header_png.startswith(b"\\x89PNG\\r\\n\\x1a\\n")
+    if not (header_png[:8] == bytes((137, 80, 78, 71, 13, 10, 26, 10))
             and int.from_bytes(header_png[16:20], "big") == 1920
             and int.from_bytes(header_png[20:24], "big") == 134
             and len(header_png) < 350_000):
