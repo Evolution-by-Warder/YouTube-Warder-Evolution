@@ -116,6 +116,21 @@ class HeaderTests(unittest.TestCase):
                 callback()
             self.assertTrue(c.closed)
 
+    def test_header_uses_the_owner_original_emblem_not_a_second_drawn_skull(self):
+        artwork = (PKG / "images" / "warder_skull.png").read_bytes()
+        self.assertEqual(artwork[:8], bytes((137, 80, 78, 71, 13, 10, 26, 10)))
+        self.assertEqual(
+            (int.from_bytes(artwork[16:20], "big"),
+             int.from_bytes(artwork[20:24], "big")),
+            (104, 100)
+        )
+        source = (PKG.parents[3] / "tools" / "warder_header_art.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('warder_skull.png', source)
+        self.assertNotIn("Warder metallic cyber skull", source)
+        self.assertNotIn("cx, cy = 94, 66", source)
+
     def test_every_screen_uses_same_static_header_without_renderers(self):
         source = (PKG / "skin.py").read_text(encoding="utf-8")
         tree = ast.parse(source)
