@@ -61,6 +61,7 @@ class WarderYouTubeHome(Screen):
         self.kb_shown = False
         self.inline_keyboard = None
         self.kb_unavailable_reason = ""
+        self._home_search_flow = None
         self.video_items = []
         self.page_index = 0
         self._section_items = []
@@ -190,6 +191,8 @@ class WarderYouTubeHome(Screen):
     def dispose(self):
         self._disposed = True
         self._play_request += 1
+        if self._home_search_flow is not None:
+            self._home_search_flow.dispose()
         if self.inline_keyboard is not None:
             self.inline_keyboard.cleanup()
         self.thumbs.close()
@@ -484,10 +487,13 @@ class WarderYouTubeHome(Screen):
         if len(query) > 160:
             self["kb_feedback"].setText(_("Search phrase is too long."))
             return
-        # The results Screen starts the genuine backend on onShown;
-        # no second keyboard is opened and Home remains behind it.
-        from .search import WarderYouTubeSearch
-        self.session.open(WarderYouTubeSearch, initial_query=query)
+        # Dispatch from the current Home Screen while its two-pane keyboard
+        # remains visible. Open Grid only when real results arrive; never
+        # create the redundant Search Screen that visibly flashed before.
+        if self._home_search_flow is None:
+            from .home_search_flow import HomeSearchFlow
+            self._home_search_flow = HomeSearchFlow(self)
+        self._home_search_flow.start(query)
 
     def _update_keys(self):
         if self.focus_area == "keyboard":
@@ -511,6 +517,10 @@ class WarderYouTubeHome(Screen):
         # Down from Updates -> Home. Only the left menu wraps; the
         # right-hand video grid keeps its existing navigation semantics.
         index = index % len(self.sections)
+        if (self.index == 1 and index != 1
+                and self._home_search_flow is not None):
+            # Discard late worker results when navigating away from Search.
+            self._home_search_flow.cancel_pending()
         if self.index == index and self.focus_area == "nav":
             return
         self.index = index
@@ -757,8 +767,11 @@ class WarderYouTubeHome(Screen):
         except LibraryError as error:
             self["status"].setText(str(error))
 
-    def _play_selected(self):
-        video = self.selected_video()
+    def _play_selected(self, video=None):
+        # Video Grid invokes this with the actual selected video, while Home
+        # tiles continue to call it without an argument.
+        if video is None:
+            video = self.selected_video()
         if (video is None or self._disposed or self._busy or
                 self._playback_active or self._context_open):
             return
@@ -766,6 +779,11 @@ class WarderYouTubeHome(Screen):
         self._play_request += 1
         token = self._play_request
         self["status"].setText(_("Looking for a compatible video stream…"))
+        if (self._home_search_flow is not None
+                and self._home_search_flow.grid_open):
+            self._home_search_flow._status(
+                _("Looking for a compatible video stream…"), override=True
+            )
         try:
             from .player import dash_available
             task = deferToThread(
@@ -794,6 +812,11 @@ class WarderYouTubeHome(Screen):
         except Exception:
             self._playback_active = False
             self["status"].setText(_("Unable to open Enigma2 player."))
+            if (self._home_search_flow is not None
+                    and self._home_search_flow.grid_open):
+                self._home_search_flow._status(
+                    _("Unable to open Enigma2 player."), override=True
+                )
             return
         try:
             record_opened(video)
@@ -805,12 +828,22 @@ class WarderYouTubeHome(Screen):
             return
         self._busy = False
         error = getattr(failure, "value", None)
-        self["status"].setText(
-            str(error) if isinstance(error, ResolverError)
-            else _("Unable to obtain a video stream.")
-        )
+        message = (str(error) if isinstance(error, ResolverError)
+                   else _("Unable to obtain a video stream."))
+        self["status"].setText(message)
+        if (self._home_search_flow is not None
+                and self._home_search_flow.grid_open):
+            self._home_search_flow._status(message, override=True)
 
     def _player_closed(self, failed=False, *args):
         self._playback_active = False
-        if not self._disposed:
+        if self._disposed:
+            return
+        if (self._home_search_flow is not None
+                and self._home_search_flow.grid_open):
+            self._home_search_flow._status(
+                _("Playback failed.") if failed else
+                _("Playback ended. OK: play another video."), override=True
+            )
+        else:
             self._update_preview()
