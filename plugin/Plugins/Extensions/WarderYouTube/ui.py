@@ -16,6 +16,7 @@ from .skin import HOME_SKIN
 from .i18n import tr as _
 from .update_core import CURRENT_VERSION
 from .grid_model import move_index
+from .keyboard_layout import keyboard_rows, COLUMNS
 from .home_feed import popular_videos, public_home_videos
 from .home_thumbs import HomeThumbs
 from .local_library import (
@@ -55,6 +56,14 @@ class WarderYouTubeHome(Screen):
         self.index = 0
         self.focus_area = "nav"
         self.tile_index = 0
+        # Inline Warder search is a panel within Home, not a separate dialog.
+        # Both this pane and the optional standalone editor reuse the same
+        # locale/keymap model. The keyboard appears on highlighting Search.
+        self.kb_characters = "".join(keyboard_rows())
+        self.kb_position = COLUMNS
+        self.kb_text = ""
+        self.kb_upper = False
+        self.kb_shown = False
         self.video_items = []
         self.page_index = 0
         self._section_items = []
@@ -83,6 +92,12 @@ class WarderYouTubeHome(Screen):
         self["heading"] = Label("")
         self["subtitle"] = Label("")
         self["page_info"] = Label("")
+        self["kb_input"] = Label("")
+        self["kb_hint"] = Label("")
+        self["kb_feedback"] = Label("")
+        for i, char in enumerate(self.kb_characters):
+            self["kb_key%d" % i] = Label(char)
+            self["kb_focus%d" % i] = Label(char)
         self["preview_message"] = Label("")
         self["status"] = Label("")
         for i in range(VISIBLE_TILES):
@@ -105,8 +120,8 @@ class WarderYouTubeHome(Screen):
             {
                 "up": self.up, "down": self.down, "left": self.left,
                 "right": self.right, "ok": self.activate,
-                "green": self.activate, "yellow": self.yellow,
-                "blue": self.blue, "menu": self.context,
+                "green": self.green, "yellow": self.yellow,
+                "blue": self.blue, "menu": self.menu,
                 "info": self.info, "red": self.back, "cancel": self.back,
             }, -1
         )
@@ -136,7 +151,7 @@ class WarderYouTubeHome(Screen):
         # Returning from player/library refreshes local data, but does not
         # automatically poll the update server or repeat the popular feed.
         if self._mounted and not self._disposed and not self._playback_active:
-            if self.index in (0, 3, 5, 6, 7):
+            if self.index in (0, 1, 3, 5, 6, 7):
                 self._update_preview()
             if (self.index == 0 and self._popular_cache
                     and not self._popular_loading
@@ -324,6 +339,7 @@ class WarderYouTubeHome(Screen):
     def _update_preview(self):
         if self._disposed or not self._mounted:
             return
+        self._hide_inline_keyboard()
         self._clear_preview()
         self["heading"].setText(self.sections[self.index][0])
         self["subtitle"].setText(self.sections[self.index][1])
@@ -342,10 +358,7 @@ class WarderYouTubeHome(Screen):
             else:
                 self._request_popular()
         elif self.index == 1:
-            self._show_message(
-                "Press OK to enter a search phrase. "
-                "The system keyboard opens inside Warder."
-            )
+            self._show_inline_keyboard()
         elif self.index == 2:
             self._show_message("Subscriptions are not supported yet.")
         elif self.index == 3:
@@ -372,10 +385,125 @@ class WarderYouTubeHome(Screen):
         self._update_tile_focus()
         self._update_keys()
 
+    def _hide_inline_keyboard(self):
+        if not self.kb_shown:
+            return
+        self.kb_shown = False
+        for name in ("kb_input", "kb_hint", "kb_feedback"):
+            self[name].hide()
+        for i in range(len(self.kb_characters)):
+            self["kb_key%d" % i].hide()
+            self["kb_focus%d" % i].hide()
+
+    def _show_inline_keyboard(self):
+        """Show editable search keys INSIDE the existing right-hand panel."""
+        self.kb_shown = True
+        for name in ("kb_input", "kb_hint", "kb_feedback"):
+            self[name].show()
+        for i, char in enumerate(self.kb_characters):
+            visible = char.upper() if self.kb_upper else char
+            self["kb_key%d" % i].setText(visible)
+            self["kb_focus%d" % i].setText(visible)
+            self["kb_key%d" % i].show()
+            self["kb_focus%d" % i].hide()
+        self["kb_hint"].setText(
+            _("Arrows: choose letter  ·  OK: type  ·  GREEN: search  ·  "
+              "YELLOW: delete  ·  BLUE: space  ·  MENU: Aa")
+        )
+        self["kb_feedback"].setText("")
+        self._keyboard_refresh()
+        self._keyboard_focus_update()
+
+    def _keyboard_refresh(self):
+        self["kb_input"].setText(
+            self.kb_text[-80:] if self.kb_text else _("Enter your YouTube search")
+        )
+
+    def _keyboard_focus_update(self):
+        if not self.kb_shown:
+            return
+        for i in range(len(self.kb_characters)):
+            if self.focus_area == "keyboard" and i == self.kb_position:
+                self["kb_focus%d" % i].show()
+            else:
+                self["kb_focus%d" % i].hide()
+
+    def _enter_keyboard_focus(self):
+        if self.index != 1 or not self.kb_shown or self._disposed:
+            return
+        self.focus_area = "keyboard"
+        self._update_nav()
+        self._keyboard_focus_update()
+        self._update_keys()
+
+    def _leave_keyboard_focus(self):
+        self.focus_area = "nav"
+        self._keyboard_focus_update()
+        self._update_nav()
+        self._update_keys()
+
+    def _keyboard_move(self, distance):
+        if self.focus_area != "keyboard":
+            return
+        new = (self.kb_position + distance) % len(self.kb_characters)
+        if new != self.kb_position:
+            self["kb_focus%d" % self.kb_position].hide()
+            self.kb_position = new
+            self["kb_focus%d" % self.kb_position].show()
+
+    def _keyboard_append(self, character):
+        if self.focus_area != "keyboard":
+            return
+        if len(self.kb_text) >= 160:
+            self["kb_feedback"].setText(_("Search phrase is too long."))
+            return
+        self.kb_text += character
+        self["kb_feedback"].setText("")
+        self._keyboard_refresh()
+
+    def _keyboard_press(self):
+        if self.focus_area == "keyboard":
+            letter = self.kb_characters[self.kb_position]
+            self._keyboard_append(letter.upper() if self.kb_upper else letter)
+
+    def _keyboard_delete(self):
+        if self.focus_area == "keyboard":
+            self.kb_text = self.kb_text[:-1]
+            self._keyboard_refresh()
+
+    def _keyboard_case(self):
+        if self.focus_area != "keyboard":
+            return
+        self.kb_upper = not self.kb_upper
+        for i, char in enumerate(self.kb_characters):
+            displayed = char.upper() if self.kb_upper else char
+            self["kb_key%d" % i].setText(displayed)
+            self["kb_focus%d" % i].setText(displayed)
+
+    def _keyboard_submit(self):
+        if self.focus_area != "keyboard":
+            return
+        query = self.kb_text.strip()
+        if not query:
+            self["kb_feedback"].setText(_("Enter your YouTube search"))
+            return
+        # Reuse the real search backend/results screen, but skip its popup
+        # entirely. Searching starts on its first onShown, not during
+        # applySkin, when Enigma2 Session is not yet in_exec.
+        from .search import WarderYouTubeSearch
+        self.session.open(WarderYouTubeSearch, initial_query=query)
+
     def _update_keys(self):
+        if self.focus_area == "keyboard":
+            self["key_red"].setText(_("Back"))
+            self["key_green"].setText(_("Search"))
+            self["key_yellow"].setText(_("Delete"))
+            self["key_blue"].setText(_("Space"))
+            return
         self["key_red"].setText(_("Back") if self.focus_area == "tiles" else _("Close"))
         self["key_green"].setText(
-            _("Play video") if self.focus_area == "tiles" and self.video_items else _("Open")
+            _("Play video") if self.focus_area == "tiles" and self.video_items
+            else _("Search") if self.index == 1 else _("Open")
         )
         self["key_yellow"].setText(_("History"))
         self["key_blue"].setText(_("Search"))
@@ -395,18 +523,28 @@ class WarderYouTubeHome(Screen):
         self._update_preview()
 
     def up(self):
-        if self.focus_area == "nav":
+        if self.focus_area == "keyboard":
+            self._keyboard_move(-COLUMNS)
+        elif self.focus_area == "nav":
             self._select_nav(self.index - 1)
         else:
             self._move_tile("up")
 
     def down(self):
-        if self.focus_area == "nav":
+        if self.focus_area == "keyboard":
+            self._keyboard_move(COLUMNS)
+        elif self.focus_area == "nav":
             self._select_nav(self.index + 1)
         else:
             self._move_tile("down")
 
     def left(self):
+        if self.focus_area == "keyboard":
+            if self.kb_position % COLUMNS == 0:
+                self._leave_keyboard_focus()
+            else:
+                self._keyboard_move(-1)
+            return
         if self.focus_area == "tiles":
             if self.tile_index % 3 == 0:
                 self.focus_area = "nav"
@@ -420,7 +558,13 @@ class WarderYouTubeHome(Screen):
                 self._move_tile("left")
 
     def right(self):
-        if self.focus_area == "nav":
+        if self.focus_area == "keyboard":
+            self._keyboard_move(1 if self.kb_position % COLUMNS < COLUMNS - 1
+                                else -(COLUMNS - 1))
+            return
+        if self.focus_area == "nav" and self.index == 1:
+            self._enter_keyboard_focus()
+        elif self.focus_area == "nav":
             self._enter_tiles()
         else:
             self._move_tile("right")
@@ -461,6 +605,9 @@ class WarderYouTubeHome(Screen):
             self._update_keys()
 
     def back(self):
+        if self.focus_area == "keyboard":
+            self._leave_keyboard_focus()
+            return
         if self.focus_area == "tiles":
             self.focus_area = "nav"
             self["status"].setText("")
@@ -470,20 +617,43 @@ class WarderYouTubeHome(Screen):
         else:
             self.close()
 
+    def green(self):
+        if self.focus_area == "keyboard":
+            self._keyboard_submit()
+        else:
+            self.activate()
+
     def yellow(self):
+        if self.focus_area == "keyboard":
+            self._keyboard_delete()
+            return
         if self.focus_area == "tiles":
             self.context()
         else:
             self._select_nav(3)
 
     def blue(self):
-        self._open_index(1)
+        if self.focus_area == "keyboard":
+            self._keyboard_append(" ")
+            return
+        self._select_nav(1)
+        self._enter_keyboard_focus()
+
+    def menu(self):
+        if self.focus_area == "keyboard":
+            self._keyboard_case()
+        else:
+            self.context()
 
     def activate(self):
         if self._disposed or self._busy or self._playback_active or self._context_open:
             return
-        if self.focus_area == "tiles":
+        if self.focus_area == "keyboard":
+            self._keyboard_press()
+        elif self.focus_area == "tiles":
             self._play_selected()
+        elif self.index == 1:
+            self._enter_keyboard_focus()
         elif self.index in (0, 3, 5) and self.video_items:
             self._enter_tiles()
         else:
@@ -493,8 +663,8 @@ class WarderYouTubeHome(Screen):
         if self._disposed or self._busy or self._context_open or self._playback_active:
             return
         if index == 1:
-            from .search import WarderYouTubeSearch
-            self.session.open(WarderYouTubeSearch)
+            self._select_nav(1)
+            self._enter_keyboard_focus()
         elif index in (3, 5):
             from .library_ui import WarderYouTubeLibrary
             self.session.open(WarderYouTubeLibrary,
