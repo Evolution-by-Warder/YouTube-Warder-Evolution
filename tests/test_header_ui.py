@@ -197,6 +197,50 @@ class HeaderTests(unittest.TestCase):
             self.assertLessEqual(clock_y + clock_h, 76,
                                  root.attrib["name"])
 
+    def test_all_twelve_screens_have_standard_bottom_rule_and_key_bar(self):
+        source = (PKG / "skin.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        skins = [ast.literal_eval(stmt.value)
+                 for stmt in tree.body
+                 if isinstance(stmt, ast.Assign)
+                 and any(isinstance(t, ast.Name) and t.id.endswith("_SKIN")
+                         for t in stmt.targets)]
+        self.assertEqual(len(skins), 12)
+        accents = {"red": ("150", "#FF526A"),
+                   "green": ("620", "#36E884"),
+                   "yellow": ("1090", "#FFE065"),
+                   "blue": ("1560", "#60BCFF")}
+        for xml in skins:
+            root = ET.fromstring(xml)
+            self.assertEqual(root.attrib["backgroundColor"], "#08182D")
+            labels = [x.attrib for x in root.findall("eLabel")]
+            cyan = [x for x in labels if x.get("position") == "0,150"
+                    and x.get("size") == "1920,3"]
+            self.assertEqual(len(cyan), 1, root.attrib["name"])
+            self.assertEqual(cyan[0]["backgroundColor"], "#1BEFF0")
+            foot = [x for x in labels if x.get("size", "").startswith("1920,")
+                    and int(x.get("position", "0,0").split(",")[1]) > 900]
+            self.assertEqual(len(foot), 1, root.attrib["name"])
+            self.assertEqual(foot[0]["backgroundColor"], "#08182D")
+            widgets = {x.attrib.get("name"): x.attrib
+                       for x in root.findall("widget")}
+            key_prefix = ("warder_key_" if
+                          root.attrib["name"] == "WarderYouTubeNativeSearchKeyboard"
+                          else "key_")
+            for color, (x, rgb) in accents.items():
+                bars = [el for el in labels if
+                        el.get("position") == x + ",1070" and
+                        el.get("size") == "195,3" and
+                        el.get("backgroundColor") == rgb]
+                self.assertEqual(len(bars), 1, (root.attrib["name"], color))
+                key = widgets.get(key_prefix + color)
+                self.assertIsNotNone(key, (root.attrib["name"], color))
+                self.assertEqual(key["backgroundColor"], "#08182D")
+                key_bottom = (int(key["position"].split(",")[1]) +
+                              int(key["size"].split(",")[1]))
+                self.assertLess(key_bottom, 1070)
+            self.assertNotIn(',1003" size="195,3"', xml)
+
     def test_every_screen_uses_same_static_header_without_renderers(self):
         source = (PKG / "skin.py").read_text(encoding="utf-8")
         tree = ast.parse(source)
