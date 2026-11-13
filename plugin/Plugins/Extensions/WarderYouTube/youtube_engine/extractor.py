@@ -342,7 +342,7 @@ class YouTubeVideoUrl():
 					'315': 2160, '38': 2160}
 				try:
 					height = int(fmt.get('height') or fallback_heights.get(itag) or 0)
-				expected = int(config.plugins.YouTube.maxHeight.value)
+					expected = int(config.plugins.YouTube.maxHeight.value)
 				except (TypeError, ValueError):
 					continue
 				if height > expected:
