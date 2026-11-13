@@ -70,6 +70,46 @@ class PackagingTests(unittest.TestCase):
                                            for i in (16, 20)), dimensions)
                     self.assertEqual(raw[25], 6)  # RGBA, alpha transparency
 
+    def test_video_focus_frames_are_transparent_inside_and_bright_on_edge(self):
+        import zlib
+        # The selected border must pop against dark, one/two-pixel static
+        # borders, without covering actual YouTube thumbnails.
+        from importlib.util import spec_from_file_location, module_from_spec
+        art_path = P.parent / "warder_nav_art.py"
+        spec = spec_from_file_location("_focus_art_test", art_path)
+        art = module_from_spec(spec)
+        spec.loader.exec_module(art)
+        for render, dims in (
+            (art.render_video_focus, (477, 324)),
+            (art.render_grid_focus, (491, 364))
+        ):
+            raw = render()
+            self.assertEqual(raw[25], 6)
+            self.assertEqual((int.from_bytes(raw[16:20], "big"),
+                              int.from_bytes(raw[20:24], "big")), dims)
+            offset = 8
+            compressed = bytearray()
+            while offset < len(raw):
+                length = int.from_bytes(raw[offset:offset+4], "big")
+                chunk = raw[offset+4:offset+8]
+                if chunk == b"IDAT":
+                    compressed.extend(raw[offset+8:offset+8+length])
+                offset += length+12
+                if chunk == b"IEND":
+                    break
+            pixels = zlib.decompress(bytes(compressed))
+            row_size = dims[0]*4+1
+            self.assertTrue(all(pixels[i*row_size] == 0 for i in range(dims[1])))
+            def at(x, y):
+                base = y*row_size+1+x*4
+                return pixels[base:base+4]
+            border = at(0, dims[1]//2)
+            inside = at(dims[0]//2, dims[1]//2)
+            self.assertGreater(border[0], 140)
+            self.assertGreater(border[1], 220)
+            self.assertEqual(border[3], 255)
+            self.assertEqual(inside[3], 0)
+
     def test_displayed_version_matches_control_package(self):
         """Prevent the Home header and opkg control version from drifting."""
         from ast import parse, Assign, Name, Constant
