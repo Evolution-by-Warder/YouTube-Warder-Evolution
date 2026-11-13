@@ -169,6 +169,34 @@ class HeaderTests(unittest.TestCase):
         # PNG by all 12 screens, with live date/clock/version widgets separate.
         self.assertIn('images/warder_header.png', (PKG / "skin.py").read_text())
 
+    def test_all_screens_use_two_compact_rows_above_planet_horizon(self):
+        source = (PKG / "skin.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        skins = [ast.literal_eval(stmt.value)
+                 for stmt in tree.body
+                 if isinstance(stmt, ast.Assign)
+                 and any(isinstance(t, ast.Name) and t.id.endswith("_SKIN")
+                         for t in stmt.targets)]
+        self.assertEqual(len(skins), 12)
+        for xml in skins:
+            root = ET.fromstring(xml)
+            nodes = {w.attrib.get("name"): w.attrib
+                     for w in root.findall("widget")}
+            for label, value in (("hdr_day", "hdr_date"),
+                                 ("hdr_version_label", "hdr_version")):
+                title_y = int(nodes[label]["position"].split(",")[1])
+                title_h = int(nodes[label]["size"].split(",")[1])
+                second_y = int(nodes[value]["position"].split(",")[1])
+                second_h = int(nodes[value]["size"].split(",")[1])
+                self.assertGreaterEqual(second_y, title_y + title_h)
+                self.assertLessEqual(second_y - (title_y + title_h), 3)
+                self.assertLessEqual(second_y + second_h, 76,
+                                     (root.attrib["name"], value))
+            clock_y = int(nodes["hdr_clock"]["position"].split(",")[1])
+            clock_h = int(nodes["hdr_clock"]["size"].split(",")[1])
+            self.assertLessEqual(clock_y + clock_h, 76,
+                                 root.attrib["name"])
+
     def test_every_screen_uses_same_static_header_without_renderers(self):
         source = (PKG / "skin.py").read_text(encoding="utf-8")
         tree = ast.parse(source)
