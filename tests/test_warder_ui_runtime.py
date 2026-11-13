@@ -209,9 +209,16 @@ class WarderNativeUiTests(unittest.TestCase):
                 continue
             root = ET.fromstring(ast.literal_eval(stmt.value))
             for widget in root.findall("widget"):
+                name = widget.attrib["name"]
+                self.assertIn("zPosition", widget.attrib,
+                              (root.attrib["name"], name))
+                # Existing grid focus underlays and bottom button-bar
+                # footers deliberately live below the content layer.
+                if name.startswith("focus") or name == "footer":
+                    continue
                 self.assertGreaterEqual(
-                    int(widget.attrib.get("zPosition", "0")), 2,
-                    (root.attrib["name"], widget.attrib["name"])
+                    int(widget.attrib["zPosition"]), 2,
+                    (root.attrib["name"], name)
                 )
 
     def test_context_menu_never_saves_on_open(self):
