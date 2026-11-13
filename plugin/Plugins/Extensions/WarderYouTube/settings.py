@@ -10,7 +10,7 @@ from .skin import SETTINGS_SKIN
 from .resolver import is_available
 from .i18n import tr as _
 from .confirm_ui import WarderYouTubeConfirm
-from .api_key_file import read_manual_key
+from .api_key_file import read_manual_key, VALID_KEY
 
 QUALITY_VALUES = ("360", "480", "720", "1080", "1440", "2160")
 
@@ -58,7 +58,7 @@ class WarderYouTubeSettings(Screen):
         self["resolver_state"] = Label("")
         self["warning"] = Label(
             _("API stored unencrypted") + "\n" +
-            _("Keep live TV audio")
+            _("API key visible while typing")
         )
         self["footer"] = Label(
             _("OK/Green: API key   Blue: quality   Yellow: remove key   Exit: back")
@@ -98,19 +98,25 @@ class WarderYouTubeSettings(Screen):
         self.refresh()
 
     def prompt_key(self):
-        # Never reveal a stored key when opening the keyboard.
+        # The owner can see and correct every character before pressing
+        # GREEN/Confirm. Never pre-fill or reveal an existing saved key.
         from .keyboard import WarderYouTubeKeyboard
+        try:
+            from .native_keyboard import WarderNativeSearchKeyboard
+        except ImportError:
+            WarderNativeSearchKeyboard = None
+        editor = WarderNativeSearchKeyboard or WarderYouTubeKeyboard
         self.session.openWithCallback(
-            self.key_received, WarderYouTubeKeyboard,
-            value="", title=_("Enter API key"), secret=True, limit=256
+            self.key_received, editor,
+            value="", title=_("Enter API key"), secret=False, limit=160
         )
 
     def key_received(self, value):
         if value is None:
             return
         value = value.strip()
-        if not value or any(c.isspace() for c in value) or len(value) > 256:
-            self["status"].setText(_("API key") + ": " + _("Cancel"))
+        if not VALID_KEY.fullmatch(value):
+            self["status"].setText(_("Invalid API key format."))
             return
         config.plugins.warderyoutube.api_key.value = value
         config.plugins.warderyoutube.api_key.save()
