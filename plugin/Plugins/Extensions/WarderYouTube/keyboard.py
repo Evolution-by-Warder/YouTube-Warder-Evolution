@@ -4,6 +4,7 @@
 One lightweight label per key; navigation uses standard remote actions. No
 renderer, no external widgets, no virtual keyboard popup over the live-TV image.
 """
+from .header_ui import add_header
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Screens.Screen import Screen
@@ -33,6 +34,7 @@ class WarderYouTubeKeyboard(Screen):
 
     def __init__(self, session, value="", title=None, secret=False, limit=160):
         Screen.__init__(self, session)
+        add_header(self)
         self.limit = max(1, min(256, int(limit)))
         self.value = str(value or "")[:self.limit]
         self.rows = keyboard_rows()
