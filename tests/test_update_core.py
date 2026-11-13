@@ -75,11 +75,11 @@ class UpdateCoreTests(unittest.TestCase):
         self.assertTrue(release["url"].endswith("_0.0.8.test7_all.ipk"))
 
     def test_future_testing_update_is_offered_with_dotted_download_url(self):
-        future = valid_manifest("0.0.8~test13")
+        future = valid_manifest("0.0.8~test14")
         release = u.parse_manifest(json.dumps(future).encode(), u.CURRENT_VERSION)
-        self.assertEqual(release["version"], "0.0.8~test13")
-        self.assertEqual(release["url"], u.expected_url("0.0.8~test13"))
-        self.assertTrue(release["url"].endswith("_0.0.8.test13_all.ipk"))
+        self.assertEqual(release["version"], "0.0.8~test14")
+        self.assertEqual(release["url"], u.expected_url("0.0.8~test14"))
+        self.assertTrue(release["url"].endswith("_0.0.8.test14_all.ipk"))
 
     def test_manifest_rejects_mismatched_tag_url_or_digest(self):
         for change, value in [
@@ -97,12 +97,12 @@ class UpdateCoreTests(unittest.TestCase):
 
     def test_check_update_uses_testing_feed_and_no_auto_install(self):
         requested = []
-        future = json.dumps(valid_manifest("0.0.8~test13")).encode("utf-8")
+        future = json.dumps(valid_manifest("0.0.8~test14")).encode("utf-8")
         def fake_open(url, timeout):
             requested.append((url, timeout))
             return FakeResponse(future)
         result = u.check_update(u.CURRENT_VERSION, opener=fake_open)
-        self.assertEqual(result["version"], "0.0.8~test13")
+        self.assertEqual(result["version"], "0.0.8~test14")
         self.assertEqual(requested, [(u.FEED_TESTING, 8)])
 
     def test_verified_download_and_reject_corruption(self):
