@@ -57,7 +57,7 @@ def header_module():
     enigma = types.ModuleType("enigma")
     enigma.eTimer = Timer
     core = types.ModuleType("_warder_header_test.update_core")
-    core.CURRENT_VERSION = "0.0.8~test11"
+    core.CURRENT_VERSION = "0.0.8~test12"
     language = types.ModuleType("_warder_header_test.i18n")
     language.language_code = lambda: "sk"
     mocked = {
@@ -94,7 +94,7 @@ class HeaderTests(unittest.TestCase):
             c = m.add_header(sc)
             self.assertEqual(len(sc), 5)
             self.assertIs(sc._warder_header, c)
-            self.assertEqual(sc["hdr_version"].text, "0.0.8~test11")
+            self.assertEqual(sc["hdr_version"].text, "0.0.8~test12")
             self.assertIn("Verzia:", sc["hdr_version_label"].text)
             self.assertIsNone(c.timer)
             for callback in sc.onShown:
