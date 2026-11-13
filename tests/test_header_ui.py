@@ -168,6 +168,9 @@ class HeaderTests(unittest.TestCase):
                        if "warder_header.png" in x.attrib.get("pixmap", "")]
             self.assertEqual(len(pixmaps), 1, root.attrib["name"])
             self.assertEqual(pixmaps[0].attrib["size"], "1920,152")
+            clock = root.find('widget[@name="hdr_clock"]')
+            self.assertEqual(clock.attrib["font"], "Regular;51")
+            self.assertEqual(clock.attrib["valign"], "bottom")
             names = {x.attrib["name"] for x in root.findall("widget")}
             self.assertTrue({"hdr_day", "hdr_date", "hdr_clock",
                              "hdr_version", "hdr_version_label"} <= names)
