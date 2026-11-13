@@ -122,6 +122,48 @@ class WarderNativeUiTests(unittest.TestCase):
         self.assertEqual(keyboard["warder_key_yellow"].text, "Shift")
         self.assertEqual(keyboard["warder_key_blue"].text, "Aa")
 
+    def test_keyboard_geometry_is_centered_on_native_key_dimensions(self):
+        m = load("native_keyboard")
+        left, top, width, height = m.keyboard_geometry(67, 67, 14, 5)
+        self.assertEqual((left, width), (487, 946))
+        self.assertEqual(left + width // 2, 960)
+        self.assertGreaterEqual(top, 350)
+        self.assertLessEqual(top + height, 820)
+        for bad in ((0, 67, 14, 5), (140, 67, 14, 5),
+                    (67, 100, 14, 5), (67, 67, 50, 5)):
+            with self.assertRaises(ValueError):
+                m.keyboard_geometry(*bad)
+
+    def test_layout_repositions_list_and_shows_only_one_line_of_locale(self):
+        m = load("native_keyboard")
+        keyboard = m.WarderNativeSearchKeyboard(None)
+        keyboard.width = 67
+        keyboard.height = 67
+        keyboard.keyboardWidth = 14
+        keyboard.keyboardHeight = 5
+        keyboard.locale = "sk_SK"
+        keyboard["locale"] = Label("")
+        keyboard["language"] = Label("")
+        positions = {}
+        class ListWidget:
+            def resize(self, size):
+                positions["size"] = size
+            def move(self, point):
+                positions["point"] = point
+        keyboard["list"] = types.SimpleNamespace(instance=ListWidget())
+        with patch.dict(sys.modules, {
+            "enigma": mod("enigma",
+                          ePoint=lambda x, y: (x, y),
+                          eSize=lambda w, h: (w, h))
+        }):
+            keyboard._align_native_keys()
+        self.assertEqual(positions["size"], (946, 343))
+        self.assertEqual(positions["point"][0], 487)
+        self.assertEqual(keyboard["locale"].text, "Keyboard layout: sk_SK")
+        self.assertEqual(keyboard["language"].text, "Language from Enigma2")
+        self.assertNotIn("\\n", keyboard["locale"].text)
+        self.assertNotIn("\\n", keyboard["language"].text)
+
     def test_real_system_keyboard_does_not_expose_api_key(self):
         native = load("native_keyboard")
         with self.assertRaises(ValueError):
