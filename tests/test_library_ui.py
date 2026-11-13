@@ -112,6 +112,7 @@ def load():
     internet = mkmod("twisted.internet")
     internet.__path__ = []
     fake = {
+        "_test_warder_library.header_ui": mkmod("_test_warder_library.header_ui", add_header=lambda sc: sc.__setitem__("hdr_version", Widget())),
         "_test_warder_library": package,
         "_test_warder_library.i18n": mkmod(
             "_test_warder_library.i18n", tr=lambda value: value
