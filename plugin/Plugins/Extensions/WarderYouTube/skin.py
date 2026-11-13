@@ -110,110 +110,12 @@ HOME_SKIN = """
   <widget name="preview_border3" position="413,601" size="477,324" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
   <widget name="preview_border4" position="902,601" size="477,324" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
   <widget name="preview_border5" position="1391,601" size="477,324" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
-  <!-- Search is always inline in the right-hand Home panel. Nothing opens as a modal. -->
-  <widget name="kb_input" position="479,264" size="1325,59" font="Regular;32" foregroundColor="#FFFFFF" backgroundColor="#0C2038" transparent="0" zPosition="6"/>
+  <!-- Search system keyboard is rendered inside Home; no modal/overlay. -->
+  <!-- Reuse system VirtualKeyBoard eListboxPythonMultiContent + Input, NOT Warder-made letter buttons. -->
+  <widget name="kb_system_input" position="479,264" size="1325,59" font="Regular;32" foregroundColor="#FFFFFF" backgroundColor="#0C2038" transparent="0" zPosition="6"/>
+  <widget name="kb_system_list" position="780,372" size="718,405" scrollbarMode="showNever" transparent="1" zPosition="6"/>
   <widget name="kb_hint" position="480,780" size="1340,42" font="Regular;24" foregroundColor="#76CFF2" transparent="1" zPosition="6"/>
   <widget name="kb_feedback" position="480,838" size="1340,42" font="Regular;23" foregroundColor="#55DEFF" transparent="1" zPosition="6"/>
-  <widget name="kb_key0" position="493,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus0" position="493,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key1" position="621,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus1" position="621,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key2" position="749,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus2" position="749,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key3" position="877,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus3" position="877,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key4" position="1005,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus4" position="1005,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key5" position="1133,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus5" position="1133,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key6" position="1261,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus6" position="1261,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key7" position="1389,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus7" position="1389,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key8" position="1517,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus8" position="1517,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key9" position="1645,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus9" position="1645,354" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key10" position="493,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus10" position="493,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key11" position="621,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus11" position="621,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key12" position="749,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus12" position="749,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key13" position="877,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus13" position="877,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key14" position="1005,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus14" position="1005,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key15" position="1133,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus15" position="1133,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key16" position="1261,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus16" position="1261,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key17" position="1389,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus17" position="1389,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key18" position="1517,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus18" position="1517,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key19" position="1645,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus19" position="1645,436" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key20" position="493,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus20" position="493,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key21" position="621,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus21" position="621,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key22" position="749,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus22" position="749,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key23" position="877,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus23" position="877,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key24" position="1005,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus24" position="1005,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key25" position="1133,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus25" position="1133,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key26" position="1261,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus26" position="1261,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key27" position="1389,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus27" position="1389,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key28" position="1517,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus28" position="1517,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key29" position="1645,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus29" position="1645,518" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key30" position="493,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus30" position="493,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key31" position="621,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus31" position="621,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key32" position="749,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus32" position="749,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key33" position="877,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus33" position="877,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key34" position="1005,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus34" position="1005,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key35" position="1133,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus35" position="1133,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key36" position="1261,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus36" position="1261,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key37" position="1389,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus37" position="1389,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key38" position="1517,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus38" position="1517,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key39" position="1645,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus39" position="1645,600" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key40" position="493,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus40" position="493,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key41" position="621,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus41" position="621,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key42" position="749,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus42" position="749,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key43" position="877,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus43" position="877,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key44" position="1005,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus44" position="1005,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key45" position="1133,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus45" position="1133,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key46" position="1261,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus46" position="1261,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key47" position="1389,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus47" position="1389,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key48" position="1517,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus48" position="1517,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
-  <widget name="kb_key49" position="1645,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="0" halign="center" valign="center" zPosition="6"/>
-  <widget name="kb_focus49" position="1645,682" size="114,68" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" halign="center" valign="center" zPosition="7"/>
 </screen>
 """
 
