@@ -1,0 +1,31 @@
+name: One-shot export of owner-accepted test24 source tree
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/export-accepted-source.yml]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/native-search-v002
+          persist-credentials: false
+      - name: Archive tracked test24 source and note HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          git rev-parse HEAD > dist/HEAD.sha
+          git archive --format=tar.gz --prefix=youtube-warder/ --output=dist/source-from-github.tar.gz HEAD
+          sha256sum dist/source-from-github.tar.gz > dist/source-from-github.tar.gz.sha256
+          python3 -m unittest discover -s tests -q
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Warder-test24-full-source-pre-approved-asset
+          path: dist/
+          retention-days: 7
+          if-no-files-found: error
