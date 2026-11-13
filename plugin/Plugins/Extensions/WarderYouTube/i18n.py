@@ -24,6 +24,9 @@ MESSAGES = {
         "Testovací kanál: používate najnovšiu dostupnú verziu.": "Testing channel: latest available version.",
     },
     "sk": {
+        "Change saved API key?": "Zmeniť uložený API kľúč?",
+        "manual file": "zo súboru",
+
         "Maximum video quality": "Maximálna kvalita videa",
         "API key visible while typing": "Pri zadávaní je API kľúč viditeľný.",
         "Invalid API key format.": "Neplatný formát API kľúča.",
@@ -126,6 +129,9 @@ MESSAGES = {
         "Keep live TV audio": "Zvuk TV na pozadí zostáva zachovaný",
     },
     "cs": {
+        "Change saved API key?": "Změnit uložený API klíč?",
+        "manual file": "ze souboru",
+
         "Maximum video quality": "Maximální kvalita videa",
         "API key visible while typing": "Při zadávání je API klíč viditelný.",
         "Invalid API key format.": "Neplatný formát API klíče.",
@@ -222,6 +228,9 @@ MESSAGES = {
         "Keep live TV audio":"Zvuk TV na pozadí zůstává zachován",
     },
     "de": {
+        "Change saved API key?": "Gespeicherten API-Schlüssel ändern?",
+        "manual file": "aus Datei",
+
         "Maximum video quality": "Maximale Videoqualität",
         "API key visible while typing": "API-Schlüssel ist während der Eingabe sichtbar.",
         "Invalid API key format.": "Ungültiges API-Schlüsselformat.",
