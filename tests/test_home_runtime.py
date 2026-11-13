@@ -131,7 +131,7 @@ def load(key="", history=None, fav=None):
         "_warder_home.i18n": fake("_warder_home.i18n", tr=lambda text: text),
         "_warder_home.update_core": fake("_warder_home.update_core", CURRENT_VERSION="0.0.8~test8"),
         "_warder_home.grid_model": fake("_warder_home.grid_model", move_index=move),
-        "_warder_home.home_feed": fake("_warder_home.home_feed", popular_videos=lambda key: []),
+        "_warder_home.home_feed": fake("_warder_home.home_feed", popular_videos=lambda key: [], public_home_videos=lambda: []),
         "_warder_home.home_thumbs": fake("_warder_home.home_thumbs", HomeThumbs=FakeThumbs),
         "_warder_home.local_library": fake(
             "_warder_home.local_library", LibraryError=ValueError, list_videos=list_videos,
@@ -207,7 +207,33 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertTrue(screen["nav_focus3"].visible)
         self.assertEqual(session.opens, [])
         self.assertEqual(session.callbacks, [])
-        self.assertEqual(jobs, [])
+        # Initial Home requests the public anonymous feed once, but merely
+        # moving between sections never opens modal dialogs or issues more.
+        self.assertEqual(len(jobs), 1)
+        self.assertEqual(jobs[0][0], (mod.public_home_videos,))
+
+    def test_public_home_without_api_replaces_local_fallback(self):
+        mod, key, saved, jobs = load()
+        screen, session = ready(mod)
+        self.assertEqual(len(jobs), 1)
+        self.assertIs(jobs[0][0][0], mod.public_home_videos)
+        self.assertEqual(screen["subtitle"].text, "Recently played (offline)")
+        jobs[0][2].success([video(4)])
+        self.assertEqual(screen["subtitle"].text,
+                         "Public YouTube selection (no API key)")
+        self.assertEqual(screen.video_items[0]["video_id"], video(4)["video_id"])
+        screen.down()
+        screen.up()
+        self.assertEqual(len(jobs), 1)
+        self.assertEqual(len(screen.video_items), 1)
+
+    def test_public_feed_failure_keeps_local_videos(self):
+        mod, key, saved, jobs = load()
+        screen, session = ready(mod)
+        jobs[0][2].failure(RuntimeError("site changed"))
+        self.assertEqual(screen["subtitle"].text, "Recently played (offline)")
+        self.assertEqual(len(screen.video_items), len(saved["history"]))
+        self.assertEqual(len(jobs), 1)
 
     def test_arrow_right_enters_tiles_and_ok_is_not_automatic(self):
         mod, key, saved, jobs = load()
