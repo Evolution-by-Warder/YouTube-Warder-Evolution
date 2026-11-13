@@ -6,13 +6,9 @@ from Components.config import ConfigSelection, ConfigSubsection, ConfigText, con
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
-try:
-    from Screens.VirtualKeyBoard import VirtualKeyboard
-except ImportError:
-    from Screens.VirtualKeyBoard import VirtualKeyBoard as VirtualKeyboard
-
 from .skin import SETTINGS_SKIN
 from .resolver import is_available
+from .i18n import tr as _
 
 if not hasattr(config.plugins, "warderyoutube"):
     config.plugins.warderyoutube = ConfigSubsection()
@@ -38,17 +34,24 @@ class WarderYouTubeSettings(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
-        self["title"] = Label("YouTube Warder Evolution / Settings")
+        self["title"] = Label("YouTube Warder Evolution / " + _("Settings"))
+        self["section_search"] = Label(_("Search").upper())
+        self["section_playback"] = Label(_("Playback").upper())
+        self["section_privacy"] = Label(_("Privacy").upper())
+        self["status"] = Label(_("Keep live TV audio"))
+        self["key_red"] = Label(_("Back"))
+        self["key_green"] = Label(_("API key"))
+        self["key_yellow"] = Label(_("Delete saved key"))
+        self["key_blue"] = Label(_("Change quality"))
         self["description"] = Label(
-            "Vyhľadávanie: API kľúč alebo yt-dlp. "
-            "Prehrávanie: vlastný resolver Warder Radio; yt-dlp iba záloha."
+            _("About settings") + "\n" + _("Language from Enigma2")
         )
         self["key_state"] = Label("")
         self["quality"] = Label("")
         self["resolver_state"] = Label("")
         self["warning"] = Label(
-            "API kľúč je uložený v Enigma2 bez šifrovania. "
-            "Pri jeho zadávaní nezdieľajte snímky obrazovky."
+            _("API stored unencrypted") + "\n" +
+            _("Keep live TV audio")
         )
         self["footer"] = Label(
             "OK/ZELENÉ: API kľúč   MODRÉ: 360/720p   ŽLTÉ: vymazať   EXIT: späť"
@@ -82,10 +85,10 @@ class WarderYouTubeSettings(Screen):
 
     def prompt_key(self):
         # Never reveal a stored key when opening the keyboard.
+        from .keyboard import WarderYouTubeKeyboard
         self.session.openWithCallback(
-            self.key_received, VirtualKeyboard,
-            title="Vložte YouTube Data API kľúč (nahradí pôvodný)",
-            text=""
+            self.key_received, WarderYouTubeKeyboard,
+            value="", title=_("Enter API key"), secret=True, limit=256
         )
 
     def key_received(self, value):

@@ -14,6 +14,7 @@ from twisted.internet.threads import deferToThread
 from .grid_model import move_index, page_number, local_slot, VISIBLE_TILES
 from .thumbnails import fetch_thumbnail
 from .skin import GRID_SKIN
+from .i18n import tr as _
 
 THUMB_WIDTH = 476
 THUMB_HEIGHT = 249
@@ -54,14 +55,18 @@ class WarderYouTubeGrid(Screen):
         self._status_override = False
 
         self["brand"] = Label("YouTube Warder Evolution")
-        self["heading"] = Label("Hľadanie: " + self.query)
+        self["heading"] = Label(_("Search") + ": " + self.query)
         self["status"] = Label("")
         self["footer"] = Label(
             "Šípky: výber    OK: prehrať    MODRÉ: nové hľadanie    "
-            "ZELENÉ: ďalšie    ŽLTÉ: predch. strana    INFO: detaily    MENU: obľúbené    EXIT: domov"
+            "INFO: " + _("Video details") + "    MENU: " + _("Video actions") + "    EXIT: " + _("Home")
         )
-        for i, name in enumerate(SIDEBAR):
-            self["side%d" % i] = Label(name)
+        self["key_red"] = Label(_("Back"))
+        self["key_green"] = Label(_("Next"))
+        self["key_yellow"] = Label(_("Previous"))
+        self["key_blue"] = Label(_("New search"))
+        for i in range(7):
+            self["side%d" % i] = Label("")
         for i in range(VISIBLE_TILES):
             self["focus%d" % i] = Label("")
             self["thumb%d" % i] = Pixmap()
@@ -73,7 +78,7 @@ class WarderYouTubeGrid(Screen):
             {
                 "left": self.left, "right": self.right,
                 "up": self.up, "down": self.down,
-                "ok": self.play, "info": self.show_info, "menu": self.save_favourite,
+                "ok": self.play, "info": self.show_info, "menu": self.show_menu,
                 "cancel": self.go_back, "red": self.go_back,
                 "blue": self.new_search, "green": self.next_page,
                 "yellow": self.previous_page
@@ -205,9 +210,20 @@ class WarderYouTubeGrid(Screen):
             else:
                 self["focus%d" % slot].hide()
 
+        self["side0"].setText(_("Results").upper())
+        self["side1"].setText("%d / %d" % (self.selected + 1, len(self.video_items))
+                              if self.selected >= 0 else "0")
+        self["side2"].setText(_("Video selected").upper())
+        self["side4"].setText(_("Video channel").upper())
+        self["side6"].setText(_("Menu for selected video"))
         if self.selected < 0:
+            self["side3"].setText(_("No video selected"))
+            self["side5"].setText("")
             self.set_status("Žiadne videá.")
         else:
+            video = self.video_items[self.selected]
+            self["side3"].setText(str(video.get("title") or "")[:90])
+            self["side5"].setText(str(video.get("channel") or "")[:56])
             self.set_status(
                 "Video %d/%d  |  strana %d  |  obrázky iba pre viditeľné videá" %
                 (self.selected + 1, len(self.video_items), page_number(self.selected) + 1)
@@ -346,9 +362,13 @@ class WarderYouTubeGrid(Screen):
         if self.selected >= 0 and callable(self.on_info):
             self.on_info(self.video_items[self.selected])
 
-    def save_favourite(self):
+    def show_menu(self):
         if self.selected >= 0 and callable(self.on_favorite):
             self.on_favorite(self.video_items[self.selected])
+
+    def save_favourite(self):
+        # Keep old external callers safe; MENU now opens an action menu.
+        self.show_menu()
 
     def next_page(self):
         if not self.video_items:
