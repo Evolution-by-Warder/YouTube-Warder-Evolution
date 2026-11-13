@@ -386,8 +386,8 @@ class WarderYouTubeHome(Screen):
         self._update_keys()
 
     def _hide_inline_keyboard(self):
-        if not self.kb_shown:
-            return
+        # Enigma2 labels start visible. Hide even before the first Search visit;
+        # otherwise keys would cover Home video thumbnails on initial launch.
         self.kb_shown = False
         for name in ("kb_input", "kb_hint", "kb_feedback"):
             self[name].hide()
