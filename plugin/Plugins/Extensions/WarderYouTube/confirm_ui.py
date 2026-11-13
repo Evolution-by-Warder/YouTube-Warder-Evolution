@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Warder-styled native yes/no dialog; never opens a foreign Enigma popup."""
+from .header_ui import add_header
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.MenuList import MenuList
@@ -14,6 +15,7 @@ class WarderYouTubeConfirm(Screen):
 
     def __init__(self, session, question):
         Screen.__init__(self, session)
+        add_header(self)
         self["brand"] = Label("YouTube Warder Evolution")
         self["heading"] = Label(_("Confirm"))
         self["question"] = Label(str(question)[:500])
