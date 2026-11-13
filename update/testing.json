@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test13",
-    "tag": "youtube-warder-v0.0.8-test13",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test13/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test13_all.ipk",
-    "sha256": "23809367a82d47cc36d39c4e99ba2fad2c712c35e03f7771b50f10c6ce17faf9",
-    "bytes": 164510,
-    "notes": "Test13: osem skutočných Warder PNG ikon v ľavom menu, výrazný fokus položky a videa v Domov/História/Obľúbené, odstránené opakované pokyny a pretekanie textu cez rám, vyšší spoločný panel s upravenou pôvodnou lebkou a väčšími hodinami. Vizuálne overenie na prijímači ešte čaká."
+    "version": "0.0.8~test15",
+    "tag": "youtube-warder-v0.0.8-test15",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test15/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test15_all.ipk",
+    "sha256": "4a5e8386f09de33c9b46cd3fac42d30ad35859ff8d53c7f4d898044fca25d859",
+    "bytes": 165488,
+    "notes": "Test15: všetky video dlaždice majú tenké tmavé neaktívne rámiky a jasný tyrkysový rámik iba pri vybranom videu (Domov, História, Obľúbené, Hľadanie). Obsahuje aj test14: farebné texty a tenké čiary namiesto obdĺžnikov na 12 obrazovkách, viac živých YouTube videí, opravy náhľadov, menu a aktualizátora. Testovacia verzia na GigaBlue."
   }
 }
