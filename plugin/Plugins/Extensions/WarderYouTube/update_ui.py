@@ -21,6 +21,18 @@ from .i18n import tr as _
 from .confirm_ui import WarderYouTubeConfirm
 
 
+
+def check_actual_installed_version():
+    """Blocking: get installed opkg version before checking the test feed.
+
+    The running GUI may still hold test10 Python modules although opkg has
+    already installed test13. Do NOT offer an already-installed build.
+    """
+    from .installed_version import read_installed_version
+    installed = read_installed_version()
+    return installed, check_update(installed)
+
+
 class WarderYouTubeUpdateProgress(Screen):
     skin = UPDATE_SKIN
 
@@ -161,18 +173,26 @@ class WarderYouTubeUpdateCheck(Screen):
             return
         self.started = True
         self._checking = True
-        work = deferToThread(check_update, CURRENT_VERSION)
+        work = deferToThread(check_actual_installed_version)
         work.addCallbacks(self.found, self.failed_check)
 
     def found(self, release):
         if self.disposed:
             return
+        # New worker result includes the real opkg version. Plain release is
+        # still accepted for older callback callers and mocked receiver tests.
+        if isinstance(release, tuple) and len(release) == 2:
+            installed_version, release = release
+            self["hdr_version"].setText(installed_version)
+            self["detail"].setText("Nainštalovaná verzia: " + installed_version)
+        else:
+            installed_version = CURRENT_VERSION
         self._checking = False
         self.release = release
         if release is None:
             self["key_green"].setText("")
             self["status"].setText(_("Testovací kanál: používate najnovšiu dostupnú verziu."))
-            self["detail"].setText("Nainštalovaná verzia: " + CURRENT_VERSION)
+            self["detail"].setText("Nainštalovaná verzia: " + installed_version)
             self["footer"].setText("EXIT: späť")
         else:
             self["key_green"].setText(_("Install"))
