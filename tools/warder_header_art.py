@@ -13,6 +13,91 @@ import zlib
 WIDTH, HEIGHT = 1920, 152
 
 
+FULL_WARDER_SOURCE_SHA256 = "1cb97ce23564d4bfa226433ce59abdb1c42ac09e2dc2a40c809ee6c5065296e5"
+FULL_WARDER_SIZE = (384, 429)
+# The complete canonical PiconHub/Warder original is the only logo source.
+# Do not use the old 104x100 cropped image or generate/paint a replacement.
+
+
+def decode_original_skull(png):
+    """Read the original 8-bit RGBA PNG using only the standard library.
+
+    All five PNG row filters are handled. Work is done once by the IPK builder;
+    Enigma2 still receives exactly one ready-made 1920x152 static header.
+    """
+    import hashlib
+    if hashlib.sha256(png).hexdigest() != FULL_WARDER_SOURCE_SHA256:
+        raise ValueError("Warder original artwork SHA256 does not match")
+    if not png.startswith(bytes((137, 80, 78, 71, 13, 10, 26, 10))):
+        raise ValueError("Invalid canonical Warder PNG")
+    i, image_data, dimensions = 8, bytearray(), None
+    while i + 12 <= len(png):
+        size = int.from_bytes(png[i:i+4], "big")
+        tag = png[i+4:i+8]
+        chunk = png[i+8:i+8+size]
+        if len(chunk) != size:
+            raise ValueError("Truncated Warder original")
+        if tag == b"IHDR":
+            dimensions = (int.from_bytes(chunk[0:4], "big"),
+                          int.from_bytes(chunk[4:8], "big"))
+            if len(chunk) != 13 or dimensions != FULL_WARDER_SIZE or chunk[8:] != bytes((8, 6, 0, 0, 0)):
+                raise ValueError("Unsupported original Warder artwork dimensions or PNG format")
+        elif tag == b"IDAT":
+            image_data.extend(chunk)
+        i += size + 12
+        if tag == b"IEND":
+            break
+    if dimensions != FULL_WARDER_SIZE or not image_data:
+        raise ValueError("Incomplete Warder original artwork")
+    w, h = dimensions
+    raw = zlib.decompress(bytes(image_data))
+    stride = w * 4
+    if len(raw) != h * (stride + 1):
+        raise ValueError("Unsupported original Warder scanline length")
+    rgba = bytearray(w * h * 4)
+    previous = bytearray(stride)
+    for y in range(h):
+        start = y * (stride + 1)
+        filter_type = raw[start]
+        if filter_type > 4:
+            raise ValueError("Unsupported PNG filter")
+        row = bytearray(raw[start+1:start+1+stride])
+        for x in range(stride):
+            left = row[x-4] if x >= 4 else 0
+            up = previous[x]
+            upper_left = previous[x-4] if x >= 4 else 0
+            if filter_type == 1:
+                prediction = left
+            elif filter_type == 2:
+                prediction = up
+            elif filter_type == 3:
+                prediction = (left + up) // 2
+            elif filter_type == 4:
+                p = left + up - upper_left
+                a, b, c = abs(p-left), abs(p-up), abs(p-upper_left)
+                prediction = left if a <= b and a <= c else up if b <= c else upper_left
+            else:
+                prediction = 0
+            row[x] = (row[x] + prediction) & 255
+        rgba[y*stride:(y+1)*stride] = row
+        previous = row
+    return w, h, rgba
+
+
+def skull_placement():
+    """Keep the full 384x429 symbol, especially the jaw, above the divider."""
+    # The Warder divider begins at y=147. The complete source ends at y=142,
+    # leaving a five-pixel gap; neither side nor the bottom is ever cut off.
+    return 24, 3, 124, 139
+
+
+def lettering_placement():
+    """Warder-family lettering sized alongside the larger complete skull."""
+    # The stock title masks are enlarged together, not stretched or redrawn.
+    # Text still ends before the native weekday/date area at x=1090.
+    return (184, 12, 1.10), (474, 89, 1.15)
+
+
 def render_header():
     w, h = WIDTH, HEIGHT
     image = bytearray(w * h * 3)
@@ -76,60 +161,34 @@ def render_header():
             if d < 1.5:
                 blend(x,y,(118,241,255),.87)
 
-    # Embed the exact owner-supplied Warder family logo ONCE, rather than
-    # drawing or layering an invented skull. PNG is indexed RGBA with a
-    # small palette. The source file remains separately versioned in the repo.
-    from pathlib import Path
+    # The complete, exact, original Warder skull is composited once.
+    # Four subpixel samples per axis use premultiplied alpha so tiny silver
+    # details/glows survive shrinking without edge halos or an invented jaw.
     skull_path = (Path(__file__).resolve().parents[1] /
                   "plugin/Plugins/Extensions/WarderYouTube/images/warder_skull.png")
-    png = skull_path.read_bytes()
-    if not png.startswith(bytes((137,80,78,71,13,10,26,10))):
-        raise ValueError("Invalid original Warder skull asset")
-    offset, palette, alphas, pixels = 8, b"", b"", bytearray()
-    chunks = bytearray()
-    sw = sh = 0
-    while offset + 12 <= len(png):
-        length = int.from_bytes(png[offset:offset+4], "big")
-        tag = png[offset+4:offset+8]
-        payload = png[offset+8:offset+8+length]
-        if tag == b"IHDR":
-            sw = int.from_bytes(payload[:4], "big")
-            sh = int.from_bytes(payload[4:8], "big")
-            if payload[8:] != bytes((8,3,0,0,0)) or (sw,sh)!=(104,100):
-                raise ValueError("Unsupported original Warder skull format")
-        elif tag == b"PLTE":
-            palette = payload
-        elif tag == b"tRNS":
-            alphas = payload
-        elif tag == b"IDAT":
-            chunks.extend(payload)
-        offset += 12 + length
-        if tag == b"IEND":
-            break
-    if not palette or not chunks:
-        raise ValueError("Incomplete original Warder skull")
-    scanlines = zlib.decompress(bytes(chunks))
-    if len(scanlines) != sh*(sw+1):
-        raise ValueError("Unexpected Warder skull scanlines")
-    # The original indexed PNG deliberately uses filter=0 on every row.
-    if any(scanlines[row*(sw+1)] != 0 for row in range(sh)):
-        raise ValueError("Unsupported Warder skull PNG filter")
-    # One static compositing pass at build time. The receiver only decodes
-    # the finalized shared 1920x152 PNG; no runtime scaling or rendering.
-    # Keep the WHOLE source bitmap, including its lower jaw, above the
-    # divider. Previous large scaling and an extra bottom alpha fade made
-    # the skull appear abruptly cropped on the receiver.
-    target_w, target_h, origin_x, origin_y = 118, 113, 29, 9
+    sw, sh, source_pixels = decode_original_skull(skull_path.read_bytes())
+    origin_x, origin_y, target_w, target_h = skull_placement()
+    if not (origin_x >= 0 and origin_y >= 0 and
+            origin_x + target_w <= 174 and origin_y + target_h <= 143):
+        raise ValueError("Canonical skull placement would overlap its reserved space")
     for iy in range(target_h):
-        sy = iy * sh // target_h
         for ix in range(target_w):
-            sx = ix * sw // target_w
-            color_index = scanlines[sy*(sw+1)+1+sx]
-            a = (alphas[color_index] / 255.0
-                 if color_index < len(alphas) else 1.0)
-            pi = color_index*3
-            rgb = tuple(palette[pi:pi+3])
-            blend(origin_x+ix, origin_y+iy, rgb, a)
+            total_alpha = total_r = total_g = total_b = 0
+            for sy_sub in range(4):
+                source_y = min(sh-1, int((iy+(sy_sub+0.5)/4)*sh/target_h))
+                for sx_sub in range(4):
+                    source_x = min(sw-1, int((ix+(sx_sub+0.5)/4)*sw/target_w))
+                    p = (source_y*sw+source_x)*4
+                    a = source_pixels[p+3]
+                    total_alpha += a
+                    total_r += source_pixels[p]*a
+                    total_g += source_pixels[p+1]*a
+                    total_b += source_pixels[p+2]*a
+            if total_alpha:
+                rgb = (total_r/total_alpha,
+                       total_g/total_alpha,
+                       total_b/total_alpha)
+                blend(origin_x+ix, origin_y+iy, rgb, total_alpha/(16*255))
 
     # Owner-approved product lettering: the exact existing Warder-title
     # silhouettes, compressed as two tiny one-bit masks. Draw them once into
@@ -139,30 +198,39 @@ def render_header():
     shapes = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(shapes)
 
-    def stamp(encoded, sw, sh, origin_x, origin_y, signature=False):
+    def stamp(encoded, sw, sh, origin_x, origin_y, scale, signature=False):
         raw = zlib.decompress(base64.b64decode(encoded))
         if len(raw) != (sw * sh + 7) // 8:
-            raise ValueError("Invalid Warder lettering mask")
-        for y in range(sh):
-            for x in range(sw):
-                i = y * sw + x
+            raise ValueError("Invalid original Warder lettering mask")
+        target_w, target_h = round(sw*scale), round(sh*scale)
+        for y in range(target_h):
+            src_y = min(sh-1, int(y/scale))
+            for x in range(target_w):
+                src_x = min(sw-1, int(x/scale))
+                i = src_y*sw+src_x
                 if not raw[i >> 3] & (0x80 >> (i & 7)):
                     continue
                 tx, ty = origin_x+x, origin_y+y
                 blend(tx+2, ty+2, (1,17,39), .78)
                 if signature:
-                    color = (51, min(255,201 + (sh-y)//3), 242)
-                elif tx < 713:
-                    # Cool polished silver, narrow highlights.
-                    light = max(153, min(245, 178 + 62*(1-abs(y/sh-.45)*2)))
+                    color = (51, min(255, 201 + (target_h-y)//3), 242)
+                elif tx < 740:
+                    light = max(153, min(245, 178 + 62*(1-abs(y/target_h-.45)*2)))
                     color = (light, min(255, light+12), min(255, light+28))
                 else:
-                    light = 163 + (sh-y)*75//sh
+                    light = 163 + (target_h-y)*75//target_h
                     color = (20, min(255,light), 255)
                 blend(tx,ty,color,1.0)
 
-    stamp(shapes.TITLE_MASK_B64, shapes.TITLE_WIDTH, shapes.TITLE_HEIGHT, 207, 20)
-    stamp(shapes.BY_MASK_B64, shapes.BY_WIDTH, shapes.BY_HEIGHT, 480, 87, True)
+    (name_x, name_y, name_scale), (by_x, by_y, by_scale) = lettering_placement()
+    if name_x + round(shapes.TITLE_WIDTH*name_scale) >= 1090:
+        raise ValueError("Warder lettering overlaps the live date area")
+    if by_y + round(shapes.BY_HEIGHT*by_scale) >= HEIGHT-5:
+        raise ValueError("Warder signature overlaps the bottom divider")
+    stamp(shapes.TITLE_MASK_B64, shapes.TITLE_WIDTH, shapes.TITLE_HEIGHT,
+          name_x, name_y, name_scale)
+    stamp(shapes.BY_MASK_B64, shapes.BY_WIDTH, shapes.BY_HEIGHT,
+          by_x, by_y, by_scale, True)
 
     for x in (1392,1664):
         for y in range(20,138):
