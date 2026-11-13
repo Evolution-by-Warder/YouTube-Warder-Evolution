@@ -95,7 +95,7 @@ class RadioEngineIntegrationTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 radio_streams.allowed_origin(u,media=True)
         with self.assertRaises(ValueError):
-            radio_streams.extract_candidates("abcdefghijk",quality="1080",
+            radio_streams.extract_candidates("abcdefghijk",quality="4320",
                        resolver_factory=FakeResolver,transport_factory=FakeNetwork)
         with self.assertRaises(Exception):
             radio_streams.extract_candidates("bad-id",quality="720",
