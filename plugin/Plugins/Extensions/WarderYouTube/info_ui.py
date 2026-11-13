@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Native Warder information dialog that stays within the plugin palette."""
+from .header_ui import add_header
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Screens.Screen import Screen
@@ -12,6 +13,7 @@ class WarderYouTubeInfo(Screen):
 
     def __init__(self, session, message, title=None):
         Screen.__init__(self, session)
+        add_header(self)
         self["brand"] = Label("YouTube Warder Evolution")
         self["title"] = Label(title or _("Video details"))
         self["body"] = Label(str(message)[:2500])
