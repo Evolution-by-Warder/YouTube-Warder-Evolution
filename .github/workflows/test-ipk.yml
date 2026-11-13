@@ -1,8 +1,6 @@
 name: Build 0.0.8~test11 Warder GUI refinements IPK (receiver test only)
 
 on:
-  push:
-    branches: [feature/native-search-v002]
   workflow_dispatch:
 
 permissions:
