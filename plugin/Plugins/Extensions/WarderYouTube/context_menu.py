@@ -3,7 +3,6 @@
 from .header_ui import add_header
 from Components.ActionMap import ActionMap
 from Components.Label import Label
-from Components.MenuList import MenuList
 from Screens.Screen import Screen
 
 from .i18n import tr as _
@@ -29,27 +28,30 @@ class WarderYouTubeContext(Screen):
         self["brand"] = Label("YouTube Warder Evolution")
         self["heading"] = Label(_("Video actions"))
         self["video"] = Label(str((video or {}).get("title") or _("No video selected"))[:155])
-        self["menu"] = MenuList([name for key, name in self.options])
+        self.selected = 0
         for index in range(5):
             self["context_focus%d" % index] = Label(" ")
+            self["context_row%d" % index] = Label(
+                self.options[index][1] if index < len(self.options) else ""
+            )
         self["hint"] = Label(_("Choose an action"))
         self["key_red"] = Label(_("Back"))
         self["key_green"] = Label(_("Open"))
         self["key_yellow"] = Label(_("Details"))
         self["key_blue"] = Label(_("New search") if mode == "search" else _("Clear"))
         self.mode = mode
-        self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {
+        self["actions"] = ActionMap(["NavigationActions", "OkCancelActions", "ColorActions"], {
+            "up": self.up, "down": self.down,
             "ok": self.choose, "green": self.choose,
             "cancel": self.cancel, "red": self.cancel,
             "yellow": lambda: self.close("info"),
             "blue": lambda: self.close("search" if self.mode == "search" else "clear")
         }, -1)
-        self["menu"].onSelectionChanged.append(self.update_focus)
         self.onLayoutFinish.append(self.update_focus)
         self.update_focus()
 
     def update_focus(self):
-        current = self["menu"].getCurrentIndex()
+        current = self.selected
         for index in range(5):
             focus = self["context_focus%d" % index]
             if index == current and index < len(self.options):
@@ -57,10 +59,17 @@ class WarderYouTubeContext(Screen):
             else:
                 focus.hide()
 
+    def up(self):
+        self.selected = (self.selected - 1) % len(self.options)
+        self.update_focus()
+
+    def down(self):
+        self.selected = (self.selected + 1) % len(self.options)
+        self.update_focus()
+
     def choose(self):
-        index = self["menu"].getCurrentIndex()
-        if 0 <= index < len(self.options):
-            self.close(self.options[index][0])
+        if 0 <= self.selected < len(self.options):
+            self.close(self.options[self.selected][0])
 
     def cancel(self):
         self.close(None)
