@@ -86,6 +86,30 @@ class RadioEngineIntegrationTests(unittest.TestCase):
                 resolver_factory=BrokenResolver, transport_factory=FakeNetwork)
         self.assertEqual(config.plugins.YouTube.maxResolution.value, initial)
 
+    def test_4k_quality_uses_best_available_lower_dash_height(self):
+        from WarderYouTube.youtube_engine.extractor import YouTubeVideoUrl, PRIORITY_VIDEO_FORMAT
+        from WarderYouTube.youtube_engine.settings import config
+        resolver = YouTubeVideoUrl.__new__(YouTubeVideoUrl)
+        resolver.use_dash_mp4 = ()
+        initial = config.plugins.YouTube.maxHeight.value
+        samples = [
+            {"itag": "313", "height": 2160, "mimeType": "video/mp4; codecs=avc1"},
+            {"itag": "137", "height": 1080, "mimeType": "video/mp4; codecs=avc1"},
+            {"itag": "136", "height": 720, "mimeType": "video/mp4; codecs=avc1"},
+        ]
+        try:
+            config.plugins.YouTube.maxHeight.value = 2160
+            available = resolver._sort_formats(PRIORITY_VIDEO_FORMAT, samples)
+            self.assertEqual(available[0]["height"], 2160)
+            without_4k = resolver._sort_formats(PRIORITY_VIDEO_FORMAT, samples[1:])
+            self.assertEqual(without_4k[0]["height"], 1080)
+            config.plugins.YouTube.maxHeight.value = 1080
+            capped = resolver._sort_formats(PRIORITY_VIDEO_FORMAT, samples)
+            self.assertEqual(capped[0]["height"], 1080)
+            self.assertTrue(all(entry["height"] <= 1080 for entry in capped))
+        finally:
+            config.plugins.YouTube.maxHeight.value = initial
+
     def test_reject_url_and_quality(self):
         for u in ("http://rr1.googlevideo.com/video",
                   "https://rr1.googlevideo.com.attacker.example/",
