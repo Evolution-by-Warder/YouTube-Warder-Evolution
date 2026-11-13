@@ -40,9 +40,13 @@ class WarderNativeSearchKeyboard(VirtualKeyBoard):
             # alphanumeric YouTube API key or silently display a secret.
             raise ValueError("Use the masked Warder editor for secret input")
         max_size = max(1, min(256, int(limit)))
+        self._warder_limit = max_size
+        # Enigma2 Components.Input uses maxSize not just as a limit:
+        # nonzero also turns ON overwrite mode. This caused "Adela" to
+        # display as only one character. Keep its native insert mode.
         VirtualKeyBoard.__init__(
             self, session, title=title or _("Enter your YouTube search"),
-            text=str(value or "")[:max_size], maxSize=max_size
+            text=str(value or "")[:max_size], maxSize=False
         )
         # Built-in class names would resolve to the system skin before our
         # embedded skin. A unique name guarantees the blue Warder panel,
@@ -92,3 +96,14 @@ class WarderNativeSearchKeyboard(VirtualKeyBoard):
         except (AttributeError, ImportError, RuntimeError, TypeError, ValueError):
             # Safe centered XML default for unsupported vendor builds.
             return
+
+    def save(self):
+        # Check the length on final confirmation without enabling Enigma2's
+        # destructive fixed-length overwrite mode while users are typing.
+        try:
+            if len(self["text"].getText()) > self._warder_limit:
+                self["warder_key_hint"].setText(_("Maximum text length exceeded."))
+                return
+        except (KeyError, AttributeError, TypeError):
+            pass
+        return VirtualKeyBoard.save(self)
