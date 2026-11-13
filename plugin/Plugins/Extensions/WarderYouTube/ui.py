@@ -16,7 +16,7 @@ from .skin import HOME_SKIN
 from .i18n import tr as _
 from .update_core import CURRENT_VERSION
 from .grid_model import move_index
-from .keyboard_layout import keyboard_rows, COLUMNS
+from .system_keyboard_pane import SystemKeyboardPane
 from .home_feed import popular_videos, public_home_videos
 from .home_thumbs import HomeThumbs
 from .local_library import (
@@ -56,14 +56,11 @@ class WarderYouTubeHome(Screen):
         self.index = 0
         self.focus_area = "nav"
         self.tile_index = 0
-        # Inline Warder search is a panel within Home, not a separate dialog.
-        # Both this pane and the optional standalone editor reuse the same
-        # locale/keymap model. The keyboard appears on highlighting Search.
-        self.kb_characters = "".join(keyboard_rows())
-        self.kb_position = COLUMNS
-        self.kb_text = ""
-        self.kb_upper = False
+        # The inline search panel uses Enigma2's ORIGINAL VirtualKeyBoard
+        # list + Input. No homemade letter matrix, UI-renderer or modal Screen.
         self.kb_shown = False
+        self.inline_keyboard = None
+        self.kb_unavailable_reason = ""
         self.video_items = []
         self.page_index = 0
         self._section_items = []
@@ -92,12 +89,22 @@ class WarderYouTubeHome(Screen):
         self["heading"] = Label("")
         self["subtitle"] = Label("")
         self["page_info"] = Label("")
-        self["kb_input"] = Label("")
         self["kb_hint"] = Label("")
         self["kb_feedback"] = Label("")
-        for i, char in enumerate(self.kb_characters):
-            self["kb_key%d" % i] = Label(char)
-            self["kb_focus%d" % i] = Label(char)
+        try:
+            self.inline_keyboard = SystemKeyboardPane(
+                session, self._keyboard_native_submit, self._leave_keyboard_focus
+            )
+            # Attach precisely the firmware's Components.Input/MenuList to
+            # Home so Enigma2 can create their native GUI widgets here.
+            self["kb_system_input"] = self.inline_keyboard.input
+            self["kb_system_list"] = self.inline_keyboard.list
+        except (ImportError, AttributeError, ValueError, RuntimeError, TypeError) as error:
+            self.kb_unavailable_reason = type(error).__name__
+            # Graceful incompatible-image diagnostic instead of a fake keypad.
+            self.inline_keyboard = None
+            self["kb_system_input"] = Label("")
+            self["kb_system_list"] = Label("")
         self["preview_message"] = Label("")
         self["status"] = Label("")
         for i in range(VISIBLE_TILES):
@@ -133,6 +140,12 @@ class WarderYouTubeHome(Screen):
         if self._disposed or self._mounted:
             return
         self._mounted = True
+        if self.inline_keyboard is not None:
+            try:
+                self.inline_keyboard.layout_finished()
+            except (ImportError, AttributeError, ValueError, RuntimeError, TypeError) as error:
+                self.kb_unavailable_reason = type(error).__name__
+                self.inline_keyboard = None
         self.thumbs.start()
         self._update_nav()
         self._update_preview()
@@ -177,6 +190,8 @@ class WarderYouTubeHome(Screen):
     def dispose(self):
         self._disposed = True
         self._play_request += 1
+        if self.inline_keyboard is not None:
+            self.inline_keyboard.cleanup()
         self.thumbs.close()
 
     def _update_nav(self):
@@ -386,110 +401,91 @@ class WarderYouTubeHome(Screen):
         self._update_keys()
 
     def _hide_inline_keyboard(self):
-        # Enigma2 labels start visible. Hide even before the first Search visit;
-        # otherwise keys would cover Home video thumbnails on initial launch.
         self.kb_shown = False
-        for name in ("kb_input", "kb_hint", "kb_feedback"):
+        for name in ("kb_system_input", "kb_system_list",
+                     "kb_hint", "kb_feedback"):
             self[name].hide()
-        for i in range(len(self.kb_characters)):
-            self["kb_key%d" % i].hide()
-            self["kb_focus%d" % i].hide()
 
     def _show_inline_keyboard(self):
-        """Show editable search keys INSIDE the existing right-hand panel."""
+        """Show REAL system keyboard components in Home's right panel."""
         self.kb_shown = True
-        for name in ("kb_input", "kb_hint", "kb_feedback"):
-            self[name].show()
-        for i, char in enumerate(self.kb_characters):
-            visible = char.upper() if self.kb_upper else char
-            self["kb_key%d" % i].setText(visible)
-            self["kb_focus%d" % i].setText(visible)
-            self["kb_key%d" % i].show()
-            self["kb_focus%d" % i].hide()
+        self["kb_hint"].show()
+        self["kb_feedback"].show()
+        if self.inline_keyboard is None or not self.inline_keyboard.ready:
+            self["kb_hint"].setText(
+                _("The system keyboard cannot be embedded on this Enigma2 image.")
+            )
+            self["kb_feedback"].setText(self.kb_unavailable_reason)
+            return
+        self.inline_keyboard.show()
         self["kb_hint"].setText(
-            _("Arrows: choose letter  ·  OK: type  ·  GREEN: search  ·  "
-              "YELLOW: delete  ·  BLUE: space  ·  MENU: Aa")
+            _("Arrows: select  ·  OK: enter  ·  GREEN: search  ·  "
+              "YELLOW: delete  ·  BLUE: space  ·  MENU: Shift")
         )
         self["kb_feedback"].setText("")
-        self._keyboard_refresh()
-        self._keyboard_focus_update()
-
-    def _keyboard_refresh(self):
-        self["kb_input"].setText(
-            self.kb_text[-80:] if self.kb_text else _("Enter your YouTube search")
-        )
-
-    def _keyboard_focus_update(self):
-        if not self.kb_shown:
-            return
-        for i in range(len(self.kb_characters)):
-            if self.focus_area == "keyboard" and i == self.kb_position:
-                self["kb_focus%d" % i].show()
-            else:
-                self["kb_focus%d" % i].hide()
 
     def _enter_keyboard_focus(self):
-        if self.index != 1 or not self.kb_shown or self._disposed:
+        if (self.index != 1 or not self.kb_shown
+                or self.inline_keyboard is None or not self.inline_keyboard.ready
+                or self._disposed):
             return
         self.focus_area = "keyboard"
         self._update_nav()
-        self._keyboard_focus_update()
         self._update_keys()
 
     def _leave_keyboard_focus(self):
+        if self._disposed:
+            return
         self.focus_area = "nav"
-        self._keyboard_focus_update()
         self._update_nav()
         self._update_keys()
 
-    def _keyboard_move(self, distance):
-        if self.focus_area != "keyboard":
-            return
-        new = (self.kb_position + distance) % len(self.kb_characters)
-        if new != self.kb_position:
-            self["kb_focus%d" % self.kb_position].hide()
-            self.kb_position = new
-            self["kb_focus%d" % self.kb_position].show()
+    def _keyboard_move(self, direction):
+        if self.focus_area == "keyboard" and self.inline_keyboard is not None:
+            self.inline_keyboard.navigate(direction)
 
     def _keyboard_append(self, character):
-        if self.focus_area != "keyboard":
+        if self.focus_area != "keyboard" or self.inline_keyboard is None:
             return
-        if len(self.kb_text) >= 160:
+        if len(self.inline_keyboard.value()) >= 160:
             self["kb_feedback"].setText(_("Search phrase is too long."))
             return
-        self.kb_text += character
+        if character == " ":
+            self.inline_keyboard.space()
         self["kb_feedback"].setText("")
-        self._keyboard_refresh()
 
     def _keyboard_press(self):
-        if self.focus_area == "keyboard":
-            letter = self.kb_characters[self.kb_position]
-            self._keyboard_append(letter.upper() if self.kb_upper else letter)
+        if self.focus_area == "keyboard" and self.inline_keyboard is not None:
+            if len(self.inline_keyboard.value()) < 160:
+                # Firmware keymap handles letters, locale, SHIFT and special
+                # Enter/Cancel keys; no Warder character table is involved.
+                self.inline_keyboard.press()
+            else:
+                self["kb_feedback"].setText(_("Search phrase is too long."))
 
     def _keyboard_delete(self):
-        if self.focus_area == "keyboard":
-            self.kb_text = self.kb_text[:-1]
-            self._keyboard_refresh()
+        if self.focus_area == "keyboard" and self.inline_keyboard is not None:
+            self.inline_keyboard.delete()
 
     def _keyboard_case(self):
-        if self.focus_area != "keyboard":
-            return
-        self.kb_upper = not self.kb_upper
-        for i, char in enumerate(self.kb_characters):
-            displayed = char.upper() if self.kb_upper else char
-            self["kb_key%d" % i].setText(displayed)
-            self["kb_focus%d" % i].setText(displayed)
+        if self.focus_area == "keyboard" and self.inline_keyboard is not None:
+            self.inline_keyboard.shift()
 
-    def _keyboard_submit(self):
-        if self.focus_area != "keyboard":
+    def _keyboard_native_submit(self, query):
+        self._keyboard_submit(query)
+
+    def _keyboard_submit(self, query=None):
+        if self.focus_area != "keyboard" or self.inline_keyboard is None:
             return
-        query = self.kb_text.strip()
+        query = (self.inline_keyboard.value() if query is None else query).strip()
         if not query:
             self["kb_feedback"].setText(_("Enter your YouTube search"))
             return
-        # Reuse the real search backend/results screen, but skip its popup
-        # entirely. Searching starts on its first onShown, not during
-        # applySkin, when Enigma2 Session is not yet in_exec.
+        if len(query) > 160:
+            self["kb_feedback"].setText(_("Search phrase is too long."))
+            return
+        # The results Screen starts the genuine backend on onShown;
+        # no second keyboard is opened and Home remains behind it.
         from .search import WarderYouTubeSearch
         self.session.open(WarderYouTubeSearch, initial_query=query)
 
@@ -524,7 +520,7 @@ class WarderYouTubeHome(Screen):
 
     def up(self):
         if self.focus_area == "keyboard":
-            self._keyboard_move(-COLUMNS)
+            self._keyboard_move("up")
         elif self.focus_area == "nav":
             self._select_nav(self.index - 1)
         else:
@@ -532,7 +528,7 @@ class WarderYouTubeHome(Screen):
 
     def down(self):
         if self.focus_area == "keyboard":
-            self._keyboard_move(COLUMNS)
+            self._keyboard_move("down")
         elif self.focus_area == "nav":
             self._select_nav(self.index + 1)
         else:
@@ -540,10 +536,10 @@ class WarderYouTubeHome(Screen):
 
     def left(self):
         if self.focus_area == "keyboard":
-            if self.kb_position % COLUMNS == 0:
+            if self.inline_keyboard is not None and self.inline_keyboard.is_left_edge():
                 self._leave_keyboard_focus()
             else:
-                self._keyboard_move(-1)
+                self._keyboard_move("left")
             return
         if self.focus_area == "tiles":
             if self.tile_index % 3 == 0:
@@ -559,8 +555,7 @@ class WarderYouTubeHome(Screen):
 
     def right(self):
         if self.focus_area == "keyboard":
-            self._keyboard_move(1 if self.kb_position % COLUMNS < COLUMNS - 1
-                                else -(COLUMNS - 1))
+            self._keyboard_move("right")
             return
         if self.focus_area == "nav" and self.index == 1:
             self._enter_keyboard_focus()
