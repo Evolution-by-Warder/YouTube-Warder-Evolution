@@ -64,6 +64,7 @@ class WarderYouTubeHome(Screen):
         self._confirm_open = False
         self._play_request = 0
         self.installed_version = CURRENT_VERSION
+        self._version_checked = False
 
         self["brand"] = Label("YouTube Warder Evolution")
         self["version"] = Label(CURRENT_VERSION + "  •  Enigma2")
@@ -111,11 +112,33 @@ class WarderYouTubeHome(Screen):
         self._update_preview()
 
     def _on_shown(self):
-        # Returning from player/library refreshes on-disk lists but never
-        # repeats the internet feed request just because the screen is shown.
+        # An opkg read runs once in a worker; a stale hardcoded version in a
+        # previously loaded UI must not be presented as installed truth.
+        if not self._version_checked and not self._disposed:
+            self._version_checked = True
+            try:
+                from .installed_version import read_installed_version
+                task = deferToThread(read_installed_version)
+                task.addCallbacks(self._version_ready, self._version_failed)
+            except Exception:
+                pass
+        # Returning from player/library refreshes local data, but does not
+        # automatically poll the update server or repeat the popular feed.
         if self._mounted and not self._disposed and not self._playback_active:
-            if self.index in (3, 5):
+            if self.index in (0, 3, 5, 6, 7):
                 self._update_preview()
+
+    def _version_ready(self, version):
+        if self._disposed or not isinstance(version, str):
+            return
+        self.installed_version = version
+        self["version"].setText(version + "  •  Enigma2")
+        if self._mounted and self.index == 7:
+            self._update_preview()
+
+    def _version_failed(self, failure):
+        # Keep the current built-in version if opkg is not available.
+        return
 
     def dispose(self):
         self._disposed = True
