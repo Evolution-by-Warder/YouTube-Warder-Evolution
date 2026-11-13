@@ -85,15 +85,19 @@ jobs:
           set -euo pipefail
           test "${GITHUB_REF}" = 'refs/heads/feature/native-search-v002'
           tag="youtube-warder-v0.0.8-test12"
-          test -z "$(gh release list --limit 100 --json tagName --jq '.[] | select(.tagName == "youtube-warder-v0.0.8-test12") | .tagName')"
-          gh release create "$tag" \
-            'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk' \
-            'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk.sha256' \
-            --target feature/native-search-v002 \
-            --title 'YouTube Warder Evolution 0.0.8~test12 (TEST ONLY)' \
-            --notes 'Opt-in test candidate for GigaBlue Quad 4K Pro / OpenATV 8.1. One authentic Warder header image shared by 12 Enigma2 screens; day, date, clock and version remain native/live. Receiver visual acceptance is pending. No stable release and no main merge.' \
-            --prerelease
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo 'Existing test prerelease detected; verifying exact published bytes'
+          else
+            gh release create "$tag" \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk' \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk.sha256' \
+              --target feature/native-search-v002 \
+              --title 'YouTube Warder Evolution 0.0.8~test12 (TEST ONLY)' \
+              --notes 'Opt-in test candidate for GigaBlue Quad 4K Pro / OpenATV 8.1. One authentic Warder header image shared by 12 Enigma2 screens; day, date, clock and version remain native/live. Receiver visual acceptance is pending. No stable release and no main merge.' \
+              --prerelease
+          fi
+          test "$(gh release view "$tag" --json isPrerelease --jq '.isPrerelease')" = true
           mkdir -p verify
           gh release download "$tag" --dir verify --pattern '*.ipk'
-          cmp 'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk' 'verify/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk'
+          cmp 'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk' 'verify/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test12_all.ipk'
           echo 'PASS: released IPK matches exact CI build byte-for-byte'
