@@ -33,6 +33,7 @@ class FakeScreen(dict):
         super().__init__()
         self.session = session
         self.onLayoutFinish = []
+        self.onShown = []
         self.onClose = []
         self.closed_args = None
 
@@ -211,6 +212,23 @@ class TestNativeGrid(unittest.TestCase):
         grid.close()
         self.assertEqual(decoder.callbacks, [])
         self.assertIsNone(grid._picload)
+
+    def test_thumbnails_restore_from_native_cache_after_context_dialog(self):
+        jobs = []
+        mod = self.load_grid(jobs)
+        g = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
+        g._layout_ready()
+        decoder = g._picload
+        jobs[0][1].success("/tmp/video.jpg")
+        decoder.callbacks[0]()
+        self.assertTrue(g["thumb0"].visible)
+        self.assertEqual(len(jobs), 1)
+        g["thumb0"].hide()  # Dialog temporarily hides parent ePixmap.
+        for callback in g.onShown:
+            callback()
+        self.assertTrue(g["thumb0"].visible)
+        self.assertEqual(g["thumb0"].image, "fake native pixmap")
+        self.assertEqual(len(jobs), 1)  # No re-download of the same video.
 
     def test_original_native_pixmap_pointer_is_not_dereferenced(self):
         jobs = []
