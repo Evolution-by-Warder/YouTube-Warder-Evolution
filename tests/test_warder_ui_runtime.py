@@ -213,7 +213,20 @@ class WarderNativeUiTests(unittest.TestCase):
             callback()
         self.assertTrue(screen["nav_focus5"].visible)
         self.assertFalse(screen["nav_focus0"].visible)
+        self.assertTrue(screen["card_focus1"].visible)
+        self.assertFalse(screen["card_focus0"].visible)
+        self.assertFalse(screen["card_focus2"].visible)
         self.assertEqual(screen["heading"].text, "Favourites")
+        screen["menu"].index = 3
+        for callback in screen["menu"].onSelectionChanged:
+            callback()
+        self.assertTrue(screen["card_focus2"].visible)
+        self.assertFalse(screen["card_focus1"].visible)
+        screen["menu"].index = 0
+        for callback in screen["menu"].onSelectionChanged:
+            callback()
+        self.assertFalse(any(screen["card_focus%d" % i].visible
+                             for i in range(3)))
 
     def test_context_highlight_tracks_selected_action(self):
         m = load("context_menu")
