@@ -81,6 +81,7 @@ class WarderYouTubeHome(Screen):
         for i in range(VISIBLE_TILES):
             self["preview_focus%d" % i] = Label(" ")
             self["preview_panel%d" % i] = Label(" ")
+            self["preview_border%d" % i] = Label(" ")
             self["preview_thumb%d" % i] = Pixmap()
             self["preview_title%d" % i] = Label("")
             self["preview_channel%d" % i] = Label("")
@@ -162,7 +163,7 @@ class WarderYouTubeHome(Screen):
     def _clear_preview(self):
         self.thumbs.show([])
         for i in range(VISIBLE_TILES):
-            for prefix in ("preview_focus", "preview_panel", "preview_thumb",
+            for prefix in ("preview_focus", "preview_panel", "preview_border", "preview_thumb",
                            "preview_title", "preview_channel", "detail"):
                 self["%s%d" % (prefix, i)].hide()
         self["preview_message"].hide()
@@ -193,6 +194,7 @@ class WarderYouTubeHome(Screen):
             return
         for i, video in enumerate(self.video_items):
             self["preview_panel%d" % i].show()
+            self["preview_border%d" % i].show()
             title = self["preview_title%d" % i]
             channel = self["preview_channel%d" % i]
             title.setText(preview_title(video.get("title")))
