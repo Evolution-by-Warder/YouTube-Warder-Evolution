@@ -4,42 +4,68 @@ HOME_SKIN = """
 <screen name="WarderYouTubeHome" position="0,0" size="1920,1080" title="YouTube Warder Evolution" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
   <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="brand" position="43,21" size="1200,64" font="Regular;44" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="2"/>
-  <widget name="version" position="1250,32" size="620,48" font="Regular;26" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1" halign="right" zPosition="2"/>
-  <eLabel position="24,135" size="362,843" backgroundColor="#122C47"/>
-  <eLabel position="24,135" size="362,6" backgroundColor="#087EC7"/>
-  <widget name="nav_title" position="47,158" size="310,55" font="Regular;26" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="nav_focus0" position="38,229" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="nav_focus1" position="38,296" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="nav_focus2" position="38,363" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="nav_focus3" position="38,430" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="nav_focus4" position="38,497" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="nav_focus5" position="38,564" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="nav_focus6" position="38,631" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="nav_focus7" position="38,698" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
-  <widget name="menu" position="38,229" size="332,699" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" itemHeight="67" scrollbarMode="showOnDemand" zPosition="3"/>
-  <eLabel position="414,137" size="1470,410" backgroundColor="#10263E"/>
-  <eLabel position="414,137" size="8,410" backgroundColor="#087EC7"/>
-  <widget name="overline" position="452,162" size="1320,49" font="Regular;27" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="heading" position="452,218" size="1350,81" font="Regular;52" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="description" position="452,316" size="1335,158" font="Regular;32" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
-  <eLabel position="414,569" size="476,329" backgroundColor="#122C47"/>
-  <eLabel position="912,569" size="476,329" backgroundColor="#122C47"/>
-  <eLabel position="1410,569" size="474,329" backgroundColor="#122C47"/>
-  <eLabel position="435,587" size="435,5" backgroundColor="#087EC7"/>
-  <eLabel position="933,587" size="435,5" backgroundColor="#137A77"/>
-  <eLabel position="1431,587" size="433,5" backgroundColor="#8B6F40"/>
-  <widget name="card_focus0" position="414,569" size="476,329" font="Regular;24" foregroundColor="#1F507A" backgroundColor="#1F507A" transparent="0" zPosition="2"/>
-  <widget name="card_focus1" position="912,569" size="476,329" font="Regular;24" foregroundColor="#1F507A" backgroundColor="#1F507A" transparent="0" zPosition="2"/>
-  <widget name="card_focus2" position="1410,569" size="474,329" font="Regular;24" foregroundColor="#1F507A" backgroundColor="#1F507A" transparent="0" zPosition="2"/>
-  <widget name="card1_title" position="447,612" size="420,62" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="card1_body" position="447,680" size="415,166" font="Regular;27" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="card2_title" position="945,612" size="420,62" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="card2_body" position="945,680" size="415,166" font="Regular;27" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="card3_title" position="1443,612" size="420,62" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="card3_body" position="1443,680" size="415,166" font="Regular;27" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="status" position="430,916" size="1435,46" font="Regular;26" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
-  <widget name="footer" position="40,947" size="1810,38" font="Regular;23" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="brand" position="42,21" size="1200,64" font="Regular;44" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
+  <widget name="version" position="1247,30" size="620,49" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" halign="right" zPosition="4"/>
+  <eLabel position="22,135" size="351,843" backgroundColor="#122C47"/>
+  <eLabel position="22,135" size="351,5" backgroundColor="#087EC7"/>
+  <widget name="nav_focus0" position="35,171" size="328,72" font="Regular;26" foregroundColor="#176EB0" backgroundColor="#176EB0" transparent="0" zPosition="2"/>
+  <widget name="nav0" position="51,180" size="300,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="nav_focus1" position="35,251" size="328,72" font="Regular;26" foregroundColor="#176EB0" backgroundColor="#176EB0" transparent="0" zPosition="2"/>
+  <widget name="nav1" position="51,260" size="300,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="nav_focus2" position="35,331" size="328,72" font="Regular;26" foregroundColor="#176EB0" backgroundColor="#176EB0" transparent="0" zPosition="2"/>
+  <widget name="nav2" position="51,340" size="300,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="nav_focus3" position="35,411" size="328,72" font="Regular;26" foregroundColor="#176EB0" backgroundColor="#176EB0" transparent="0" zPosition="2"/>
+  <widget name="nav3" position="51,420" size="300,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="nav_focus4" position="35,491" size="328,72" font="Regular;26" foregroundColor="#176EB0" backgroundColor="#176EB0" transparent="0" zPosition="2"/>
+  <widget name="nav4" position="51,500" size="300,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="nav_focus5" position="35,571" size="328,72" font="Regular;26" foregroundColor="#176EB0" backgroundColor="#176EB0" transparent="0" zPosition="2"/>
+  <widget name="nav5" position="51,580" size="300,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="nav_focus6" position="35,651" size="328,72" font="Regular;26" foregroundColor="#176EB0" backgroundColor="#176EB0" transparent="0" zPosition="2"/>
+  <widget name="nav6" position="51,660" size="300,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <widget name="nav_focus7" position="35,731" size="328,72" font="Regular;26" foregroundColor="#176EB0" backgroundColor="#176EB0" transparent="0" zPosition="2"/>
+  <widget name="nav7" position="51,740" size="300,55" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <eLabel position="394,135" size="1490,843" backgroundColor="#10263E"/>
+  <eLabel position="394,135" size="1490,5" backgroundColor="#087EC7"/>
+  <widget name="heading" position="426,157" size="1050,63" font="Regular;45" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
+  <widget name="subtitle" position="427,225" size="1324,45" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" zPosition="4"/>
+  <widget name="preview_focus0" position="413,285" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel0" position="418,290" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb0" position="425,295" size="453,225" zPosition="4"/>
+  <widget name="preview_title0" position="427,525" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel0" position="427,570" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus1" position="902,285" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel1" position="907,290" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb1" position="914,295" size="453,225" zPosition="4"/>
+  <widget name="preview_title1" position="916,525" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel1" position="916,570" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus2" position="1391,285" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel2" position="1396,290" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb2" position="1403,295" size="453,225" zPosition="4"/>
+  <widget name="preview_title2" position="1405,525" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel2" position="1405,570" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus3" position="413,615" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel3" position="418,620" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb3" position="425,625" size="453,225" zPosition="4"/>
+  <widget name="preview_title3" position="427,855" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel3" position="427,900" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus4" position="902,615" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel4" position="907,620" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb4" position="914,625" size="453,225" zPosition="4"/>
+  <widget name="preview_title4" position="916,855" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel4" position="916,900" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus5" position="1391,615" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel5" position="1396,620" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb5" position="1403,625" size="453,225" zPosition="4"/>
+  <widget name="preview_title5" position="1405,855" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel5" position="1405,900" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="detail0" position="449,290" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
+  <widget name="detail1" position="449,386" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
+  <widget name="detail2" position="449,482" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
+  <widget name="detail3" position="449,578" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
+  <widget name="detail4" position="449,674" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
+  <widget name="detail5" position="449,770" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
+  <widget name="preview_message" position="450,300" size="1360,350" font="Regular;32" foregroundColor="#C6DCEE" transparent="1" zPosition="4"/>
+  <widget name="status" position="427,954" size="1410,36" font="Regular;23" foregroundColor="#6CCBFF" transparent="1" zPosition="4"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
@@ -51,6 +77,7 @@ HOME_SKIN = """
   <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
 </screen>
 """
+
 
 SEARCH_SKIN = """
 <screen name="WarderYouTubeSearch" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Search" flags="wfNoBorder" backgroundColor="#08182D">
