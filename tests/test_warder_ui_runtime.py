@@ -266,9 +266,8 @@ class WarderNativeUiTests(unittest.TestCase):
         for callback in screen.onLayoutFinish:
             callback()
         self.assertTrue(screen["context_focus0"].visible)
-        screen["menu"].index = 2
-        for callback in screen["menu"].onSelectionChanged:
-            callback()
+        screen.down()
+        screen.down()
         self.assertFalse(screen["context_focus0"].visible)
         self.assertTrue(screen["context_focus2"].visible)
         self.assertFalse(screen["context_focus4"].visible)
@@ -304,7 +303,7 @@ class WarderNativeUiTests(unittest.TestCase):
         self.assertEqual(screen.options[1][0], "favorite")
         self.assertIn("Add", screen.options[1][1])
         self.assertIsNone(screen.closed_args)
-        screen["menu"].index = 1
+        screen.down()
         screen.choose()
         self.assertEqual(screen.closed_args, ("favorite",))
 
@@ -313,14 +312,20 @@ class WarderNativeUiTests(unittest.TestCase):
         screen = m.WarderYouTubeContext(None, {"title": "One"}, True, "history")
         self.assertEqual([action for action, _ in screen.options],
                          ["play", "favorite", "info", "remove", "clear"])
-        screen["menu"].index = 3
+        for _ in range(3):
+            screen.down()
         screen.choose()
         self.assertEqual(screen.closed_args, ("remove",))
 
     def test_native_confirmation_defaults_to_no(self):
         m = load("confirm_ui")
         screen = m.WarderYouTubeConfirm(None, "Install test7?")
-        self.assertEqual(screen["menu"].index, 0)
+        self.assertEqual(screen.selected, 0)
+        self.assertTrue(screen["confirm_focus0"].visible)
+        screen.down()
+        self.assertTrue(screen["confirm_focus1"].visible)
+        screen.up()
+        self.assertTrue(screen["confirm_focus0"].visible)
         screen.choose()
         self.assertEqual(screen.closed_args, (False,))
         other = m.WarderYouTubeConfirm(None, "Install test7?")
