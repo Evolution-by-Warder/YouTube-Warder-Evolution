@@ -4,6 +4,7 @@
 Navigation never opens modal dialogs, starts playback or installs updates
 without an explicit remote action. No global Enigma2 skin or custom renderer.
 """
+from .header_ui import add_header
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.Pixmap import Pixmap
@@ -47,6 +48,7 @@ class WarderYouTubeHome(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
+        add_header(self)
         self.sections = [(_(name), _(description)) for name, description in SECTIONS]
         self.index = 0
         self.focus_area = "nav"
