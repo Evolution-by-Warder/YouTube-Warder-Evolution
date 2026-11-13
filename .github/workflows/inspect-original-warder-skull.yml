@@ -1,0 +1,36 @@
+name: Inspect original Warder skull sources (one-time)
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/inspect-original-warder-skull.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect original and complete family source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p inspect
+          cp plugin/Plugins/Extensions/WarderYouTube/images/warder_skull.png inspect/warder-youtube-source.png
+          curl -fLsS --retry 2 --max-time 35 \
+            'https://raw.githubusercontent.com/Evolution-by-Warder/PiconHub-Warder-Evolution/59ec70708d4d05a28f17c741742c78451d4fc45/plugin/artwork/templates/warder-brand/warder-shared-skull.png' \
+            -o inspect/warder-family-full-source.png
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, struct, zlib
+          for file in sorted(Path("inspect").glob("*.png")):
+              data=file.read_bytes()
+              assert data.startswith(bytes((137,80,78,71,13,10,26,10)))
+              width,height=struct.unpack(">II",data[16:24])
+              print(file, 'bytes', len(data), 'width',width,'height',height,'sha256',hashlib.sha256(data).hexdigest())
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Warder-original-skull-source-inspection
+          path: inspect/*.png
+          retention-days: 2
