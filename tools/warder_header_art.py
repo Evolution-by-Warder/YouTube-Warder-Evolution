@@ -2,6 +2,9 @@
 
 No Pillow, Internet access, fonts or executable code on the receiver.
 """
+import base64
+import importlib.util
+from pathlib import Path
 import math
 import random
 import struct
@@ -124,6 +127,39 @@ def render_header():
             pi = color_index*3
             rgb = tuple(palette[pi:pi+3])
             blend(origin_x+ix, origin_y+iy, rgb, a)
+
+    # Owner-approved product lettering: the exact existing Warder-title
+    # silhouettes, compressed as two tiny one-bit masks. Draw them once into
+    # this PNG at build-time. No receiver-side fonts, SVGs or overlays.
+    mask_path = Path(__file__).resolve().with_name("warder_title_masks.py")
+    spec = importlib.util.spec_from_file_location("_warder_title_masks", str(mask_path))
+    shapes = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(shapes)
+
+    def stamp(encoded, sw, sh, origin_x, origin_y, signature=False):
+        raw = zlib.decompress(base64.b64decode(encoded))
+        if len(raw) != (sw * sh + 7) // 8:
+            raise ValueError("Invalid Warder lettering mask")
+        for y in range(sh):
+            for x in range(sw):
+                i = y * sw + x
+                if not raw[i >> 3] & (0x80 >> (i & 7)):
+                    continue
+                tx, ty = origin_x+x, origin_y+y
+                blend(tx+2, ty+2, (1,17,39), .78)
+                if signature:
+                    color = (51, min(255,201 + (sh-y)//3), 242)
+                elif tx < 713:
+                    # Cool polished silver, narrow highlights.
+                    light = max(153, min(245, 178 + 62*(1-abs(y/sh-.45)*2)))
+                    color = (light, min(255, light+12), min(255, light+28))
+                else:
+                    light = 163 + (sh-y)*75//sh
+                    color = (20, min(255,light), 255)
+                blend(tx,ty,color,1.0)
+
+    stamp(shapes.TITLE_MASK_B64, shapes.TITLE_WIDTH, shapes.TITLE_HEIGHT, 207, 15)
+    stamp(shapes.BY_MASK_B64, shapes.BY_WIDTH, shapes.BY_HEIGHT, 480, 74, True)
 
     for x in (1392,1664):
         for y in range(20,112):
