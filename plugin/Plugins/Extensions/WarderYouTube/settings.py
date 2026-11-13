@@ -81,7 +81,7 @@ class WarderYouTubeSettings(Screen):
             _("API kľúč: nastavený") if in_config else
             _("API kľúč: nenastavený (vyhľadávanie cez yt-dlp)")
         )
-        self["quality"].setText(_("Preferovaná kvalita videa") + ": %sp" % get_quality())
+        self["quality"].setText(_("Maximum video quality") + ": %sp" % get_quality())
         self["resolver_state"].setText(
             _("yt-dlp: dostupný (vyhľadávanie aj záložné prehrávanie)") if is_available() else
             _("yt-dlp: nenainštalovaný (na prehrávanie nie je nutný)")
