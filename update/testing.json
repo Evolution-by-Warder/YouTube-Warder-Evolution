@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test6",
-    "tag": "youtube-warder-v0.0.8-test6",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test6/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test6_all.ipk",
-    "sha256": "7adcfc9afca8f57762d861321b996e25040ac0e6748b900613bfec8527ab6242",
-    "bytes": 66304,
-    "notes": "Test6: Obľúbené (MENU), História, prehrávanie uložených videí, ochrana aktualizátora pred dvojitou inštaláciou. Testovacia verzia na overenie na GigaBlue."
+    "version": "0.0.8~test7",
+    "tag": "youtube-warder-v0.0.8-test7",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test7/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test7_all.ipk",
+    "sha256": "101e4505674ad3e8f04965a26c27e2902fda10ef19e87cd6d15b28381cbf42e6",
+    "bytes": 76434,
+    "notes": "Test7: novy Warder vzhlad Home, Search a Settings, vlastna klavesnica podla jazyka Enigma2, farebne tlacidla, MENU s ponukou akcii a upraveny aktualizator. Testovacia verzia na overenie na GigaBlue."
   }
 }
