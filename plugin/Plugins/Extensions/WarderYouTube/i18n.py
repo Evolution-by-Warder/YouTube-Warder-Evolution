@@ -24,6 +24,7 @@ MESSAGES = {
         "Testovací kanál: používate najnovšiu dostupnú verziu.": "Testing channel: latest available version.",
     },
     "sk": {
+        "Shift": "Zmena písmen",
         "Popular in Slovakia": "Populárne na Slovensku",
         "Subscriptions are not supported yet.": "Odbery zatiaľ nie sú podporované.",
         "Recently played videos": "Naposledy prehrané videá",
@@ -115,6 +116,7 @@ MESSAGES = {
         "Keep live TV audio": "Zvuk TV na pozadí zostáva zachovaný",
     },
     "cs": {
+        "Shift": "Změna písmen",
         "Popular in Slovakia": "Populární na Slovensku",
         "Subscriptions are not supported yet.": "Odběry zatím nejsou podporovány.",
         "Recently played videos": "Naposledy přehraná videa",
@@ -200,6 +202,7 @@ MESSAGES = {
         "Keep live TV audio":"Zvuk TV na pozadí zůstává zachován",
     },
     "de": {
+        "Shift": "Groß-/Kleinschreibung",
         "Popular in Slovakia": "Beliebt in der Slowakei",
         "Subscriptions are not supported yet.": "Abonnements werden noch nicht unterstützt.",
         "Recently played videos": "Zuletzt abgespielte Videos",
