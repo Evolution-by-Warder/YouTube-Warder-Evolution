@@ -340,7 +340,10 @@ class WarderYouTubeHome(Screen):
     def _select_nav(self, index):
         if self._disposed or self._busy or self._playback_active or self._context_open:
             return
-        index = max(0, min(index, len(self.sections) - 1))
+        # Circular main-menu navigation: Up from Home -> Updates,
+        # Down from Updates -> Home. Only the left menu wraps; the
+        # right-hand video grid keeps its existing navigation semantics.
+        index = index % len(self.sections)
         if self.index == index and self.focus_area == "nav":
             return
         self.index = index
