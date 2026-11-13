@@ -284,6 +284,37 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(screen.focus_area, "nav")
         self.assertTrue(screen["nav_focus0"].visible)
 
+    def test_navigation_hint_removed_and_focus_follows_home_and_history(self):
+        mod, key, saved, jobs = load()
+        screen, session = ready(mod)
+        # The remote help used to be rendered on every menu preview, directly
+        # on top of the bottom frame. The status area is now reserved for
+        # actual errors, loading and the focused video name.
+        self.assertEqual(screen["status"].text, "")
+        self.assertTrue(screen["nav_focus0"].visible)
+        screen.right()
+        self.assertTrue(screen["preview_focus0"].visible)
+        self.assertFalse(screen["preview_focus1"].visible)
+        screen.right()
+        self.assertFalse(screen["preview_focus0"].visible)
+        self.assertTrue(screen["preview_focus1"].visible)
+        screen.left()
+        screen.left()
+        self.assertEqual(screen.focus_area, "nav")
+        self.assertEqual(screen["status"].text, "")
+        # Home and History use the same genuine video focus rather than
+        # having an unmarked selected thumbnail in History.
+        for _ in range(3):
+            screen.down()
+        self.assertEqual(screen[ "heading" ].text, "History")
+        self.assertTrue(screen["nav_focus3"].visible)
+        self.assertEqual(screen["status"].text, "")
+        screen.right()
+        self.assertTrue(screen["preview_focus0"].visible)
+        screen.right()
+        self.assertTrue(screen["preview_focus1"].visible)
+        self.assertFalse(screen["preview_focus0"].visible)
+
     def test_history_favourites_and_empty_states_are_real(self):
         mod, key, saved, jobs = load(history=[], fav=[video(2)])
         screen, session = ready(mod)
