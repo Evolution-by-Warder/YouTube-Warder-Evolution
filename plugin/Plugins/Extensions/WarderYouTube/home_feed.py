@@ -82,7 +82,7 @@ import re
 
 PUBLIC_HOME_URL = "https://www.youtube.com/?gl=SK&hl=sk"
 PUBLIC_MAX_HTML = 4 * 1024 * 1024
-INITIAL_DATA = re.compile(r"(?:var\\s+)?ytInitialData\\s*=\\s*")
+INITIAL_DATA = re.compile(r"(?:var\s+)?ytInitialData\s*=\s*")
 
 
 def _rendered_text(node):
