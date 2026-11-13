@@ -137,7 +137,7 @@ class WarderYouTubeUpdateCheck(Screen):
         self.install_started = False
         self["title"] = Label("YouTube Warder Evolution  /  " + _("Updates"))
         self["key_red"] = Label(_("Back"))
-        self["key_green"] = Label(_("Install"))
+        self["key_green"] = Label("")
         self["key_yellow"] = Label(_("Details"))
         self["key_blue"] = Label(_("Refresh"))
         self._checking = False
@@ -167,10 +167,12 @@ class WarderYouTubeUpdateCheck(Screen):
         self._checking = False
         self.release = release
         if release is None:
+            self["key_green"].setText("")
             self["status"].setText(_("Testovací kanál: používate najnovšiu dostupnú verziu."))
             self["detail"].setText("Nainštalovaná verzia: " + CURRENT_VERSION)
             self["footer"].setText("EXIT: späť")
         else:
+            self["key_green"].setText(_("Install"))
             self["status"].setText(_("Update found") + ": " + release["version"])
             self["detail"].setText(release.get("notes") or "Oficiálne overená aktualizácia.")
             self["footer"].setText("OK / ZELENÉ: aktualizovať    EXIT: späť")
@@ -179,6 +181,7 @@ class WarderYouTubeUpdateCheck(Screen):
         if self.disposed:
             return
         self._checking = False
+        self["key_green"].setText("")
         problem = getattr(failure, "value", None)
         self["status"].setText("Kontrola aktualizácie zlyhala.")
         self["detail"].setText(str(problem) if isinstance(problem, UpdateError)
@@ -199,6 +202,7 @@ class WarderYouTubeUpdateCheck(Screen):
         self.started = False
         self.release = None
         self.details_visible = False
+        self["key_green"].setText("")
         self["status"].setText(_("Checking updates"))
         self.begin_once()
 

@@ -62,7 +62,8 @@ class WarderYouTubeKeyboard(Screen):
 
     def _refresh(self):
         masked = "•" * len(self.value) if self.secret else self.value
-        self["input"].setText(masked[-160:] or _("Search is empty"))
+        self["input"].setText(masked[-160:] or
+                              (_("Enter API key") if self.secret else _("Search is empty")))
 
     def _select(self, index):
         before = self.position

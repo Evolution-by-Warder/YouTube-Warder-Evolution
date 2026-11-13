@@ -19,8 +19,6 @@ from .i18n import tr as _
 THUMB_WIDTH = 476
 THUMB_HEIGHT = 249
 MAX_DOWNLOADS = 2
-SIDEBAR = ("Domov", "Hľadať", "Odbery", "História", "Playlisty", "Obľúbené", "Nastavenia")
-
 
 class WarderYouTubeGrid(Screen):
     skin = GRID_SKIN
