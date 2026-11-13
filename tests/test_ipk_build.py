@@ -61,7 +61,8 @@ class PackagingTests(unittest.TestCase):
                 # are real IPK members, not just concept artwork.
                 accent_names = [("nav_%d.png" % i, (64, 64)) for i in range(8)]
                 accent_names += [("nav_focus.png", (328, 72)),
-                                 ("video_focus.png", (477, 324))]
+                                 ("video_focus.png", (477, 324)),
+                                 ("grid_focus.png", (491, 364))]
                 for icon, dimensions in accent_names:
                     raw = tar.extractfile("./" + m.TARGET_PREFIX + "/images/" + icon).read()
                     self.assertEqual(raw[:8], b"\x89PNG\r\n\x1a\n")
