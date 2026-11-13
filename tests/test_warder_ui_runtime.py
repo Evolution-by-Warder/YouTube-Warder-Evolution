@@ -28,6 +28,7 @@ class MenuList:
     def __init__(self, rows):
         self.rows = rows
         self.index = 0
+        self.onSelectionChanged = []
     def getCurrentIndex(self):
         return self.index
 
@@ -67,13 +68,18 @@ def load(name):
         "_test_warder_design.skin": mod(
             "_test_warder_design.skin",
             KEYBOARD_SKIN="<screen/>", CONTEXT_SKIN="<screen/>",
-            CONFIRM_SKIN="<screen/>", INFO_SKIN="<screen/>"
+            CONFIRM_SKIN="<screen/>", INFO_SKIN="<screen/>",
+            HOME_SKIN="<screen/>"
         ),
         "Components": components,
         "Components.ActionMap": mod(
             "Components.ActionMap", ActionMap=lambda *args, **kwargs: Label()
         ),
         "Components.Label": mod("Components.Label", Label=Label),
+        "Screens.MessageBox": mod("Screens.MessageBox", MessageBox=object),
+        "_test_warder_design.update_core": mod(
+            "_test_warder_design.update_core", CURRENT_VERSION="0.0.8~test7"
+        ),
         "Components.MenuList": mod("Components.MenuList", MenuList=MenuList),
         "Screens": screens,
         "Screens.Screen": mod("Screens.Screen", Screen=Screen),
@@ -161,6 +167,52 @@ class WarderNativeUiTests(unittest.TestCase):
         self.assertEqual(k.position, 0)
         k.toggle_case()
         self.assertEqual(k["letter10"].text, "Q")
+
+    def test_home_quick_access_is_visible_and_focus_tracks_selection(self):
+        m = load("ui")
+        screen = m.WarderYouTubeHome(None)
+        for callback in screen.onLayoutFinish:
+            callback()
+        self.assertEqual(len(screen.sections), 8)
+        self.assertEqual(len(screen["menu"].rows), 8)
+        self.assertTrue(screen["nav_focus0"].visible)
+        self.assertFalse(screen["nav_focus1"].visible)
+        screen["menu"].index = 5
+        for callback in screen["menu"].onSelectionChanged:
+            callback()
+        self.assertTrue(screen["nav_focus5"].visible)
+        self.assertFalse(screen["nav_focus0"].visible)
+        self.assertEqual(screen["heading"].text, "Favourites")
+
+    def test_context_highlight_tracks_selected_action(self):
+        m = load("context_menu")
+        screen = m.WarderYouTubeContext(None, {"title": "Adele"}, False)
+        for callback in screen.onLayoutFinish:
+            callback()
+        self.assertTrue(screen["context_focus0"].visible)
+        screen["menu"].index = 2
+        for callback in screen["menu"].onSelectionChanged:
+            callback()
+        self.assertFalse(screen["context_focus0"].visible)
+        self.assertTrue(screen["context_focus2"].visible)
+        self.assertFalse(screen["context_focus4"].visible)
+        screen.choose()
+        self.assertEqual(screen.closed_args, ("info",))
+
+    def test_all_native_widgets_have_explicit_foreground_layer(self):
+        tree = ast.parse((ROOT / "skin.py").read_text(encoding="utf-8"))
+        for stmt in tree.body:
+            if not isinstance(stmt, ast.Assign) or not any(
+                isinstance(target, ast.Name) and target.id.endswith("_SKIN")
+                for target in stmt.targets
+            ):
+                continue
+            root = ET.fromstring(ast.literal_eval(stmt.value))
+            for widget in root.findall("widget"):
+                self.assertGreaterEqual(
+                    int(widget.attrib.get("zPosition", "0")), 2,
+                    (root.attrib["name"], widget.attrib["name"])
+                )
 
     def test_context_menu_never_saves_on_open(self):
         m = load("context_menu")
