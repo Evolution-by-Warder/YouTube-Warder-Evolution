@@ -333,6 +333,20 @@ class YouTubeVideoUrl():
 			itag = str(fmt.get('itag', ''))
 			if self._skip_fmt(fmt, itag):
 				continue
+			if get_audio is None:
+				# Only prefer compatible video within the receiver-selected
+				# ceiling. This must not filter audio-only companion tracks.
+				fallback_heights = {'18': 360, '35': 480, '59': 480,
+					'22': 720, '136': 720, '37': 1080, '137': 1080,
+					'264': 1440, '266': 2160, '313': 2160,
+					'315': 2160, '38': 2160}
+				try:
+					height = int(fmt.get('height') or fallback_heights.get(itag) or 0)
+				expected = int(config.plugins.YouTube.maxHeight.value)
+				except (TypeError, ValueError):
+					continue
+				if height > expected:
+					continue
 			prefer = priority_formats.index(itag) if itag in priority_formats else 100
 			prefer = self._video_pref(fmt, prefer) if get_audio is None else self._audio_pref(fmt, prefer, get_audio)
 			if prefer < 200:
