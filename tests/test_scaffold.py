@@ -21,7 +21,10 @@ class Tests(unittest.TestCase):
         self.assertEqual(screen.attrib["backgroundColor"], "#08182D")
         self.assertTrue({"nav0", "nav7", "heading", "subtitle", "status", "preview_thumb0", "preview_thumb5", "preview_message"}.issubset(
             {w.attrib.get("name") for w in screen.findall("widget")}))
-        self.assertNotIn("ePixmap", xml)
+        self.assertIn("images/warder_header.png", xml)
+        self.assertEqual(xml.count("<ePixmap"), 1)
+        self.assertIn('name="hdr_clock"', xml)
+        self.assertIn('name="hdr_version"', xml)
 
     def test_no_fake_youtube(self):
         readme = (ROOT / "README.md").read_text().lower()
