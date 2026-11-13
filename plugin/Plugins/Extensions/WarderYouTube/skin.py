@@ -3,9 +3,6 @@
 HOME_SKIN = """
 <screen name="WarderYouTubeHome" position="0,0" size="1920,1080" title="YouTube Warder Evolution" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
@@ -108,9 +105,6 @@ HOME_SKIN = """
 SEARCH_SKIN = """
 <screen name="WarderYouTubeSearch" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Search" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
@@ -144,9 +138,6 @@ SEARCH_SKIN = """
 SETTINGS_SKIN = """
 <screen name="WarderYouTubeSettings" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Settings" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
@@ -201,9 +192,6 @@ SETTINGS_SKIN = """
 GRID_SKIN = """
 <screen name="WarderYouTubeGrid" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Videos" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
@@ -310,9 +298,6 @@ GRID_SKIN = """
 UPDATE_CHECK_SKIN = """
 <screen name="WarderYouTubeUpdateCheck" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Updates" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
@@ -346,9 +331,6 @@ UPDATE_CHECK_SKIN = """
 UPDATE_SKIN = """
 <screen name="WarderYouTubeUpdateProgress" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Update progress" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
@@ -385,9 +367,6 @@ UPDATE_SKIN = """
 LIBRARY_SKIN = """
 <screen name="WarderYouTubeLibrary" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Saved videos" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
@@ -422,9 +401,6 @@ LIBRARY_SKIN = """
 KEYBOARD_SKIN = """
 <screen name="WarderYouTubeKeyboard" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Keyboard" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
@@ -616,9 +592,6 @@ KEYBOARD_SKIN = """
 CONTEXT_SKIN = """
 <screen name="WarderYouTubeContext" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Actions" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
@@ -660,9 +633,6 @@ CONTEXT_SKIN = """
 CONFIRM_SKIN = """
 <screen name="WarderYouTubeConfirm" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Confirm" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
@@ -698,9 +668,6 @@ CONFIRM_SKIN = """
 INFO_SKIN = """
 <screen name="WarderYouTubeInfo" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Details" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
@@ -738,9 +705,6 @@ INFO_SKIN = """
 NATIVE_SEARCH_KEYBOARD_SKIN = """
 <screen name="WarderNativeSearchKeyboard" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Search" flags="wfNoBorder" backgroundColor="#08182D">
 
-  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
-  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
-  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
   <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
   <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
