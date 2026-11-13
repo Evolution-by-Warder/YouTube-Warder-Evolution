@@ -2,8 +2,8 @@
 
 The canonical complete image is committed at images/warder_header.png.
 No runtime text/font layers, no traced bitmap masks or cut-and-paste
-signature. The separate render_full_header.py creates the complete art only
-when a designer intentionally updates the ONE visual asset.
+signature. This is the EXACT owner-accepted test24 PNG: never regenerate, render,
+replace, resize, or patch the approved graphic in build or runtime.
 """
 from pathlib import Path
 import hashlib
@@ -11,7 +11,7 @@ import hashlib
 WIDTH, HEIGHT = 1920, 152
 FULL_WARDER_SIZE = (384, 429)
 FULL_WARDER_SOURCE_SHA256 = "1cb97ce23564d4bfa226433ce59abdb1c42ac09e2dc2a40c809ee6c5065296e5"
-FINAL_BANNER_SHA256 = "023588797d292b985b2d1e4d686ba114757becd49ed374e2beefd95f78a34e31"
+FINAL_BANNER_SHA256 = "93b509055bfe63e1126ccca27f324829d8a2e0c6bbdd3d10976b30d7cf70935c"
 ART_DIR = (Path(__file__).resolve().parents[1] /
            "plugin/Plugins/Extensions/WarderYouTube/images")
 

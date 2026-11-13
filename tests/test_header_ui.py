@@ -151,23 +151,26 @@ class HeaderTests(unittest.TestCase):
         self.assertEqual(header[24:26], bytes((8, 2)))
         self.assertEqual(hashlib.sha256(header).hexdigest(), art.FINAL_BANNER_SHA256)
 
-    def test_signature_and_metallic_title_are_clean_single_png_not_old_masks(self):
+
+    def test_approved_single_header_never_regenerates_original_artwork(self):
+        # Exact bytes user accepted on GigaBlue in test24, not guessed pixels
+        # redrawn by the obsolete test17 banner generator.
         tools_dir = PKG.parents[3] / "tools"
-        generator = (tools_dir / "render_full_header.py").read_text(encoding="utf-8")
+        self.assertFalse((tools_dir / "render_full_header.py").exists())
         loader = (tools_dir / "warder_header_art.py").read_text(encoding="utf-8")
         builder = (tools_dir / "build_test_ipk.py").read_text(encoding="utf-8")
-        for text in (loader, generator, builder):
-            self.assertNotIn("warder_title_masks.py", text)
-            self.assertNotIn("TITLE_MASK_B64", text)
-            self.assertNotIn("BY_MASK_B64", text)
-        self.assertIn('"YouTube Warder "', generator)
-        self.assertIn('"Evolution"', generator)
-        self.assertIn('"by Warder"', generator)
-        self.assertIn("skull.resize((124,139)", generator)
-        self.assertIn("complete original warder skull", loader.lower())
-        # The complete image is committed once and consumed as a single RGB
-        # PNG by all 12 screens, with live date/clock/version widgets separate.
-        self.assertIn('images/warder_header.png', (PKG / "skin.py").read_text())
+        for source in (loader, builder):
+            self.assertNotIn("warder_title_masks.py", source)
+            self.assertNotIn("TITLE_MASK_B64", source)
+            self.assertNotIn("BY_MASK_B64", source)
+        self.assertIn("93b509055bfe63e1126ccca27f324829d8a2e0c6bbdd3d10976b30d7cf70935c", loader)
+        self.assertIn("source.render_header()", builder)
+        self.assertNotIn("PIL", loader)
+        self.assertNotIn("from PIL", builder)
+        # All 12 layouts reuse the SAME verified binary, never a title/signature
+        # overlay or an alternate generated header.
+        skin_source = (PKG / "skin.py").read_text(encoding="utf-8")
+        self.assertEqual(skin_source.count('images/warder_header.png'), 12)
 
     def test_all_screens_use_two_compact_rows_above_planet_horizon(self):
         source = (PKG / "skin.py").read_text(encoding="utf-8")

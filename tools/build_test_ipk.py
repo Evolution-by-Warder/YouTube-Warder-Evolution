@@ -124,7 +124,7 @@ def build(output_dir):
             raise ValueError("Invalid Warder navigation artwork: " + filename)
         data_files.append((TARGET_PREFIX + "/images/" + filename, png, False))
 
-    # Shared 1920x152 header is rendered once during packaging; never on the receiver.
+    # Copy ONLY the SHA256-pinned, owner-accepted 1920x152 PNG, unchanged.
     # Import by explicit build-script path: unit tests load this builder via
     # importlib with sys.path that does not contain tools/.
     import importlib.util
@@ -136,7 +136,7 @@ def build(output_dir):
     if not (header_png[:8] == bytes((137, 80, 78, 71, 13, 10, 26, 10))
             and int.from_bytes(header_png[16:20], "big") == 1920
             and int.from_bytes(header_png[20:24], "big") == 152
-            and len(header_png) < 350_000):
+            and len(header_png) < 600_000):
         raise ValueError("Invalid Warder shared header PNG (bytes=%d, signature=%r, size=%d,%d)" % (len(header_png), header_png[:8], int.from_bytes(header_png[16:20], "big"), int.from_bytes(header_png[20:24], "big")))
     data_files.append((TARGET_PREFIX + "/images/warder_header.png",
                        header_png, False))
