@@ -117,6 +117,10 @@ class WarderNativeUiTests(unittest.TestCase):
         self.assertEqual(keyboard.system_limit, 160)
         self.assertEqual(keyboard.skinName, ["WarderNativeSearchKeyboard"])
         self.assertEqual(keyboard["warder_brand"].text, "YouTube Warder Evolution")
+        self.assertEqual(keyboard["warder_key_red"].text, "Cancel")
+        self.assertEqual(keyboard["warder_key_green"].text, "Confirm")
+        self.assertEqual(keyboard["warder_key_yellow"].text, "Shift")
+        self.assertEqual(keyboard["warder_key_blue"].text, "Aa")
 
     def test_real_system_keyboard_does_not_expose_api_key(self):
         native = load("native_keyboard")
@@ -297,8 +301,11 @@ class WarderNativeUiTests(unittest.TestCase):
         for xml in specs:
             root = ET.fromstring(xml)
             names = {w.attrib["name"] for w in root.findall("widget")}
-            self.assertTrue({"key_red", "key_green", "key_yellow", "key_blue"}.issubset(names),
-                            root.attrib["name"])
+            expected = ({"warder_key_red", "warder_key_green",
+                         "warder_key_yellow", "warder_key_blue"}
+                        if root.attrib["name"] == "WarderNativeSearchKeyboard"
+                        else {"key_red", "key_green", "key_yellow", "key_blue"})
+            self.assertTrue(expected.issubset(names), root.attrib["name"])
             self.assertNotIn('render="', xml)
 
 
