@@ -92,7 +92,7 @@ class HeaderTests(unittest.TestCase):
         with header_module() as m:
             sc = Screen()
             c = m.add_header(sc)
-            self.assertEqual(len(sc), 5)
+            self.assertEqual(len(sc), 6)
             self.assertIs(sc._warder_header, c)
             self.assertEqual(sc["hdr_version"].text, "0.0.8~test17")
             self.assertIn("Verzia:", sc["hdr_version_label"].text)
@@ -190,11 +190,11 @@ class HeaderTests(unittest.TestCase):
                 second_h = int(nodes[value]["size"].split(",")[1])
                 self.assertGreaterEqual(second_y, title_y + title_h)
                 self.assertLessEqual(second_y - (title_y + title_h), 3)
-                self.assertLessEqual(second_y + second_h, 76,
+                self.assertLessEqual(second_y + second_h, 110,
                                      (root.attrib["name"], value))
             clock_y = int(nodes["hdr_clock"]["position"].split(",")[1])
             clock_h = int(nodes["hdr_clock"]["size"].split(",")[1])
-            self.assertLessEqual(clock_y + clock_h, 76,
+            self.assertLessEqual(clock_y + clock_h, 110,
                                  root.attrib["name"])
 
     def test_all_twelve_screens_have_standard_bottom_rule_and_key_bar(self):
@@ -258,10 +258,10 @@ class HeaderTests(unittest.TestCase):
             self.assertEqual(len(pixmaps), 1, root.attrib["name"])
             self.assertEqual(pixmaps[0].attrib["size"], "1920,152")
             clock = root.find('widget[@name="hdr_clock"]')
-            self.assertEqual(clock.attrib["font"], "Regular;51")
-            self.assertEqual(clock.attrib["valign"], "bottom")
+            self.assertEqual(clock.attrib["font"], "Regular;60")
+            self.assertEqual(clock.attrib["valign"], "center")
             names = {x.attrib["name"] for x in root.findall("widget")}
-            self.assertTrue({"hdr_day", "hdr_date", "hdr_clock",
+            self.assertTrue({"hdr_day", "hdr_date", "hdr_clock", "hdr_seconds",
                              "hdr_version", "hdr_version_label"} <= names)
             self.assertFalse({"hdr_name", "hdr_evolution", "hdr_by"} & names)
             self.assertNotIn('render="', xml)
