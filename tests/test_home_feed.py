@@ -66,7 +66,7 @@ class HomeFeedTests(unittest.TestCase):
         self.assertEqual(q["chart"], ["mostPopular"])
         self.assertEqual(q["regionCode"], ["SK"])
         self.assertEqual(q["part"], ["snippet"])
-        self.assertEqual(q["maxResults"], ["12"])
+        self.assertEqual(q["maxResults"], ["24"])
         self.assertEqual(requests[0][1], 8)
 
     def test_errors_keep_key_out_of_user_message(self):
