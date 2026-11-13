@@ -28,6 +28,8 @@ class WarderYouTubeContext(Screen):
         self["heading"] = Label(_("Video actions"))
         self["video"] = Label(str((video or {}).get("title") or _("No video selected"))[:155])
         self["menu"] = MenuList([name for key, name in self.options])
+        for index in range(5):
+            self["context_focus%d" % index] = Label(" ")
         self["hint"] = Label(_("Choose an action"))
         self["key_red"] = Label(_("Back"))
         self["key_green"] = Label(_("Open"))
@@ -40,6 +42,18 @@ class WarderYouTubeContext(Screen):
             "yellow": lambda: self.close("info"),
             "blue": lambda: self.close("search" if self.mode == "search" else "clear")
         }, -1)
+        self["menu"].onSelectionChanged.append(self.update_focus)
+        self.onLayoutFinish.append(self.update_focus)
+        self.update_focus()
+
+    def update_focus(self):
+        current = self["menu"].getCurrentIndex()
+        for index in range(5):
+            focus = self["context_focus%d" % index]
+            if index == current and index < len(self.options):
+                focus.show()
+            else:
+                focus.hide()
 
     def choose(self):
         index = self["menu"].getCurrentIndex()
