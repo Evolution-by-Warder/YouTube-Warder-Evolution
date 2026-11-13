@@ -12,6 +12,7 @@ ICON_COUNT = 8
 ICON_SIZE = 64
 NAV_FOCUS_SIZE = (328, 72)
 VIDEO_FOCUS_SIZE = (477, 324)
+GRID_FOCUS_SIZE = (491, 364)
 
 
 def png_rgba(width, height, rgba):
@@ -154,20 +155,33 @@ def render_nav_focus():
     return png_rgba(w, h, raw)
 
 
-def render_video_focus():
-    w, h = VIDEO_FOCUS_SIZE
-    raw = bytearray(w*h*4)
+def _render_selected_video_frame(width, height):
+    """Only the focused tile gets a luminous cyan frame.
+
+    The centre is transparent so thumbnails and text are never covered.
+    Both Home (477x324) and Search results (491x364) reuse this geometry.
+    """
+    w, h = width, height
+    raw = bytearray(w * h * 4)
     for y in range(h):
         for x in range(w):
-            d = min(x, y, w-1-x, h-1-y)
-            if d < 2:
-                rgb, a = (164, 246, 255), 255
-            elif d < 5:
-                rgb, a = (18, 217, 252), 250
-            elif d < 8:
-                rgb, a = (10, 132, 209), int(125 * (8-d)/3)
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            if edge < 2:
+                rgb, alpha = (177, 253, 255), 255
+            elif edge < 5:
+                rgb, alpha = (15, 222, 255), 255
+            elif edge < 9:
+                rgb, alpha = (8, 129, 206), int(150 * (9 - edge) / 4)
             else:
                 continue
-            p = (y*w+x)*4
-            raw[p:p+4] = bytes((*rgb, a))
+            p = (y * w + x) * 4
+            raw[p:p+4] = bytes((*rgb, alpha))
     return png_rgba(w, h, raw)
+
+
+def render_video_focus():
+    return _render_selected_video_frame(*VIDEO_FOCUS_SIZE)
+
+
+def render_grid_focus():
+    return _render_selected_video_frame(*GRID_FOCUS_SIZE)
