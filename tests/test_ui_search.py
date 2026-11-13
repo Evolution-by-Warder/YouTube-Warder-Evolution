@@ -36,7 +36,11 @@ class UiTests(unittest.TestCase):
         settings = (PKG / "settings.py").read_text(encoding="utf-8")
         self.assertIn("ConfigText(default=\"\", fixed_size=False)", settings)
         self.assertIn('value=""', settings)
-        self.assertIn("secret=True", settings)
+        # Owner intentionally wants to see each newly typed key before
+        # confirming it; previously saved credentials are never prefilled.
+        self.assertIn("secret=False", settings)
+        self.assertIn('value=""', settings)
+        self.assertIn("VALID_KEY.fullmatch(value)", settings)
         self.assertNotIn("VirtualKeyBoard", settings)
         for name in ("settings.py", "search.py", "api.py"):
             self.assertNotIn("print(", (PKG / name).read_text(encoding="utf-8"))
