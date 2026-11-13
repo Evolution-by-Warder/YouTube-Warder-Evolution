@@ -1,0 +1,75 @@
+name: Publish pinned owner-accepted test24 (TESTING only)
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/publish-accepted-test24.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/feature/native-search-v002'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Download exact tested source GitHub build (not an old ZIP)
+        uses: actions/download-artifact@v4
+        with:
+          name: WarderYouTube-0.0.8-test24-IPK
+          run-id: 43498792062
+          github-token: ${{ github.token }}
+          path: dist
+      - name: Verify original approved header, version and archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          ipk='dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test24_all.ipk'
+          test "$(stat -c '%s' "$ipk")" -eq 552512
+          echo "b7692b1ecd681b60e653f894d062c06a5bbf08ab5363594ecf2a353d6e79f459  $ipk" | sha256sum -c -
+          cd dist && sha256sum -c *.sha256 && cd ..
+          ar p "$ipk" control.tar.gz | tar -xzOf - ./control | grep -Fx 'Version: 0.0.8~test24'
+          ar p "$ipk" control.tar.gz | tar -xzOf - ./control | grep -Fx 'Architecture: all'
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,tarfile,io,subprocess
+          p=Path("dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test24_all.ipk")
+          d=subprocess.check_output(["ar","p",str(p),"data.tar.gz"])
+          with tarfile.open(fileobj=io.BytesIO(d), mode="r:gz") as t:
+              members=[m for m in t.getmembers() if m.isfile()]
+              names=[m.name for m in members]
+              assert len(names)==54 and len(names)==len(set(names))
+              name=next(m for m in names if m.endswith("/images/warder_header.png"))
+              data=t.extractfile(name).read()
+              expected="93b509055bfe63e1126ccca27f324829d8a2e0c6bbdd3d10976b30d7cf70935c"
+              assert len(data)==435475 and hashlib.sha256(data).hexdigest()==expected
+              assert data==Path("dist/warder-header-preview.png").read_bytes()
+              assert (int.from_bytes(data[16:20],"big"),int.from_bytes(data[20:24],"big"))==(1920,152)
+              print("PASS: 54 original receiver files; owner-approved PNG exact bytes",expected)
+          PY
+      - name: Publish as opt-in testing PRE-RELEASE only, then verify downloaded bytes
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          tag='youtube-warder-v0.0.8-test24'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Existing test24 release; checking exact bytes"
+          else
+            gh release create "$tag" \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test24_all.ipk' \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test24_all.ipk.sha256' \
+              --target feature/native-search-v002 --prerelease \
+              --title 'YouTube Warder Evolution 0.0.8~test24 (TESTING ONLY)' \
+              --notes 'Owner accepted this test24 on GigaBlue Quad 4K Pro / OpenATV 8.1. It uses the original EXACT YouTube by Warder 1920x152 header, genuine system Enigma2 keyboard embedded in Home Search, direct search→results and BLUE→clean new search, native focus and dark footer. Source GitHub build matches every one of 54 receiver payload files and opkg maintainer scripts in owner-accepted test24. No stable release; main untouched. SHA256 for this published IPK: b7692b1ecd681b60e653f894d062c06a5bbf08ab5363594ecf2a353d6e79f459.'
+          fi
+          test "$(gh release view "$tag" --json isPrerelease --jq '.isPrerelease')" = true
+          mkdir -p verify
+          gh release download "$tag" --dir verify --pattern '*.ipk'
+          count=$(find verify -maxdepth 1 -name '*.ipk' -type f | wc -l)
+          test "$count" -eq 1
+          test -f verify/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test24_all.ipk
+          cmp 'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test24_all.ipk' \
+              'verify/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test24_all.ipk'
+          echo 'PASS: exact released asset equals source-built approved test24'
