@@ -113,7 +113,8 @@ def build(output_dir):
                for i in range(art.ICON_COUNT)]
     accents += [
         ("nav_focus.png", art.render_nav_focus(), art.NAV_FOCUS_SIZE),
-        ("video_focus.png", art.render_video_focus(), art.VIDEO_FOCUS_SIZE)
+        ("video_focus.png", art.render_video_focus(), art.VIDEO_FOCUS_SIZE),
+        ("grid_focus.png", art.render_grid_focus(), art.GRID_FOCUS_SIZE)
     ]
     for filename, png, expected in accents:
         if (not png.startswith(b"\x89PNG\r\n\x1a\n") or
