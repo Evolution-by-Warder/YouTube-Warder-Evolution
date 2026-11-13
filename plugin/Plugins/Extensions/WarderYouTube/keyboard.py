@@ -8,14 +8,24 @@ from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Screens.Screen import Screen
 
-from .i18n import tr as _
+from .i18n import tr as _, language_code
 from .skin import KEYBOARD_SKIN
 
-ROWS = (
-    "1234567890", "qwertyuiop", "asdfghjkl-",
-    "zxcvbnm.,?", "áčďéíľňšťž"
-)
 COLUMNS = 10
+KEYBOARDS = {
+    "sk": ("1234567890", "qwertyuiop", "asdfghjkl-", "zxcvbnm.,?", "áčďéíľňšťž"),
+    "cs": ("1234567890", "qwertyuiop", "asdfghjkl-", "zxcvbnm.,?", "áčďéěíňřšť"),
+    "de": ("1234567890", "qwertzuiop", "asdfghjkl-", "yxcvbnm.,?", "äöüßéèàâêî"),
+    "en": ("1234567890", "qwertyuiop", "asdfghjkl-", "zxcvbnm.,?", "@#:/_()+*?"),
+}
+ROWS = KEYBOARDS["sk"]
+
+
+def keyboard_rows(locale=None):
+    """Five rows of ten letters selected by the Enigma2 interface language."""
+    selected = (locale or language_code()).split("_")[0].split("-")[0].lower()
+    return KEYBOARDS.get(selected, KEYBOARDS["en"])
+
 
 
 class WarderYouTubeKeyboard(Screen):
@@ -23,8 +33,10 @@ class WarderYouTubeKeyboard(Screen):
 
     def __init__(self, session, value="", title=None, secret=False, limit=160):
         Screen.__init__(self, session)
-        self.value = str(value or "")[:limit]
-        self.limit = limit
+        self.limit = max(1, min(256, int(limit)))
+        self.value = str(value or "")[:self.limit]
+        self.rows = keyboard_rows()
+        self.characters = "".join(self.rows)
         self.secret = bool(secret)
         self.position = 10
         self.upper = False
@@ -37,7 +49,7 @@ class WarderYouTubeKeyboard(Screen):
         self["key_green"] = Label(_("Confirm"))
         self["key_yellow"] = Label(_("Delete"))
         self["key_blue"] = Label(_("Space"))
-        for index, char in enumerate("".join(ROWS)):
+        for index, char in enumerate(self.characters):
             self["letter%d" % index] = Label(char)
             self["focus%d" % index] = Label("")
         self["actions"] = ActionMap([
@@ -56,7 +68,7 @@ class WarderYouTubeKeyboard(Screen):
 
     def _ready(self):
         self._refresh()
-        for index in range(len("".join(ROWS))):
+        for index in range(len(self.characters)):
             self["focus%d" % index].hide()
         self["focus%d" % self.position].show()
 
@@ -67,7 +79,7 @@ class WarderYouTubeKeyboard(Screen):
 
     def _select(self, index):
         before = self.position
-        self.position = index % 50
+        self.position = index % len(self.characters)
         if before != self.position:
             self["focus%d" % before].hide()
             self["focus%d" % self.position].show()
@@ -91,12 +103,12 @@ class WarderYouTubeKeyboard(Screen):
         self._refresh()
 
     def press_letter(self):
-        char = "".join(ROWS)[self.position]
+        char = self.characters[self.position]
         self.append(char.upper() if self.upper else char)
 
     def toggle_case(self):
         self.upper = not self.upper
-        for i, char in enumerate("".join(ROWS)):
+        for i, char in enumerate(self.characters):
             self["letter%d" % i].setText(char.upper() if self.upper else char)
 
     def space(self):
