@@ -32,6 +32,8 @@ class WarderYouTubeHome(Screen):
         self["menu"] = MenuList([name for name, description in self.sections])
         for index in range(len(self.sections)):
             self["nav_focus%d" % index] = Label(" ")
+        for index in range(3):
+            self["card_focus%d" % index] = Label(" ")
         self["heading"] = Label("")
         self["description"] = Label("")
         self["card1_title"] = Label(_("Search").upper())
@@ -61,6 +63,13 @@ class WarderYouTubeHome(Screen):
         for row in range(len(self.sections)):
             focus = self["nav_focus%d" % row]
             if row == index:
+                focus.show()
+            else:
+                focus.hide()
+        card_for_section = {1: 0, 5: 1, 3: 2}
+        for card in range(3):
+            focus = self["card_focus%d" % card]
+            if card_for_section.get(index) == card:
                 focus.show()
             else:
                 focus.hide()
