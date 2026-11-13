@@ -4,6 +4,7 @@
 Only six cards are visible, two thumbnail network workers and one ePicLoad
 decoder may operate. No custom widget renderer or external image dependency.
 """
+from .header_ui import add_header
 from enigma import ePicLoad
 from Components.ActionMap import ActionMap
 from Components.Label import Label
@@ -33,6 +34,7 @@ class WarderYouTubeGrid(Screen):
 
     def __init__(self, session, items, query, has_next_page=False, on_play=None, on_info=None, on_favorite=None):
         Screen.__init__(self, session)
+        add_header(self)
         self.video_items = list(items[:15])
         self.selected = 0 if self.video_items else -1
         self.query = str(query)[:70]
