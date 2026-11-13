@@ -77,6 +77,9 @@ class WarderYouTubeSettings(Screen):
     def refresh(self):
         in_config = bool(config.plugins.warderyoutube.api_key.value.strip())
         in_file = bool(read_manual_key()) if not in_config else False
+        self["key_green"].setText(
+            _("Change API key") if in_config or in_file else _("API key")
+        )
         # Never put a saved credential into a GUI Label, even when the user
         # selects the API key row. Fixed-length stars do not expose key length.
         self["key_state"].setText(
