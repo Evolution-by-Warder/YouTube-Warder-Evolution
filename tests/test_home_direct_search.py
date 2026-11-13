@@ -247,7 +247,7 @@ class DirectSearchFlowTests(unittest.TestCase):
     def test_failed_or_empty_search_keeps_real_inline_keyboard_visible(self):
         with native_search() as (flow, home, jobs, api):
             flow.start("aladin")
-            jobs[0][1].failure(RuntimeError("Test backend unavailable"))
+            jobs[0][1].failure(types.SimpleNamespace(value=RuntimeError("Test backend unavailable")))
             self.assertIn("Test backend unavailable", home["kb_feedback"].text)
             self.assertEqual(home.session.grids, [])
             flow.start("aladin")
