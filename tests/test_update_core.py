@@ -81,7 +81,7 @@ class UpdateCoreTests(unittest.TestCase):
         for change, value in [
             ("tag", "youtube-warder-v0.0.8-test99"),
             ("url", "https://attacker.invalid/plugin.ipk"),
-            ("url", u.expected_url("0.0.8~test7").replace(".test6", "~test6")),
+            ("url", u.expected_url("0.0.8~test7").replace(".test7", "~test7")),
             ("sha256", "invalid"),
             ("bytes", 0),
         ]:
