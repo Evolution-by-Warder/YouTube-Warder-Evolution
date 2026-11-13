@@ -115,6 +115,7 @@ def load_search(api_key="configured-key", have_ytdlp=False):
         "_warder_modal.i18n": module("_warder_modal.i18n", tr=lambda value: value),
         "_warder_modal.keyboard": module("_warder_modal.keyboard", WarderYouTubeKeyboard=fake_keyboard),
         "_warder_modal.context_menu": module("_warder_modal.context_menu", WarderYouTubeContext=fake_context),
+        "_warder_modal.info_ui": module("_warder_modal.info_ui", WarderYouTubeInfo=object),
         "_warder_modal.local_library": module(
             "_warder_modal.local_library", LibraryError=ValueError,
             toggle_favourite=lambda video: True, record_opened=lambda video: None,

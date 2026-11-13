@@ -20,6 +20,7 @@ from .resolver import ResolverError, resolve_video_streams
 from .settings import get_quality
 from .i18n import tr as _
 from .confirm_ui import WarderYouTubeConfirm
+from .info_ui import WarderYouTubeInfo
 
 
 class WarderYouTubeLibrary(Screen):
@@ -111,10 +112,9 @@ class WarderYouTubeLibrary(Screen):
         item = self._selected()
         if item is not None:
             self.session.open(
-                MessageBox,
+                WarderYouTubeInfo,
                 "Názov: %s\nKanál: %s\nID videa: %s" %
-                (item["title"], item["channel"], item["video_id"]),
-                type=MessageBox.TYPE_INFO
+                (item["title"], item["channel"], item["video_id"])
             )
 
     def open_actions(self):

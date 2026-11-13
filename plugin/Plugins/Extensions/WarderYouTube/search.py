@@ -22,6 +22,7 @@ from .local_library import toggle_favourite, record_opened, list_videos, Library
 from .i18n import tr as _
 from .keyboard import WarderYouTubeKeyboard
 from .context_menu import WarderYouTubeContext
+from .info_ui import WarderYouTubeInfo
 
 
 class WarderYouTubeSearch(Screen):
@@ -296,11 +297,10 @@ class WarderYouTubeSearch(Screen):
         api_key = get_api_key()
         if not api_key:
             self.session.open(
-                MessageBox,
+                WarderYouTubeInfo,
                 "Názov: %s\nKanál: %s\n\n"
                 "Podrobné údaje vyžadujú vlastný YouTube Data API kľúč." %
-                (video.get("title") or "", video.get("channel") or ""),
-                type=MessageBox.TYPE_INFO
+                (video.get("title") or "", video.get("channel") or "")
             )
             return
         self.busy = True
@@ -324,7 +324,7 @@ class WarderYouTubeSearch(Screen):
              details["views"], description[:420])
         )
         self.show_play_status("Podrobnosti videa načítané.")
-        self.session.open(MessageBox, message, type=MessageBox.TYPE_INFO)
+        self.session.open(WarderYouTubeInfo, message)
 
     def info_failed(self, version, failure):
         if self.closed or version != self.request_version:

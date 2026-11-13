@@ -119,6 +119,9 @@ def load():
         "_test_warder_library.confirm_ui": mkmod(
             "_test_warder_library.confirm_ui", WarderYouTubeConfirm=object
         ),
+        "_test_warder_library.info_ui": mkmod(
+            "_test_warder_library.info_ui", WarderYouTubeInfo=object
+        ),
         "_test_warder_library.skin": mkmod(
             "_test_warder_library.skin", LIBRARY_SKIN="<screen/>"
         ),
