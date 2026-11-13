@@ -92,7 +92,7 @@ class HeaderTests(unittest.TestCase):
         with header_module() as m:
             sc = Screen()
             c = m.add_header(sc)
-            self.assertEqual(len(sc), 8)
+            self.assertEqual(len(sc), 5)
             self.assertIs(sc._warder_header, c)
             self.assertEqual(sc["hdr_version"].text, "0.0.8~test11")
             self.assertIn("Verzia:", sc["hdr_version_label"].text)
@@ -131,6 +131,27 @@ class HeaderTests(unittest.TestCase):
         self.assertNotIn("Warder metallic cyber skull", source)
         self.assertNotIn("cx, cy = 94, 66", source)
 
+    def test_compact_original_title_masks_and_single_banner(self):
+        import base64
+        import zlib
+        tools_dir = PKG.parents[3] / "tools"
+        mask_code = (tools_dir / "warder_title_masks.py").read_text(encoding="utf-8")
+        masks_spec = importlib.util.spec_from_file_location(
+            "warder_title_masks_test", tools_dir / "warder_title_masks.py"
+        )
+        masks = importlib.util.module_from_spec(masks_spec)
+        masks_spec.loader.exec_module(masks)
+        for encoded, w, h in (
+            (masks.TITLE_MASK_B64, masks.TITLE_WIDTH, masks.TITLE_HEIGHT),
+            (masks.BY_MASK_B64, masks.BY_WIDTH, masks.BY_HEIGHT)
+        ):
+            decoded = zlib.decompress(base64.b64decode(encoded))
+            self.assertEqual(len(decoded), (w*h+7)//8)
+        artwork_code = (tools_dir / "warder_header_art.py").read_text(encoding="utf-8")
+        self.assertIn('warder_title_masks.py', artwork_code)
+        self.assertIn('warder_skull.png', artwork_code)
+        self.assertNotIn('cx, cy = 94, 66', artwork_code)
+
     def test_every_screen_uses_same_static_header_without_renderers(self):
         source = (PKG / "skin.py").read_text(encoding="utf-8")
         tree = ast.parse(source)
@@ -148,9 +169,9 @@ class HeaderTests(unittest.TestCase):
             self.assertEqual(len(pixmaps), 1, root.attrib["name"])
             self.assertEqual(pixmaps[0].attrib["size"], "1920,134")
             names = {x.attrib["name"] for x in root.findall("widget")}
-            self.assertTrue({"hdr_name", "hdr_evolution", "hdr_by",
-                             "hdr_day", "hdr_date", "hdr_clock",
+            self.assertTrue({"hdr_day", "hdr_date", "hdr_clock",
                              "hdr_version", "hdr_version_label"} <= names)
+            self.assertFalse({"hdr_name", "hdr_evolution", "hdr_by"} & names)
             self.assertNotIn('render="', xml)
 
 
