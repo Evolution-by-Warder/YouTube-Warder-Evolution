@@ -45,7 +45,7 @@ class HomeThumbs:
             self.decoder = None
 
     def decode_parameters(self):
-        width, height = 452, 235
+        width, height = 410, 230
         try:
             widget = self.screen["preview_thumb0"]
             actual = widget.getSize() if getattr(widget, "instance", None) else None
