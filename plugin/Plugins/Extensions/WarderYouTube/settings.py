@@ -110,7 +110,7 @@ class WarderYouTubeSettings(Screen):
             try:
                 self.session.openWithCallback(
                     self._key_change_confirmed, WarderYouTubeConfirm,
-                    _("API key") + ": ********" + "\\n" +
+                    _("API key") + ": ********" + "\n" +
                     _("Change saved API key?"))
             except Exception:
                 self._key_dialog_open = False
