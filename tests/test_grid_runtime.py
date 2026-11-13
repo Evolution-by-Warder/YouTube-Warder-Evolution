@@ -127,6 +127,7 @@ class TestNativeGrid(unittest.TestCase):
         package = types.ModuleType("_warder_mock")
         package.__path__ = [str(PKG)]
         modules = {
+            "_warder_mock.header_ui": types.SimpleNamespace(add_header=lambda sc: sc.__setitem__("hdr_version", Widget())),
             "enigma": fake_enigma,
             "Components": components,
             "Components.AVSwitch": avswitch,
