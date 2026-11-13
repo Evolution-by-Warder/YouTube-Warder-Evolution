@@ -29,6 +29,9 @@ HOME_SKIN = """
   <eLabel position="435,587" size="435,5" backgroundColor="#087EC7"/>
   <eLabel position="933,587" size="435,5" backgroundColor="#137A77"/>
   <eLabel position="1431,587" size="433,5" backgroundColor="#8B6F40"/>
+  <widget name="card_focus0" position="414,569" size="476,329" font="Regular;24" foregroundColor="#1F507A" backgroundColor="#1F507A" transparent="0" zPosition="2"/>
+  <widget name="card_focus1" position="912,569" size="476,329" font="Regular;24" foregroundColor="#1F507A" backgroundColor="#1F507A" transparent="0" zPosition="2"/>
+  <widget name="card_focus2" position="1410,569" size="474,329" font="Regular;24" foregroundColor="#1F507A" backgroundColor="#1F507A" transparent="0" zPosition="2"/>
   <widget name="card1_title" position="447,612" size="420,62" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
   <widget name="card1_body" position="447,680" size="415,166" font="Regular;27" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="3"/>
   <widget name="card2_title" position="945,612" size="420,62" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
