@@ -59,6 +59,8 @@ class WarderYouTubeGrid(Screen):
         self._thumb_expected = 0
         self._thumb_network_failures = 0
         self._thumb_decode_failures = 0
+        self._pixmap_cache = {}
+        self._visible_urls = {}
         # Playback/status messages must not be overwritten by late images.
         self._status_override = False
 
@@ -93,6 +95,7 @@ class WarderYouTubeGrid(Screen):
             }, -1
         )
         self.onLayoutFinish.append(self._layout_ready)
+        self.onShown.append(self._restore_thumbnails)
         self.onClose.append(self._mark_closed)
 
     def _layout_ready(self):
@@ -114,6 +117,24 @@ class WarderYouTubeGrid(Screen):
             self._release_decoder()
             self._picload = None
         self._render_page()
+
+    def _restore_thumbnails(self):
+        if not self._ready or self._closed:
+            return
+        restored = 0
+        for slot, url in self._visible_urls.items():
+            pixmap = self._pixmap_cache.get(url)
+            if pixmap is not None:
+                try:
+                    self["thumb%d" % slot].setPixmap(pixmap)
+                    self["thumb%d" % slot].show()
+                    restored += 1
+                except (AttributeError, TypeError, ValueError, RuntimeError):
+                    self._pixmap_cache.pop(url, None)
+        if (not restored and not self._pending_downloads
+                and not self._active_requests and not self._pending_decodes
+                and self._decoding is None and self.video_items):
+            self._render_page()
 
     def _decode_parameters(self):
         """Follow the Enigma2 thumbnail pattern from Taapat YouTube.
@@ -161,6 +182,8 @@ class WarderYouTubeGrid(Screen):
         self._epoch += 1
         self._pending_downloads = []
         self._pending_decodes = []
+        self._pixmap_cache.clear()
+        self._visible_urls.clear()
         self._release_decoder()
         self._picload = None
         self.on_play = None
@@ -187,6 +210,7 @@ class WarderYouTubeGrid(Screen):
         self._thumb_decode_failures = 0
         self._status_override = False
         start = page_number(self.selected) * VISIBLE_TILES
+        self._visible_urls = {}
 
         for slot in range(VISIBLE_TILES):
             absolute = start + slot
@@ -201,6 +225,15 @@ class WarderYouTubeGrid(Screen):
             self["channel%d" % slot].setText(str(video.get("channel") or "")[:55])
             url = video.get("thumbnail_url")
             if url:
+                self._visible_urls[slot] = url
+                cached = self._pixmap_cache.get(url)
+                if cached is not None:
+                    try:
+                        self["thumb%d" % slot].setPixmap(cached)
+                        self["thumb%d" % slot].show()
+                        continue
+                    except (AttributeError, TypeError, ValueError, RuntimeError):
+                        self._pixmap_cache.pop(url, None)
                 self._thumb_expected += 1
                 self._pending_downloads.append((epoch, slot, url))
 
@@ -306,6 +339,11 @@ class WarderYouTubeGrid(Screen):
                 widget = self["thumb%d" % request[1]]
                 widget.setPixmap(pixmap_ptr)
                 widget.show()
+                url = self._visible_urls.get(request[1])
+                if url is not None:
+                    self._pixmap_cache[url] = pixmap_ptr
+                    while len(self._pixmap_cache) > 12:
+                        self._pixmap_cache.pop(next(iter(self._pixmap_cache)))
                 self._thumb_shown += 1
         except (AttributeError, TypeError, ValueError, RuntimeError):
             # A decode error must not cause a GUI crash.
