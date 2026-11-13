@@ -28,6 +28,64 @@ class Widget:
         self.image = value
 
 
+class FakeNativeInput(Widget):
+    def char(self, value):
+        self.text += value
+
+    def getText(self):
+        return self.text
+
+    def deleteBackward(self):
+        self.text = self.text[:-1]
+
+
+class FakeSystemVirtualKeyBoard(dict):
+    """Fake firmware backend; Home still uses its list/Input, not Warder keys."""
+    def __init__(self, session, title="", text="", maxSize=False):
+        super().__init__()
+        self["list"] = Widget()
+        self["text"] = FakeNativeInput(text)
+        self.keyboardWidth, self.keyboardHeight = 14, 5
+        self.width = self.height = 45
+        self.selectedKey = 14
+        self.shifted = False
+        self.generated = False
+        self.native_calls = []
+        self.sms = types.SimpleNamespace(stopTimer=lambda: None)
+
+    def layoutFinished(self):
+        self.generated = True
+
+    def up(self):
+        self.native_calls.append("up")
+        self.selectedKey = (self.selectedKey - 14) % 70
+
+    def down(self):
+        self.native_calls.append("down")
+        self.selectedKey = (self.selectedKey + 14) % 70
+
+    def left(self):
+        self.native_calls.append("left")
+        self.selectedKey = max(0, self.selectedKey - 1)
+
+    def right(self):
+        self.native_calls.append("right")
+        self.selectedKey = min(69, self.selectedKey + 1)
+
+    def processSelect(self):
+        self.native_calls.append("processSelect")
+        letter = "q" if self.selectedKey == 14 else "w"
+        self["text"].char(letter.upper() if self.shifted else letter)
+
+    def backSelected(self):
+        self.native_calls.append("backSelected")
+        self["text"].deleteBackward()
+
+    def capsLockSelected(self):
+        self.native_calls.append("capsLockSelected")
+        self.shifted = not self.shifted
+
+
 class FakeScreen(dict):
     def __init__(self, session):
         super().__init__()
@@ -169,9 +227,12 @@ def load(key="", history=None, fav=None):
 
 def ready(module):
     session = FakeSession()
-    screen = module.WarderYouTubeHome(session)
-    for callback in screen.onLayoutFinish:
-        callback()
+    system = fake("Screens.VirtualKeyBoard",
+                  VirtualKeyBoard=FakeSystemVirtualKeyBoard)
+    with patch.dict(sys.modules, {"Screens.VirtualKeyBoard": system}):
+        screen = module.WarderYouTubeHome(session)
+        for callback in screen.onLayoutFinish:
+            callback()
     return screen, session
 
 
@@ -199,9 +260,9 @@ class HomeLivePreviewTests(unittest.TestCase):
         screen.down()  # Search
         self.assertEqual(screen["heading"].text, "Search")
         self.assertFalse(screen["preview_message"].visible)
-        self.assertTrue(screen["kb_input"].visible)
-        self.assertTrue(screen["kb_key10"].visible)
-        self.assertFalse(screen["kb_focus10"].visible)  # left menu still has focus
+        self.assertTrue(screen["kb_system_input"].visible)
+        self.assertTrue(screen["kb_system_list"].visible)
+        self.assertTrue(screen["nav_focus1"].visible)  # left menu still has focus
         self.assertEqual(len(screen.video_items), 0)
         screen.down()  # Subscriptions
         self.assertIn("not supported", screen["preview_message"].text)
@@ -221,41 +282,41 @@ class HomeLivePreviewTests(unittest.TestCase):
     def test_search_keyboard_appears_inline_on_highlight_without_modal(self):
         mod, key, saved, jobs = load()
         screen, session = ready(mod)
-        self.assertFalse(screen["kb_key10"].visible)
+        self.assertFalse(screen["kb_system_list"].visible)
         screen.down()  # "Search" highlighted in LEFT menu
         self.assertEqual(screen.index, 1)
         self.assertTrue(screen["nav_focus1"].visible)
-        self.assertTrue(screen["kb_input"].visible)
-        self.assertTrue(screen["kb_key10"].visible)
-        self.assertEqual(screen["kb_key10"].text, "q")
-        self.assertFalse(screen["kb_focus10"].visible)
+        self.assertTrue(screen["kb_system_input"].visible)
+        self.assertTrue(screen["kb_system_list"].visible)
+        self.assertTrue(screen.inline_keyboard.backend.generated)
+        self.assertTrue(screen["nav_focus1"].visible)
         self.assertEqual(session.opens, [])
         self.assertEqual(session.callbacks, [])
         # RIGHT enters keyboard; OK inserts selected character.
         screen.right()
         self.assertEqual(screen.focus_area, "keyboard")
-        self.assertTrue(screen["kb_focus10"].visible)
+        self.assertEqual(screen.inline_keyboard.backend.selectedKey, 14)
         self.assertFalse(screen["nav_focus1"].visible)
         screen.activate()
-        self.assertEqual(screen.kb_text, "q")
-        self.assertEqual(screen["kb_input"].text, "q")
+        self.assertEqual(screen.inline_keyboard.value(), "q")
+        self.assertEqual(screen["kb_system_input"].text, "q")
         screen.menu()
         screen.activate()
-        self.assertEqual(screen.kb_text, "qQ")
+        self.assertEqual(screen.inline_keyboard.value(), "qQ")
         screen.yellow()
-        self.assertEqual(screen.kb_text, "q")
+        self.assertEqual(screen.inline_keyboard.value(), "q")
         screen.blue()
-        self.assertEqual(screen.kb_text, "q ")
+        self.assertEqual(screen.inline_keyboard.value(), "q ")
         # Back returns focus to left navigation WITHOUT closing or opening a modal.
         screen.back()
         self.assertEqual(screen.focus_area, "nav")
         self.assertTrue(screen["nav_focus1"].visible)
-        self.assertTrue(screen["kb_input"].visible)
+        self.assertTrue(screen["kb_system_input"].visible)
         self.assertEqual(session.opens, [])
         screen.down()
         self.assertEqual(screen.index, 2)
-        self.assertFalse(screen["kb_input"].visible)
-        self.assertFalse(screen["kb_key10"].visible)
+        self.assertFalse(screen["kb_system_input"].visible)
+        self.assertFalse(screen["kb_system_list"].visible)
 
     def test_inline_search_green_goes_to_actual_results_without_second_keyboard(self):
         mod, key, saved, jobs = load(key="available-key")
@@ -265,7 +326,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         screen.activate()  # q
         screen.right()
         screen.activate()  # w
-        self.assertEqual(screen.kb_text, "qw")
+        self.assertEqual(screen.inline_keyboard.value(), "qw")
         pkg = fake("_warder_home")
         pkg.__path__ = [str(ROOT)]
         fake_results = fake("_warder_home.search",
@@ -281,11 +342,11 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(session.callbacks, [])
         # Returning to Home keeps Search keyboard in its right pane.
         screen._on_shown()
-        self.assertTrue(screen["kb_input"].visible)
-        self.assertEqual(screen.kb_text, "qw")
+        self.assertTrue(screen["kb_system_input"].visible)
+        self.assertEqual(screen.inline_keyboard.value(), "qw")
         self.assertEqual(len(session.opens), 1)
         # Left edge of keyboard gives focus back to the persistent left menu.
-        screen.kb_position = 10
+        screen.inline_keyboard.backend.selectedKey = 14
         screen.left()
         self.assertEqual(screen.focus_area, "nav")
 
@@ -297,7 +358,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         screen.green()
         self.assertEqual(session.opens, [])
         self.assertIn("Enter", screen["kb_feedback"].text)
-        self.assertTrue(screen["kb_input"].visible)
+        self.assertTrue(screen["kb_system_input"].visible)
 
     def test_public_home_without_api_replaces_local_fallback(self):
         mod, key, saved, jobs = load()
