@@ -51,7 +51,7 @@ class WarderYouTubeHome(Screen):
         self.index = 0
         self.focus_area = "nav"
         self.tile_index = 0
-        self.items = []
+        self.video_items = []
         self._mounted = False
         self._disposed = False
         self._popular_requested = False
@@ -162,7 +162,7 @@ class WarderYouTubeHome(Screen):
                            "preview_title", "preview_channel", "detail"):
                 self["%s%d" % (prefix, i)].hide()
         self["preview_message"].hide()
-        self.items = []
+        self.video_items = []
         self.tile_index = 0
 
     def _show_message(self, message, details=None):
@@ -181,13 +181,13 @@ class WarderYouTubeHome(Screen):
 
     def _show_tiles(self, items, subtitle):
         self._clear_preview()
-        self.items = list(items[:VISIBLE_TILES])
+        self.video_items = list(items[:VISIBLE_TILES])
         self["subtitle"].setText(_(subtitle))
-        if not self.items:
+        if not self.video_items:
             self["preview_message"].setText(_("No saved videos in this section."))
             self["preview_message"].show()
             return
-        for i, video in enumerate(self.items):
+        for i, video in enumerate(self.video_items):
             self["preview_panel%d" % i].show()
             title = self["preview_title%d" % i]
             channel = self["preview_channel%d" % i]
@@ -195,7 +195,7 @@ class WarderYouTubeHome(Screen):
             channel.setText(str(video.get("channel") or "")[:43])
             title.show()
             channel.show()
-        self.thumbs.show(self.items)
+        self.thumbs.show(self.video_items)
         self._update_tile_focus()
 
     def _update_tile_focus(self):
@@ -203,12 +203,12 @@ class WarderYouTubeHome(Screen):
             return
         for i in range(VISIBLE_TILES):
             focus = self["preview_focus%d" % i]
-            if self.focus_area == "tiles" and i == self.tile_index and i < len(self.items):
+            if self.focus_area == "tiles" and i == self.tile_index and i < len(self.video_items):
                 focus.show()
             else:
                 focus.hide()
-        if self.focus_area == "tiles" and self.items:
-            self["status"].setText(preview_title(self.items[self.tile_index].get("title"), 85))
+        if self.focus_area == "tiles" and self.video_items:
+            self["status"].setText(preview_title(self.video_items[self.tile_index].get("title"), 85))
 
     def _local_items(self, kind):
         try:
@@ -317,7 +317,7 @@ class WarderYouTubeHome(Screen):
     def _update_keys(self):
         self["key_red"].setText(_("Back") if self.focus_area == "tiles" else _("Close"))
         self["key_green"].setText(
-            _("Play video") if self.focus_area == "tiles" and self.items else _("Open")
+            _("Play video") if self.focus_area == "tiles" and self.video_items else _("Open")
         )
         self["key_yellow"].setText(_("History"))
         self["key_blue"].setText(_("Search"))
@@ -361,15 +361,15 @@ class WarderYouTubeHome(Screen):
             self._move_tile("right")
 
     def _move_tile(self, direction):
-        if not self.items or self._busy or self._playback_active or self._context_open:
+        if not self.video_items or self._busy or self._playback_active or self._context_open:
             return
-        next_index = move_index(self.tile_index, direction, len(self.items))
+        next_index = move_index(self.tile_index, direction, len(self.video_items))
         if next_index != self.tile_index:
             self.tile_index = next_index
             self._update_tile_focus()
 
     def _enter_tiles(self):
-        if self.items and self.focus_area == "nav":
+        if self.video_items and self.focus_area == "nav":
             self.focus_area = "tiles"
             self.tile_index = 0
             self._update_nav()
@@ -400,7 +400,7 @@ class WarderYouTubeHome(Screen):
             return
         if self.focus_area == "tiles":
             self._play_selected()
-        elif self.index in (0, 3, 5) and self.items:
+        elif self.index in (0, 3, 5) and self.video_items:
             self._enter_tiles()
         else:
             self._open_index(self.index)
@@ -422,15 +422,15 @@ class WarderYouTubeHome(Screen):
             from .update_ui import WarderYouTubeUpdateCheck
             self.session.open(WarderYouTubeUpdateCheck)
         elif index == 0:
-            if not self.items:
+            if not self.video_items:
                 self._open_index(6)
         else:
             self["status"].setText(_("This section is not supported yet."))
 
     def selected_video(self):
         if (self.focus_area == "tiles" and
-                0 <= self.tile_index < len(self.items)):
-            return self.items[self.tile_index]
+                0 <= self.tile_index < len(self.video_items)):
+            return self.video_items[self.tile_index]
         return None
 
     def info(self):
