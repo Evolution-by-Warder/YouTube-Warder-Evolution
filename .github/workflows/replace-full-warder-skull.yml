@@ -1,0 +1,39 @@
+name: Replace cropped Warder skull source with complete canonical original
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/replace-full-warder-skull.yml]
+permissions:
+  contents: write
+jobs:
+  replace-original:
+    if: github.ref == 'refs/heads/feature/native-search-v002'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          ref: feature/native-search-v002
+      - name: Import exact complete original Warder family source
+        shell: bash
+        run: |
+          set -euo pipefail
+          target='plugin/Plugins/Extensions/WarderYouTube/images/warder_skull.png'
+          curl -fLsS --retry 2 --max-time 35 \
+            'https://raw.githubusercontent.com/Evolution-by-Warder/PiconHub-Warder-Evolution/59ec70708d4d05a28f17c741742c78451d4fc45/plugin/artwork/templates/warder-brand/warder-shared-skull.png' \
+            -o "$target"
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, struct
+          path=Path('plugin/Plugins/Extensions/WarderYouTube/images/warder_skull.png')
+          data=path.read_bytes()
+          assert hashlib.sha256(data).hexdigest() == '1cb97ce23564d4bfa226433ce59abdb1c42ac09e2dc2a40c809ee6c5065296e5'
+          assert data.startswith(b'\x89PNG\r\n\x1a\n')
+          assert struct.unpack('>II',data[16:24]) == (384,429)
+          assert data[24:26] == bytes((8,6)), 'Require canonical 8-bit RGBA'
+          print('PASS: full original Warder 384x429, byte-verified source replaces clipped 104x100')
+          PY
+          git add "$target"
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'art: replace pre-cropped skull with canonical full original Warder emblem'
+          git push origin HEAD:feature/native-search-v002
