@@ -57,6 +57,21 @@ class PackagingTests(unittest.TestCase):
                     self.assertTrue(raw.startswith(b"\x89PNG\r\n\x1a\n"))
                     self.assertEqual(tuple(int.from_bytes(raw[i:i + 4], "big") for i in (16, 20)), dimensions)
 
+    def test_displayed_version_matches_control_package(self):
+        """Prevent the Home header and opkg control version from drifting."""
+        from ast import parse, Assign, Name, Constant
+        core_path = (P.parent.parent /
+                     "plugin/Plugins/Extensions/WarderYouTube/update_core.py")
+        tree = parse(core_path.read_text(encoding="utf-8"))
+        values = [
+            node.value.value for node in tree.body
+            if isinstance(node, Assign)
+            and isinstance(node.value, Constant)
+            and any(isinstance(target, Name) and target.id == "CURRENT_VERSION"
+                    for target in node.targets)
+        ]
+        self.assertEqual(values, [m.VERSION])
+
     def test_hooks_are_non_destructive(self):
         for name, script in m.control_scripts().items():
             self.assertTrue(script.startswith("#!/bin/sh"), name)
