@@ -122,7 +122,7 @@ class HeaderTests(unittest.TestCase):
         self.assertEqual(
             (int.from_bytes(artwork[16:20], "big"),
              int.from_bytes(artwork[20:24], "big")),
-            (104, 100)
+            (384, 429)
         )
         source = (PKG.parents[3] / "tools" / "warder_header_art.py").read_text(
             encoding="utf-8"
@@ -130,6 +130,39 @@ class HeaderTests(unittest.TestCase):
         self.assertIn('warder_skull.png', source)
         self.assertNotIn("Warder metallic cyber skull", source)
         self.assertNotIn("cx, cy = 94, 66", source)
+
+    def test_full_original_skull_is_composited_without_jaw_clipping(self):
+        import hashlib
+        tools_dir = PKG.parents[3] / "tools"
+        path = tools_dir / "warder_header_art.py"
+        spec = importlib.util.spec_from_file_location(
+            "_warder_art_full_logo_regression", str(path)
+        )
+        art = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(art)
+        source = (PKG / "images/warder_skull.png").read_bytes()
+        self.assertEqual(hashlib.sha256(source).hexdigest(),
+                         art.FULL_WARDER_SOURCE_SHA256)
+        w, h, rgba = art.decode_original_skull(source)
+        self.assertEqual((w, h), (384, 429))
+        self.assertEqual(len(rgba), 384 * 429 * 4)
+        self.assertGreater(rgba[(375*w+192)*4+3], 200)
+        x, y, scaled_w, scaled_h = art.skull_placement()
+        self.assertGreater(x, 0)
+        self.assertGreater(y, 0)
+        self.assertEqual((scaled_w, scaled_h), (124, 139))
+        self.assertLessEqual(y + scaled_h, 143)
+        self.assertLessEqual(x + scaled_w, 174)
+        (name_x, name_y, name_scale), (by_x, by_y, by_scale) = art.lettering_placement()
+        self.assertGreater(name_x, x+scaled_w)
+        self.assertGreaterEqual(name_scale, 1.10)
+        self.assertGreaterEqual(by_scale, 1.15)
+        # Generated header is still only one RGB static bitmap and contains
+        # the full original; no alpha-keyed overlay or runtime reconstruction.
+        png = art.render_header()
+        self.assertTrue(png.startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual((int.from_bytes(png[16:20], "big"),
+                          int.from_bytes(png[20:24], "big")), (1920, 152))
 
     def test_compact_original_title_masks_and_single_banner(self):
         import base64
