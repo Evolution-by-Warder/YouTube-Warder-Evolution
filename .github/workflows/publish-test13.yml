@@ -1,0 +1,96 @@
+name: One-shot publish verified YouTube Warder 0.0.8~test13
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/publish-test13.yml]
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: youtube-warder-verified-test13
+  cancel-in-progress: false
+jobs:
+  publish-test13:
+    if: github.ref == 'refs/heads/feature/native-search-v002'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Download exactly verified test13 CI artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: WarderYouTube-0.0.8-test13-IPK
+          run-id: 43432520659
+          github-token: \${{ github.token }}
+          path: dist
+      - name: Verify digest, package control, images and absence of API secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, io, re, tarfile
+          base = Path("dist")
+          name = "enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test13_all.ipk"
+          ipk = (base/name).read_bytes()
+          expected = "23809367a82d47cc36d39c4e99ba2fad2c712c35e03f7771b50f10c6ce17faf9"
+          assert len(ipk) == 164510
+          assert hashlib.sha256(ipk).hexdigest() == expected
+          assert (base/(name+".sha256")).read_text().strip() == expected + "  " + name
+          assert ipk.startswith(b"!<arch>\n")
+          parts = {}
+          offset = 8
+          while offset < len(ipk):
+              head = ipk[offset:offset+60]
+              assert len(head) == 60 and head[58] == 96 and head[59] == 10
+              member_name = head[:16].decode().strip().rstrip("/")
+              size = int(head[48:58].decode().strip())
+              offset += 60
+              parts[member_name] = ipk[offset:offset+size]
+              offset += size + size%2
+          assert set(parts) == {"debian-binary", "control.tar.gz", "data.tar.gz"}
+          assert parts["debian-binary"] == b"2.0\n"
+          with tarfile.open(fileobj=io.BytesIO(parts["control.tar.gz"]), mode="r:gz") as tar:
+              control = tar.extractfile("./control").read().decode()
+          assert "Version: 0.0.8~test13\n" in control
+          assert "Architecture: all\n" in control
+          prefix = "./usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/"
+          with tarfile.open(fileobj=io.BytesIO(parts["data.tar.gz"]), mode="r:gz") as tar:
+              names = {m.name for m in tar.getmembers()}
+              for icon in ["nav_%d.png"%i for i in range(8)] + ["nav_focus.png", "video_focus.png"]:
+                  assert prefix+icon in names, icon
+              header = tar.extractfile(prefix+"warder_header.png").read()
+              assert header == (base/"warder-header-preview.png").read_bytes()
+              assert header[:8] == b"\x89PNG\r\n\x1a\n"
+              assert int.from_bytes(header[16:20], "big") == 1920
+              assert int.from_bytes(header[20:24], "big") == 152
+              for member in tar:
+                  if member.name.endswith(".py"):
+                      assert not re.search(rb"AIza[0-9A-Za-z_-]{20,}", tar.extractfile(member).read())
+          print("PASS: exact test13 IPK, all picons/focus assets, header, and no secrets")
+          PY
+      - name: Publish opt-in GitHub testing prerelease only
+        shell: bash
+        env:
+          GH_TOKEN: \${{ github.token }}
+          GH_REPO: \${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/feature/native-search-v002'
+          tag="youtube-warder-v0.0.8-test13"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo 'Release already exists; validating exact stored bytes'
+          else
+            gh release create "$tag" \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test13_all.ipk' \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test13_all.ipk.sha256' \
+              --target feature/native-search-v002 \
+              --title 'YouTube Warder Evolution 0.0.8~test13 (TEST ONLY)' \
+              --notes 'Opt-in test13: eight native menu picons, visible focus in Home/History/Favourites, clean footer, taller shared header, full Warder skull, larger bottom-aligned clock. 181 tests PASS. Receiver acceptance pending. No stable release or main merge.' \
+              --prerelease
+          fi
+          test "$(gh release view "$tag" --json isPrerelease --jq '.isPrerelease')" = true
+          mkdir -p verify
+          gh release download "$tag" --dir verify --pattern '*.ipk'
+          cmp 'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test13_all.ipk' \
+              'verify/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test13_all.ipk'
+          echo 'PASS: test13 published asset verified byte-for-byte'
