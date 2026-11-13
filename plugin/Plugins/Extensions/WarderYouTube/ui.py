@@ -136,6 +136,7 @@ class WarderYouTubeHome(Screen):
             return
         self.installed_version = version
         self["version"].setText(version + "  •  Enigma2")
+        self["hdr_version"].setText(version)
         if self._mounted and self.index == 7:
             self._update_preview()
 
