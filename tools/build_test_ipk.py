@@ -123,9 +123,7 @@ def build(output_dir):
             raise ValueError("Invalid Warder navigation artwork: " + filename)
         data_files.append((TARGET_PREFIX + "/images/" + filename, png, False))
 
-    # One pre-rendered shared static header; zero drawing on the receiver.
-
-    # screens. Generated at build time only; ZERO GPU/Python drawing at run.
+    # Shared 1920x152 header is rendered once during packaging; never on the receiver.
     # Import by explicit build-script path: unit tests load this builder via
     # importlib with sys.path that does not contain tools/.
     import importlib.util
@@ -175,8 +173,9 @@ def build(output_dir):
     (output_dir / (FILENAME + ".sha256")).write_text(
         digest + "  " + FILENAME + "\n", encoding="ascii"
     )
-    print("PASS: test IPK built (%d Python files + 2 PNG icons, %d bytes)." %
-          (len(data_files), len(ipk)))
+    total_png = sum(path.endswith(".png") for path, _, _ in data_files)
+    print("PASS: test IPK built (%d Python files + %d PNG images, %d bytes)." %
+          (len(py_sources), total_png, len(ipk)))
     print("PASS: package SHA256:", digest)
     return path
 
