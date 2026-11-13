@@ -61,7 +61,8 @@ def load(name):
     fake = {
         "_test_warder_design": package,
         "_test_warder_design.i18n": mod(
-            "_test_warder_design.i18n", tr=lambda message: message
+            "_test_warder_design.i18n", tr=lambda message: message,
+            language_code=lambda: "sk"
         ),
         "_test_warder_design.skin": mod(
             "_test_warder_design.skin",
@@ -87,6 +88,39 @@ def load(name):
 
 
 class WarderNativeUiTests(unittest.TestCase):
+    def test_keyboard_uses_receiver_language_layout(self):
+        m = load("keyboard")
+        for locale, row, first in (
+            ("sk_SK", "áčďéíľňšťž", "qwertyuiop"),
+            ("cs_CZ", "áčďéěíňřšť", "qwertyuiop"),
+            ("de_DE", "äöüßéèàâêî", "qwertzuiop"),
+            ("en_GB", "@#:/_()+*?", "qwertyuiop"),
+            ("fr_FR", "@#:/_()+*?", "qwertyuiop"),
+        ):
+            with self.subTest(locale=locale):
+                rows = m.keyboard_rows(locale)
+                self.assertEqual(len(rows), 5)
+                self.assertTrue(all(len(part) == 10 for part in rows))
+                self.assertEqual(rows[-1], row)
+                self.assertEqual(rows[1], first)
+
+    def test_keyboard_locale_and_numeric_entry_stay_native(self):
+        m = load("keyboard")
+        with patch.object(m, "keyboard_rows", return_value=m.keyboard_rows("de_DE")):
+            k = m.WarderYouTubeKeyboard(None, value="test", limit=10)
+        for fn in k.onLayoutFinish:
+            fn()
+        self.assertEqual(k["letter15"].text, "z")
+        k._select(15)
+        k.press_letter()
+        self.assertEqual(k.value, "testz")
+        k.toggle_case()
+        self.assertEqual(k["letter15"].text, "Z")
+        k.press_letter()
+        self.assertEqual(k.value, "testzZ")
+        k.delete()
+        self.assertEqual(k.value, "testz")
+
     def test_keyboard_is_plugin_native_with_real_selection_and_typing(self):
         m = load("keyboard")
         k = m.WarderYouTubeKeyboard(None)
