@@ -152,7 +152,7 @@ GRID_SKIN = """
   <widget name="channel5" position="1390,905" size="473,28" font="Regular;22" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
   <widget name="status" position="358,953" size="1460,43" font="Regular;25" foregroundColor="#36B9FF" transparent="1"/>
   <eLabel position="0,999" size="1920,81" backgroundColor="#142C47"/>
-  <widget name="footer" position="28,1014" size="1880,52" font="Regular;24" foregroundColor="#FFFFFF" transparent="1"zPosition="0"/>
+  <widget name="footer" position="28,1014" size="1880,52" font="Regular;24" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
@@ -172,7 +172,7 @@ UPDATE_CHECK_SKIN = """
   <widget name="status" position="72,230" size="1750,110" font="Regular;37" foregroundColor="#36B9FF" transparent="1"/>
   <widget name="detail" position="72,385" size="1750,185" font="Regular;30" foregroundColor="#B9D9F5" transparent="1"/>
   <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
-  <widget name="footer" position="42,1013" size="1820,54" font="Regular;27" foregroundColor="#FFFFFF" transparent="1"zPosition="0"/>
+  <widget name="footer" position="42,1013" size="1820,54" font="Regular;27" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
@@ -194,7 +194,7 @@ UPDATE_SKIN = """
   <widget name="percentage" position="1660,390" size="160,62" font="Regular;31" foregroundColor="#36B9FF" transparent="1"/>
   <widget name="detail" position="72,510" size="1720,170" font="Regular;30" foregroundColor="#B9D9F5" transparent="1"/>
   <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
-  <widget name="footer" position="42,1013" size="1830,54" font="Regular;27" foregroundColor="#FFFFFF" transparent="1"zPosition="0"/>
+  <widget name="footer" position="42,1013" size="1830,54" font="Regular;27" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
@@ -214,7 +214,7 @@ LIBRARY_SKIN = """
   <widget name="results" position="50,218" size="1810,625" font="Regular;30" itemHeight="62" foregroundColor="#FFFFFF" backgroundColor="#142C47" scrollbarMode="showOnDemand"/>
   <widget name="status" position="55,874" size="1790,93" font="Regular;28" foregroundColor="#B9D9F5" transparent="1"/>
   <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
-  <widget name="footer" position="38,1013" size="1840,54" font="Regular;25" foregroundColor="#FFFFFF" transparent="1"zPosition="0"/>
+  <widget name="footer" position="38,1013" size="1840,54" font="Regular;25" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>

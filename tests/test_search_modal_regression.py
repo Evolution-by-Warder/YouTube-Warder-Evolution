@@ -53,7 +53,7 @@ class FakeSession:
         self.modal_calls = []
         self.current_dialog = None
 
-    def openWithCallback(self, callback, screen, **kwargs):
+    def openWithCallback(self, callback, screen, *args, **kwargs):
         if not self.in_exec:
             raise RuntimeError(
                 "[StartEnigma] Error: Modal open are allowed only from a screen which is modal!"
