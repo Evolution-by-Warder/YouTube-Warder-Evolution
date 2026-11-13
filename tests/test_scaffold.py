@@ -25,6 +25,24 @@ class Tests(unittest.TestCase):
         self.assertEqual(xml.count("<ePixmap"), 9)
         self.assertIn('name="hdr_clock"', xml)
         self.assertIn('name="hdr_version"', xml)
+        icons = [p.attrib["pixmap"] for p in screen.findall("ePixmap")
+                 if "/nav_" in p.attrib.get("pixmap", "")]
+        self.assertEqual(len(icons), 8)
+        self.assertEqual(set(icons), {
+            "/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_%d.png" % i
+            for i in range(8)
+        })
+        widgets = {w.attrib.get("name"): w for w in screen.findall("widget")}
+        for i in range(8):
+            self.assertIn("/nav_focus.png", widgets["nav_focus%d" % i].attrib["pixmap"])
+            self.assertEqual(widgets["nav_focus%d" % i].attrib["zPosition"], "2")
+        for i in range(6):
+            self.assertIn("/video_focus.png", widgets["preview_focus%d" % i].attrib["pixmap"])
+            self.assertEqual(widgets["preview_focus%d" % i].attrib["zPosition"], "8")
+        self.assertEqual(widgets["status"].attrib["position"], "427,938")
+        self.assertEqual(widgets["status"].attrib["size"], "1410,28")
+        self.assertEqual(widgets["hdr_clock"].attrib["font"], "Regular;51")
+        self.assertEqual(widgets["hdr_clock"].attrib["valign"], "bottom")
 
     def test_no_fake_youtube(self):
         readme = (ROOT / "README.md").read_text().lower()
