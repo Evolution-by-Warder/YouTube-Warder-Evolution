@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PKG_DIR = ROOT / "plugin/Plugins/Extensions/WarderYouTube"
 TARGET_PREFIX = "usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube"
 PACKAGE = "enigma2-plugin-extensions-youtube-warder-evolution"
-VERSION = "0.0.8~test11"
+VERSION = "0.0.8~test12"
 FILENAME = "%s_%s_all.ipk" % (PACKAGE, VERSION)
 SENSITIVE = re.compile(rb"AIza[0-9A-Za-z_-]{20,}")
 
@@ -145,6 +145,8 @@ def build(output_dir):
         ar_member("data.tar.gz", data_tar),
     ))
     output_dir.mkdir(parents=True, exist_ok=True)
+    # Direct visual QA of the exact same static PNG included inside IPK.
+    (output_dir / "warder-header-preview.png").write_bytes(header_png)
     path = output_dir / FILENAME
     path.write_bytes(ipk)
     digest = hashlib.sha256(ipk).hexdigest()
