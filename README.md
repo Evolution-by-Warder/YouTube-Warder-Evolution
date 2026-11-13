@@ -1,33 +1,95 @@
 # YouTube – Warder Evolution
 
-Lightweight native Enigma2 YouTube plugin with a blue Full HD interface. The priorities are remote usability, small flash footprint and compatibility with OpenATV receivers — no browser, GLES dependency or custom graphical renderer.
+Native Enigma2 YouTube plugin with Warder blue Full HD interface. No browser,
+GLES dependency or custom C++ renderer. Real search and playback, an optional
+API key or preinstalled yt-dlp, native remote control and a small IPK footprint.
 
-## Current status — 13 November 2026
+## Current test release — 13 November 2026
 
-- **Last owner-installed receiver build:** **0.0.8~test5** ([test-only GitHub prerelease](https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/tag/youtube-warder-v0.0.8-test5)).
-- **Physical receiver evidence:** GigaBlue Quad 4K Pro / OpenATV 8.1. The owner confirmed YouTube Adele search results with all six thumbnails, real Full HD video, **working sound**, and successful **EXIT navigation**. When the plugin closes the TV picture returns. Original live TV audio stays audible while browsing the menu **by owner choice**.
-- **Owner-approved test6 is now available through the plugin's testing updater** ([GitHub test6 prerelease](https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/tag/youtube-warder-v0.0.8-test6)). It adds working native **Favourites** and **History** screens, saved-video playback, and strict duplicate-installation guards. The owner-installed test5 does not include these changes until the update is confirmed on the receiver.
-- **Still unverified:** completing the test5→test6 in-plugin upgrade on GigaBlue, the new saved-video screens on receiver hardware, additional video formats and extended playback, INFO on receiver, and SF8008/OpenATV 7.6/OpenPLi 9.2 compatibility.
-- **Native Warder UX overhaul in the development source only:** branded 50-key search keyboard, contextual MENU, information-rich Home/Settings/results, four-color action legends, branded confirmation/Info dialogs and system-language menu labels. These changes are **not included in published test6**. See [UI redesign](docs/UI-REDESIGN.md).
-- **No stable release, no main-branch merge.** A test IPK is prepared or published only with the owner's explicit approval.
+- **Latest owner-confirmed GigaBlue build:** **0.0.8~test24** on GigaBlue Quad 4K Pro / OpenATV 8.1.
+  The owner confirmed the two-panel Home, genuine **Enigma2 system keyboard**
+  inside the right-hand Search panel, direct search→video results without
+  the old blank intermediary screen, BLUE **New search** returning to the
+  same two-panel keyboard and clearing the previous search phrase.
+- **Official opt-in TESTING prerelease:** [v0.0.8~test24](https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/tag/youtube-warder-v0.0.8-test24).
+  The GitHub build contains **all 54 installable data members and all opkg
+  maintainer scripts byte-for-byte identical** to the owner-accepted test24
+  receiver package. The outer IPK archive can have a different hash due to
+  repackaging; the installed files are unchanged.
+- **Approved Warder header:** single original 1920×152 PNG, SHA-256
+  `93b509055bfe63e1126ccca27f324829d8a2e0c6bbdd3d10976b30d7cf70935c`,
+  committed as the actual source asset — **no title mask, redrawn artwork,
+  overlay, or image regeneration**. All 12 screens reuse the same header;
+  weekday/date/time/version remain live Enigma2 widgets.
+- **Published IPK:** 552512 bytes, SHA-256
+  `b7692b1ecd681b60e653f894d062c06a5bbf08ab5363594ecf2a353d6e79f459`.
+  The testing updater pins the exact official release URL, size and checksum.
+- **Validation:** 207 host unit/regression tests PASS; source and scaffold
+  CI checks green. Receiver appearance, embedded keyboard and search
+  transitions have owner acceptance on GigaBlue/OpenATV 8.1.
+- **No stable release, no `main` branch merge.** Work continues in
+  `feature/native-search-v002` and [Draft PR #1](https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/pull/1).
 
-## Functional components
+### What still needs device testing
 
-- **Search:** YouTube Data API v3 with your own key, or optional preinstalled yt-dlp for public search without a key. Remote VirtualKeyboard and real results/pagination.
-- **Video grid:** native 3×2 cards with six JPEG thumbnails, blue selection, and bounded network/decoder work (two workers + one native ePicLoad). MENU toggles local favourites in test6.
-- **Video playback:** independent bundled Warder Radio-derived YouTube resolver (GPL-2.0 material with attribution), native Enigma2 MoviePlayer and bounded MP4/HLS options; DASH candidates only when registered Exteplayer3 is available. Optional yt-dlp is a **fallback**, not required for playback. EXIT restores normal navigation and the existing TV service.
-- **INFO:** optional detailed title/channel/duration/views/description lookup from the official API, only if an API key is configured.
-- **Settings:** API key, 360p/720p preferred limit (adaptive HLS may choose another resolution). API keys reside unencrypted in the receiver's Enigma2 settings and must not be shared.
-- **Favourites / History (in test6, awaiting hardware validation):** save a searched video using MENU, open either list from Home, play the selected item using OK, remove with YELLOW, clear with BLUE after confirmation, and show INFO locally. History means **recently opened in MoviePlayer**, not a claim that every video was watched to completion.
-- **Local privacy:** saved video titles, channel names and canonical thumbnail URLs only; no signed media URLs, credentials or video files. Up to 200 favourites and 100 recently opened items, private atomic JSON file under /etc/enigma2, retained through plugin updates.
-- **Updates:** separate opt-in testing feed, strict official release URL/size/SHA256/IPK structure/version checks. No unattended install. **0.0.8~test6 is now offered to installed test5**, pending receiver-side confirmation; repeated-confirmation guards are tested offline.
+Complete end-to-end favourites/history workflows, multi-video playback and
+EXIT/TV restoration across more sources, optional detailed INFO, update/
+reinstall/remove operations, and compatibility on SF8008 / OpenATV 7.6 /
+OpenPLi 9.2 are **not** claimed as accepted from the GigaBlue test24 screenshots.
+The owner's earlier test5 confirmed actual Adele videos with Full HD picture,
+sound and working EXIT restoration on GigaBlue; broader testing is pending.
 
-## Design and validation
+## Features in test24
 
-- Native Enigma2 Labels, MenuList, Pixmap, ActionMap and ePicLoad only; no custom renderer.
-- Full HD 1920×1080 reference layout; target OpenATV 7.6, 8.0.x, 8.1 and OpenPLi 9.2. Only the GigaBlue / OpenATV 8.1 combination has the above hardware confirmations.
-- Offline tests: python3 -m unittest discover -s tests -v
-- Docs: [Search](docs/SEARCH.md), [Video metadata](docs/VIDEO_INFO.md), [Thumbnails](docs/THUMBNAILS.md), [Playback](docs/PLAYBACK.md), [Architecture](docs/ARCHITECTURE.md), [Roadmap](docs/ROADMAP.md), [Receiver checkpoints](docs/BRAND-AND-UPDATE-TESTING.md).
-- Referenced projects: [Taapat](https://github.com/Taapat/enigma2-plugin-youtube), [Fairbird](https://github.com/fairbird/Youtube-Opensource-DreamOS), yt-dlp and our own Warder Radio Evolution. Applicable upstream attribution and licenses are retained.
+- **Search:** original firmware VirtualKeyBoard displayed inside Home's
+  right panel on highlighting Hľadať. Arrows select keys, OK inserts, Shift
+  and locale follow the receiver, green searches using YouTube Data API v3
+  (with a configured key) or optional yt-dlp (if already installed).
+- **Video results:** real paginated YouTube results, 3×2 native video grid,
+  JPEG thumbnails, remote focus, blue new-search action and bounded
+  thumbnail loading (two workers + one native ePicLoad).
+- **Playback:** bundled Warder Radio-derived GPL-2.0 YouTube resolver, native
+  Enigma2 player, bounded MP4/HLS candidates and DASH only with a registered
+  compatible external player. Optional yt-dlp is not a required dependency.
+- **Local favourites and history:** explicit saving/removal/clearing via native
+  UI; history records successfully **opened** video sessions, not completed
+  watches. Up to 200 favourites and 100 recent items. JSON under
+  `/etc/enigma2` retains titles/channels/thumbnail URLs, not signed media
+  URLs, API keys or video files.
+- **INFO:** detailed metadata requires your API key; otherwise local video
+  title/channel are available. Configurable quality preference.
+- **Settings:** an API key can be configured locally; it is kept **unencrypted**
+  in receiver settings and should not be shared. Avoid screenshots/logs
+  containing it.
+- **Updates:** opt-in testing feed only, strict URL/version/size/SHA256,
+  opkg control/member validation, explicit user confirmation, no unattended
+  upgrades. Accepted test24 is published in the testing channel.
 
-**Development remains under owner review in [Draft PR #1](https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/pull/1).** The installed test5 build does not automatically gain later source edits.
+## Installation and verification
+
+Download the **test-only** IPK from the release above, copy it to `/tmp`,
+and install it with:
+
+```sh
+opkg install '/tmp/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test24_all.ipk'
+```
+
+Then restart the Enigma2 GUI. The GitHub asset file name uses `.test24`
+(normalized by GitHub); the installed opkg control version is `0.0.8~test24`.
+Do not treat testing releases as stable receiver updates.
+
+Host validation from the GitHub branch:
+
+```sh
+python3 -m unittest discover -s tests -v
+python3 tools/build_test_ipk.py --output dist
+cd dist && sha256sum -c *.sha256
+```
+
+The build checks the **exact approved image digest**, not an approximate
+re-render. See [approved header provenance](docs/APPROVED_YOUTUBE_HEADER.md),
+[playback](docs/PLAYBACK.md), [architecture](docs/ARCHITECTURE.md),
+[roadmap](docs/ROADMAP.md) and [receiver checkpoints](docs/BRAND-AND-UPDATE-TESTING.md).
+
+Upstream references and required GPL-2.0 attributions for Taapat, Fairbird,
+Warder Radio-derived components and yt-dlp integrations are retained.
