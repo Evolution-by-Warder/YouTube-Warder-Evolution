@@ -2,10 +2,19 @@
 """Flat, native Enigma2 screens; no images, animation or custom renderer."""
 HOME_SKIN = """
 <screen name="WarderYouTubeHome" position="0,0" size="1920,1080" title="YouTube Warder Evolution" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
-  <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="brand" position="42,21" size="1200,64" font="Regular;44" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
-  <widget name="version" position="1247,30" size="620,49" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" halign="right" zPosition="4"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="brand" position="0,0" size="1,1" font="Regular;44" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
+  <widget name="version" position="0,0" size="1,1" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" halign="right" zPosition="4"/>
   <eLabel position="22,135" size="351,843" backgroundColor="#122C47"/>
   <eLabel position="22,135" size="351,5" backgroundColor="#087EC7"/>
   <widget name="nav_focus0" position="35,171" size="328,72" font="Regular;26" foregroundColor="#176EB0" backgroundColor="#176EB0" transparent="0" zPosition="2"/>
@@ -68,22 +77,48 @@ HOME_SKIN = """
   <widget name="status" position="427,954" size="1410,36" font="Regular;23" foregroundColor="#6CCBFF" transparent="1" zPosition="4"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FE637D" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#4CE58B" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFD367" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
+
+  <eLabel position="22,135" size="351,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="22,976" size="351,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="22,135" size="2,843" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="371,135" size="2,843" backgroundColor="#168BAF" zPosition="2"/>
+
+  <eLabel position="394,135" size="1490,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="394,976" size="1490,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="394,135" size="2,843" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1882,135" size="2,843" backgroundColor="#168BAF" zPosition="2"/>
+
+  <widget name="preview_border0" position="413,285" size="477,324" foregroundColor="#188EAB" backgroundColor="#188EAB" transparent="0" zPosition="1"/>
+  <widget name="preview_border1" position="902,285" size="477,324" foregroundColor="#188EAB" backgroundColor="#188EAB" transparent="0" zPosition="1"/>
+  <widget name="preview_border2" position="1391,285" size="477,324" foregroundColor="#188EAB" backgroundColor="#188EAB" transparent="0" zPosition="1"/>
+  <widget name="preview_border3" position="413,615" size="477,324" foregroundColor="#188EAB" backgroundColor="#188EAB" transparent="0" zPosition="1"/>
+  <widget name="preview_border4" position="902,615" size="477,324" foregroundColor="#188EAB" backgroundColor="#188EAB" transparent="0" zPosition="1"/>
+  <widget name="preview_border5" position="1391,615" size="477,324" foregroundColor="#188EAB" backgroundColor="#188EAB" transparent="0" zPosition="1"/>
 </screen>
 """
 
 
 SEARCH_SKIN = """
 <screen name="WarderYouTubeSearch" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Search" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
-  <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="title" position="45,22" size="1700,66" font="Regular;43" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="title" position="0,0" size="1,1" font="Regular;43" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <widget name="query" position="65,145" size="1755,57" font="Regular;35" foregroundColor="#65C7FF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="44,215" size="1832,636" backgroundColor="#122C47"/>
   <widget name="results" position="68,240" size="1778,570" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" itemHeight="60" scrollbarMode="showOnDemand" zPosition="3"/>
@@ -91,21 +126,35 @@ SEARCH_SKIN = """
   <widget name="status" position="65,922" size="1780,42" font="Regular;25" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FE637D" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#4CE58B" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFD367" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
+
+  <eLabel position="44,215" size="1832,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="44,849" size="1832,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="44,215" size="2,636" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1874,215" size="2,636" backgroundColor="#168BAF" zPosition="2"/>
 </screen>
 """
 
 SETTINGS_SKIN = """
 <screen name="WarderYouTubeSettings" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Settings" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
-  <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="title" position="44,22" size="1760,65" font="Regular;43" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="title" position="0,0" size="1,1" font="Regular;43" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <widget name="description" position="61,144" size="1762,80" font="Regular;31" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="49,251" size="878,370" backgroundColor="#122C47"/>
   <eLabel position="949,251" size="920,370" backgroundColor="#122C47"/>
@@ -123,27 +172,52 @@ SETTINGS_SKIN = """
   <widget name="status" position="56,909" size="1775,56" font="Regular;26" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FE637D" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#4CE58B" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFD367" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
+
+  <eLabel position="49,251" size="878,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="49,619" size="878,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="49,251" size="2,370" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="925,251" size="2,370" backgroundColor="#168BAF" zPosition="2"/>
+
+  <eLabel position="949,251" size="920,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="949,619" size="920,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="949,251" size="2,370" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1867,251" size="2,370" backgroundColor="#168BAF" zPosition="2"/>
+
+  <eLabel position="49,645" size="1820,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="49,876" size="1820,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="49,645" size="2,233" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1867,645" size="2,233" backgroundColor="#168BAF" zPosition="2"/>
 </screen>
 """
 
 
 GRID_SKIN = """
 <screen name="WarderYouTubeGrid" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Videos" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,104" backgroundColor="#142C47"/>
-  <widget name="brand" position="36,20" size="1010,61" font="Regular;41" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
-  <widget name="heading" position="1038,28" size="815,54" font="Regular;29" foregroundColor="#36B9FF" transparent="1" halign="right" zPosition="3"/>
-  <eLabel position="0,104" size="321,895" backgroundColor="#102A45"/>
-  <eLabel position="18,155" size="288,6" backgroundColor="#087EC7"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="brand" position="0,0" size="1,1" font="Regular;41" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="heading" position="1045,142" size="814,48" font="Regular;29" foregroundColor="#36B9FF" transparent="1" halign="right" zPosition="3"/>
+  <eLabel position="0,139" size="321,860" backgroundColor="#102A45"/>
+  <eLabel position="18,157" size="288,6" backgroundColor="#087EC7"/>
   <eLabel position="18,337" size="288,2" backgroundColor="#315676"/>
   <eLabel position="18,640" size="288,2" backgroundColor="#315676"/>
-  <eLabel position="322,104" size="2,895" backgroundColor="#315676"/>
+  <eLabel position="322,139" size="2,860" backgroundColor="#315676"/>
   
     <widget name="side0" position="26,174" size="274,54" font="Regular;29" foregroundColor="#6CCBFF" backgroundColor="#102A45" transparent="1" zPosition="3"/>
   
@@ -192,40 +266,99 @@ GRID_SKIN = """
   <eLabel position="0,999" size="1920,81" backgroundColor="#142C47"/>
   <widget name="footer" position="28,1014" size="1880,52" font="Regular;24" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FE637D" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#4CE58B" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFD367" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
+
+  <eLabel position="355,197" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="355,559" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="355,197" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="844,197" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
+
+  <eLabel position="355,575" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="355,937" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="355,575" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="844,575" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
+
+  <eLabel position="868,197" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="868,559" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="868,197" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="1357,197" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
+
+  <eLabel position="868,575" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="868,937" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="868,575" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="1357,575" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
+
+  <eLabel position="1381,197" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="1381,559" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="1381,197" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="1870,197" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
+
+  <eLabel position="1381,575" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="1381,937" size="491,2" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="1381,575" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
+  <eLabel position="1870,575" size="2,364" backgroundColor="#1AB4D5" zPosition="5"/>
 </screen>
 """
 
 
 UPDATE_CHECK_SKIN = """
 <screen name="WarderYouTubeUpdateCheck" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Updates" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
-  <widget name="title" position="45,23" size="1800,62" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <eLabel position="43,204" size="1834,748" backgroundColor="#122C47" zPosition="0"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="title" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <widget name="status" position="72,230" size="1750,110" font="Regular;37" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
   <widget name="detail" position="72,385" size="1750,185" font="Regular;30" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
   <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
   <widget name="footer" position="42,1013" size="1820,54" font="Regular;27" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FE637D" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#4CE58B" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFD367" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
+
+  <eLabel position="43,204" size="1834,2" backgroundColor="#1886AD" zPosition="2"/>
+  <eLabel position="43,950" size="1834,2" backgroundColor="#1886AD" zPosition="2"/>
+  <eLabel position="43,204" size="2,748" backgroundColor="#1886AD" zPosition="2"/>
+  <eLabel position="1875,204" size="2,748" backgroundColor="#1886AD" zPosition="2"/>
 </screen>
 """
 
 UPDATE_SKIN = """
 <screen name="WarderYouTubeUpdateProgress" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Update progress" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
-  <widget name="title" position="45,23" size="1770,62" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <eLabel position="43,204" size="1834,748" backgroundColor="#122C47" zPosition="0"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="title" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <widget name="version" position="72,180" size="1650,62" font="Regular;37" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
   <widget name="phase" position="72,290" size="1670,66" font="Regular;33" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <widget name="progress" position="72,405" size="1550,34" borderWidth="1" zPosition="3"/>
@@ -234,41 +367,72 @@ UPDATE_SKIN = """
   <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
   <widget name="footer" position="42,1013" size="1830,54" font="Regular;27" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FE637D" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#4CE58B" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFD367" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
+
+  <eLabel position="43,204" size="1834,2" backgroundColor="#1886AD" zPosition="2"/>
+  <eLabel position="43,950" size="1834,2" backgroundColor="#1886AD" zPosition="2"/>
+  <eLabel position="43,204" size="2,748" backgroundColor="#1886AD" zPosition="2"/>
+  <eLabel position="1875,204" size="2,748" backgroundColor="#1886AD" zPosition="2"/>
 </screen>
 """
 
 LIBRARY_SKIN = """
 <screen name="WarderYouTubeLibrary" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Saved videos" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
-  <widget name="title" position="45,23" size="1750,62" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <eLabel position="43,204" size="1834,748" backgroundColor="#122C47" zPosition="0"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="title" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
   <widget name="subtitle" position="55,132" size="1740,65" font="Regular;32" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
   <widget name="results" position="50,218" size="1810,625" font="Regular;30" itemHeight="62" foregroundColor="#FFFFFF" backgroundColor="#142C47" scrollbarMode="showOnDemand" zPosition="3"/>
   <widget name="status" position="55,874" size="1790,93" font="Regular;28" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
   <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
   <widget name="footer" position="38,1013" size="1840,54" font="Regular;25" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FE637D" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#4CE58B" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFD367" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
+
+  <eLabel position="43,204" size="1834,2" backgroundColor="#1886AD" zPosition="2"/>
+  <eLabel position="43,950" size="1834,2" backgroundColor="#1886AD" zPosition="2"/>
+  <eLabel position="43,204" size="2,748" backgroundColor="#1886AD" zPosition="2"/>
+  <eLabel position="1875,204" size="2,748" backgroundColor="#1886AD" zPosition="2"/>
 </screen>
 """
 
 KEYBOARD_SKIN = """
 <screen name="WarderYouTubeKeyboard" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Keyboard" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
-  <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="brand" position="46,24" size="1770,62" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="brand" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
   <eLabel position="197,141" size="1526,170" backgroundColor="#122C47"/>
   <eLabel position="197,141" size="1526,5" backgroundColor="#087EC7"/>
   <widget name="title" position="229,168" size="1456,62" font="Regular;34" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
@@ -428,22 +592,41 @@ KEYBOARD_SKIN = """
   <widget name="legend" position="205,912" size="1580,56" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FE637D" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#4CE58B" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFD367" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
+
+  <eLabel position="197,141" size="1526,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="197,309" size="1526,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="197,141" size="2,170" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1721,141" size="2,170" backgroundColor="#168BAF" zPosition="2"/>
+
+  <eLabel position="197,380" size="1526,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="197,883" size="1526,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="197,380" size="2,505" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1721,380" size="2,505" backgroundColor="#168BAF" zPosition="2"/>
 </screen>
 """
 
 
 CONTEXT_SKIN = """
 <screen name="WarderYouTubeContext" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Actions" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
-  <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="brand" position="47,24" size="1700,62" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="brand" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
   <eLabel position="288,155" size="1345,778" backgroundColor="#122C47"/>
   <eLabel position="288,155" size="1345,6" backgroundColor="#087EC7"/>
   <widget name="heading" position="333,193" size="1260,76" font="Regular;44" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
@@ -457,13 +640,18 @@ CONTEXT_SKIN = """
   <widget name="hint" position="336,825" size="1230,60" font="Regular;28" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FE637D" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#4CE58B" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFD367" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" backgroundColor="#10283F" transparent="1" zPosition="6" halign="center"/>
+
+  <eLabel position="288,155" size="1345,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="288,931" size="1345,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="288,155" size="2,778" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1631,155" size="2,778" backgroundColor="#168BAF" zPosition="2"/>
 </screen>
 """
 
@@ -471,9 +659,18 @@ CONTEXT_SKIN = """
 
 CONFIRM_SKIN = """
 <screen name="WarderYouTubeConfirm" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Confirm" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
-  <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="brand" position="47,22" size="1710,69" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="brand" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="274,175" size="1372,725" backgroundColor="#122C47"/>
   <eLabel position="274,175" size="1372,5" backgroundColor="#087EC7"/>
   <widget name="heading" position="327,210" size="1260,72" font="Regular;43" foregroundColor="#6CCBFF" transparent="1" zPosition="3"/>
@@ -482,35 +679,54 @@ CONFIRM_SKIN = """
   <widget name="hint" position="335,825" size="1200,49" font="Regular;28" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="6"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FE637D" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="6"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#4CE58B" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="6"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFD367" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="6"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" transparent="1" zPosition="6" halign="center"/>
+
+  <eLabel position="274,175" size="1372,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="274,898" size="1372,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="274,175" size="2,725" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1644,175" size="2,725" backgroundColor="#168BAF" zPosition="2"/>
 </screen>
 """
 
 
 INFO_SKIN = """
 <screen name="WarderYouTubeInfo" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Details" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
-  <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="brand" position="45,22" size="1750,69" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="brand" position="0,0" size="1,1" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="72,161" size="1775,756" backgroundColor="#122C47"/>
   <eLabel position="72,161" size="1775,5" backgroundColor="#087EC7"/>
   <widget name="title" position="116,197" size="1690,68" font="Regular;42" foregroundColor="#6CCBFF" transparent="1" zPosition="3"/>
   <widget name="body" position="116,297" size="1660,556" font="Regular;30" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FE637D" transparent="1" zPosition="3" halign="center"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#4CE58B" transparent="1" zPosition="3" halign="center"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#10283F"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFD367" transparent="1" zPosition="3" halign="center"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#10283F"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#5EBEFF" transparent="1" zPosition="3" halign="center"/>
+
+  <eLabel position="72,161" size="1775,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="72,915" size="1775,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="72,161" size="2,756" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1845,161" size="2,756" backgroundColor="#168BAF" zPosition="2"/>
 </screen>
 """
 
@@ -521,10 +737,19 @@ INFO_SKIN = """
 # This screen never replaces VirtualKeyBoard globally in the active GUI skin.
 NATIVE_SEARCH_KEYBOARD_SKIN = """
 <screen name="WarderNativeSearchKeyboard" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Search" flags="wfNoBorder" backgroundColor="#08182D">
-  <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
-  <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="warder_brand" position="44,22" size="1380,68" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
-  <widget name="warder_caption" position="1465,32" size="410,54" font="Regular;30" foregroundColor="#6CCBFF" transparent="1" halign="right" zPosition="3"/>
+
+  <widget name="hdr_name" position="193,14" size="595,64" font="Regular;48" foregroundColor="#EDF5FF" transparent="1" zPosition="8"/>
+  <widget name="hdr_evolution" position="676,17" size="340,60" font="Regular;46" foregroundColor="#23CFFF" transparent="1" zPosition="8"/>
+  <widget name="hdr_by" position="431,78" size="350,40" font="Regular;26" foregroundColor="#6BE9F3" transparent="1" zPosition="8"/>
+  <widget name="hdr_day" position="1125,21" size="245,42" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_date" position="1090,69" size="280,36" font="Regular;22" foregroundColor="#C2DDF8" transparent="1" halign="right" zPosition="8"/>
+  <widget name="hdr_clock" position="1412,26" size="241,66" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version_label" position="1682,19" size="214,37" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+  <widget name="hdr_version" position="1670,68" size="235,39" font="Regular;26" foregroundColor="#55DEFF" transparent="1" halign="center" zPosition="8"/>
+
+  <ePixmap position="0,0" size="1920,134" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png" zPosition="0"/>
+  <widget name="warder_brand" position="0,0" size="1,1" font="Regular;43" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="warder_caption" position="0,0" size="1,1" font="Regular;30" foregroundColor="#6CCBFF" transparent="1" halign="right" zPosition="3"/>
   <eLabel position="168,142" size="1584,814" backgroundColor="#122C47"/>
   <eLabel position="168,142" size="1584,6" backgroundColor="#087EC7"/>
   <widget name="prompt" position="206,175" size="1500,65" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
@@ -544,5 +769,10 @@ NATIVE_SEARCH_KEYBOARD_SKIN = """
   <widget name="warder_key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
   <widget name="warder_key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+
+  <eLabel position="168,142" size="1584,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="168,954" size="1584,2" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="168,142" size="2,814" backgroundColor="#168BAF" zPosition="2"/>
+  <eLabel position="1750,142" size="2,814" backgroundColor="#168BAF" zPosition="2"/>
 </screen>
 """
