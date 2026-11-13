@@ -1,0 +1,32 @@
+name: Inspect original GSU Warder typography reference
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/inspect-gsu-family-artwork.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch exact family source and analyze pixels
+        run: |
+          set -euo pipefail
+          mkdir -p reference
+          curl -fLsS --retry 2 --max-time 40 'https://raw.githubusercontent.com/Evolution-by-Warder/GSU-Warder-Evolution/main/plugin/src/GlassSysUtil/images/warder-main.png' -o reference/gsu-warder-main.png
+          curl -fLsS --retry 2 --max-time 40 'https://raw.githubusercontent.com/Evolution-by-Warder/GSU-Warder-Evolution/main/plugin/artwork/warder-plugin-master.png' -o reference/gsu-warder-plugin-master.png
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, struct
+          for f in sorted(Path("reference").glob("*.png")):
+              data=f.read_bytes()
+              assert data.startswith(bytes((137,80,78,71,13,10,26,10)))
+              print(f,struct.unpack(">II",data[16:24]),len(data),hashlib.sha256(data).hexdigest())
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Warder-GSU-canonical-family-typography
+          path: reference/*.png
+          retention-days: 2
