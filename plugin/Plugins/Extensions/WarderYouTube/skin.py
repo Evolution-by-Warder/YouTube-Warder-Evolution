@@ -534,17 +534,15 @@ NATIVE_SEARCH_KEYBOARD_SKIN = """
   <widget name="mode" position="215,859" size="150,49" font="Regular;27" foregroundColor="#6CCBFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
   <widget name="locale" position="396,859" size="520,49" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#122C47" transparent="1" zPosition="3"/>
   <widget name="language" position="919,859" size="730,49" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#122C47" transparent="1" zPosition="3"/>
-  <widget name="key_info" position="207,918" size="125,32" font="Regular;22" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
-  <widget name="key_text" position="365,918" size="125,32" font="Regular;22" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
-  <widget name="key_help" position="525,918" size="125,32" font="Regular;22" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
+  <widget name="warder_key_hint" position="207,918" size="1200,34" font="Regular;23" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
+  <widget name="warder_key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
+  <widget name="warder_key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#167A55" transparent="1" zPosition="6"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#9E7516"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
+  <widget name="warder_key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#9E7516" transparent="1" zPosition="6"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#155EA1"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
+  <widget name="warder_key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#155EA1" transparent="1" zPosition="6"/>
 </screen>
 """
