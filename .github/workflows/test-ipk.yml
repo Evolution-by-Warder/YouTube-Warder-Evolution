@@ -1,6 +1,9 @@
 name: Build 0.0.8~test15 refreshed Warder native receiver IPK
 
 on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/test-ipk.yml]
   workflow_dispatch:
 
 permissions:
