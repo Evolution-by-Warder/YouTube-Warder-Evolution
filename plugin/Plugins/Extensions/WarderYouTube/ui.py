@@ -5,6 +5,7 @@ Navigation never opens modal dialogs, starts playback or installs updates
 without an explicit remote action. No global Enigma2 skin or custom renderer.
 """
 from .header_ui import add_header
+from time import monotonic
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.Pixmap import Pixmap
@@ -36,6 +37,7 @@ SECTIONS = (
     ("Updates", "Update status (check only on request)"),
 )
 VISIBLE_TILES = 6
+POPULAR_REFRESH_SECONDS = 600
 
 
 def preview_title(text, limit=49):
@@ -54,6 +56,10 @@ class WarderYouTubeHome(Screen):
         self.focus_area = "nav"
         self.tile_index = 0
         self.video_items = []
+        self.page_index = 0
+        self._section_items = []
+        self._section_subtitle = ""
+        self._popular_fetched_at = 0
         self._mounted = False
         self._disposed = False
         self._popular_requested = False
@@ -76,6 +82,7 @@ class WarderYouTubeHome(Screen):
             self["nav_focus%d" % i] = Pixmap()
         self["heading"] = Label("")
         self["subtitle"] = Label("")
+        self["page_info"] = Label("")
         self["preview_message"] = Label("")
         self["status"] = Label("")
         for i in range(VISIBLE_TILES):
@@ -131,6 +138,13 @@ class WarderYouTubeHome(Screen):
         if self._mounted and not self._disposed and not self._playback_active:
             if self.index in (0, 3, 5, 6, 7):
                 self._update_preview()
+            if (self.index == 0 and self._popular_cache
+                    and not self._popular_loading
+                    and monotonic() - self._popular_fetched_at > POPULAR_REFRESH_SECONDS):
+                # Recheck real YouTube only after the bounded freshness window;
+                # keep the previous visible tiles while the worker runs.
+                self._popular_requested = False
+                self._request_popular(refresh=True)
 
     def _version_ready(self, version):
         if self._disposed or not isinstance(version, str):
@@ -169,9 +183,12 @@ class WarderYouTubeHome(Screen):
         self["preview_message"].hide()
         self.video_items = []
         self.tile_index = 0
+        self["page_info"].setText("")
 
     def _show_message(self, message, details=None):
         self._clear_preview()
+        self._section_items = []
+        self.page_index = 0
         self["preview_message"].setText(_(message))
         self["preview_message"].show()
         if details:
@@ -179,15 +196,28 @@ class WarderYouTubeHome(Screen):
 
     def _show_details(self, rows):
         self._clear_preview()
+        self._section_items = []
+        self.page_index = 0
         for i, text in enumerate(rows[:VISIBLE_TILES]):
             widget = self["detail%d" % i]
             widget.setText(_(text))
             widget.show()
 
     def _show_tiles(self, items, subtitle):
+        all_videos = list(items)
         self._clear_preview()
-        self.video_items = list(items[:VISIBLE_TILES])
+        self._section_items = all_videos
+        self._section_subtitle = subtitle
+        pages = max(1, (len(all_videos) + VISIBLE_TILES - 1) // VISIBLE_TILES)
+        if self.page_index >= pages:
+            self.page_index = 0
+        first = self.page_index * VISIBLE_TILES
+        self.video_items = all_videos[first:first + VISIBLE_TILES]
         self["subtitle"].setText(_(subtitle))
+        self["page_info"].setText(
+            "%d / %d  •  %d" % (self.page_index + 1, pages, len(all_videos))
+            if len(all_videos) > VISIBLE_TILES else ""
+        )
         if not self.video_items:
             self["preview_message"].setText(_("No saved videos in this section."))
             self["preview_message"].show()
@@ -237,15 +267,17 @@ class WarderYouTubeHome(Screen):
             "Recently played and saved videos will appear here."
         )
 
-    def _request_popular(self):
+    def _request_popular(self, refresh=False):
         if self._popular_requested or self._disposed:
             return
         key = get_api_key()
         self._popular_source = "api" if key else "public"
         self._popular_requested = True
         self._popular_loading = True
-        if key:
+        if key and not refresh:
             self._show_message("Loading popular videos for Slovakia…")
+        elif refresh:
+            self["status"].setText(_("Refreshing real YouTube videos…"))
         else:
             # Show a useful local cache while public videos load. Never
             # block Enigma2 or claim anonymous results are personalized.
@@ -262,7 +294,9 @@ class WarderYouTubeHome(Screen):
         if self._disposed:
             return
         self._popular_loading = False
-        self._popular_cache = videos[:12] if isinstance(videos, list) else []
+        self._popular_cache = videos[:24] if isinstance(videos, list) else []
+        self._popular_fetched_at = monotonic()
+        self._popular_error = False
         if self.index == 0:
             if self._popular_cache:
                 self._show_tiles(self._popular_cache,
@@ -276,6 +310,10 @@ class WarderYouTubeHome(Screen):
             return
         self._popular_loading = False
         self._popular_error = True
+        self._popular_fetched_at = monotonic()
+        if self.index == 0 and self._popular_cache:
+            self["status"].setText(_("Live YouTube refresh unavailable; previous data shown."))
+            return
         if self.index == 0:
             self._fallback_home()
             self["status"].setText(
@@ -352,6 +390,7 @@ class WarderYouTubeHome(Screen):
         if self.index == index and self.focus_area == "nav":
             return
         self.index = index
+        self.page_index = 0
         self.focus_area = "nav"
         self._update_preview()
 
@@ -389,10 +428,29 @@ class WarderYouTubeHome(Screen):
     def _move_tile(self, direction):
         if not self.video_items or self._busy or self._playback_active or self._context_open:
             return
+        # Six visible native tiles are a PAGE, not a fixed list of videos.
+        # Navigate through all actual items returned by YouTube/local library.
+        if ((direction == "down" and self.tile_index + 3 >= len(self.video_items))
+                or (direction == "right" and self.tile_index == len(self.video_items) - 1)):
+            if self._switch_page(1):
+                return
+        if direction == "up" and self.tile_index < 3:
+            if self._switch_page(-1):
+                return
         next_index = move_index(self.tile_index, direction, len(self.video_items))
         if next_index != self.tile_index:
             self.tile_index = next_index
             self._update_tile_focus()
+
+    def _switch_page(self, delta):
+        max_page = (len(self._section_items) - 1) // VISIBLE_TILES
+        new_page = self.page_index + delta
+        if new_page < 0 or new_page > max_page:
+            return False
+        self.page_index = new_page
+        self._show_tiles(self._section_items, self._section_subtitle)
+        self._update_tile_focus()
+        return True
 
     def _enter_tiles(self):
         if self.video_items and self.focus_area == "nav":
