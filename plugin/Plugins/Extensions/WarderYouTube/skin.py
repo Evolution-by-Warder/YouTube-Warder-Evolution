@@ -9,12 +9,20 @@ HOME_SKIN = """
   <eLabel position="24,135" size="362,843" backgroundColor="#122C47"/>
   <eLabel position="24,135" size="362,6" backgroundColor="#087EC7"/>
   <widget name="nav_title" position="47,158" size="310,55" font="Regular;26" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="menu" position="38,229" size="332,699" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" itemHeight="67" scrollbarMode="showOnDemand"/>
+  <widget name="nav_focus0" position="38,229" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="nav_focus1" position="38,296" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="nav_focus2" position="38,363" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="nav_focus3" position="38,430" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="nav_focus4" position="38,497" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="nav_focus5" position="38,564" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="nav_focus6" position="38,631" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="nav_focus7" position="38,698" size="332,67" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="menu" position="38,229" size="332,699" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" itemHeight="67" scrollbarMode="showOnDemand" zPosition="3"/>
   <eLabel position="414,137" size="1470,410" backgroundColor="#10263E"/>
   <eLabel position="414,137" size="8,410" backgroundColor="#087EC7"/>
   <widget name="overline" position="452,162" size="1320,49" font="Regular;27" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
   <widget name="heading" position="452,218" size="1350,81" font="Regular;52" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="description" position="452,316" size="1335,158" font="Regular;32" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1" />
+  <widget name="description" position="452,316" size="1335,158" font="Regular;32" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="414,569" size="476,329" backgroundColor="#122C47"/>
   <eLabel position="912,569" size="476,329" backgroundColor="#122C47"/>
   <eLabel position="1410,569" size="474,329" backgroundColor="#122C47"/>
@@ -27,8 +35,8 @@ HOME_SKIN = """
   <widget name="card2_body" position="945,680" size="415,166" font="Regular;27" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="3"/>
   <widget name="card3_title" position="1443,612" size="420,62" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
   <widget name="card3_body" position="1443,680" size="415,166" font="Regular;27" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="status" position="430,916" size="1435,46" font="Regular;26" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1" />
-  <widget name="footer" position="40,947" size="1810,38" font="Regular;23" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" />
+  <widget name="status" position="430,916" size="1435,46" font="Regular;26" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="footer" position="40,947" size="1810,38" font="Regular;23" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
@@ -45,12 +53,12 @@ SEARCH_SKIN = """
 <screen name="WarderYouTubeSearch" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Search" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
   <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="title" position="45,22" size="1700,66" font="Regular;43" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" />
-  <widget name="query" position="65,145" size="1755,57" font="Regular;35" foregroundColor="#65C7FF" backgroundColor="#142C47" transparent="1" />
+  <widget name="title" position="45,22" size="1700,66" font="Regular;43" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="query" position="65,145" size="1755,57" font="Regular;35" foregroundColor="#65C7FF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="44,215" size="1832,636" backgroundColor="#122C47"/>
-  <widget name="results" position="68,240" size="1778,570" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" itemHeight="60" scrollbarMode="showOnDemand"/>
-  <widget name="details" position="65,868" size="1730,44" font="Regular;26" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1" />
-  <widget name="status" position="65,922" size="1780,42" font="Regular;25" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1" />
+  <widget name="results" position="68,240" size="1778,570" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" itemHeight="60" scrollbarMode="showOnDemand" zPosition="3"/>
+  <widget name="details" position="65,868" size="1730,44" font="Regular;26" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="status" position="65,922" size="1780,42" font="Regular;25" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
@@ -67,22 +75,22 @@ SETTINGS_SKIN = """
 <screen name="WarderYouTubeSettings" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Settings" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
   <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
-  <widget name="title" position="44,22" size="1760,65" font="Regular;43" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" />
-  <widget name="description" position="61,144" size="1762,80" font="Regular;31" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1" />
+  <widget name="title" position="44,22" size="1760,65" font="Regular;43" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="description" position="61,144" size="1762,80" font="Regular;31" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="49,251" size="878,370" backgroundColor="#122C47"/>
   <eLabel position="949,251" size="920,370" backgroundColor="#122C47"/>
   <eLabel position="49,251" size="878,5" backgroundColor="#087EC7"/>
   <eLabel position="949,251" size="920,5" backgroundColor="#137A77"/>
-  <widget name="section_search" position="76,277" size="830,55" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" />
-  <widget name="key_state" position="76,361" size="812,110" font="Regular;31" foregroundColor="#65C7FF" backgroundColor="#142C47" transparent="1" />
-  <widget name="section_playback" position="976,277" size="842,55" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" />
-  <widget name="quality" position="976,361" size="845,66" font="Regular;32" foregroundColor="#65C7FF" backgroundColor="#142C47" transparent="1" />
-  <widget name="resolver_state" position="976,453" size="824,110" font="Regular;26" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1" />
+  <widget name="section_search" position="76,277" size="830,55" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="key_state" position="76,361" size="812,110" font="Regular;31" foregroundColor="#65C7FF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="section_playback" position="976,277" size="842,55" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="quality" position="976,361" size="845,66" font="Regular;32" foregroundColor="#65C7FF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="resolver_state" position="976,453" size="824,110" font="Regular;26" foregroundColor="#C6DCEE" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="49,645" size="1820,233" backgroundColor="#10263E"/>
   <eLabel position="49,645" size="1820,5" backgroundColor="#8B6F40"/>
-  <widget name="section_privacy" position="77,666" size="1640,53" font="Regular;32" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" />
-  <widget name="warning" position="77,727" size="1657,105" font="Regular;28" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" />
-  <widget name="status" position="56,909" size="1775,56" font="Regular;26" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1" />
+  <widget name="section_privacy" position="77,666" size="1640,53" font="Regular;32" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="warning" position="77,727" size="1657,105" font="Regular;28" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="status" position="56,909" size="1775,56" font="Regular;26" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
@@ -150,7 +158,7 @@ GRID_SKIN = """
   <widget name="thumb5" position="1388,582" size="476,249" zPosition="2"/>
   <widget name="title5" position="1390,844" size="473,57" font="Regular;27" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
   <widget name="channel5" position="1390,905" size="473,28" font="Regular;22" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
-  <widget name="status" position="358,953" size="1460,43" font="Regular;25" foregroundColor="#36B9FF" transparent="1"/>
+  <widget name="status" position="358,953" size="1460,43" font="Regular;25" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
   <eLabel position="0,999" size="1920,81" backgroundColor="#142C47"/>
   <widget name="footer" position="28,1014" size="1880,52" font="Regular;24" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
@@ -168,9 +176,9 @@ GRID_SKIN = """
 UPDATE_CHECK_SKIN = """
 <screen name="WarderYouTubeUpdateCheck" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Updates" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
-  <widget name="title" position="45,23" size="1800,62" font="Regular;42" foregroundColor="#FFFFFF" transparent="1"/>
-  <widget name="status" position="72,230" size="1750,110" font="Regular;37" foregroundColor="#36B9FF" transparent="1"/>
-  <widget name="detail" position="72,385" size="1750,185" font="Regular;30" foregroundColor="#B9D9F5" transparent="1"/>
+  <widget name="title" position="45,23" size="1800,62" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="status" position="72,230" size="1750,110" font="Regular;37" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
+  <widget name="detail" position="72,385" size="1750,185" font="Regular;30" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
   <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
   <widget name="footer" position="42,1013" size="1820,54" font="Regular;27" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
@@ -187,12 +195,12 @@ UPDATE_CHECK_SKIN = """
 UPDATE_SKIN = """
 <screen name="WarderYouTubeUpdateProgress" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Update progress" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
-  <widget name="title" position="45,23" size="1770,62" font="Regular;42" foregroundColor="#FFFFFF" transparent="1"/>
+  <widget name="title" position="45,23" size="1770,62" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <widget name="version" position="72,180" size="1650,62" font="Regular;37" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
-  <widget name="phase" position="72,290" size="1670,66" font="Regular;33" foregroundColor="#FFFFFF" transparent="1"/>
-  <widget name="progress" position="72,405" size="1550,34" borderWidth="1"/>
-  <widget name="percentage" position="1660,390" size="160,62" font="Regular;31" foregroundColor="#36B9FF" transparent="1"/>
-  <widget name="detail" position="72,510" size="1720,170" font="Regular;30" foregroundColor="#B9D9F5" transparent="1"/>
+  <widget name="phase" position="72,290" size="1670,66" font="Regular;33" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="progress" position="72,405" size="1550,34" borderWidth="1" zPosition="3"/>
+  <widget name="percentage" position="1660,390" size="160,62" font="Regular;31" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
+  <widget name="detail" position="72,510" size="1720,170" font="Regular;30" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
   <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
   <widget name="footer" position="42,1013" size="1830,54" font="Regular;27" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
@@ -209,10 +217,10 @@ UPDATE_SKIN = """
 LIBRARY_SKIN = """
 <screen name="WarderYouTubeLibrary" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Saved videos" flags="wfNoBorder" backgroundColor="#08182D">
   <eLabel position="0,0" size="1920,105" backgroundColor="#142C47"/>
-  <widget name="title" position="45,23" size="1750,62" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"/>
-  <widget name="subtitle" position="55,132" size="1740,65" font="Regular;32" foregroundColor="#36B9FF" transparent="1"/>
-  <widget name="results" position="50,218" size="1810,625" font="Regular;30" itemHeight="62" foregroundColor="#FFFFFF" backgroundColor="#142C47" scrollbarMode="showOnDemand"/>
-  <widget name="status" position="55,874" size="1790,93" font="Regular;28" foregroundColor="#B9D9F5" transparent="1"/>
+  <widget name="title" position="45,23" size="1750,62" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
+  <widget name="subtitle" position="55,132" size="1740,65" font="Regular;32" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
+  <widget name="results" position="50,218" size="1810,625" font="Regular;30" itemHeight="62" foregroundColor="#FFFFFF" backgroundColor="#142C47" scrollbarMode="showOnDemand" zPosition="3"/>
+  <widget name="status" position="55,874" size="1790,93" font="Regular;28" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
   <eLabel position="0,997" size="1920,83" backgroundColor="#142C47"/>
   <widget name="footer" position="38,1013" size="1840,54" font="Regular;25" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
@@ -233,9 +241,9 @@ KEYBOARD_SKIN = """
   <widget name="brand" position="46,24" size="1770,62" font="Regular;42" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
   <eLabel position="197,141" size="1526,170" backgroundColor="#122C47"/>
   <eLabel position="197,141" size="1526,5" backgroundColor="#087EC7"/>
-  <widget name="title" position="229,168" size="1456,62" font="Regular;34" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" />
-  <widget name="input" position="235,247" size="1410,51" font="Regular;31" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1" />
-  <widget name="hint" position="210,326" size="1490,44" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" />
+  <widget name="title" position="229,168" size="1456,62" font="Regular;34" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="input" position="235,247" size="1410,51" font="Regular;31" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="hint" position="210,326" size="1490,44" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="197,380" size="1526,505" backgroundColor="#10263E"/>
   <eLabel position="221,405" size="132,76" backgroundColor="#142C47"/>
   <widget name="focus0" position="221,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
@@ -387,7 +395,7 @@ KEYBOARD_SKIN = """
   <eLabel position="1562,777" size="132,76" backgroundColor="#142C47"/>
   <widget name="focus49" position="1562,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter49" position="1566,785" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
-  <widget name="legend" position="205,912" size="1580,56" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" />
+  <widget name="legend" position="205,912" size="1580,56" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
@@ -409,9 +417,14 @@ CONTEXT_SKIN = """
   <eLabel position="288,155" size="1345,778" backgroundColor="#122C47"/>
   <eLabel position="288,155" size="1345,6" backgroundColor="#087EC7"/>
   <widget name="heading" position="333,193" size="1260,76" font="Regular;44" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="3"/>
-  <widget name="video" position="337,283" size="1250,123" font="Regular;29" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1" />
-  <widget name="menu" position="334,432" size="1250,314" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" itemHeight="72" scrollbarMode="showOnDemand"/>
-  <widget name="hint" position="336,825" size="1230,60" font="Regular;28" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" />
+  <widget name="video" position="337,283" size="1250,123" font="Regular;29" foregroundColor="#6CCBFF" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
+  <widget name="context_focus0" position="334,432" size="1250,72" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="context_focus1" position="334,504" size="1250,72" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="context_focus2" position="334,576" size="1250,72" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="context_focus3" position="334,648" size="1250,72" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="context_focus4" position="334,720" size="1250,72" font="Regular;27" foregroundColor="#126DA4" backgroundColor="#126DA4" transparent="0" zPosition="2"/>
+  <widget name="menu" position="334,432" size="1250,314" font="Regular;31" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" itemHeight="72" scrollbarMode="showOnDemand" zPosition="3"/>
+  <widget name="hint" position="336,825" size="1230,60" font="Regular;28" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1"  zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#A32B3C" transparent="1" zPosition="6"/>
@@ -434,9 +447,9 @@ CONFIRM_SKIN = """
   <eLabel position="274,175" size="1372,725" backgroundColor="#122C47"/>
   <eLabel position="274,175" size="1372,5" backgroundColor="#087EC7"/>
   <widget name="heading" position="327,210" size="1260,72" font="Regular;43" foregroundColor="#6CCBFF" transparent="1" zPosition="3"/>
-  <widget name="question" position="327,316" size="1250,175" font="Regular;32" foregroundColor="#FFFFFF" transparent="1"/>
-  <widget name="menu" position="550,570" size="830,180" font="Regular;34" itemHeight="72" foregroundColor="#FFFFFF" backgroundColor="#122C47" scrollbarMode="showOnDemand"/>
-  <widget name="hint" position="335,825" size="1200,49" font="Regular;28" foregroundColor="#B9D9F5" transparent="1"/>
+  <widget name="question" position="327,316" size="1250,175" font="Regular;32" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="menu" position="550,570" size="830,180" font="Regular;34" itemHeight="72" foregroundColor="#FFFFFF" backgroundColor="#122C47" scrollbarMode="showOnDemand" zPosition="3"/>
+  <widget name="hint" position="335,825" size="1200,49" font="Regular;28" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
   <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="6"/>
@@ -457,16 +470,16 @@ INFO_SKIN = """
   <widget name="brand" position="45,22" size="1750,69" font="Regular;42" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="72,161" size="1775,756" backgroundColor="#122C47"/>
   <eLabel position="72,161" size="1775,5" backgroundColor="#087EC7"/>
-  <widget name="title" position="116,197" size="1690,68" font="Regular;42" foregroundColor="#6CCBFF" transparent="1"/>
-  <widget name="body" position="116,297" size="1660,556" font="Regular;30" foregroundColor="#FFFFFF" transparent="1"/>
+  <widget name="title" position="116,197" size="1690,68" font="Regular;42" foregroundColor="#6CCBFF" transparent="1" zPosition="3"/>
+  <widget name="body" position="116,297" size="1660,556" font="Regular;30" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
   <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
-  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
-  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="980,1005" size="415,58" backgroundColor="#10283F"/>
-  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="1450,1005" size="415,58" backgroundColor="#10283F"/>
-  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
 </screen>
 """
