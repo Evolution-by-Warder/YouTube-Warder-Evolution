@@ -64,6 +64,7 @@ class HeaderController:
         screen["hdr_day"] = Label("")
         screen["hdr_date"] = Label("")
         screen["hdr_clock"] = Label("")
+        screen["hdr_seconds"] = Label("")
         screen["hdr_version_label"] = Label("")
         from .update_core import CURRENT_VERSION
         screen["hdr_version"] = Label(CURRENT_VERSION)
@@ -84,7 +85,10 @@ class HeaderController:
             datetime.now(), receiver_language())
         self.screen["hdr_day"].setText(day)
         self.screen["hdr_date"].setText(date)
-        self.screen["hdr_clock"].setText(clock)
+        # Standard Warder/PiconHub treatment: large HH:MM, smaller :SS.
+        hours_minutes, seconds = clock.rsplit(":", 1)
+        self.screen["hdr_clock"].setText(hours_minutes)
+        self.screen["hdr_seconds"].setText(":" + seconds)
         self.screen["hdr_version_label"].setText(version_label)
 
     def start(self):
