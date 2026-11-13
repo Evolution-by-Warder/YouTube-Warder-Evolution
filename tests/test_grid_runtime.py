@@ -224,7 +224,8 @@ class TestNativeGrid(unittest.TestCase):
         grid._picload.getData = bad_data
         jobs[0][1].success("/tmp/bad.jpg")
         grid._decode_finished()
-        self.assertIn("Náhľady sa nepodarilo", grid["status"].text)
+        self.assertTrue(any(text in grid["status"].text for text in
+                            ("Náhľady sa nepodarilo", "Thumbnails could not be loaded")))
 
     def test_visible_six_and_stale_callback_discard(self):
         jobs = []
@@ -332,8 +333,9 @@ class TestNativeGrid(unittest.TestCase):
         jobs[0][1].failure(Exception("private token"))
         jobs[1][1].success("/tmp/good.jpg")
         g._decode_finished()
-        self.assertIn("Náhľady 1/2", g["status"].text)
-        self.assertIn("sieť: 1", g["status"].text)
+        self.assertTrue(any(text in g["status"].text for text in
+                            ("Náhľady 1/2", "Thumbnails 1/2")))
+        self.assertTrue(any(text in g["status"].text for text in ("sieť: 1", "network: 1")))
         self.assertNotIn("private", g["status"].text)
 
     def test_download_error_distinguishes_decoder_failure(self):
@@ -344,8 +346,8 @@ class TestNativeGrid(unittest.TestCase):
         jobs[0][1].success("/tmp/malformed.jpg")
         g._picload.getData = lambda: None
         g._decode_finished()
-        self.assertIn("dekodér: 1", g["status"].text)
-        self.assertIn("sieť: 0", g["status"].text)
+        self.assertTrue(any(text in g["status"].text for text in ("dekodér: 1", "decoder: 1")))
+        self.assertTrue(any(text in g["status"].text for text in ("sieť: 0", "network: 0")))
 
     def test_stale_network_worker_does_not_block_new_page_diagnostics(self):
         jobs = []

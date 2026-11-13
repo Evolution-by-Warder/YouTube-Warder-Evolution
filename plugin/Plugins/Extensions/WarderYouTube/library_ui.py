@@ -86,7 +86,7 @@ class WarderYouTubeLibrary(Screen):
             for item in items
         ])
         self["subtitle"].setText("%s: %d videí" % (
-            "Obľúbené" if self.kind == "favourites" else "Naposledy otvorené", len(items)))
+            _("Favourites") if self.kind == "favourites" else _("Recently opened"), len(items)))
         self["status"].setText(
             _("Zoznam je prázdny. V hľadaní stlač MENU na uloženie videa.")
             if not items and self.kind == "favourites" else

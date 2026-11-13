@@ -315,7 +315,7 @@ class WarderYouTubeGrid(Screen):
                     and not self._pending_decodes and self._decoding is None)
         if not finished or not self._thumb_failures:
             return
-        info = "sieť: %d, dekodér: %d" % (
+        info = _("sieť: %d, dekodér: %d") % (
             self._thumb_network_failures, self._thumb_decode_failures)
         if self._thumb_failures >= self._thumb_expected:
             self.set_status(_("Náhľady sa nepodarilo načítať (%s).") % info)

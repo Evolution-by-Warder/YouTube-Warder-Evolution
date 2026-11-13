@@ -8,6 +8,7 @@ import os
 
 MESSAGES = {
     "en": {
+        "sieť: %d, dekodér: %d": "network: %d, decoder: %d",
         "API kľúč: nastavený": "API key: configured",
         "API kľúč: nenastavený (vyhľadávanie cez yt-dlp)": "API key: not configured (yt-dlp search)",
         "Preferovaná kvalita videa": "Preferred video quality",
@@ -86,6 +87,7 @@ MESSAGES = {
         "Keep live TV audio": "Zvuk TV na pozadí zostáva zachovaný",
     },
     "cs": {
+        "sieť: %d, dekodér: %d": "síť: %d, dekodér: %d",
         "API kľúč: nastavený": "API klíč: nastavený",
         "API kľúč: nenastavený (vyhľadávanie cez yt-dlp)": "API klíč: nenastavený (vyhledávání přes yt-dlp)",
         "yt-dlp: dostupný (vyhľadávanie aj záložné prehrávanie)": "yt-dlp: dostupný (vyhledávání a záložní přehrávání)",
@@ -142,6 +144,7 @@ MESSAGES = {
         "Keep live TV audio":"Zvuk TV na pozadí zůstává zachován",
     },
     "de": {
+        "sieť: %d, dekodér: %d": "Netz: %d, Decoder: %d",
         "API kľúč: nastavený": "API-Schlüssel: eingerichtet",
         "API kľúč: nenastavený (vyhľadávanie cez yt-dlp)": "API-Schlüssel: nicht eingerichtet (yt-dlp-Suche)",
         "Preferovaná kvalita videa": "Bevorzugte Videoqualität",
