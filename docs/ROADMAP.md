@@ -52,3 +52,13 @@
 - [ ] Real install/upgrade/remove matrix on other image versions
 - [ ] Receiver test matrix and regression suite
 - [ ] No stable release without explicit approval
+
+## UX refresh after GigaBlue test6 screenshots — 13 Nov 2026
+- [x] Native Warder dashboard and functional results sidebar in source
+- [x] Full-screen native 50-key branded keyboard replaces black Enigma2 Search keyboard
+- [x] Contextual MENU instead of instant add-to-favourites
+- [x] Four visible colored action legends on every native screen
+- [x] Branded yes/no and Info screens; system-language primary UI labels
+- [x] Offline UI/layout, keyboard, locale and context regression tests
+- [ ] Visual validation of redesigned UI on GigaBlue OpenATV 8.1 after an explicitly approved next test IPK
+- [ ] Finish internationalizing all backend error messages and verify on other image languages

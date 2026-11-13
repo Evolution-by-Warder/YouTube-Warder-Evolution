@@ -116,3 +116,7 @@ Owner explicitly approved a test IPK release into the YouTube plugin's existing 
 - After the single owner-approved release, restored the packaging workflow to `workflow_dispatch` only and read-only GitHub token permissions. **No automatic future releases**, no stable feed change, no main merge.
 
 Receiver installation flow: **YouTube Warder Evolution → Updates → OK/GREEN → approve installation**, then GUI-only restart after success. The user's previous receiver tests of test5 (Adele FullHD, audio, thumbnails, EXIT, live TV restoration) must not be conflated with untested test6 Favourites/History and the live updater transition.
+
+## UI redesign requested after test6 receiver screenshots — 13 November 2026
+
+Owner supplied screenshots documenting poor Home and Settings styling, missing color-coded action legends, nonfunctional sidebar rectangles, black native Enigma2 keyboard over live-TV video, and MENU incorrectly directly toggling favourites. These are accepted UX defects rather than playback regressions. The source-only redesign is implemented with new screens and actions described in `docs/UI-REDESIGN.md`; screenshots of redesigned UI have **not** yet been taken from a real receiver. Previous test6 remains the only published testing updater release. No unapproved new IPK, stable publishing or merge.
