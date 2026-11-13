@@ -1,0 +1,72 @@
+name: One-shot publish corrected full-skull test16 Warder IPK
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/publish-test16.yml]
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: warder-youtube-test16-full-skull
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/feature/native-search-v002'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: WarderYouTube-0.0.8-test16-IPK
+          run-id: 43451996563
+          github-token: ${{ github.token }}
+          path: dist
+      - name: Verify exact pinned package and complete header
+        shell: bash
+        run: |
+          set -euo pipefail
+          ipk='dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test16_all.ipk'
+          test "$(stat -c %s "$ipk")" = 191446
+          echo "ba43622f53b03985801fe938652af6607e68fc268110a243176c30ed640b1b49  $ipk" | sha256sum -c -
+          cd dist
+          sha256sum -c *.sha256
+          ar p *.ipk control.tar.gz | tar -xzOf - ./control | grep -Fx 'Version: 0.0.8~test16'
+          ar p *.ipk control.tar.gz | tar -xzOf - ./control | grep -Fx 'Architecture: all'
+          python3 - <<'PY'
+          from pathlib import Path
+          import io, tarfile, subprocess, hashlib
+          raw = Path('warder-header-preview.png').read_bytes()
+          assert raw[:8] == bytes((137,80,78,71,13,10,26,10))
+          assert (int.from_bytes(raw[16:20], 'big'),int.from_bytes(raw[20:24], 'big')) == (1920,152)
+          archived = subprocess.check_output(['ar','p',next(Path('.').glob('*.ipk')).name,'data.tar.gz'])
+          with tarfile.open(fileobj=io.BytesIO(archived),mode='r:gz') as t:
+              candidates=[m for m in t.getmembers() if m.name.endswith('/images/warder_header.png')]
+              assert len(candidates)==1
+              assert t.extractfile(candidates[0]).read()==raw
+          print('PASS: exact generated complete Warder header verified inside IPK')
+          PY
+      - name: Publish opt-in testing release and compare stored asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag='youtube-warder-v0.0.8-test16'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo 'Existing test16 release, verifying unchanged bytes'
+          else
+            gh release create "$tag" \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test16_all.ipk' \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test16_all.ipk.sha256' \
+              --target feature/native-search-v002 \
+              --title 'YouTube Warder Evolution 0.0.8~test16 (TEST ONLY)' \
+              --notes 'Owner-authorized opt-in GigaBlue/OpenATV preview. Root-cause fix: replaced old pre-cropped 104x100 emblem with SHA256-pinned original complete Warder 384x429 RGBA skull, including real lower jaw. The exact original is composited at build time without edits, masking or painted jaw, inside same 1920x152 shared banner on all 12 screens. Enlarged metallic YouTube Warder Evolution and by Warder proportionally to family header standards. Includes verified test15 focused video borders, live Home and native footer. Physical receiver acceptance remains pending; main/stable untouched.' \
+              --prerelease
+          fi
+          test "$(gh release view "$tag" --json isPrerelease --jq '.isPrerelease')" = true
+          mkdir -p verify
+          gh release download "$tag" --dir verify --pattern '*.ipk'
+          cmp 'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test16_all.ipk' \
+              'verify/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test16_all.ipk'
+          echo 'PASS: test16 published bytes match exact successful receiver CI artifact'
