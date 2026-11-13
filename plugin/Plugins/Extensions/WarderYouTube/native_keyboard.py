@@ -32,3 +32,11 @@ class WarderNativeSearchKeyboard(VirtualKeyBoard):
         self.skinName = ["WarderNativeSearchKeyboard"]
         self["warder_brand"] = Label("YouTube Warder Evolution")
         self["warder_caption"] = Label(_("Search videos"))
+        # Enigma2 uses StaticText sources for its native colour key labels.
+        # Keep those original sources/actions untouched; plain native Labels
+        # below make the Warder footer visible without a custom renderer.
+        self["warder_key_red"] = Label(_("Cancel"))
+        self["warder_key_green"] = Label(_("Confirm"))
+        self["warder_key_yellow"] = Label(_("Shift"))
+        self["warder_key_blue"] = Label("Aa")
+        self["warder_key_hint"] = Label(_("Language from Enigma2"))
