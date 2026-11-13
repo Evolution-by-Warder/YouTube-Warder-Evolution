@@ -1,8 +1,6 @@
 name: Build 0.0.8~test10 Warder improvements IPK (receiver test only)
 
 on:
-  push:
-    branches: [feature/native-search-v002]
   workflow_dispatch:
 
 permissions:
