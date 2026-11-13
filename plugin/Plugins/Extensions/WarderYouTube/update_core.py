@@ -253,6 +253,23 @@ def install_update(release, opener=_open, runner=subprocess.run, progress=None):
                 text=True, timeout=180, check=False
             )
             if result.returncode:
+                if result.returncode == 255:
+                    # OpenATV opkg may refuse an already-installed IPK with
+                    # code 255. A stale GUI module can still offer that same
+                    # release after the package was upgraded. Check the
+                    # installed package/version, never infer success from 255.
+                    existing = runner(
+                        ["opkg", "status", PACKAGE],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                        text=True, timeout=12, check=False
+                    )
+                    version, state = _installed_version(existing.stdout or "")
+                    if (existing.returncode == 0 and version == release["version"]
+                            and state is not None and
+                            state.startswith("install ok installed")):
+                        if progress:
+                            progress("complete", release["bytes"], release["bytes"])
+                        return version
                 raise UpdateError("Inštalácia opkg skončila chybou (%d)." % result.returncode)
             status = runner(["opkg", "status", PACKAGE],
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
