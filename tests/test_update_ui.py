@@ -91,6 +91,7 @@ def load_updater():
     progress = Widget
     shutdown = type("TryQuitMainloop", (), {})
     fake = {
+        "_mock_warder_updates.header_ui": make_module("_mock_warder_updates.header_ui", add_header=lambda sc: sc.__setitem__("hdr_version", Widget())),
         "enigma": make_module("enigma", eTimer=Timer),
         "Components": make_module("Components"),
         "Components.ActionMap": make_module(
