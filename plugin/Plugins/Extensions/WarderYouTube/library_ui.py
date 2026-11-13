@@ -4,6 +4,7 @@
 The receiver's TV service stays running while browsing, as requested by the
 owner. Only playback activates the existing native Warder MoviePlayer.
 """
+from .header_ui import add_header
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.MenuList import MenuList
@@ -30,6 +31,7 @@ class WarderYouTubeLibrary(Screen):
         if kind not in ("favourites", "history"):
             raise ValueError("Unknown video library")
         Screen.__init__(self, session)
+        add_header(self)
         self.kind = kind
         self.video_items = []
         self.busy = False
