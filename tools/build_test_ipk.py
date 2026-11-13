@@ -104,8 +104,14 @@ def build(output_dir):
 
     # One pre-rendered 1920x134 PNG shared across all embedded Enigma2
     # screens. Generated at build time only; ZERO GPU/Python drawing at run.
-    from warder_header_art import render_header
-    header_png = render_header()
+    # Import by explicit build-script path: unit tests load this builder via
+    # importlib with sys.path that does not contain tools/.
+    import importlib.util
+    asset_path = ROOT / "tools" / "warder_header_art.py"
+    spec = importlib.util.spec_from_file_location("_warder_header_art", str(asset_path))
+    source = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(source)
+    header_png = source.render_header()
     if not (header_png.startswith(b"\\x89PNG\\r\\n\\x1a\\n")
             and int.from_bytes(header_png[16:20], "big") == 1920
             and int.from_bytes(header_png[20:24], "big") == 134
