@@ -266,7 +266,14 @@ class HomeLivePreviewTests(unittest.TestCase):
         screen.right()
         screen.activate()  # w
         self.assertEqual(screen.kb_text, "qw")
-        screen.green()
+        pkg = fake("_warder_home")
+        pkg.__path__ = [str(ROOT)]
+        fake_results = fake("_warder_home.search",
+                            WarderYouTubeSearch=type("InlineResults", (), {}))
+        with patch.dict(sys.modules, {
+            "_warder_home": pkg, "_warder_home.search": fake_results
+        }):
+            screen.green()
         self.assertEqual(len(session.opens), 1)
         args, kwargs = session.opens[0]
         self.assertEqual(args[0].__name__, "InlineResults")
