@@ -40,7 +40,7 @@
 
 ## Phase 4 — user features
 - [x] Local favourites and recently opened History — source implementation and host tests
-- [ ] Receiver test of favourites/history (requires owner-approved next test IPK)
+- [ ] Receiver test of favourites/history (test6 prerelease published 13 Nov 2026; pending owner test)
 - [ ] Playlists and other account-independent features
 - [ ] Optional authenticated features after security review
 - [ ] Multilingual translations
@@ -48,7 +48,7 @@
 ## Phase 5 — delivery
 - [x] Owner-approved test IPK 0.0.8~test5 installed, basic video/audio/EXIT confirmed
 - [x] Source-level IPK and opt-in updater tests with mocked opkg
-- [ ] Live updater test from test5 to a future explicitly approved release
+- [ ] Live updater test from test5 to published test6 (owner-approved prerelease; pending real receiver confirmation)
 - [ ] Real install/upgrade/remove matrix on other image versions
 - [ ] Receiver test matrix and regression suite
 - [ ] No stable release without explicit approval

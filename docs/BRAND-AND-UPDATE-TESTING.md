@@ -102,3 +102,17 @@ History is recorded only after the native MoviePlayer window is successfully ope
 ## Double-confirm guard for opt-in updater (source only)
 
 Updated the existing Updates confirmation flow to ignore repeated OK/GREEN presses while a yes/no modal is open and prevent a second install progress dialog until the prior one closes. The selected release is installed only following one fresh positive confirmation. A negative confirmation or error unlocks the button, and failed modal creation yields a safe status. Mock tests cover duplicate actions, cancellation, progress close/retry, and failure-safe error handling. Search integration tests also verify favourite MENU and recording History only after MoviePlayer opens. No automatic install, IPK release or merge.
+
+## Release to in-plugin Testing updater — 13 Nov 2026
+
+Owner explicitly approved a test IPK release into the YouTube plugin's existing updater. Published **0.0.8~test6** as GitHub prerelease `youtube-warder-v0.0.8-test6` from `feature/native-search-v002`; the branch `update/testing.json` now points to the exact GitHub Releases-normalized asset file `enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test6_all.ipk`.
+
+- Actual IPK control version: `0.0.8~test6`, Architecture `all`; release asset name uses `.test6` because GitHub normalizes `~` in uploaded asset names
+- Size: **66,304 bytes**
+- SHA256: `7adcfc9afca8f57762d861321b996e25040ac0e6748b900613bfec8527ab6242`
+- CI packaging: https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/actions/runs/43375853885 (success)
+- Host regressions: https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/actions/runs/43375853818 and https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/actions/runs/43375859943 (both success; 118 source tests)
+- Post-release verification: feed URL exactly matched the published asset download URL, feed SHA matched the asset digest, and feed size matched the published asset size; downloaded Actions artifact IPK SHA256 and `opkg` control version were independently verified.
+- After the single owner-approved release, restored the packaging workflow to `workflow_dispatch` only and read-only GitHub token permissions. **No automatic future releases**, no stable feed change, no main merge.
+
+Receiver installation flow: **YouTube Warder Evolution → Updates → OK/GREEN → approve installation**, then GUI-only restart after success. The user's previous receiver tests of test5 (Adele FullHD, audio, thumbnails, EXIT, live TV restoration) must not be conflated with untested test6 Favourites/History and the live updater transition.
