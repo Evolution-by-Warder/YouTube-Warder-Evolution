@@ -35,10 +35,12 @@ from .info_ui import WarderYouTubeInfo
 class WarderYouTubeSearch(Screen):
     skin = SEARCH_SKIN
 
-    def __init__(self, session):
+    def __init__(self, session, initial_query=None):
         Screen.__init__(self, session)
         add_header(self)
-        self.query = ""
+        # Nonempty search text entered inline in the Home right pane.
+        # Skip the standalone keyboard when provided.
+        self.query = str(initial_query or "").strip()[:160]
         self.video_items = []
         self.page_token = ""
         self.next_page_token = ""
@@ -87,7 +89,11 @@ class WarderYouTubeSearch(Screen):
         if self.closed or self._did_initial_prompt:
             return
         self._did_initial_prompt = True
-        if select_backend(get_api_key(), is_available()):
+        backend = select_backend(get_api_key(), is_available())
+        if backend and self.query:
+            self.search_backend = backend
+            self._load_page("")
+        elif backend:
             self.open_keyboard()
         else:
             self["status"].setText(
