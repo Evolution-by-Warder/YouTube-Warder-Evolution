@@ -126,6 +126,7 @@ def load(key="", history=None, fav=None):
     internet = fake("twisted.internet")
     internet.__path__ = []
     modules = {
+        "_warder_home.header_ui": fake("_warder_home.header_ui", add_header=lambda sc: sc.__setitem__("hdr_version", Widget())),
         "_warder_home": pkg,
         "_warder_home.skin": fake("_warder_home.skin", HOME_SKIN="<screen/>"),
         "_warder_home.i18n": fake("_warder_home.i18n", tr=lambda text: text),
