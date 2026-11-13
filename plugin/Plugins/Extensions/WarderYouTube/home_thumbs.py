@@ -26,6 +26,9 @@ class HomeThumbs:
         self.decoder = None
         self.signal = None
         self.connection = None
+        # The on-screen ePixmap may lose its buffer while a dialog is open.
+        # Retain at most 12 native ePtr frames for safe restoration.
+        self.image_cache = {}
 
     def start(self):
         if self.closed or self.ready:
@@ -75,8 +78,18 @@ class HomeThumbs:
             return
         for slot, item in enumerate(items[:VISIBLE]):
             url = item.get("thumbnail_url") if isinstance(item, dict) else None
-            if url:
-                self.queue.append((self.epoch, slot, url))
+            if not url:
+                continue
+            cached = self.image_cache.get(url)
+            if cached is not None:
+                try:
+                    widget = self.screen["preview_thumb%d" % slot]
+                    widget.setPixmap(cached)
+                    widget.show()
+                    continue
+                except (AttributeError, TypeError, ValueError, RuntimeError):
+                    self.image_cache.pop(url, None)
+            self.queue.append((self.epoch, slot, url))
         self._pump()
 
     def _pump(self):
@@ -97,7 +110,7 @@ class HomeThumbs:
     def _downloaded(self, req, path):
         self.active = max(0, self.active - 1)
         if not self.closed and path and req[0] == self.epoch:
-            self.decodes.append((req[0], req[1], path))
+            self.decodes.append((req[0], req[1], path, req[2]))
             self._start_decode()
         self._pump()
 
@@ -126,6 +139,9 @@ class HomeThumbs:
                     widget = self.screen["preview_thumb%d" % req[1]]
                     widget.setPixmap(pixmap)
                     widget.show()
+                    self.image_cache[req[3]] = pixmap
+                    while len(self.image_cache) > 12:
+                        self.image_cache.pop(next(iter(self.image_cache)))
             except (AttributeError, TypeError, ValueError, RuntimeError):
                 pass
         self._start_decode()
@@ -149,5 +165,6 @@ class HomeThumbs:
         self.epoch += 1
         self.queue = []
         self.decodes = []
+        self.image_cache.clear()
         self._release()
         self.decoder = None
