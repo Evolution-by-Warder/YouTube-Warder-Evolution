@@ -225,7 +225,7 @@ class HeaderTests(unittest.TestCase):
             widgets = {x.attrib.get("name"): x.attrib
                        for x in root.findall("widget")}
             key_prefix = ("warder_key_" if
-                          root.attrib["name"] == "WarderYouTubeNativeSearchKeyboard"
+                          root.attrib["name"] == "WarderNativeSearchKeyboard"
                           else "key_")
             for color, (x, rgb) in accents.items():
                 bars = [el for el in labels if
