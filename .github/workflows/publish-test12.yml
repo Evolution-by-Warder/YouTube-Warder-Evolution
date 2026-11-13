@@ -1,0 +1,98 @@
+name: Publish verified test12 receiver IPK (testing only)
+
+# One-shot, exact-build publication. Deliberately no broad release trigger:
+# main and stable remain untouched, and source pushes do not publish versions.
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths:
+      - '.github/workflows/publish-test12.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: youtube-warder-publish-test12
+  cancel-in-progress: false
+
+jobs:
+  publish-test12:
+    if: github.ref == 'refs/heads/feature/native-search-v002'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Download exact successful test12 build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: WarderYouTube-0.0.8-test12-IPK
+          run-id: 43426333798
+          github-token: ${{ github.token }}
+          path: dist
+
+      - name: Verify exact version, content and SHA256 before releasing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import io
+          from pathlib import Path
+          import re
+          import tarfile
+          name = "enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk"
+          base = Path("dist")
+          ipk = (base / name).read_bytes()
+          assert len(ipk) == 146146, "Unexpected IPK size"
+          sha = hashlib.sha256(ipk).hexdigest()
+          assert sha == "65e35da4597e77455a675468a6f18cdadf82e5064e7f41b9141d6422106f7ece", sha
+          assert (base / (name + ".sha256")).read_text().strip() == sha + "  " + name
+          assert ipk.startswith(b"!<arch>\\n"), "Not an ar IPK"
+          entries, offset = {}, 8
+          while offset < len(ipk):
+              header = ipk[offset:offset+60]
+              assert len(header) == 60 and header[58:60] == b"`\\n", "Invalid ar header"
+              member = header[:16].decode("ascii").strip().rstrip("/")
+              size = int(header[48:58].decode("ascii").strip())
+              offset += 60
+              entries[member] = ipk[offset:offset+size]
+              offset += size + size % 2
+          assert set(entries) == {"debian-binary", "control.tar.gz", "data.tar.gz"}
+          assert entries["debian-binary"] == b"2.0\\n"
+          with tarfile.open(fileobj=io.BytesIO(entries["control.tar.gz"]), mode="r:gz") as archive:
+              control = archive.extractfile("./control").read().decode()
+          assert "Version: 0.0.8~test12\\n" in control
+          assert "Architecture: all\\n" in control
+          with tarfile.open(fileobj=io.BytesIO(entries["data.tar.gz"]), mode="r:gz") as archive:
+              names = archive.getnames()
+              assert all(n.startswith("./usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/") for n in names)
+              banner = archive.extractfile("./usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/warder_header.png").read()
+              assert banner == (base / "warder-header-preview.png").read_bytes()
+              assert banner[:8] == b"\\x89PNG\\r\\n\\x1a\\n" and int.from_bytes(banner[16:20], "big") == 1920 and int.from_bytes(banner[20:24], "big") == 134
+              for member in archive:
+                  if member.name.endswith(".py"):
+                      data = archive.extractfile(member).read()
+                      assert not re.search(rb"AIza[0-9A-Za-z_-]{20,}", data), "API key in package source"
+          print("PASS: exact test12 SHA, archive, control, PNG and no credentials")
+          PY
+
+      - name: Create GitHub prerelease (never stable)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = 'refs/heads/feature/native-search-v002'
+          tag="youtube-warder-v0.0.8-test12"
+          test -z "$(gh release list --limit 100 --json tagName --jq '.[] | select(.tagName == "youtube-warder-v0.0.8-test12") | .tagName')"
+          gh release create "$tag" \
+            'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk' \
+            'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk.sha256' \
+            --target feature/native-search-v002 \
+            --title 'YouTube Warder Evolution 0.0.8~test12 (TEST ONLY)' \
+            --notes 'Opt-in test candidate for GigaBlue Quad 4K Pro / OpenATV 8.1. One authentic Warder header image shared by 12 Enigma2 screens; day, date, clock and version remain native/live. Receiver visual acceptance is pending. No stable release and no main merge.' \
+            --prerelease
+          mkdir -p verify
+          gh release download "$tag" --dir verify --pattern '*.ipk'
+          cmp 'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk' 'verify/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test12_all.ipk'
+          echo 'PASS: released IPK matches exact CI build byte-for-byte'
