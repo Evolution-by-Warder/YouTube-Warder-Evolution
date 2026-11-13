@@ -20,6 +20,8 @@ from .video_metadata import VideoInfoError, fetch_video_info
 from .skin import SEARCH_SKIN
 from .local_library import toggle_favourite, record_opened, list_videos, LibraryError
 from .i18n import tr as _
+from .keyboard import WarderYouTubeKeyboard
+from .context_menu import WarderYouTubeContext
 
 
 class WarderYouTubeSearch(Screen):
@@ -100,7 +102,6 @@ class WarderYouTubeSearch(Screen):
                 "No search backend: set an API key or install yt-dlp."
             )
             return
-        from .keyboard import WarderYouTubeKeyboard
         self.session.openWithCallback(
             self.search_submitted, WarderYouTubeKeyboard,
             value=self.query, title=_("Enter your YouTube search")
@@ -246,7 +247,6 @@ class WarderYouTubeSearch(Screen):
         if self.busy or self.closed or self.playback_active or self.context_open:
             return
         try:
-            from .context_menu import WarderYouTubeContext
             saved = any(x["video_id"] == video.get("video_id")
                         for x in list_videos("favourites"))
             self.context_open = True

@@ -70,7 +70,8 @@ def module(name, **attrs):
 
 
 def load_search(api_key="configured-key", have_ytdlp=False):
-    fake_keyboard = type("VirtualKeyboard", (), {})
+    fake_keyboard = type("WarderYouTubeKeyboard", (), {})
+    fake_context = type("WarderYouTubeContext", (), {})
     fake_settings = type("WarderYouTubeSettings", (), {})
     fake_message_box = type("MessageBox", (), {"TYPE_INFO": 1})
     fake_map = lambda *args, **kwargs: object()
@@ -111,9 +112,13 @@ def load_search(api_key="configured-key", have_ytdlp=False):
             "_warder_modal.video_metadata", VideoInfoError=Exception, fetch_video_info=no_network
         ),
         "_warder_modal.skin": module("_warder_modal.skin", SEARCH_SKIN="<screen/>"),
+        "_warder_modal.i18n": module("_warder_modal.i18n", tr=lambda value: value),
+        "_warder_modal.keyboard": module("_warder_modal.keyboard", WarderYouTubeKeyboard=fake_keyboard),
+        "_warder_modal.context_menu": module("_warder_modal.context_menu", WarderYouTubeContext=fake_context),
         "_warder_modal.local_library": module(
             "_warder_modal.local_library", LibraryError=ValueError,
-            toggle_favourite=lambda video: True, record_opened=lambda video: None
+            toggle_favourite=lambda video: True, record_opened=lambda video: None,
+            list_videos=lambda kind: []
         ),
     }
     fake_modules["_warder_modal"].__path__ = [str(SEARCH.parent)]
@@ -188,15 +193,24 @@ class SearchModalRegressionTests(unittest.TestCase):
         screen.playback_finished(True)
         self.assertFalse(screen.playback_active)
 
-    def test_search_menu_toggles_favourite_without_remote_network(self):
+    def test_search_menu_opens_context_and_does_not_directly_save(self):
         source = load_search(api_key="", have_ytdlp=False)
-        screen = source.WarderYouTubeSearch(FakeSession())
+        session = FakeSession()
+        session.in_exec = True
+        screen = source.WarderYouTubeSearch(session)
         screen.video_items = [{"video_id": "abcdefghijk", "title": "Adele", "channel": "Adele"}]
         saved = []
         source.toggle_favourite = lambda video: saved.append(video["video_id"]) or True
         screen.favorite_selected()
+        self.assertEqual(saved, [])
+        self.assertEqual(len(session.modal_calls), 1)
+        self.assertTrue(screen.context_open)
+        screen.favorite_selected()  # no second menu while already open
+        self.assertEqual(len(session.modal_calls), 1)
+        session.modal_calls[0][0]("favorite")
         self.assertEqual(saved, ["abcdefghijk"])
-        self.assertIn("Pridané do obľúbených", screen["status"].text)
+        self.assertFalse(screen.context_open)
+        self.assertIn("Add to favourites", screen["status"].text)
 
     def test_search_records_history_after_player_launch_not_on_error(self):
         source = load_search()
@@ -234,7 +248,8 @@ class SearchModalRegressionTests(unittest.TestCase):
         for callback in screen.onShown:
             callback()
         self.assertEqual(len(session.modal_calls), 1)
-        self.assertEqual(session.modal_calls[0][2]["title"], "Search YouTube videos")
+        self.assertEqual(session.modal_calls[0][2]["title"], "Enter your YouTube search")
+        self.assertIs(session.modal_calls[0][1], source.WarderYouTubeKeyboard)
 
         # onShown may fire again when returning from VirtualKeyboard/MoviePlayer.
         for callback in screen.onShown:

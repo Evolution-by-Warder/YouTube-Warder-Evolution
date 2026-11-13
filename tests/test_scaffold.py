@@ -30,7 +30,8 @@ class Tests(unittest.TestCase):
         self.assertIn("history", readme)
         self.assertIn("no stable release", readme)
         self.assertIn("owner-installed test5 does not include these changes", readme)
-        self.assertIn("this section is planned", (SRC / "ui.py").read_text().lower())
+        self.assertIn("WarderYouTubeLibrary", (SRC / "ui.py").read_text())
+        self.assertIn("WarderYouTubeKeyboard", (SRC / "search.py").read_text())
         self.assertIn("fairbird", (ROOT / "docs/ASSIMILATION.md").read_text())
 
 if __name__ == "__main__":

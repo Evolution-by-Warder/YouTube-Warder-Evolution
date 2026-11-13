@@ -238,154 +238,154 @@ KEYBOARD_SKIN = """
   <widget name="hint" position="210,326" size="1490,44" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" />
   <eLabel position="197,380" size="1526,505" backgroundColor="#10263E"/>
   <eLabel position="221,405" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus0" position="221,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus0" position="221,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter0" position="225,413" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="370,405" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus1" position="370,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus1" position="370,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter1" position="374,413" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="519,405" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus2" position="519,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus2" position="519,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter2" position="523,413" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="668,405" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus3" position="668,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus3" position="668,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter3" position="672,413" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="817,405" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus4" position="817,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus4" position="817,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter4" position="821,413" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="966,405" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus5" position="966,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus5" position="966,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter5" position="970,413" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1115,405" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus6" position="1115,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus6" position="1115,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter6" position="1119,413" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1264,405" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus7" position="1264,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus7" position="1264,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter7" position="1268,413" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1413,405" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus8" position="1413,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus8" position="1413,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter8" position="1417,413" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1562,405" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus9" position="1562,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus9" position="1562,405" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter9" position="1566,413" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="221,498" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus10" position="221,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus10" position="221,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter10" position="225,506" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="370,498" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus11" position="370,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus11" position="370,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter11" position="374,506" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="519,498" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus12" position="519,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus12" position="519,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter12" position="523,506" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="668,498" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus13" position="668,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus13" position="668,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter13" position="672,506" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="817,498" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus14" position="817,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus14" position="817,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter14" position="821,506" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="966,498" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus15" position="966,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus15" position="966,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter15" position="970,506" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1115,498" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus16" position="1115,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus16" position="1115,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter16" position="1119,506" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1264,498" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus17" position="1264,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus17" position="1264,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter17" position="1268,506" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1413,498" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus18" position="1413,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus18" position="1413,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter18" position="1417,506" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1562,498" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus19" position="1562,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus19" position="1562,498" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter19" position="1566,506" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="221,591" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus20" position="221,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus20" position="221,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter20" position="225,599" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="370,591" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus21" position="370,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus21" position="370,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter21" position="374,599" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="519,591" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus22" position="519,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus22" position="519,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter22" position="523,599" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="668,591" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus23" position="668,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus23" position="668,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter23" position="672,599" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="817,591" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus24" position="817,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus24" position="817,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter24" position="821,599" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="966,591" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus25" position="966,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus25" position="966,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter25" position="970,599" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1115,591" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus26" position="1115,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus26" position="1115,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter26" position="1119,599" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1264,591" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus27" position="1264,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus27" position="1264,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter27" position="1268,599" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1413,591" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus28" position="1413,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus28" position="1413,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter28" position="1417,599" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1562,591" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus29" position="1562,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus29" position="1562,591" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter29" position="1566,599" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="221,684" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus30" position="221,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus30" position="221,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter30" position="225,692" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="370,684" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus31" position="370,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus31" position="370,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter31" position="374,692" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="519,684" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus32" position="519,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus32" position="519,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter32" position="523,692" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="668,684" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus33" position="668,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus33" position="668,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter33" position="672,692" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="817,684" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus34" position="817,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus34" position="817,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter34" position="821,692" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="966,684" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus35" position="966,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus35" position="966,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter35" position="970,692" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1115,684" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus36" position="1115,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus36" position="1115,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter36" position="1119,692" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1264,684" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus37" position="1264,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus37" position="1264,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter37" position="1268,692" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1413,684" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus38" position="1413,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus38" position="1413,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter38" position="1417,692" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1562,684" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus39" position="1562,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus39" position="1562,684" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter39" position="1566,692" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="221,777" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus40" position="221,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus40" position="221,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter40" position="225,785" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="370,777" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus41" position="370,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus41" position="370,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter41" position="374,785" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="519,777" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus42" position="519,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus42" position="519,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter42" position="523,785" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="668,777" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus43" position="668,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus43" position="668,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter43" position="672,785" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="817,777" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus44" position="817,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus44" position="817,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter44" position="821,785" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="966,777" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus45" position="966,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus45" position="966,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter45" position="970,785" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1115,777" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus46" position="1115,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus46" position="1115,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter46" position="1119,785" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1264,777" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus47" position="1264,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus47" position="1264,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter47" position="1268,785" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1413,777" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus48" position="1413,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus48" position="1413,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter48" position="1417,785" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <eLabel position="1562,777" size="132,76" backgroundColor="#142C47"/>
-  <widget name="focus49" position="1562,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="1" zPosition="2"/>
+  <widget name="focus49" position="1562,777" size="132,76" font="Regular;33" foregroundColor="#FFFFFF" backgroundColor="#087EC7" transparent="0" zPosition="2"/>
   <widget name="letter49" position="1566,785" size="124,58" font="Regular;36" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" halign="center" valign="center" zPosition="3"/>
   <widget name="legend" position="205,912" size="1580,56" font="Regular;26" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" />
   <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>

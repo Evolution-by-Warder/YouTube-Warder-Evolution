@@ -17,7 +17,7 @@ class UiTests(unittest.TestCase):
             for target in node.targets if isinstance(target, ast.Name)
             and target.id.endswith("_SKIN")
         }
-        self.assertEqual(set(values), {"HOME_SKIN", "SEARCH_SKIN", "SETTINGS_SKIN", "GRID_SKIN", "UPDATE_SKIN", "UPDATE_CHECK_SKIN", "LIBRARY_SKIN"})
+        self.assertEqual(set(values), {"HOME_SKIN", "SEARCH_SKIN", "SETTINGS_SKIN", "GRID_SKIN", "UPDATE_SKIN", "UPDATE_CHECK_SKIN", "LIBRARY_SKIN", "KEYBOARD_SKIN", "CONTEXT_SKIN"})
         for name, xml in values.items():
             screen = ET.fromstring(xml)
             self.assertEqual(screen.attrib["size"], "1920,1080")
@@ -35,7 +35,9 @@ class UiTests(unittest.TestCase):
     def test_no_key_committed_or_logged(self):
         settings = (PKG / "settings.py").read_text(encoding="utf-8")
         self.assertIn("ConfigText(default=\"\", fixed_size=False)", settings)
-        self.assertIn("text=\"\"", settings)
+        self.assertIn('value=""', settings)
+        self.assertIn("secret=True", settings)
+        self.assertNotIn("VirtualKeyBoard", settings)
         for name in ("settings.py", "search.py", "api.py"):
             self.assertNotIn("print(", (PKG / name).read_text(encoding="utf-8"))
 
