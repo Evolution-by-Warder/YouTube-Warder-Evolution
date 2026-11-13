@@ -1,0 +1,76 @@
+name: One-shot publish verified full-banner test17
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/publish-test17.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    if: github.ref == 'refs/heads/feature/native-search-v002'
+    steps:
+      - name: Get pinned successful test17 CI IPK
+        uses: actions/download-artifact@v4
+        with:
+          name: WarderYouTube-0.0.8-test17-IPK
+          run-id: 43458796013
+          github-token: ${{ github.token }}
+          path: dist
+      - name: Verify exact opkg package and one complete static PNG
+        shell: bash
+        run: |
+          set -euo pipefail
+          ipk='dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test17_all.ipk'
+          test "$(stat -c %s "$ipk")" = 238654
+          echo "7837c2c5b42689f60f2c37d5fe3562904dd2d9bafffbba400af63f5ee6713b7b  $ipk" | sha256sum -c -
+          cd dist
+          sha256sum -c *.sha256
+          ar p *.ipk control.tar.gz | tar -xzOf - ./control | grep -Fx 'Version: 0.0.8~test17'
+          ar p *.ipk control.tar.gz | tar -xzOf - ./control | grep -Fx 'Architecture: all'
+          python3 - <<'PY'
+          from pathlib import Path
+          import io, tarfile, subprocess, hashlib
+          expected='023588797d292b985b2d1e4d686ba114757becd49ed374e2beefd95f78a34e31'
+          path=next(Path('.').glob('*.ipk'))
+          data_tar=subprocess.check_output(['ar','p',str(path),'data.tar.gz'])
+          with tarfile.open(fileobj=io.BytesIO(data_tar),mode='r:gz') as t:
+              names=[i.name for i in t.getmembers()]
+              candidates=[n for n in names if n.endswith('/images/warder_header.png')]
+              assert len(candidates)==1, candidates
+              assert not any('warder_title_masks.py' in n for n in names)
+              banner=t.extractfile(candidates[0]).read()
+              assert hashlib.sha256(banner).hexdigest()==expected
+              assert banner==Path('warder-header-preview.png').read_bytes()
+              assert banner[:8]==bytes((137,80,78,71,13,10,26,10))
+              assert (int.from_bytes(banner[16:20],'big'),int.from_bytes(banner[20:24],'big'))==(1920,152)
+              assert banner[24:26]==bytes((8,2))
+          print('PASS: one clean authored RGB Warder banner in IPK; no old mask artifacts')
+          PY
+      - name: Publish opt-in test only and verify published bytes
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          tag='youtube-warder-v0.0.8-test17'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo 'Test17 prerelease already exists; checking byte-identical download'
+          else
+            gh release create "$tag" \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test17_all.ipk' \
+              'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test17_all.ipk.sha256' \
+              --target feature/native-search-v002 \
+              --title 'YouTube Warder Evolution 0.0.8~test17 (TEST ONLY)' \
+              --notes 'Owner-requested full branded header from scratch as ONE RGB 1920x152 PNG: complete canonical Warder skull, GSU-family metallic lettering YouTube Warder Evolution, clean cursive by Warder signature. NO old traced masks or rect patches. Live date/clock/version remain native Enigma2 labels. Includes test15 approved video focus; all 191 CI checks PASS. Receiver visual acceptance still pending; no main merge or stable release.' \
+              --prerelease
+          fi
+          test "$(gh release view "$tag" --json isPrerelease --jq '.isPrerelease')" = true
+          mkdir -p verify
+          gh release download "$tag" --dir verify --pattern '*.ipk'
+          cmp 'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test17_all.ipk' \
+              'verify/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test17_all.ipk'
+          echo 'PASS: uploaded test17 exact bytes match pinned CI artifact'
