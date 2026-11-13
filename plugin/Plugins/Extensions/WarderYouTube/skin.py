@@ -28,36 +28,36 @@ HOME_SKIN = """
   <eLabel position="394,135" size="1490,5" backgroundColor="#087EC7"/>
   <widget name="heading" position="426,157" size="1050,63" font="Regular;45" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
   <widget name="subtitle" position="427,225" size="1324,45" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" zPosition="4"/>
-  <widget name="preview_focus0" position="413,285" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
-  <widget name="preview_panel0" position="418,290" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb0" position="425,295" size="453,225" zPosition="4"/>
-  <widget name="preview_title0" position="427,525" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel0" position="427,570" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_focus1" position="902,285" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
-  <widget name="preview_panel1" position="907,290" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb1" position="914,295" size="453,225" zPosition="4"/>
-  <widget name="preview_title1" position="916,525" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel1" position="916,570" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_focus2" position="1391,285" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
-  <widget name="preview_panel2" position="1396,290" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb2" position="1403,295" size="453,225" zPosition="4"/>
-  <widget name="preview_title2" position="1405,525" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel2" position="1405,570" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_focus3" position="413,615" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
-  <widget name="preview_panel3" position="418,620" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb3" position="425,625" size="453,225" zPosition="4"/>
-  <widget name="preview_title3" position="427,855" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel3" position="427,900" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_focus4" position="902,615" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
-  <widget name="preview_panel4" position="907,620" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb4" position="914,625" size="453,225" zPosition="4"/>
-  <widget name="preview_title4" position="916,855" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel4" position="916,900" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_focus5" position="1391,615" size="477,314" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
-  <widget name="preview_panel5" position="1396,620" size="467,304" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb5" position="1403,625" size="453,225" zPosition="4"/>
-  <widget name="preview_title5" position="1405,855" size="444,46" font="Regular;24" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel5" position="1405,900" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus0" position="413,285" size="477,324" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel0" position="418,290" size="467,314" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb0" position="446,295" size="410,230" zPosition="4"/>
+  <widget name="preview_title0" position="427,529" size="444,52" font="Regular;23" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel0" position="427,581" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus1" position="902,285" size="477,324" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel1" position="907,290" size="467,314" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb1" position="935,295" size="410,230" zPosition="4"/>
+  <widget name="preview_title1" position="916,529" size="444,52" font="Regular;23" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel1" position="916,581" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus2" position="1391,285" size="477,324" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel2" position="1396,290" size="467,314" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb2" position="1424,295" size="410,230" zPosition="4"/>
+  <widget name="preview_title2" position="1405,529" size="444,52" font="Regular;23" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel2" position="1405,581" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus3" position="413,615" size="477,324" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel3" position="418,620" size="467,314" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb3" position="446,625" size="410,230" zPosition="4"/>
+  <widget name="preview_title3" position="427,859" size="444,52" font="Regular;23" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel3" position="427,911" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus4" position="902,615" size="477,324" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel4" position="907,620" size="467,314" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb4" position="935,625" size="410,230" zPosition="4"/>
+  <widget name="preview_title4" position="916,859" size="444,52" font="Regular;23" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel4" position="916,911" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus5" position="1391,615" size="477,324" font="Regular;22" foregroundColor="#148CCD" backgroundColor="#148CCD" transparent="0" zPosition="2"/>
+  <widget name="preview_panel5" position="1396,620" size="467,314" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb5" position="1424,625" size="410,230" zPosition="4"/>
+  <widget name="preview_title5" position="1405,859" size="444,52" font="Regular;23" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel5" position="1405,911" size="444,22" font="Regular;20" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
   <widget name="detail0" position="449,290" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
   <widget name="detail1" position="449,386" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
   <widget name="detail2" position="449,482" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
