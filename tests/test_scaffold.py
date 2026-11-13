@@ -44,6 +44,40 @@ class Tests(unittest.TestCase):
         self.assertEqual(widgets["hdr_clock"].attrib["font"], "Regular;51")
         self.assertEqual(widgets["hdr_clock"].attrib["valign"], "bottom")
 
+    def test_inactive_video_borders_are_thin_dark_and_focus_is_bright(self):
+        parsed = ast.parse((SRC / "skin.py").read_text(encoding="utf-8"))
+        layouts = {}
+        for stmt in parsed.body:
+            if isinstance(stmt, ast.Assign):
+                for target in stmt.targets:
+                    if isinstance(target, ast.Name) and target.id in ("HOME_SKIN", "GRID_SKIN"):
+                        layouts[target.id] = ET.fromstring(ast.literal_eval(stmt.value))
+        self.assertEqual(set(layouts), {"HOME_SKIN", "GRID_SKIN"})
+        home = layouts["HOME_SKIN"]
+        home_widgets = {w.attrib["name"]: w for w in home.findall("widget")}
+        for i in range(6):
+            border = home_widgets["preview_border%d" % i]
+            panel = home_widgets["preview_panel%d" % i]
+            focus = home_widgets["preview_focus%d" % i]
+            self.assertEqual(border.attrib["backgroundColor"], "#0D5273")
+            self.assertEqual(panel.attrib["size"], "473,320")
+            self.assertEqual(focus.attrib["zPosition"], "8")
+            self.assertIn("video_focus.png", focus.attrib["pixmap"])
+        grid = layouts["GRID_SKIN"]
+        grid_widgets = {w.attrib["name"]: w for w in grid.findall("widget")}
+        for i in range(6):
+            focus = grid_widgets["focus%d" % i]
+            self.assertEqual(focus.attrib["zPosition"], "8")
+            self.assertEqual(focus.attrib["alphatest"], "on")
+            self.assertIn("grid_focus.png", focus.attrib["pixmap"])
+            self.assertNotIn("backgroundColor", focus.attrib)
+        subtle_borders = [item for item in grid.findall("eLabel")
+                          if item.attrib.get("backgroundColor") == "#0D536F"]
+        self.assertEqual(len(subtle_borders), 24)
+        self.assertTrue(all(item.attrib["size"].startswith(("491,1", "1,364"))
+                            for item in subtle_borders))
+        self.assertNotIn('backgroundColor="#1AB4D5"', ET.tostring(grid, encoding="unicode"))
+
     def test_no_fake_youtube(self):
         readme = (ROOT / "README.md").read_text().lower()
         self.assertIn("0.0.8~test5", readme)
