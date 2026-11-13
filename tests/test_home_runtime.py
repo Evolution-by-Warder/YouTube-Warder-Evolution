@@ -57,8 +57,8 @@ class FakeSession:
         self.opens = []
         self.callbacks = []
 
-    def open(self, *args):
-        self.opens.append(args)
+    def open(self, *args, **kwargs):
+        self.opens.append((args, kwargs) if kwargs else args)
 
     def openWithCallback(self, callback, *args):
         self.callbacks.append((callback, args))
@@ -129,6 +129,7 @@ def load(key="", history=None, fav=None):
         "_warder_home.header_ui": fake("_warder_home.header_ui", add_header=lambda sc: sc.__setitem__("hdr_version", Widget())),
         "_warder_home": pkg,
         "_warder_home.skin": fake("_warder_home.skin", HOME_SKIN="<screen/>"),
+        "_warder_home.search": fake("_warder_home.search", WarderYouTubeSearch=type("InlineResults", (), {})),
         "_warder_home.i18n": fake("_warder_home.i18n", tr=lambda text: text,
                                     language_code=lambda: "sk"),
         "_warder_home.update_core": fake("_warder_home.update_core", CURRENT_VERSION="0.0.8~test8"),
@@ -197,7 +198,10 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(screen["heading"].text, "Home")
         screen.down()  # Search
         self.assertEqual(screen["heading"].text, "Search")
-        self.assertTrue(screen["preview_message"].visible)
+        self.assertFalse(screen["preview_message"].visible)
+        self.assertTrue(screen["kb_input"].visible)
+        self.assertTrue(screen["kb_key10"].visible)
+        self.assertFalse(screen["kb_focus10"].visible)  # left menu still has focus
         self.assertEqual(len(screen.video_items), 0)
         screen.down()  # Subscriptions
         self.assertIn("not supported", screen["preview_message"].text)
@@ -213,6 +217,80 @@ class HomeLivePreviewTests(unittest.TestCase):
         # moving between sections never opens modal dialogs or issues more.
         self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0][0], (mod.public_home_videos,))
+
+    def test_search_keyboard_appears_inline_on_highlight_without_modal(self):
+        mod, key, saved, jobs = load()
+        screen, session = ready(mod)
+        self.assertFalse(screen["kb_key10"].visible)
+        screen.down()  # "Search" highlighted in LEFT menu
+        self.assertEqual(screen.index, 1)
+        self.assertTrue(screen["nav_focus1"].visible)
+        self.assertTrue(screen["kb_input"].visible)
+        self.assertTrue(screen["kb_key10"].visible)
+        self.assertEqual(screen["kb_key10"].text, "q")
+        self.assertFalse(screen["kb_focus10"].visible)
+        self.assertEqual(session.opens, [])
+        self.assertEqual(session.callbacks, [])
+        # RIGHT enters keyboard; OK inserts selected character.
+        screen.right()
+        self.assertEqual(screen.focus_area, "keyboard")
+        self.assertTrue(screen["kb_focus10"].visible)
+        self.assertFalse(screen["nav_focus1"].visible)
+        screen.activate()
+        self.assertEqual(screen.kb_text, "q")
+        self.assertEqual(screen["kb_input"].text, "q")
+        screen.menu()
+        screen.activate()
+        self.assertEqual(screen.kb_text, "qQ")
+        screen.yellow()
+        self.assertEqual(screen.kb_text, "q")
+        screen.blue()
+        self.assertEqual(screen.kb_text, "q ")
+        # Back returns focus to left navigation WITHOUT closing or opening a modal.
+        screen.back()
+        self.assertEqual(screen.focus_area, "nav")
+        self.assertTrue(screen["nav_focus1"].visible)
+        self.assertTrue(screen["kb_input"].visible)
+        self.assertEqual(session.opens, [])
+        screen.down()
+        self.assertEqual(screen.index, 2)
+        self.assertFalse(screen["kb_input"].visible)
+        self.assertFalse(screen["kb_key10"].visible)
+
+    def test_inline_search_green_goes_to_actual_results_without_second_keyboard(self):
+        mod, key, saved, jobs = load(key="available-key")
+        screen, session = ready(mod)
+        screen.down()  # just highlighting Search shows entire keyboard
+        screen.right()
+        screen.activate()  # q
+        screen.right()
+        screen.activate()  # w
+        self.assertEqual(screen.kb_text, "qw")
+        screen.green()
+        self.assertEqual(len(session.opens), 1)
+        args, kwargs = session.opens[0]
+        self.assertEqual(args[0].__name__, "InlineResults")
+        self.assertEqual(kwargs, {"initial_query": "qw"})
+        self.assertEqual(session.callbacks, [])
+        # Returning to Home keeps Search keyboard in its right pane.
+        screen._on_shown()
+        self.assertTrue(screen["kb_input"].visible)
+        self.assertEqual(screen.kb_text, "qw")
+        self.assertEqual(len(session.opens), 1)
+        # Left edge of keyboard gives focus back to the persistent left menu.
+        screen.kb_position = 10
+        screen.left()
+        self.assertEqual(screen.focus_area, "nav")
+
+    def test_inline_search_empty_query_does_not_open_any_window(self):
+        mod, key, saved, jobs = load()
+        screen, session = ready(mod)
+        screen.down()
+        screen.right()
+        screen.green()
+        self.assertEqual(session.opens, [])
+        self.assertIn("Enter", screen["kb_feedback"].text)
+        self.assertTrue(screen["kb_input"].visible)
 
     def test_public_home_without_api_replaces_local_fallback(self):
         mod, key, saved, jobs = load()
