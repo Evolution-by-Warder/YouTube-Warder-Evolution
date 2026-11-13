@@ -36,6 +36,8 @@ class FakeScreen(dict):
     def __init__(self, session):
         super().__init__()
         self.session = session
+    def close(self, *args):
+        pass
 
 
 class FakeSession:
