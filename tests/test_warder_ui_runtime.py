@@ -45,6 +45,15 @@ class Screen(dict):
             callback()
 
 
+class SystemKeyboard(Screen):
+    def __init__(self, session, title=None, text="", maxSize=False):
+        Screen.__init__(self, session)
+        self.skinName = ["VirtualKeyboard", "VirtualKeyBoard"]
+        self.system_title = title
+        self.system_text = text
+        self.system_limit = maxSize
+
+
 def mod(name, **kwargs):
     obj = types.ModuleType(name)
     for key, value in kwargs.items():
@@ -69,7 +78,7 @@ def load(name):
             "_test_warder_design.skin",
             KEYBOARD_SKIN="<screen/>", CONTEXT_SKIN="<screen/>",
             CONFIRM_SKIN="<screen/>", INFO_SKIN="<screen/>",
-            HOME_SKIN="<screen/>"
+            HOME_SKIN="<screen/>", NATIVE_SEARCH_KEYBOARD_SKIN="<screen/>"
         ),
         "Components": components,
         "Components.ActionMap": mod(
@@ -83,6 +92,9 @@ def load(name):
         "Components.MenuList": mod("Components.MenuList", MenuList=MenuList),
         "Screens": screens,
         "Screens.Screen": mod("Screens.Screen", Screen=Screen),
+        "Screens.VirtualKeyBoard": mod(
+            "Screens.VirtualKeyBoard", VirtualKeyBoard=SystemKeyboard
+        ),
     }
     spec = importlib.util.spec_from_file_location(
         "_test_warder_design." + name, str(ROOT / (name + ".py"))
@@ -94,6 +106,25 @@ def load(name):
 
 
 class WarderNativeUiTests(unittest.TestCase):
+    def test_real_system_keyboard_keeps_firmware_logic_and_warder_skin(self):
+        native = load("native_keyboard")
+        keyboard = native.WarderNativeSearchKeyboard(
+            None, value="adele", title="Search videos", limit=160
+        )
+        self.assertIsInstance(keyboard, SystemKeyboard)
+        self.assertEqual(keyboard.system_text, "adele")
+        self.assertEqual(keyboard.system_title, "Search videos")
+        self.assertEqual(keyboard.system_limit, 160)
+        self.assertEqual(keyboard.skinName, ["WarderNativeSearchKeyboard"])
+        self.assertEqual(keyboard["warder_brand"].text, "YouTube Warder Evolution")
+
+    def test_real_system_keyboard_does_not_expose_api_key(self):
+        native = load("native_keyboard")
+        with self.assertRaises(ValueError):
+            native.WarderNativeSearchKeyboard(
+                None, value="AIzafake-secret", secret=True
+            )
+
     def test_keyboard_uses_receiver_language_layout(self):
         m = load("keyboard")
         for locale, row, first in (
@@ -265,7 +296,7 @@ class WarderNativeUiTests(unittest.TestCase):
                  if isinstance(stmt, ast.Assign) and
                  any(isinstance(t, ast.Name) and t.id.endswith("_SKIN")
                      for t in stmt.targets)]
-        self.assertEqual(len(specs), 11)
+        self.assertEqual(len(specs), 12)
         for xml in specs:
             root = ET.fromstring(xml)
             names = {w.attrib["name"] for w in root.findall("widget")}
