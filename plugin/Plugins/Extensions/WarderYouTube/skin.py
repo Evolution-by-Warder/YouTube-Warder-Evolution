@@ -448,3 +448,25 @@ CONFIRM_SKIN = """
   <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="6"/>
 </screen>
 """
+
+
+INFO_SKIN = """
+<screen name="WarderYouTubeInfo" position="0,0" size="1920,1080" title="YouTube Warder Evolution / Details" flags="wfNoBorder" backgroundColor="#08182D">
+  <eLabel position="0,0" size="1920,108" backgroundColor="#142C47"/>
+  <eLabel position="0,106" size="1920,3" backgroundColor="#087EC7"/>
+  <widget name="brand" position="45,22" size="1750,69" font="Regular;42" foregroundColor="#FFFFFF" transparent="1"/>
+  <eLabel position="72,161" size="1775,756" backgroundColor="#122C47"/>
+  <eLabel position="72,161" size="1775,5" backgroundColor="#087EC7"/>
+  <widget name="title" position="116,197" size="1690,68" font="Regular;42" foregroundColor="#6CCBFF" transparent="1"/>
+  <widget name="body" position="116,297" size="1660,556" font="Regular;30" foregroundColor="#FFFFFF" transparent="1"/>
+  <eLabel position="0,993" size="1920,87" backgroundColor="#10283F"/>
+  <eLabel position="40,1005" size="415,58" backgroundColor="#A32B3C"/>
+  <widget name="key_red" position="56,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1"/>
+  <eLabel position="510,1005" size="415,58" backgroundColor="#167A55"/>
+  <widget name="key_green" position="526,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1"/>
+  <eLabel position="980,1005" size="415,58" backgroundColor="#10283F"/>
+  <widget name="key_yellow" position="996,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1"/>
+  <eLabel position="1450,1005" size="415,58" backgroundColor="#10283F"/>
+  <widget name="key_blue" position="1466,1011" size="381,48" font="Regular;26" foregroundColor="#FFFFFF" transparent="1"/>
+</screen>
+"""
