@@ -38,73 +38,73 @@ class FakeResponse(io.BytesIO):
 
 class UpdateCoreTests(unittest.TestCase):
     def test_tilde_versions_and_github_normalized_asset_url(self):
-        self.assertEqual(u.CURRENT_VERSION, "0.0.8~test6")
+        self.assertEqual(u.CURRENT_VERSION, "0.0.8~test7")
         self.assertEqual(u.channel_for_version(u.CURRENT_VERSION), "testing")
-        self.assertLess(u.version_key("0.0.8~test4"), u.version_key("0.0.8~test6"))
-        self.assertLess(u.version_key("0.0.8~test6"), u.version_key("0.0.8"))
-        self.assertIn("/youtube-warder-v0.0.8-test6/", u.expected_url("0.0.8~test6"))
-        self.assertIn("_0.0.8.test6_all.ipk", u.expected_url("0.0.8~test6"))
+        self.assertLess(u.version_key("0.0.8~test6"), u.version_key("0.0.8~test7"))
+        self.assertLess(u.version_key("0.0.8~test7"), u.version_key("0.0.8"))
+        self.assertIn("/youtube-warder-v0.0.8-test7/", u.expected_url("0.0.8~test7"))
+        self.assertIn("_0.0.8.test7_all.ipk", u.expected_url("0.0.8~test7"))
 
     def test_no_release_and_reject_unsigned(self):
         base = {"schema": 1, "product": u.PRODUCT, "channel": "testing", "release": None}
         self.assertIsNone(u.parse_manifest(json.dumps(base).encode(), u.CURRENT_VERSION))
-        base["release"] = {"version": "0.0.8~test7"}
+        base["release"] = {"version": "0.0.8~test8"}
         with self.assertRaises(u.UpdateError):
             u.parse_manifest(json.dumps(base).encode(), u.CURRENT_VERSION)
 
     def test_published_testing_manifest_matches_real_github_asset(self):
         feed = json.loads((ROOT / "update/testing.json").read_text(encoding="utf-8"))
         rel = feed["release"]
-        # Before publication the branch feed still lists test5. Once test6
-        # is published this same regression must also accept the new feed.
-        self.assertIn(rel["version"], ("0.0.8~test5", "0.0.8~test6"))
+        # Before publication the feed lists test6; after publication test7.
+        self.assertIn(rel["version"], ("0.0.8~test6", "0.0.8~test7"))
         self.assertEqual(rel["url"], u.expected_url(rel["version"]))
         self.assertEqual(len(rel["sha256"]), 64)
         self.assertGreater(rel["bytes"], 0)
         self.assertIsNone(u.parse_manifest(json.dumps(feed).encode(), u.CURRENT_VERSION))
+        self.assertLessEqual(u.version_key(rel["version"]), u.version_key(u.CURRENT_VERSION))
 
-    def test_installed_test5_is_offered_test6_for_opt_in_update(self):
-        candidate = valid_manifest("0.0.8~test6")
-        release = u.parse_manifest(json.dumps(candidate).encode(), "0.0.8~test5")
-        self.assertEqual(release["version"], "0.0.8~test6")
-        self.assertEqual(release["url"], u.expected_url("0.0.8~test6"))
-        self.assertTrue(release["url"].endswith("_0.0.8.test6_all.ipk"))
-
-    def test_future_testing_update_is_offered_with_dotted_download_url(self):
-        future = valid_manifest("0.0.8~test7")
-        release = u.parse_manifest(json.dumps(future).encode(), u.CURRENT_VERSION)
+    def test_installed_test6_is_offered_test7_for_opt_in_update(self):
+        candidate = valid_manifest("0.0.8~test7")
+        release = u.parse_manifest(json.dumps(candidate).encode(), "0.0.8~test6")
         self.assertEqual(release["version"], "0.0.8~test7")
         self.assertEqual(release["url"], u.expected_url("0.0.8~test7"))
         self.assertTrue(release["url"].endswith("_0.0.8.test7_all.ipk"))
+
+    def test_future_testing_update_is_offered_with_dotted_download_url(self):
+        future = valid_manifest("0.0.8~test8")
+        release = u.parse_manifest(json.dumps(future).encode(), u.CURRENT_VERSION)
+        self.assertEqual(release["version"], "0.0.8~test8")
+        self.assertEqual(release["url"], u.expected_url("0.0.8~test8"))
+        self.assertTrue(release["url"].endswith("_0.0.8.test8_all.ipk"))
 
     def test_manifest_rejects_mismatched_tag_url_or_digest(self):
         for change, value in [
             ("tag", "youtube-warder-v0.0.8-test99"),
             ("url", "https://attacker.invalid/plugin.ipk"),
-            ("url", u.expected_url("0.0.8~test7").replace(".test7", "~test7")),
+            ("url", u.expected_url("0.0.8~test8").replace(".test7", "~test7")),
             ("sha256", "invalid"),
             ("bytes", 0),
         ]:
             with self.subTest(field=change, value=value):
-                bad = valid_manifest("0.0.8~test7")
+                bad = valid_manifest("0.0.8~test8")
                 bad["release"][change] = value
                 with self.assertRaises(u.UpdateError):
                     u.parse_manifest(json.dumps(bad).encode(), u.CURRENT_VERSION)
 
     def test_check_update_uses_testing_feed_and_no_auto_install(self):
         requested = []
-        future = json.dumps(valid_manifest("0.0.8~test7")).encode("utf-8")
+        future = json.dumps(valid_manifest("0.0.8~test8")).encode("utf-8")
         def fake_open(url, timeout):
             requested.append((url, timeout))
             return FakeResponse(future)
         result = u.check_update(u.CURRENT_VERSION, opener=fake_open)
-        self.assertEqual(result["version"], "0.0.8~test7")
+        self.assertEqual(result["version"], "0.0.8~test8")
         self.assertEqual(requested, [(u.FEED_TESTING, 8)])
 
     def test_verified_download_and_reject_corruption(self):
         payload = b"ipk-bytes-from-test-only-backend"
         info = {
-            "url": u.expected_url("0.0.8~test7"),
+            "url": u.expected_url("0.0.8~test8"),
             "sha256": hashlib.sha256(payload).hexdigest(),
             "bytes": len(payload),
         }
@@ -125,18 +125,18 @@ class UpdateCoreTests(unittest.TestCase):
             self.assertFalse(dest.exists())
 
     def test_installed_package_status_exact_match(self):
-        status = "Package: other-plugin\nVersion: 0.0.8~test7\n\n" + (
+        status = "Package: other-plugin\nVersion: 0.0.8~test8\n\n" + (
             "Package: " + u.PACKAGE + "\n"
-            "Version: 0.0.8~test7\nStatus: install ok installed\n")
+            "Version: 0.0.8~test8\nStatus: install ok installed\n")
         self.assertEqual(u._installed_version(status),
-                         ("0.0.8~test7", "install ok installed"))
+                         ("0.0.8~test8", "install ok installed"))
         self.assertEqual(u._installed_version("Package: unrelated\nVersion: 1\n"),
                          (None, None))
 
 
 
     def test_actual_ipk_offline_install_verification_no_real_opkg(self):
-        """Dry-run the complete install from the real current test6 package builder."""
+        """Dry-run the complete install from the real current test7 package builder."""
         import sys
         from unittest.mock import patch
         import types
@@ -185,8 +185,8 @@ class UpdateCoreTests(unittest.TestCase):
         import types
         data = b"not-an-ipk"
         release = {
-            "version": "0.0.8~test7",
-            "url": u.expected_url("0.0.8~test7"),
+            "version": "0.0.8~test8",
+            "url": u.expected_url("0.0.8~test8"),
             "sha256": hashlib.sha256(data).hexdigest(),
             "bytes": len(data),
         }
