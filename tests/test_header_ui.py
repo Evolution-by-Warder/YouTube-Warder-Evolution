@@ -131,59 +131,43 @@ class HeaderTests(unittest.TestCase):
         self.assertNotIn("Warder metallic cyber skull", source)
         self.assertNotIn("cx, cy = 94, 66", source)
 
-    def test_full_original_skull_is_composited_without_jaw_clipping(self):
+    def test_full_original_source_and_whole_header_are_sha256_pinned(self):
         import hashlib
         tools_dir = PKG.parents[3] / "tools"
-        path = tools_dir / "warder_header_art.py"
         spec = importlib.util.spec_from_file_location(
-            "_warder_art_full_logo_regression", str(path)
+            "_warder_art_single_banner_test", str(tools_dir / "warder_header_art.py")
         )
         art = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(art)
-        source = (PKG / "images/warder_skull.png").read_bytes()
-        self.assertEqual(hashlib.sha256(source).hexdigest(),
+        original = (PKG / "images/warder_skull.png").read_bytes()
+        self.assertEqual((int.from_bytes(original[16:20], "big"),
+                          int.from_bytes(original[20:24], "big")), (384, 429))
+        self.assertEqual(hashlib.sha256(original).hexdigest(),
                          art.FULL_WARDER_SOURCE_SHA256)
-        w, h, rgba = art.decode_original_skull(source)
-        self.assertEqual((w, h), (384, 429))
-        self.assertEqual(len(rgba), 384 * 429 * 4)
-        self.assertGreater(rgba[(375*w+192)*4+3], 200)
-        x, y, scaled_w, scaled_h = art.skull_placement()
-        self.assertGreater(x, 0)
-        self.assertGreater(y, 0)
-        self.assertEqual((scaled_w, scaled_h), (124, 139))
-        self.assertLessEqual(y + scaled_h, 143)
-        self.assertLessEqual(x + scaled_w, 174)
-        (name_x, name_y, name_scale), (by_x, by_y, by_scale) = art.lettering_placement()
-        self.assertGreater(name_x, x+scaled_w)
-        self.assertGreaterEqual(name_scale, 1.10)
-        self.assertGreaterEqual(by_scale, 1.15)
-        # Generated header is still only one RGB static bitmap and contains
-        # the full original; no alpha-keyed overlay or runtime reconstruction.
-        png = art.render_header()
-        self.assertTrue(png.startswith(b"\x89PNG\r\n\x1a\n"))
-        self.assertEqual((int.from_bytes(png[16:20], "big"),
-                          int.from_bytes(png[20:24], "big")), (1920, 152))
+        header = art.render_header()
+        self.assertEqual(header[:8], bytes((137, 80, 78, 71, 13, 10, 26, 10)))
+        self.assertEqual((int.from_bytes(header[16:20], "big"),
+                          int.from_bytes(header[20:24], "big")), (1920, 152))
+        self.assertEqual(header[24:26], bytes((8, 2)))
+        self.assertEqual(hashlib.sha256(header).hexdigest(), art.FINAL_BANNER_SHA256)
 
-    def test_compact_original_title_masks_and_single_banner(self):
-        import base64
-        import zlib
+    def test_signature_and_metallic_title_are_clean_single_png_not_old_masks(self):
         tools_dir = PKG.parents[3] / "tools"
-        mask_code = (tools_dir / "warder_title_masks.py").read_text(encoding="utf-8")
-        masks_spec = importlib.util.spec_from_file_location(
-            "warder_title_masks_test", tools_dir / "warder_title_masks.py"
-        )
-        masks = importlib.util.module_from_spec(masks_spec)
-        masks_spec.loader.exec_module(masks)
-        for encoded, w, h in (
-            (masks.TITLE_MASK_B64, masks.TITLE_WIDTH, masks.TITLE_HEIGHT),
-            (masks.BY_MASK_B64, masks.BY_WIDTH, masks.BY_HEIGHT)
-        ):
-            decoded = zlib.decompress(base64.b64decode(encoded))
-            self.assertEqual(len(decoded), (w*h+7)//8)
-        artwork_code = (tools_dir / "warder_header_art.py").read_text(encoding="utf-8")
-        self.assertIn('warder_title_masks.py', artwork_code)
-        self.assertIn('warder_skull.png', artwork_code)
-        self.assertNotIn('cx, cy = 94, 66', artwork_code)
+        generator = (tools_dir / "render_full_header.py").read_text(encoding="utf-8")
+        loader = (tools_dir / "warder_header_art.py").read_text(encoding="utf-8")
+        builder = (tools_dir / "build_test_ipk.py").read_text(encoding="utf-8")
+        for text in (loader, generator, builder):
+            self.assertNotIn("warder_title_masks.py", text)
+            self.assertNotIn("TITLE_MASK_B64", text)
+            self.assertNotIn("BY_MASK_B64", text)
+        self.assertIn('"YouTube Warder "', generator)
+        self.assertIn('"Evolution"', generator)
+        self.assertIn('"by Warder"', generator)
+        self.assertIn("skull.resize((124,139)", generator)
+        self.assertIn("complete original Warder skull", loader)
+        # The complete image is committed once and consumed as a single RGB
+        # PNG by all 12 screens, with live date/clock/version widgets separate.
+        self.assertIn('images/warder_header.png', (PKG / "skin.py").read_text())
 
     def test_every_screen_uses_same_static_header_without_renderers(self):
         source = (PKG / "skin.py").read_text(encoding="utf-8")
