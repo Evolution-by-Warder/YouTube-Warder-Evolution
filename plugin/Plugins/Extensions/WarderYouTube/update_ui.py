@@ -4,6 +4,7 @@
 Never manipulate Enigma2 GUI controls from background worker threads.
 Do not silently install or restart; user must accept the update first.
 """
+from .header_ui import add_header
 from enigma import eTimer
 from Components.ActionMap import ActionMap
 from Components.Label import Label
@@ -25,6 +26,7 @@ class WarderYouTubeUpdateProgress(Screen):
 
     def __init__(self, session, release):
         Screen.__init__(self, session)
+        add_header(self)
         self.release = release
         self.started = False
         self.disposed = False
@@ -130,6 +132,7 @@ class WarderYouTubeUpdateCheck(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
+        add_header(self)
         self.started = False
         self.disposed = False
         self.release = None
