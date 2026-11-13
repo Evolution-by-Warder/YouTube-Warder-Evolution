@@ -84,6 +84,7 @@ def load_search(api_key="configured-key", have_ytdlp=False):
         raise AssertionError("No worker network calls allowed in this test")
 
     fake_modules = {
+        "_warder_modal.header_ui": module("_warder_modal.header_ui", add_header=lambda sc: sc.__setitem__("hdr_version", FakeWidget())),
         "Components": module("Components"),
         "Components.ActionMap": module("Components.ActionMap", ActionMap=fake_map),
         "Components.Label": module("Components.Label", Label=FakeWidget),
