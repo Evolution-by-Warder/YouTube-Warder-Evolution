@@ -10,7 +10,7 @@ import random
 import struct
 import zlib
 
-WIDTH, HEIGHT = 1920, 134
+WIDTH, HEIGHT = 1920, 152
 
 
 def render_header():
@@ -43,9 +43,9 @@ def render_header():
 
     for y in range(h):
         for x in range(w):
-            left = math.exp(-((x-100)/300)**2-((y-60)/69)**2)
+            left = math.exp(-((x-100)/300)**2-((y-70)/80)**2)
             mid = math.exp(-((x-700)/500)**2-((y-10)/95)**2)
-            right = math.exp(-((x-1535)/550)**2-((y-133)/40)**2)
+            right = math.exp(-((x-1535)/550)**2-((y-151)/46)**2)
             noise = 1.7*math.sin(x/91+y/17)**2
             blend(x, y, (2+11*left+3*mid+3*right+noise,
                          7+26*left+8*mid+36*right+noise,
@@ -61,13 +61,13 @@ def render_header():
             ex = x + random_source.choice((-1,1))*random_source.randrange(12,64)
             ey = y + random_source.randrange(-12,14)
             line(x, y, ex, ey, (10, 87, 188), a*.22)
-    beam = ((162,104),(215,109),(272,106),(320,112),(370,105),
-            (428,112),(489,107),(549,115),(609,110),(662,115),(714,112),(820,109))
+    beam = ((162,124),(215,129),(272,126),(320,132),(370,125),
+            (428,132),(489,127),(549,135),(609,130),(662,135),(714,132),(820,129))
     for (x1,y1),(x2,y2) in zip(beam,beam[1:]):
         line(x1,y1,x2,y2,(0,108,189),.5,3)
         line(x1,y1,x2,y2,(11,217,250),.75)
     for x in range(1090,w):
-        center = 117+36*((x-1535)/565)**2
+        center = 135+36*((x-1535)/565)**2
         if center >= h:
             continue
         for y in range(max(0,int(center)-7),min(h,int(center)+8)):
@@ -115,8 +115,8 @@ def render_header():
     if any(scanlines[row*(sw+1)] != 0 for row in range(sh)):
         raise ValueError("Unsupported Warder skull PNG filter")
     # One static compositing pass at build time. The receiver only decodes
-    # the finalized shared 1920x134 PNG; no runtime scaling or rendering.
-    target_w, target_h, origin_x, origin_y = 135, 129, 24, 2
+    # the finalized shared 1920x152 PNG; no runtime scaling or rendering.
+    target_w, target_h, origin_x, origin_y = 150, 144, 18, 2
     for iy in range(target_h):
         sy = iy * sh // target_h
         for ix in range(target_w):
@@ -158,19 +158,21 @@ def render_header():
                     color = (20, min(255,light), 255)
                 blend(tx,ty,color,1.0)
 
-    stamp(shapes.TITLE_MASK_B64, shapes.TITLE_WIDTH, shapes.TITLE_HEIGHT, 207, 15)
-    stamp(shapes.BY_MASK_B64, shapes.BY_WIDTH, shapes.BY_HEIGHT, 480, 74, True)
+    stamp(shapes.TITLE_MASK_B64, shapes.TITLE_WIDTH, shapes.TITLE_HEIGHT, 207, 20)
+    stamp(shapes.BY_MASK_B64, shapes.BY_WIDTH, shapes.BY_HEIGHT, 480, 87, True)
 
     for x in (1392,1664):
-        for y in range(20,112):
+        for y in range(20,138):
             blend(x,y,(47,224,244),.85)
-    for y in range(129,134):
+    for y in range(h-5, h):
         for x in range(w):
-            blend(x,y,((50,235,250) if y==132 else
-                       (1,160,231) if y==133 else (2,60+25*(y-129),110+24*(y-129))))
+            offset = y - (h-5)
+            blend(x,y,((50,235,250) if offset == 3 else
+                       (1,160,231) if offset == 4 else
+                       (2,60+25*offset,110+24*offset)))
     # Keep the original deep-navy/metallic shades. RGB332 turned almost
     # every dark blue into pure black and visibly damaged the Warder design.
-    # Still ONE tiny static 1920x134 PNG decoded only once on the receiver.
+    # Still ONE static 1920x152 PNG decoded only once on the receiver.
     data = b"".join(b"\x00" + image[y*w*3:(y+1)*w*3] for y in range(h))
 
     def chunk(tag, body):
