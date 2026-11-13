@@ -2,13 +2,9 @@ name: Build 0.0.8~test7 Warder UI IPK (receiver test only)
 
 on:
   workflow_dispatch:
-  push:
-    branches: [feature/native-search-v002]
-    paths:
-      - .github/workflows/test-ipk.yml
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-test-ipk:
@@ -30,62 +26,6 @@ jobs:
           ar p dist/*.ipk control.tar.gz | tar -tzf -
           ar p dist/*.ipk data.tar.gz | tar -tzf -
           cd dist && sha256sum -c *.sha256
-      - name: Owner-approved test7 Warder UI prerelease and testing updater feed
-        if: github.event_name == 'push'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -eu
-          TAG="youtube-warder-v0.0.8-test7"
-          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "Refusing to overwrite existing test7 prerelease."
-            exit 1
-          fi
-          gh release create "$TAG" dist/*.ipk dist/*.sha256 \
-            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
-            --title "YouTube Warder Evolution 0.0.8-test7 - native UI redesign" \
-            --notes "Owner-approved test-only: Warder native Home, redesigned Search and Settings, native full-screen search keyboard, SK/CZ/DE/EN language support, coloured remote action bars, context MENU and Warder-styled update confirmation. Existing playback/thumbnail backend retained. GigaBlue hardware UI validation pending." \
-            --prerelease
-          python3 - <<'PY'
-          import hashlib, json
-          from pathlib import Path
-          package = next(Path("dist").glob("*.ipk"))
-          assert package.name.endswith("_0.0.8~test7_all.ipk")
-          url = ("https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/"
-                 "releases/download/youtube-warder-v0.0.8-test7/"
-                 + package.name.replace("~", "."))
-          manifest = {
-              "schema": 1, "product": "YouTube Warder Evolution",
-              "channel": "testing",
-              "release": {
-                  "version": "0.0.8~test7",
-                  "tag": "youtube-warder-v0.0.8-test7",
-                  "url": url,
-                  "sha256": hashlib.sha256(package.read_bytes()).hexdigest(),
-                  "bytes": package.stat().st_size,
-                  "notes": ("Test7: novy Warder vzhlad Home, Search a Settings, "
-                            "vlastna klavesnica podla jazyka Enigma2, farebne tlacidla, "
-                            "MENU s ponukou akcii a upraveny aktualizator. "
-                            "Testovacia verzia na overenie na GigaBlue.")
-              }
-          }
-          Path("/tmp/warder-youtube-test7-feed.json").write_text(
-              json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
-              encoding="utf-8")
-          PY
-          REAL="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" \
-            --json assets --jq '.assets[] | select(.name | endswith(".ipk")) | .name')"
-          EXPECTED="$(basename dist/*.ipk | sed 's/~/./g')"
-          test "$REAL" = "$EXPECTED"
-          SIZE="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" \
-            --jq '.assets[] | select(.name | endswith(".ipk")) | .size')"
-          test "$SIZE" = "$(stat -c%s dist/*.ipk)"
-          SHA="$(gh api "repos/$GITHUB_REPOSITORY/contents/update/testing.json?ref=feature/native-search-v002" --jq .sha)"
-          B64="$(base64 -w 0 /tmp/warder-youtube-test7-feed.json)"
-          gh api --method PUT "repos/$GITHUB_REPOSITORY/contents/update/testing.json" \
-            -f message="Offer owner-approved test7 native Warder redesign in testing updater" \
-            -f branch="feature/native-search-v002" -f sha="$SHA" -f content="$B64" >/dev/null
-          echo "PASS: test7 prerelease + exact SHA256 testing feed published"
       - uses: actions/upload-artifact@v4
         with:
           name: WarderYouTube-0.0.8-test7-IPK
