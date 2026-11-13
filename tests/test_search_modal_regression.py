@@ -71,6 +71,7 @@ def module(name, **attrs):
 
 def load_search(api_key="configured-key", have_ytdlp=False):
     fake_keyboard = type("WarderYouTubeKeyboard", (), {})
+    fake_system_keyboard = type("WarderNativeSearchKeyboard", (), {})
     fake_context = type("WarderYouTubeContext", (), {})
     fake_settings = type("WarderYouTubeSettings", (), {})
     fake_message_box = type("MessageBox", (), {"TYPE_INFO": 1})
@@ -114,6 +115,9 @@ def load_search(api_key="configured-key", have_ytdlp=False):
         "_warder_modal.skin": module("_warder_modal.skin", SEARCH_SKIN="<screen/>"),
         "_warder_modal.i18n": module("_warder_modal.i18n", tr=lambda value: value),
         "_warder_modal.keyboard": module("_warder_modal.keyboard", WarderYouTubeKeyboard=fake_keyboard),
+        "_warder_modal.native_keyboard": module(
+            "_warder_modal.native_keyboard", WarderNativeSearchKeyboard=fake_system_keyboard
+        ),
         "_warder_modal.context_menu": module("_warder_modal.context_menu", WarderYouTubeContext=fake_context),
         "_warder_modal.info_ui": module("_warder_modal.info_ui", WarderYouTubeInfo=object),
         "_warder_modal.local_library": module(
@@ -250,7 +254,7 @@ class SearchModalRegressionTests(unittest.TestCase):
             callback()
         self.assertEqual(len(session.modal_calls), 1)
         self.assertEqual(session.modal_calls[0][2]["title"], "Enter your YouTube search")
-        self.assertIs(session.modal_calls[0][1], source.WarderYouTubeKeyboard)
+        self.assertIs(session.modal_calls[0][1], source.WarderNativeSearchKeyboard)
 
         # onShown may fire again when returning from VirtualKeyboard/MoviePlayer.
         for callback in screen.onShown:
@@ -262,6 +266,16 @@ class SearchModalRegressionTests(unittest.TestCase):
         for callback in screen.onShown:
             callback()
         self.assertEqual(len(session.modal_calls), 1)
+
+    def test_fallback_keyboard_is_used_when_system_keyboard_is_missing(self):
+        source = load_search()
+        screen = source.WarderYouTubeSearch(FakeSession())
+        screen.session.in_exec = True
+        source.WarderNativeSearchKeyboard = None
+        screen.open_keyboard()
+        self.assertEqual(len(screen.session.modal_calls), 1)
+        self.assertIs(screen.session.modal_calls[0][1],
+                      source.WarderYouTubeKeyboard)
 
     def test_no_backend_shows_status_without_modal(self):
         source = load_search(api_key="", have_ytdlp=False)
