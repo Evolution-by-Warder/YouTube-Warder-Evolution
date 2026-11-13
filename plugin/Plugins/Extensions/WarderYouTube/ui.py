@@ -314,7 +314,7 @@ class WarderYouTubeHome(Screen):
         elif self.index == 6:
             self._show_details([
                 _("API key") + ": " + (_("Configured") if get_api_key() else _("Not configured")),
-                _("Preferred quality") + ": %sp" % get_quality(),
+                _("Maximum video quality") + ": %sp" % get_quality(),
                 "yt-dlp: " + (_("Available") if is_available() else _("Not installed")),
                 _("Language from Enigma2"),
                 _("API stored unencrypted"),
