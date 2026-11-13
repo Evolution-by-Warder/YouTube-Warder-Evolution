@@ -90,6 +90,23 @@ class PreviewThumbTests(unittest.TestCase):
             callback()
         self.assertTrue(screen["preview_thumb0"].visible)
 
+    def test_return_from_context_menu_restores_cached_native_pixmap(self):
+        thumbs, screen, jobs, decoder = load()
+        thumbs.start()
+        selection = items(1)
+        thumbs.show(selection)
+        jobs[0][1].success("/tmp/img.jpg")
+        for callback in decoder.callbacks[:]:
+            callback()
+        self.assertTrue(screen["preview_thumb0"].visible)
+        self.assertEqual(len(thumbs.image_cache), 1)
+        thumbs.show([])  # Another Warder screen is temporarily on top.
+        self.assertFalse(screen["preview_thumb0"].visible)
+        thumbs.show(selection)
+        self.assertTrue(screen["preview_thumb0"].visible)
+        self.assertEqual(screen["preview_thumb0"].image, "native ePixmap pointer")
+        self.assertEqual(len(jobs), 1)  # No duplicate network request.
+
     def test_stale_image_never_reappears_after_switching_section(self):
         thumbs, screen, jobs, decoder = load()
         thumbs.start()
