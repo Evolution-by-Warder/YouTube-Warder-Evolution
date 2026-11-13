@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test16",
-    "tag": "youtube-warder-v0.0.8-test16",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test16/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test16_all.ipk",
-    "sha256": "ba43622f53b03985801fe938652af6607e68fc268110a243176c30ed640b1b49",
-    "bytes": 191446,
-    "notes": "Test16: originálna kompletná Warder lebka 384×429 so spodnou čeľusťou, bez záplat a odrezania, nahrádza pôvodný orezaný zdroj v spoločnej hlavičke všetkých 12 obrazoviek. Kovový názov YouTube Warder Evolution aj podpis by Warder sú proporčne väčšie podľa ostatných Warder pluginov. Obsahuje aj overené test15 rámiky videí, náhľady, stránkovanie Domov a tenké farebné popisy tlačidiel. Test na GigaBlue/OpenATV."
+    "version": "0.0.8~test17",
+    "tag": "youtube-warder-v0.0.8-test17",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test17/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test17_all.ipk",
+    "sha256": "7837c2c5b42689f60f2c37d5fe3562904dd2d9bafffbba400af63f5ee6713b7b",
+    "bytes": 238654,
+    "notes": "Test17: celý horný pás bol nanovo zhotovený ako JEDEN čistý PNG 1920×152, s kompletnou originálnou lebkou, kovovým názvom YouTube Warder Evolution a rukopisným podpisom by Warder v štýle rodiny GSU. Odstránené staré masky a presvitajúce artefakty. Dátum, čas a verzia zostávajú živé údaje Enigma2. Testovacia verzia; grafický výsledok treba potvrdiť na GigaBlue."
   }
 }
