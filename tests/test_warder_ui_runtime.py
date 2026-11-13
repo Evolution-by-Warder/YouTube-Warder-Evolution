@@ -339,6 +339,48 @@ class WarderNativeUiTests(unittest.TestCase):
         screen.close()
         self.assertEqual(screen.closed_args, ())
 
+    def test_all_twelve_screens_use_colored_text_and_thin_lines_not_rectangles(self):
+        tree = ast.parse((ROOT / "skin.py").read_text(encoding="utf-8"))
+        specs = [ast.literal_eval(stmt.value)
+                 for stmt in tree.body if isinstance(stmt, ast.Assign) and
+                 any(isinstance(t, ast.Name) and t.id.endswith("_SKIN")
+                     for t in stmt.targets)]
+        self.assertEqual(len(specs), 12)
+        for xml in specs:
+            root = ET.fromstring(xml)
+            lines = [item for item in root.findall("eLabel")
+                     if item.attrib.get("size") == "195,3"
+                     and item.attrib.get("position", "").endswith(",1003")]
+            self.assertEqual(len(lines), 4, root.attrib["name"])
+            self.assertFalse(any(item.attrib.get("size") == "415,58"
+                                 for item in root.findall("eLabel")))
+            keys = {w.attrib["name"]: w for w in root.findall("widget")}
+            for name, color in (("red", "#FE637D"), ("green", "#4CE58B"),
+                                ("yellow", "#FFD367"), ("blue", "#5EBEFF")):
+                key = ("warder_key_" if root.attrib["name"] == "WarderNativeSearchKeyboard"
+                       else "key_") + name
+                self.assertEqual(keys[key].attrib["foregroundColor"], color)
+                self.assertEqual(keys[key].attrib["halign"], "center")
+                self.assertEqual(keys[key].attrib["transparent"], "1")
+
+    def test_context_and_confirm_use_opaque_native_selection_not_listbox(self):
+        tree = ast.parse((ROOT / "skin.py").read_text(encoding="utf-8"))
+        for stmt in tree.body:
+            if not isinstance(stmt, ast.Assign):
+                continue
+            if not any(isinstance(t, ast.Name) and t.id in ("CONTEXT_SKIN", "CONFIRM_SKIN")
+                       for t in stmt.targets):
+                continue
+            root = ET.fromstring(ast.literal_eval(stmt.value))
+            names = {w.attrib["name"]: w for w in root.findall("widget")}
+            self.assertNotIn("menu", names)
+            prefix = "context" if root.attrib["name"] == "WarderYouTubeContext" else "confirm"
+            count = 5 if prefix == "context" else 2
+            for i in range(count):
+                self.assertEqual(names["%s_focus%d" % (prefix, i)].attrib["transparent"], "0")
+                self.assertIn("backgroundColor", names["%s_focus%d" % (prefix, i)].attrib)
+                self.assertIn("%s_row%d" % (prefix, i), names)
+
     def test_every_screen_has_four_colored_key_slots(self):
         tree = ast.parse((ROOT / "skin.py").read_text(encoding="utf-8"))
         specs = [ast.literal_eval(stmt.value)
