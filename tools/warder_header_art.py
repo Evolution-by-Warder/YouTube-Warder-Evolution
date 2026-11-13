@@ -168,26 +168,15 @@ def render_header():
         for x in range(w):
             blend(x,y,((50,235,250) if y==132 else
                        (1,160,231) if y==133 else (2,60+25*(y-129),110+24*(y-129))))
-    # Quantize to a lightweight indexed PNG (RGB332 palette). The static
-    # image is decoded by Enigma2 only once; no runtime drawing or PIL.
-    palette = bytearray()
-    for index in range(256):
-        r = ((index >> 5) & 7) * 255 // 7
-        g = ((index >> 2) & 7) * 255 // 7
-        b = (index & 3) * 255 // 3
-        palette.extend((r, g, b))
-    indexed = bytearray(w * h)
-    for pixel in range(w * h):
-        base = pixel * 3
-        red, green, blue = image[base:base+3]
-        indexed[pixel] = (red & 0xe0) | ((green & 0xe0) >> 3) | (blue >> 6)
-    data = b"".join(b"\x00" + indexed[y*w:(y+1)*w] for y in range(h))
+    # Keep the original deep-navy/metallic shades. RGB332 turned almost
+    # every dark blue into pure black and visibly damaged the Warder design.
+    # Still ONE tiny static 1920x134 PNG decoded only once on the receiver.
+    data = b"".join(b"\\x00" + image[y*w*3:(y+1)*w*3] for y in range(h))
 
     def chunk(tag, body):
         full = tag + body
         return (struct.pack(">I", len(body)) + full +
                 struct.pack(">I", zlib.crc32(full) & 0xffffffff))
     return (b"\x89PNG\r\n\x1a\n" +
-            chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 3, 0, 0, 0)) +
-            chunk(b"PLTE", bytes(palette)) +
+            chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)) +
             chunk(b"IDAT", zlib.compress(data, 9)) + chunk(b"IEND", b""))
