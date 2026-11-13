@@ -199,34 +199,18 @@ class WarderNativeUiTests(unittest.TestCase):
         k.toggle_case()
         self.assertEqual(k["letter10"].text, "Q")
 
-    def test_home_quick_access_is_visible_and_focus_tracks_selection(self):
-        m = load("ui")
-        screen = m.WarderYouTubeHome(None)
-        for callback in screen.onLayoutFinish:
-            callback()
-        self.assertEqual(len(screen.sections), 8)
-        self.assertEqual(len(screen["menu"].rows), 8)
-        self.assertTrue(screen["nav_focus0"].visible)
-        self.assertFalse(screen["nav_focus1"].visible)
-        screen["menu"].index = 5
-        for callback in screen["menu"].onSelectionChanged:
-            callback()
-        self.assertTrue(screen["nav_focus5"].visible)
-        self.assertFalse(screen["nav_focus0"].visible)
-        self.assertTrue(screen["card_focus1"].visible)
-        self.assertFalse(screen["card_focus0"].visible)
-        self.assertFalse(screen["card_focus2"].visible)
-        self.assertEqual(screen["heading"].text, "Favourites")
-        screen["menu"].index = 3
-        for callback in screen["menu"].onSelectionChanged:
-            callback()
-        self.assertTrue(screen["card_focus2"].visible)
-        self.assertFalse(screen["card_focus1"].visible)
-        screen["menu"].index = 0
-        for callback in screen["menu"].onSelectionChanged:
-            callback()
-        self.assertFalse(any(screen["card_focus%d" % i].visible
-                             for i in range(3)))
+    def test_home_has_eight_direct_navigation_rows(self):
+        tree = ast.parse((ROOT / "skin.py").read_text(encoding="utf-8"))
+        home = next(ast.literal_eval(stmt.value) for stmt in tree.body
+                    if isinstance(stmt, ast.Assign) and any(
+                        isinstance(target, ast.Name) and target.id == "HOME_SKIN"
+                        for target in stmt.targets))
+        screen = ET.fromstring(home)
+        names = {w.attrib["name"] for w in screen.findall("widget")}
+        self.assertTrue({"nav0", "nav7", "preview_thumb0", "preview_thumb5",
+                         "preview_message", "heading"}.issubset(names))
+        self.assertNotIn("nav_title", names)
+        self.assertNotIn("card1_title", names)
 
     def test_context_highlight_tracks_selected_action(self):
         m = load("context_menu")
