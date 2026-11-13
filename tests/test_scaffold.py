@@ -19,7 +19,7 @@ class Tests(unittest.TestCase):
         screen = ET.fromstring(xml)
         self.assertEqual(screen.attrib["size"], "1920,1080")
         self.assertEqual(screen.attrib["backgroundColor"], "#08182D")
-        self.assertTrue({"menu", "heading", "description", "status", "footer"}.issubset(
+        self.assertTrue({"nav0", "nav7", "heading", "subtitle", "status", "preview_thumb0", "preview_thumb5", "preview_message"}.issubset(
             {w.attrib.get("name") for w in screen.findall("widget")}))
         self.assertNotIn("ePixmap", xml)
 
