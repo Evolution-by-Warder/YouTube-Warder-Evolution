@@ -93,13 +93,16 @@ class Tests(unittest.TestCase):
                             for item in subtle_borders))
         self.assertNotIn('backgroundColor="#1AB4D5"', ET.tostring(grid, encoding="unicode"))
 
-    def test_no_fake_youtube(self):
+    def test_readme_reports_actual_owner_accepted_test24(self):
         readme = (ROOT / "README.md").read_text().lower()
-        self.assertIn("0.0.8~test5", readme)
+        self.assertIn("0.0.8~test24", readme)
+        self.assertIn("owner-confirmed", readme)
         self.assertIn("favourites", readme)
         self.assertIn("history", readme)
         self.assertIn("no stable release", readme)
-        self.assertIn("owner-installed test5 does not include these changes", readme)
+        self.assertIn("original firmware virtualkeyboard", readme)
+        self.assertIn("93b509055bfe63e1126ccca27f324829d8a2e0c6bbdd3d10976b30d7cf70935c", readme)
+        self.assertIn("b7692b1ecd681b60e653f894d062c06a5bbf08ab5363594ecf2a353d6e79f459", readme)
         self.assertIn("WarderYouTubeLibrary", (SRC / "ui.py").read_text())
         self.assertIn("WarderYouTubeKeyboard", (SRC / "search.py").read_text())
         self.assertIn("fairbird", (ROOT / "docs/ASSIMILATION.md").read_text())
