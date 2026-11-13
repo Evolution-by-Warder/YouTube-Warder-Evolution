@@ -102,6 +102,18 @@ def build(output_dir):
             raise ValueError("Invalid Warder plugin icon: " + filename)
         data_files.append((TARGET_PREFIX + "/images/" + filename, raw, False))
 
+    # One pre-rendered 1920x134 PNG shared across all embedded Enigma2
+    # screens. Generated at build time only; ZERO GPU/Python drawing at run.
+    from warder_header_art import render_header
+    header_png = render_header()
+    if not (header_png.startswith(b"\\x89PNG\\r\\n\\x1a\\n")
+            and int.from_bytes(header_png[16:20], "big") == 1920
+            and int.from_bytes(header_png[20:24], "big") == 134
+            and len(header_png) < 350_000):
+        raise ValueError("Invalid Warder shared header PNG")
+    data_files.append((TARGET_PREFIX + "/images/warder_header.png",
+                       header_png, False))
+
     # Include our self-contained Radio-derived GPL-2.0 backend and license.
     # No plugin dependency, downloader, credentials or third-party binaries.
     engine = PKG_DIR / "youtube_engine"
