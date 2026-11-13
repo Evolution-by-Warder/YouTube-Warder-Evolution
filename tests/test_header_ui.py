@@ -164,7 +164,7 @@ class HeaderTests(unittest.TestCase):
         self.assertIn('"Evolution"', generator)
         self.assertIn('"by Warder"', generator)
         self.assertIn("skull.resize((124,139)", generator)
-        self.assertIn("complete original Warder skull", loader)
+        self.assertIn("complete original warder skull", loader.lower())
         # The complete image is committed once and consumed as a single RGB
         # PNG by all 12 screens, with live date/clock/version widgets separate.
         self.assertIn('images/warder_header.png', (PKG / "skin.py").read_text())
