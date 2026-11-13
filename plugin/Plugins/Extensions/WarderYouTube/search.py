@@ -4,6 +4,7 @@
 Background jobs use Twisted workers; callbacks update Enigma2 only on reactor
 thread. yt-dlp is optional and is never installed by the plugin.
 """
+from .header_ui import add_header
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.MenuList import MenuList
@@ -36,6 +37,7 @@ class WarderYouTubeSearch(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
+        add_header(self)
         self.query = ""
         self.video_items = []
         self.page_token = ""
