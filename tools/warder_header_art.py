@@ -73,40 +73,57 @@ def render_header():
             if d < 1.5:
                 blend(x,y,(118,241,255),.87)
 
-    # Warder metallic cyber skull within the electric circular family emblem.
-    cx, cy = 94, 66
-    for radius in range(68,47,-1):
-        point(cx,cy,radius,(10,112,205),.013)
-    for angle in range(0,360,2):
-        a=math.radians(angle)
-        for radius in (56.5,58,60.5,65):
-            x,y=round(cx+radius*math.cos(a)),round(cy+radius*math.sin(a))
-            blend(x,y,(50,193,245),.85 if radius in (58,60.5) else .45)
-    point(cx,cy,53,(3,10,26),.88)
-    for y in range(28,109):
-        half = 24+(y-28)*.78 if y<46 else (37 if y<79 else 34-(y-79)*.32)
-        for x in range(int(cx-half),int(cx+half)+1):
-            f=max(.18,1-abs(x-cx)/half*.62)
-            color=100+28*math.cos((x-cx)*.12)+27*math.sin(y*.16)
-            blend(x,y,(color*f,(color+23)*f,(color+48)*f),.8)
-    for sign in (-1,1):
-        line(cx+sign*11,37,cx+sign*33,49,(4,10,29),.92,5)
-        line(cx+sign*34,49,cx+sign*36,67,(6,21,35),.9,4)
-        point(cx+sign*18,65,13,(2,3,10),.99)
-        point(cx+sign*18,65,7,(240,26,13),.98)
-        point(cx+sign*18,65,3,(255,210,125),.98)
-    for y in range(81,95):
-        for x in range(cx-6,cx+7):
-            if abs(x-cx)+(95-y)*.34 < 7:
-                blend(x,y,(2,6,15),.95)
-    line(cx-22,97,cx+22,97,(4,16,35),.93,4)
-    for i in range(-4,5):
-        line(cx+i*5,97,cx+i*5,106,(18,34,51),.97,2)
-    line(cx-21,108,cx+21,108,(100,214,240),.7)
-    for angle in (30,65,98,145,200,251,303):
-        a=math.radians(angle)
-        line(cx+60*math.cos(a),cy+60*math.sin(a),
-             cx+69*math.cos(a),cy+69*math.sin(a),(33,191,246),.7,2)
+    # Embed the exact owner-supplied Warder family logo ONCE, rather than
+    # drawing or layering an invented skull. PNG is indexed RGBA with a
+    # small palette. The source file remains separately versioned in the repo.
+    from pathlib import Path
+    skull_path = (Path(__file__).resolve().parents[1] /
+                  "plugin/Plugins/Extensions/WarderYouTube/images/warder_skull.png")
+    png = skull_path.read_bytes()
+    if not png.startswith(bytes((137,80,78,71,13,10,26,10))):
+        raise ValueError("Invalid original Warder skull asset")
+    offset, palette, alphas, pixels = 8, b"", b"", bytearray()
+    chunks = bytearray()
+    sw = sh = 0
+    while offset + 12 <= len(png):
+        length = int.from_bytes(png[offset:offset+4], "big")
+        tag = png[offset+4:offset+8]
+        payload = png[offset+8:offset+8+length]
+        if tag == b"IHDR":
+            sw = int.from_bytes(payload[:4], "big")
+            sh = int.from_bytes(payload[4:8], "big")
+            if payload[8:] != bytes((8,3,0,0,0)) or (sw,sh)!=(104,100):
+                raise ValueError("Unsupported original Warder skull format")
+        elif tag == b"PLTE":
+            palette = payload
+        elif tag == b"tRNS":
+            alphas = payload
+        elif tag == b"IDAT":
+            chunks.extend(payload)
+        offset += 12 + length
+        if tag == b"IEND":
+            break
+    if not palette or not chunks:
+        raise ValueError("Incomplete original Warder skull")
+    scanlines = zlib.decompress(bytes(chunks))
+    if len(scanlines) != sh*(sw+1):
+        raise ValueError("Unexpected Warder skull scanlines")
+    # The original indexed PNG deliberately uses filter=0 on every row.
+    if any(scanlines[row*(sw+1)] != 0 for row in range(sh)):
+        raise ValueError("Unsupported Warder skull PNG filter")
+    # One static compositing pass at build time. The receiver only decodes
+    # the finalized shared 1920x134 PNG; no runtime scaling or rendering.
+    target_w, target_h, origin_x, origin_y = 135, 129, 24, 2
+    for iy in range(target_h):
+        sy = iy * sh // target_h
+        for ix in range(target_w):
+            sx = ix * sw // target_w
+            color_index = scanlines[sy*(sw+1)+1+sx]
+            a = (alphas[color_index] / 255.0
+                 if color_index < len(alphas) else 1.0)
+            pi = color_index*3
+            rgb = tuple(palette[pi:pi+3])
+            blend(origin_x+ix, origin_y+iy, rgb, a)
 
     for x in (1392,1664):
         for y in range(20,112):
