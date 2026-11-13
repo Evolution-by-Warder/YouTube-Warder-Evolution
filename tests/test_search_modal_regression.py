@@ -268,6 +268,36 @@ class SearchModalRegressionTests(unittest.TestCase):
             callback()
         self.assertEqual(len(session.modal_calls), 1)
 
+    def test_inline_home_query_skips_keyboard_and_dispatches_real_search_once(self):
+        source = load_search(api_key="configured-key")
+        session = FakeSession()
+        screen = source.WarderYouTubeSearch(session, initial_query="Warder's favourite")
+        calls = []
+
+        class Deferred:
+            def addCallbacks(self, success, failure):
+                self.success, self.failure = success, failure
+
+        source.deferToThread = lambda *args, **kwargs: (
+            calls.append((args, kwargs)) or Deferred()
+        )
+        for callback in screen.onLayoutFinish:
+            callback()
+        self.assertEqual(calls, [])
+        self.assertEqual(session.modal_calls, [])
+
+        session.in_exec = True
+        for callback in screen.onShown:
+            callback()
+        self.assertEqual(screen.query, "Warder's favourite")
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0][0][1], "Warder's favourite")
+        self.assertEqual(session.modal_calls, [])
+        for callback in screen.onShown:
+            callback()
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(session.modal_calls, [])
+
     def test_fallback_keyboard_is_used_when_system_keyboard_is_missing(self):
         source = load_search()
         screen = source.WarderYouTubeSearch(FakeSession())
