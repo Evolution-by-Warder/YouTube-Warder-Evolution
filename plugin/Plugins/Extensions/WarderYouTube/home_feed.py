@@ -12,6 +12,8 @@ from urllib.request import Request, urlopen
 
 from .api import SearchError, MAX_RESPONSE_BYTES, VIDEO_ID
 from .home_categories import CATEGORY_IDS
+from .data_auth import (authorize_request, DataAuthorizationError,
+                        authorization_error, open_authorized)
 
 POPULAR_ENDPOINT = "https://www.googleapis.com/youtube/v3/videos"
 REGION = "SK"
@@ -42,15 +44,13 @@ def parse_popular_response(payload):
     return items
 
 
-def popular_videos_page(api_key, category_id="0", page_token="", region=REGION,
+def popular_videos_page(api_key="", category_id="0", page_token="", region=REGION,
                         opener=urlopen, timeout=8):
     """One bounded YouTube chart page, including the API's real next token.
 
     A category selection does not claim to reproduce the personalized
     recommendations or "Mixes" from the YouTube website.
     """
-    if not isinstance(api_key, str) or not api_key.strip():
-        raise SearchError("YouTube API key is required for popular videos.")
     if category_id not in CATEGORY_IDS:
         raise SearchError("Unsupported YouTube video category.")
     if not isinstance(region, str) or len(region) != 2 or not region.isalpha():
@@ -63,18 +63,20 @@ def popular_videos_page(api_key, category_id="0", page_token="", region=REGION,
         "chart": "mostPopular",
         "regionCode": region.upper(),
         "maxResults": MAX_RESULTS,
-        "key": api_key.strip(),
     }
     if category_id != "0":
         params["videoCategoryId"] = category_id
     if page_token:
         params["pageToken"] = page_token
-    request = Request(
-        POPULAR_ENDPOINT + "?" + urlencode(params),
-        headers={"Accept": "application/json", "User-Agent": "WarderYouTube/0.0.8"}
-    )
     try:
-        response = opener(request, timeout=timeout)
+        params, headers = authorize_request(params, {
+            "Accept": "application/json", "User-Agent": "WarderYouTube/0.0.8"
+        }, api_key)
+    except DataAuthorizationError as error:
+        raise SearchError(str(error)) from None
+    request = Request(POPULAR_ENDPOINT + "?" + urlencode(params), headers=headers)
+    try:
+        response = open_authorized(request, opener, timeout)
         try:
             body = response.read(MAX_RESPONSE_BYTES + 1)
         finally:
@@ -97,7 +99,7 @@ def popular_videos_page(api_key, category_id="0", page_token="", region=REGION,
                 "total_results": total}
     except HTTPError as error:
         if error.code in (400, 401, 403):
-            raise SearchError("YouTube API key, region, category or quota could not load videos.")
+            raise SearchError(authorization_error(error.code)) from None
         raise SearchError("YouTube popular video request failed.")
     except (URLError, OSError):
         raise SearchError("Popular videos are temporarily unavailable.")

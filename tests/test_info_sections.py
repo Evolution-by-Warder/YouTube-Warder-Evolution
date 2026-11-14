@@ -26,7 +26,7 @@ class DetailInfoTests(unittest.TestCase):
                 self.assertEqual(len(screen_session.opens), 1)
                 text = screen_session.opens[0][1][0]
                 self.assertIn("Video ID", text)
-                self.assertIn("YouTube API key", text)
+                self.assertIn("Sign in to YouTube", text)
 
     def test_library_details_are_async_and_ignore_duplicate_info(self):
         ui, mocks, videos, jobs, played, recorded = load_library()
@@ -86,7 +86,7 @@ class DetailInfoTests(unittest.TestCase):
             screen.info()
         self.assertEqual(len(session.opens), 1)
         self.assertIn("Video ID", session.opens[0][0][1])
-        self.assertIn("YouTube API key", session.opens[0][0][1])
+        self.assertIn("Sign in to YouTube", session.opens[0][0][1])
         self.assertEqual(session.opens[0][1]["video"]["video_id"], storage["history"][0]["video_id"])
         self.assertEqual(len(jobs), 2)  # initial Home feed only
 

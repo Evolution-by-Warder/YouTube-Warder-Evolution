@@ -14,6 +14,7 @@ from twisted.internet.threads import deferToThread
 
 from .skin import HOME_SKIN
 from .i18n import tr as _
+from .data_auth import can_use_data_api, account_available
 from .update_core import CURRENT_VERSION
 from .grid_model import move_index
 from .system_keyboard_pane import SystemKeyboardPane
@@ -122,11 +123,11 @@ def _load_personal_channel_videos(chip, all_channels=()):
 class WarderYouTubeHome(Screen):
     skin = HOME_SKIN
 
-    def __init__(self, session):
+    def __init__(self, session, initial_section=0):
         Screen.__init__(self, session)
         add_header(self)
         self.sections = [(_(name), _(description)) for name, description in SECTIONS]
-        self.index = 0
+        self.index = 2 if initial_section == 2 else 0
         self.focus_area = "nav"
         self.tile_index = 0
         # The inline search panel uses Enigma2's ORIGINAL VirtualKeyBoard
@@ -178,6 +179,7 @@ class WarderYouTubeHome(Screen):
         self._subscription_video_cache = {}
         self._inline_tv_login = None
         self._auth_maybe_changed = False
+        self._account_login_requested = False
         self._busy = False
         self._playback_active = False
         self._context_open = False
@@ -489,7 +491,7 @@ class WarderYouTubeHome(Screen):
         if not isinstance(data, dict):
             return
         # General categories belong to the official public Data API chart.
-        # They NEVER depend on Google TV OAuth or on followed channel names.
+        # Labels do not depend on followed channels; requests may use OAuth.
         self._subscriptions_reconnect = bool(data.get("reconnect"))
         self._subscription_load_error = bool(data.get("load_error"))
         if not self._subscription_load_error:
@@ -521,6 +523,10 @@ class WarderYouTubeHome(Screen):
             self.page_index = 0
             self._show_selected_subscription_chip()
         self._render_categories()
+        if self._account_login_requested:
+            self._account_login_requested = False
+            if self.index == 2 and not self._subscriptions_connected and not self._subscription_load_error:
+                self._open_subscription_login()
 
     def _personalization_failed(self, epoch):
         if not self._disposed and epoch == self._personal_epoch:
@@ -582,8 +588,8 @@ class WarderYouTubeHome(Screen):
             self._popular_fetched_at = previous["fetched"] if previous else 0
             self._popular_source = previous["source"] if previous else "api"
         if (category_id == "0" and self._popular_source == "public"
-                and get_api_key()):
-            # New API key entered in Settings since public Home was displayed.
+                and can_use_data_api(get_api_key())):
+            # Account connected or optional key entered since public Home was displayed.
             self._popular_cache = None
             self._popular_error = False
             self._popular_requested = False
@@ -597,8 +603,8 @@ class WarderYouTubeHome(Screen):
                 self._fallback_home()
             else:
                 self._show_message("Loading popular videos for Slovakia…")
-        elif self._popular_error and category_id != "0" and not get_api_key():
-            self._show_message("Choose an API key to browse video categories.")
+        elif self._popular_error and category_id != "0" and not can_use_data_api(get_api_key()):
+            self._show_message("Sign in to YouTube for video categories. A personal API key is optional.")
         elif self._popular_error:
             if category_id == "0":
                 self._fallback_home()
@@ -854,10 +860,11 @@ class WarderYouTubeHome(Screen):
             return
         key = get_api_key()
         category_id = self._selected_home_chip()["category_id"]
-        self._popular_source = "api" if key else "public"
-        if not key and category_id != "0":
+        use_api = can_use_data_api(key)
+        self._popular_source = "api" if use_api else "public"
+        if not use_api and category_id != "0":
             self._popular_error = True
-            self._show_message("Choose an API key to browse video categories.")
+            self._show_message("Sign in to YouTube for video categories. A personal API key is optional.")
             self._render_categories()
             return
         self._popular_requested = True
@@ -865,7 +872,7 @@ class WarderYouTubeHome(Screen):
         self._popular_more_loading = False
         self._popular_request_epoch += 1
         request_epoch = self._popular_request_epoch
-        if key and not refresh:
+        if use_api and not refresh:
             self._show_message("Loading popular videos for Slovakia…")
             self._render_categories()
         elif refresh:
@@ -877,7 +884,7 @@ class WarderYouTubeHome(Screen):
         try:
             work = (deferToThread(popular_videos_page, key,
                                   category_id=category_id)
-                    if key else deferToThread(public_home_videos))
+                    if use_api else deferToThread(public_home_videos))
             work.addCallbacks(
                 lambda payload: self._popular_loaded(payload, request_epoch),
                 lambda failure: self._popular_failed(failure, request_epoch))
@@ -921,6 +928,13 @@ class WarderYouTubeHome(Screen):
         if self._popular_cache:
             self["status"].setText(_("Live YouTube refresh unavailable; previous data shown."))
             return
+        error = getattr(failure, "value", None)
+        if isinstance(error, SearchError) and str(error).startswith((
+                "YouTube authorization expired", "Could not refresh YouTube sign-in",
+                "YouTube sign-in data is invalid")):
+            self._show_message(str(error))
+            self._render_categories()
+            return
         if self._popular_category_id == "0":
             self._fallback_home()
             self["status"].setText(
@@ -933,7 +947,7 @@ class WarderYouTubeHome(Screen):
     def _request_more_popular(self):
         if (self.index != 0 or self._disposed or self._popular_more_loading
                 or self._selected_home_chip()["kind"] not in ("all", "general")
-                or not self._popular_next_page_token or not get_api_key()):
+                or not self._popular_next_page_token or not can_use_data_api(get_api_key())):
             return False
         token = self._popular_next_page_token
         category_id = self._popular_category_id
@@ -1012,11 +1026,12 @@ class WarderYouTubeHome(Screen):
             self._show_tiles(self._local_items("favourites"), "Saved videos")
         elif self.index == 5:
             self._show_details([
-                _("API key") + ": " + (_("Configured") if get_api_key() else _("Not configured")),
+                _("YouTube account") + ": " + (_("Signed in") if account_available() else _("Not signed in")),
+                _("No personal API key is needed when signed in."),
                 _("Maximum video quality") + ": %sp" % get_quality(),
                 "yt-dlp: " + (_("Available") if is_available() else _("Not installed")),
                 _("Language from Enigma2"),
-                _("API stored unencrypted"),
+                _("Account access is stored locally on this receiver."),
             ])
         elif self.index == 6:
             self._show_details([
@@ -1370,7 +1385,7 @@ class WarderYouTubeHome(Screen):
                               "history" if index == 3 else "favourites")
         elif index == 5:
             from .settings import WarderYouTubeSettings
-            self.session.open(WarderYouTubeSettings)
+            self.session.openWithCallback(self._settings_closed, WarderYouTubeSettings)
         elif index == 6:
             from .update_ui import WarderYouTubeUpdateCheck
             self.session.open(WarderYouTubeUpdateCheck)
@@ -1379,6 +1394,20 @@ class WarderYouTubeHome(Screen):
                 self._open_index(5)
         else:
             self["status"].setText(_("This section is not supported yet."))
+
+    def _settings_closed(self, action=None):
+        if self._disposed:
+            return
+        self._auth_maybe_changed = True
+        if action == "account":
+            self._account_login_requested = not account_available()
+            self._personal_fetched_at = 0
+            self._select_nav(2)
+            if not self._subscriptions_connected and not self._personal_requested:
+                self._account_login_requested = False
+                self._open_subscription_login()
+        else:
+            self._update_preview()
 
     def selected_video(self):
         if (self.focus_area == "tiles" and
@@ -1402,12 +1431,12 @@ class WarderYouTubeHome(Screen):
             return
         from .info_ui import WarderYouTubeInfo
         key = get_api_key()
-        if not key:
+        if not can_use_data_api(key):
             self.session.open(
                 WarderYouTubeInfo,
                 format_video_info(
                     item, translate=_,
-                    note="Detailed information requires a YouTube API key."
+                    note="Sign in to YouTube for detailed video information. A personal API key is optional."
                 ), video=item, thumbnail_pixmap=self._info_cached_thumbnail(item)
             )
             return

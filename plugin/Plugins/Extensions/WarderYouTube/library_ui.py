@@ -22,6 +22,7 @@ from .settings import get_quality, get_api_key
 from .video_metadata import fetch_video_info
 from .video_info_display import format_video_info
 from .i18n import tr as _
+from .data_auth import can_use_data_api, account_available
 from .confirm_ui import WarderYouTubeConfirm
 from .info_ui import WarderYouTubeInfo
 
@@ -124,12 +125,12 @@ class WarderYouTubeLibrary(Screen):
         if item is None:
             return
         key = get_api_key()
-        if not key:
+        if not can_use_data_api(key):
             self.session.open(
                 WarderYouTubeInfo,
                 format_video_info(
                     item, translate=_,
-                    note="Detailed information requires a YouTube API key."
+                    note="Sign in to YouTube for detailed video information. A personal API key is optional."
                 ), video=item
             )
             return

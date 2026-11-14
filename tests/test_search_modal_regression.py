@@ -320,7 +320,7 @@ class SearchModalRegressionTests(unittest.TestCase):
         for callback in screen.onShown:
             callback()
         self.assertEqual(session.modal_calls, [])
-        self.assertIn("Search needs", screen["status"].text)
+        self.assertIn("Sign in to YouTube", screen["status"].text)
 
     def test_installed_ytdlp_without_api_key_still_opens_once(self):
         source = load_search(api_key="", have_ytdlp=True)

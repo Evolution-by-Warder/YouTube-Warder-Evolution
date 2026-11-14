@@ -48,9 +48,9 @@ class ApprovedSourceTests(unittest.TestCase):
         self.assertEqual(assigned['OAUTH_TV_CLIENT_ID'],'')
         self.assertEqual(assigned['OAUTH_TV_CLIENT_SECRET'],'')
 
-    def test_runtime_and_builder_have_distinct_test51_version(self):
-        self.assertEqual(builder.VERSION,'0.0.8~test51')
-        self.assertIn('CURRENT_VERSION = "0.0.8~test51"',(SRC/'update_core.py').read_text())
+    def test_runtime_and_builder_have_matching_candidate_version(self):
+        self.assertEqual(builder.VERSION,'0.0.8~test52')
+        self.assertIn('CURRENT_VERSION = "0.0.8~test52"',(SRC/'update_core.py').read_text())
 
 
 class AccountLifecycleTests(unittest.TestCase):

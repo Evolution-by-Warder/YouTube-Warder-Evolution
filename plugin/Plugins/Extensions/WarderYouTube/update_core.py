@@ -20,7 +20,7 @@ from urllib.request import Request, urlopen
 REPO = "Evolution-by-Warder/YouTube-Warder-Evolution"
 PACKAGE = "enigma2-plugin-extensions-youtube-warder-evolution"
 PRODUCT = "YouTube Warder Evolution"
-CURRENT_VERSION = "0.0.8~test51"
+CURRENT_VERSION = "0.0.8~test52"
 FEED_TESTING = ("https://raw.githubusercontent.com/" + REPO +
                 "/feature/native-search-v002/update/testing.json")
 FEED_STABLE = ("https://raw.githubusercontent.com/" + REPO +

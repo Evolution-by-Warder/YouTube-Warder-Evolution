@@ -57,7 +57,7 @@ def make_module(name, **items):
 
 
 @contextmanager
-def environment(configured="", file_key=""):
+def environment(configured="", file_key="", advanced=True):
     api_key = ConfigValue(configured)
     quality = ConfigValue("720")
     cfg = SimpleNamespace(plugins=SimpleNamespace(warderyoutube=SimpleNamespace(
@@ -111,7 +111,10 @@ def environment(configured="", file_key=""):
     with patch.dict(sys.modules, modules):
         spec.loader.exec_module(mod)
         session = FakeSession()
-        yield mod, mod.WarderYouTubeSettings(session), session, api_key, cfgfile, fake_confirm, fake_system_keyboard
+        screen = mod.WarderYouTubeSettings(session)
+        if advanced:
+            screen.toggle_advanced()
+        yield mod, screen, session, api_key, cfgfile, fake_confirm, fake_system_keyboard
 
 
 class MaskedKeyTests(unittest.TestCase):

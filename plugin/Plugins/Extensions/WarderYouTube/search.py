@@ -21,6 +21,7 @@ from .video_metadata import VideoInfoError, fetch_video_info
 from .skin import SEARCH_SKIN
 from .local_library import toggle_favourite, record_opened, list_videos, LibraryError
 from .i18n import tr as _
+from .data_auth import can_use_data_api, account_available
 from .keyboard import WarderYouTubeKeyboard
 try:
     from .native_keyboard import WarderNativeSearchKeyboard
@@ -97,8 +98,7 @@ class WarderYouTubeSearch(Screen):
             self.open_keyboard()
         else:
             self["status"].setText(
-                _("Search needs your API key or an installed yt-dlp. "
-                  "Press YELLOW to configure Settings.")
+                _("Sign in to YouTube to search, or use the optional API key or yt-dlp.")
             )
 
     def mark_closed(self):
@@ -107,14 +107,19 @@ class WarderYouTubeSearch(Screen):
 
     def open_settings(self):
         if not self.busy:
-            self.session.open(WarderYouTubeSettings)
+            self.session.openWithCallback(self._settings_closed, WarderYouTubeSettings)
+
+    def _settings_closed(self, action=None):
+        if action == "account" and not self.closed:
+            from .ui import WarderYouTubeHome
+            self.session.open(WarderYouTubeHome, 2)
 
     def open_keyboard(self):
         if self.busy or self.closed:
             return
         if not select_backend(get_api_key(), is_available()):
             self["status"].setText(
-                _("No search backend: set an API key or install yt-dlp.")
+                _("Sign in to YouTube to search, or use the optional API key or yt-dlp.")
             )
             return
         editor = WarderNativeSearchKeyboard or WarderYouTubeKeyboard
@@ -310,12 +315,12 @@ class WarderYouTubeSearch(Screen):
         if self.busy or self.closed or self.playback_active:
             return
         api_key = get_api_key()
-        if not api_key:
+        if not can_use_data_api(api_key):
             self.session.open(
                 WarderYouTubeInfo,
-                "Názov: %s\nKanál: %s\n\n"
-                "Podrobné údaje vyžadujú vlastný YouTube Data API kľúč." %
-                (video.get("title") or "", video.get("channel") or ""),
+                "%s\n%s\n\n%s" %
+                (video.get("title") or "", video.get("channel") or "",
+                 _("Sign in to YouTube for detailed video information. A personal API key is optional.")),
                 video=video
             )
             return

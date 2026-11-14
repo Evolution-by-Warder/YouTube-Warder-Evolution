@@ -4,12 +4,17 @@ import io
 import json
 from pathlib import Path
 import unittest
+import sys
+import types
 from urllib.error import HTTPError
 from urllib.parse import parse_qs, urlparse
 
 FILE = (Path(__file__).resolve().parents[1] /
         "plugin/Plugins/Extensions/WarderYouTube/video_metadata.py")
-spec = importlib.util.spec_from_file_location("test_metadata_module", str(FILE))
+package = types.ModuleType("_test_meta52")
+package.__path__ = [str(FILE.parent)]
+sys.modules["_test_meta52"] = package
+spec = importlib.util.spec_from_file_location("_test_meta52.video_metadata", str(FILE))
 metadata = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(metadata)
 

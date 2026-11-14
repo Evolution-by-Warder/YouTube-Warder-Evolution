@@ -16,6 +16,7 @@ from .search_backend import SearchBackendError, search_with_ytdlp, select_backen
 from .settings import get_api_key
 from .resolver import is_available
 from .i18n import tr as _
+from .data_auth import can_use_data_api, account_available
 
 
 class HomeSearchFlow:
@@ -63,7 +64,7 @@ class HomeSearchFlow:
         key = get_api_key()
         backend = select_backend(key, is_available())
         if not backend:
-            self._status("No search backend: set an API key or install yt-dlp.")
+            self._status("Sign in to YouTube to search, or use the optional API key or yt-dlp.")
             return
         if not page_token:
             self.next_page_token = ""
@@ -171,12 +172,12 @@ class HomeSearchFlow:
             return
         from .info_ui import WarderYouTubeInfo
         key = get_api_key()
-        if not key:
+        if not can_use_data_api(key):
             self.home.session.open(
                 WarderYouTubeInfo,
-                "Názov: %s\nKanál: %s\n\n"
-                "Podrobné údaje vyžadujú vlastný YouTube Data API kľúč." %
-                (video.get("title") or "", video.get("channel") or "")
+                "%s\n%s\n\n%s" %
+                (video.get("title") or "", video.get("channel") or "",
+                 _("Sign in to YouTube for detailed video information. A personal API key is optional."))
             )
             return
         from .video_metadata import fetch_video_info, VideoInfoError

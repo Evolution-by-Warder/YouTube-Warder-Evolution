@@ -12,6 +12,7 @@ from .resolver import is_available
 from .i18n import tr as _
 from .confirm_ui import WarderYouTubeConfirm
 from .api_key_file import read_manual_key, VALID_KEY
+from .data_auth import account_available
 
 QUALITY_VALUES = ("360", "480", "720", "1080", "1440", "2160")
 
@@ -57,6 +58,7 @@ class WarderYouTubeSettings(Screen):
         )
         self["key_state"] = Label("")
         self._key_dialog_open = False
+        self._advanced = False
         self["quality"] = Label("")
         self["resolver_state"] = Label("")
         self["warning"] = Label(
@@ -67,33 +69,81 @@ class WarderYouTubeSettings(Screen):
             _("OK/Green: API key   Blue: quality   Yellow: delete API key   Exit: back")
         )
         self["actions"] = ActionMap(
-            ["OkCancelActions", "ColorActions"],
-            {"ok": self.prompt_key, "green": self.prompt_key,
-             "yellow": self.confirm_clear, "blue": self.toggle_quality,
-             "red": self.close,
-             "cancel": self.close},
+            ["OkCancelActions", "ColorActions", "MenuActions"],
+            {"ok": self.primary_action, "green": self.primary_action,
+             "yellow": self.secondary_action, "blue": self.toggle_quality,
+             "menu": self.toggle_advanced, "red": self.back,
+             "cancel": self.back},
             -1
         )
         self.refresh()
 
     def refresh(self):
-        in_config = bool(config.plugins.warderyoutube.api_key.value.strip())
-        in_file = bool(read_manual_key()) if not in_config else False
-        self["key_green"].setText(
-            _("Change API key") if in_config or in_file else _("API key")
-        )
-        # Never put a saved credential into a GUI Label, even when the user
-        # selects the API key row. Fixed-length stars do not expose key length.
-        self["key_state"].setText(
-            _("API key") + ": ********" + (" (" + _("manual file") + ")" if in_file else "")
-            if in_config or in_file else
-            _("API kľúč: nenastavený (vyhľadávanie cez yt-dlp)")
-        )
+        connected = account_available()
+        if self._advanced:
+            in_config = bool(config.plugins.warderyoutube.api_key.value.strip())
+            in_file = bool(read_manual_key()) if not in_config else False
+            self["section_search"].setText(_("Optional API key").upper())
+            self["key_green"].setText(
+                _("Change API key") if in_config or in_file else _("API key"))
+            self["key_yellow"].setText(_("Delete API key"))
+            self["key_state"].setText(
+                _("API key") + ": ********" + (" (" + _("manual file") + ")" if in_file else "")
+                if in_config or in_file else _("Optional API key: not configured"))
+            self["warning"].setText(_("API stored unencrypted") + "\n" +
+                                    _("API key visible while typing"))
+            self["status"].setText(_("Optional backup for signed-out use. MENU: back to account."))
+            self["footer"].setText(_(
+                "OK/Green: API key   Blue: quality   Yellow: delete API key   Exit: back"))
+        else:
+            self["section_search"].setText(_("YouTube account").upper())
+            self["key_green"].setText(_("Manage account") if connected else _("Sign in to YouTube"))
+            self["key_yellow"].setText(_("Advanced"))
+            self["key_state"].setText(
+                _("Signed in") + "\n" + _("No personal API key is needed.")
+                if connected else _("Not signed in") + "\n" + _("Sign in using a TV code."))
+            self["warning"].setText(
+                _("Your Google password is never entered in this plugin.") + "\n" +
+                _("Confirm the TV code on a phone or computer.") + "\n" +
+                _("Account access is stored locally on this receiver."))
+            self["status"].setText(_("Signed-in account: Home, categories, search and video details.")
+                if connected else _("Sign in for categories and subscriptions. Public playback needs no sign-in."))
+            self["footer"].setText(_("OK/Green: account   Yellow/MENU: advanced   Blue: quality"))
         self["quality"].setText(_("Maximum video quality") + ": %sp" % get_quality())
         self["resolver_state"].setText(
             _("yt-dlp: dostupný (vyhľadávanie aj záložné prehrávanie)") if is_available() else
-            _("yt-dlp: nenainštalovaný (na prehrávanie nie je nutný)")
-        )
+            _("yt-dlp: nenainštalovaný (na prehrávanie nie je nutný)"))
+
+    def primary_action(self):
+        if self._key_dialog_open:
+            return
+        if self._advanced:
+            self.prompt_key()
+        else:
+            # The hosting Home opens its existing right-hand Odbery panel.
+            self.close("account")
+
+    def secondary_action(self):
+        if self._key_dialog_open:
+            return
+        if self._advanced:
+            self.confirm_clear()
+        else:
+            self.toggle_advanced()
+
+    def toggle_advanced(self):
+        if not self._key_dialog_open:
+            self._advanced = not self._advanced
+            self.refresh()
+
+    def back(self):
+        if self._key_dialog_open:
+            return
+        if self._advanced:
+            self._advanced = False
+            self.refresh()
+        else:
+            self.close()
 
     def toggle_quality(self):
         setting = config.plugins.warderyoutube.max_quality

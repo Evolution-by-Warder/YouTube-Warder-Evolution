@@ -11,6 +11,8 @@ import shutil
 import subprocess
 from urllib.parse import urlsplit
 
+from .data_auth import can_use_data_api
+
 VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
 PAGE_SIZE = 15
 MAX_RESULTS = 60
@@ -23,7 +25,7 @@ class SearchBackendError(Exception):
 
 
 def select_backend(api_key, have_ytdlp):
-    if isinstance(api_key, str) and api_key.strip():
+    if can_use_data_api(api_key):
         return "api"
     return "yt-dlp" if have_ytdlp else None
 

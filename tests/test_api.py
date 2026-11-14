@@ -4,11 +4,16 @@ import io
 import json
 from pathlib import Path
 import unittest
+import sys
+import types
 from urllib.error import HTTPError
 from urllib.parse import parse_qs, urlparse
 
 API = Path(__file__).resolve().parents[1] / "plugin/Plugins/Extensions/WarderYouTube/api.py"
-spec = importlib.util.spec_from_file_location("warderyoutube_api", str(API))
+package = types.ModuleType("_test_api52")
+package.__path__ = [str(API.parent)]
+sys.modules["_test_api52"] = package
+spec = importlib.util.spec_from_file_location("_test_api52.api", str(API))
 api = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(api)
 

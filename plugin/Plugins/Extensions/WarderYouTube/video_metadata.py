@@ -11,6 +11,9 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+from .data_auth import (authorize_request, DataAuthorizationError,
+                        authorization_error, open_authorized)
+
 ENDPOINT = "https://www.googleapis.com/youtube/v3/videos"
 VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
 DURATION = re.compile(r"^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$")
@@ -65,19 +68,19 @@ def parse_video_info(payload, expected_id):
     }
 
 
-def fetch_video_info(video_id, api_key, opener=urlopen, timeout=8):
+def fetch_video_info(video_id, api_key="", opener=urlopen, timeout=8):
     if not isinstance(video_id, str) or not VIDEO_ID.fullmatch(video_id):
         raise VideoInfoError("Invalid video ID.")
-    if not isinstance(api_key, str) or not api_key.strip():
-        raise VideoInfoError("Video details require a personal YouTube API key.")
-    url = ENDPOINT + "?" + urlencode({
-        "part": "snippet,contentDetails,statistics", "id": video_id, "key": api_key.strip()
-    })
-    req = Request(url, headers={
-        "Accept": "application/json", "User-Agent": "WarderYouTube/0.0.6"
-    })
     try:
-        response = opener(req, timeout=timeout)
+        params, headers = authorize_request({
+            "part": "snippet,contentDetails,statistics", "id": video_id
+        }, {"Accept": "application/json", "User-Agent": "WarderYouTube/0.0.8"}, api_key)
+    except DataAuthorizationError as error:
+        raise VideoInfoError(str(error)) from None
+    url = ENDPOINT + "?" + urlencode(params)
+    req = Request(url, headers=headers)
+    try:
+        response = open_authorized(req, opener, timeout)
         try:
             raw = response.read(MAX_RESPONSE_BYTES + 1)
         finally:
@@ -91,7 +94,7 @@ def fetch_video_info(video_id, api_key, opener=urlopen, timeout=8):
         return parse_video_info(data, video_id)
     except HTTPError as exc:
         if exc.code in (400, 401, 403):
-            raise VideoInfoError("YouTube rejected video details; check API access or quota.")
+            raise VideoInfoError(authorization_error(exc.code)) from None
         raise VideoInfoError("Video metadata request failed (HTTP %d)." % exc.code)
     except (URLError, OSError):
         raise VideoInfoError("Network unavailable while loading video details.")

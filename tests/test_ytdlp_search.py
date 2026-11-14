@@ -4,10 +4,15 @@ import json
 from pathlib import Path
 import subprocess
 import unittest
+import sys
+import types
 
 FILE = (Path(__file__).resolve().parents[1]
         / "plugin/Plugins/Extensions/WarderYouTube/search_backend.py")
-spec = importlib.util.spec_from_file_location("warder_ytdlp_backend", str(FILE))
+package = types.ModuleType("_test_yd52")
+package.__path__ = [str(FILE.parent)]
+sys.modules["_test_yd52"] = package
+spec = importlib.util.spec_from_file_location("_test_yd52.search_backend", str(FILE))
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 

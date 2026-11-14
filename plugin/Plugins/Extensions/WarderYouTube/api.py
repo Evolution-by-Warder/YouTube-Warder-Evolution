@@ -12,6 +12,9 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+from .data_auth import (authorize_request, DataAuthorizationError,
+                        authorization_error, open_authorized)
+
 SEARCH_ENDPOINT = "https://www.googleapis.com/youtube/v3/search"
 MAX_RESPONSE_BYTES = 1024 * 1024
 VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
@@ -26,7 +29,7 @@ def parse_search_response(payload):
     if not isinstance(payload, dict):
         raise SearchError("Invalid YouTube response.")
     if "error" in payload:
-        raise SearchError("YouTube rejected the request. Check your API key and quota.")
+        raise SearchError("YouTube denied API access or its quota was exceeded. Try again later.")
     if not isinstance(payload.get("items"), list):
         raise SearchError("Invalid YouTube response: missing video list.")
 
@@ -63,13 +66,11 @@ def parse_search_response(payload):
     return {"items": items, "next_page_token": token}
 
 
-def search_videos(query, api_key, page_token="", opener=urlopen, timeout=8):
+def search_videos(query, api_key="", page_token="", opener=urlopen, timeout=8):
     """Perform one API search; designed for Twisted deferToThread.
 
     Does not expose the key, URL, or upstream response body in error messages.
     """
-    if not isinstance(api_key, str) or not api_key.strip():
-        raise SearchError("Set your YouTube Data API key in Settings first.")
     if not isinstance(query, str) or not query.strip():
         raise SearchError("Enter a search phrase.")
     query = query.strip()
@@ -80,14 +81,20 @@ def search_videos(query, api_key, page_token="", opener=urlopen, timeout=8):
 
     params = {
         "part": "snippet", "type": "video", "maxResults": 15,
-        "q": query, "key": api_key.strip(), "safeSearch": "moderate",
+        "q": query, "safeSearch": "moderate",
     }
     if page_token:
         params["pageToken"] = page_token
-    url = SEARCH_ENDPOINT + "?" + urlencode(params)
-    request = Request(url, headers={"Accept": "application/json", "User-Agent": "WarderYouTube/0.0.2"})
     try:
-        response = opener(request, timeout=timeout)
+        params, headers = authorize_request(params, {
+            "Accept": "application/json", "User-Agent": "WarderYouTube/0.0.8"
+        }, api_key)
+    except DataAuthorizationError as error:
+        raise SearchError(str(error)) from None
+    url = SEARCH_ENDPOINT + "?" + urlencode(params)
+    request = Request(url, headers=headers)
+    try:
+        response = open_authorized(request, opener, timeout)
         try:
             content = response.read(MAX_RESPONSE_BYTES + 1)
         finally:
@@ -101,7 +108,7 @@ def search_videos(query, api_key, page_token="", opener=urlopen, timeout=8):
         return parse_search_response(payload)
     except HTTPError as error:
         if error.code in (400, 401, 403):
-            raise SearchError("YouTube rejected the request (HTTP %s). Check your API key or quota." % error.code)
+            raise SearchError(authorization_error(error.code)) from None
         raise SearchError("YouTube request failed (HTTP %s)." % error.code)
     except (URLError, OSError):
         raise SearchError("Network unavailable or YouTube did not respond.")
