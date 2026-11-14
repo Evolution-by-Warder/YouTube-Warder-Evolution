@@ -8,6 +8,7 @@ import os
 
 MESSAGES = {
     "en": {
+        "Download finished: 100%": "Download finished: 100%",
         "Nová verzia: ": "New version: ",
         "Príprava overenej aktualizácie...": "Preparing verified update...",
         "Aktualizáciu neprerušujte. Po úspechu sa obnoví GUI Enigma2.": "Do not interrupt the update. Enigma2 GUI will restart after success.",
@@ -138,6 +139,7 @@ MESSAGES = {
         "Waiting for Google account authorization…": "Waiting for Google account authorization…",
     },
     "sk": {
+        "Download finished: 100%": "Sťahovanie dokončené: 100 %",
         "Nová verzia: ": "Nová verzia: ",
         "Príprava overenej aktualizácie...": "Príprava overenej aktualizácie...",
         "Aktualizáciu neprerušujte. Po úspechu sa obnoví GUI Enigma2.": "Aktualizáciu neprerušujte. Po úspechu sa obnoví GUI Enigma2.",
@@ -436,6 +438,7 @@ MESSAGES = {
         "Google account connected.": "Google účet pripojený.",
     },
     "cs": {
+        "Download finished: 100%": "Stahování dokončeno: 100 %",
         "Nová verzia: ": "Nová verze: ",
         "Príprava overenej aktualizácie...": "Příprava ověřené aktualizace...",
         "Aktualizáciu neprerušujte. Po úspechu sa obnoví GUI Enigma2.": "Nepřerušujte aktualizaci. Po dokončení se restartuje GUI Enigma2.",
@@ -728,6 +731,7 @@ MESSAGES = {
         "Google account connected.": "Google účet připojen.",
     },
     "de": {
+        "Download finished: 100%": "Download abgeschlossen: 100 %",
         "Nová verzia: ": "Neue Version: ",
         "Príprava overenej aktualizácie...": "Verifiziertes Update wird vorbereitet...",
         "Aktualizáciu neprerušujte. Po úspechu sa obnoví GUI Enigma2.": "Update nicht unterbrechen. Die Enigma2-Oberfläche startet nach Erfolg neu.",
