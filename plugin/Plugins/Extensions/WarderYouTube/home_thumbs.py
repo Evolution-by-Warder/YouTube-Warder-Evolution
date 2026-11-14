@@ -7,7 +7,7 @@ Never load thumbnails for hidden pages or stale menu selections.
 from enigma import ePicLoad
 from twisted.internet.threads import deferToThread
 
-from .thumbnails import fetch_thumbnail, cleanup_cache
+from .thumbnails import fetch_thumbnail
 from .tile_dimensions import THUMB_WIDTH, THUMB_HEIGHT
 
 VISIBLE = 6
@@ -146,8 +146,6 @@ class HomeThumbs:
         if not self.closed and path and req[0] == self.epoch:
             self.decodes.append((req[0], req[1], path, req[2]))
             self._start_decode()
-        if self.closed and self.active == 0:
-            cleanup_cache()
         self._pump()
 
     def _start_decode(self):
@@ -211,5 +209,3 @@ class HomeThumbs:
         self.image_cache.clear()
         self._release()
         self.decoder = None
-        if self.active == 0:
-            cleanup_cache()
