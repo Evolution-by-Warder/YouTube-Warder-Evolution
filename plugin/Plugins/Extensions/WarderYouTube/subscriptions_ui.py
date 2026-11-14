@@ -187,6 +187,7 @@ class WarderYouTubeSubscriptions(Screen):
         self.onLayoutFinish.append(self._start_thumbs)
         self.onLayoutFinish.append(self._start_timer)
         self.onShown.append(self.on_show)
+        self.onShown.append(self._restore_thumbnails)
         self.onClose.append(self.dispose)
 
     def _start_thumbs(self):
@@ -196,6 +197,16 @@ class WarderYouTubeSubscriptions(Screen):
 
     def _video_mode(self):
         return self.mode in ("recent", "channel_videos", "channels")
+
+    def _restore_thumbnails(self):
+        # Returning from player or INFO can detach native ePixmap backing.
+        # Recreate only visible image slots; the shared loader caches decoded
+        # frames and recovers stale ePicLoad without restarting the plugin.
+        if (self.disposed or not self._video_mode()
+                or not self.mode_items or not self.thumbs.ready):
+            return
+        first = self.page_index * VISIBLE_TILES
+        self.thumbs.show(self.mode_items[first:first + VISIBLE_TILES])
 
     def _hide_tiles(self):
         self.thumbs.show([])
