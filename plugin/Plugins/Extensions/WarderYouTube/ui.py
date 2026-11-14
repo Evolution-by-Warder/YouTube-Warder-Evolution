@@ -62,21 +62,32 @@ def _discover_home_subscriptions():
         from .subscriptions_auth import account_connected, access_token
         from .subscriptions_api import subscriptions_list
         if not account_connected():
-            return {"connected": False, "channels": [], "home_chips": []}
+            return {"connected": False, "channels": [],
+                    "home_chips": [], "home_state": "not_connected"}
         token = access_token()
     except Exception:
-        return {"connected": False, "channels": [], "home_chips": []}
+        return {"connected": False, "channels": [],
+                "home_chips": [], "home_state": "not_connected"}
     try:
         channels = subscriptions_list(token)
     except Exception:
         channels = []
+    state = "loaded"
     try:
         home = live_home(token)
-    except Exception:
+    except Exception as error:
+        # A Data API OAuth token does not guarantee WEB Innertube access.
+        # Expose only a fixed status code, never exception text or tokens.
+        safe_codes = ("web_auth_rejected", "not_authenticated", "no_chips",
+                      "network", "http_failure", "invalid_response")
+        state = getattr(error, "reason", "unavailable")
+        if state not in safe_codes:
+            state = "unavailable"
         home = {"chips": [], "videos": []}
     return {"connected": True, "channels": channels,
             "home_chips": home.get("chips") or [],
-            "home_videos": home.get("videos") or []}
+            "home_videos": home.get("videos") or [],
+            "home_state": state}
 
 
 def _load_live_home_videos(chip):
@@ -156,6 +167,7 @@ class WarderYouTubeHome(Screen):
         self._category_cursor = 0
         self._category_offset = 0
         self._home_chips = build_home_chips()
+        self._home_state = "not_connected"
         self._home_channels = []
         self._subscription_chips = []
         self._subscription_index = 0
@@ -337,6 +349,21 @@ class WarderYouTubeHome(Screen):
             return self._subscription_chips[self._subscription_index]
         return None
 
+    def _home_status_message(self):
+        """Explain missing genuine chips without guessing categories."""
+        messages = {
+            "not_connected": "Connect your YouTube account under Subscriptions first.",
+            "web_auth_rejected": "YouTube Web rejected TV OAuth access to personal categories.",
+            "not_authenticated": "YouTube did not return an authenticated web Home feed.",
+            "no_chips": "YouTube did not return the Home category list.",
+            "network": "YouTube category service could not be reached.",
+            "http_failure": "YouTube category service returned an error.",
+            "invalid_response": "YouTube category response was not usable.",
+            "unavailable": "Real YouTube Home categories are unavailable for this account.",
+            "loaded": "Real YouTube Home categories are unavailable for this account.",
+        }
+        return messages.get(self._home_state, messages["unavailable"])
+
     def _active_chips(self):
         if self.index == 2:
             return self._subscription_chips
@@ -353,12 +380,12 @@ class WarderYouTubeHome(Screen):
 
     def _render_categories(self):
         """One-line scrolling rail in the SAME right pane for Home and Odbery."""
-        visible = self.index in (0, 2)
+        chips = self._active_chips() if self.index in (0, 2) else []
+        visible = bool(chips)
         if visible:
             self["subtitle"].hide()
         else:
             self["subtitle"].show()
-        chips = self._active_chips() if visible else []
         selected = (self._active_chip_cursor() if self.focus_area == "categories"
                     else self._active_chip_index())
         old_offset = (self._subscription_offset if self.index == 2
@@ -421,8 +448,7 @@ class WarderYouTubeHome(Screen):
             if self.index == 2:
                 self._open_subscription_login()
             else:
-                self["status"].setText(_(
-                    "Real YouTube Home categories are unavailable for this account."))
+                self["status"].setText(_(self._home_status_message()))
             return
         self.focus_area = "categories"
         if self.index == 2:
@@ -486,7 +512,13 @@ class WarderYouTubeHome(Screen):
         self._personal_fetched_at = monotonic()
         if not isinstance(data, dict):
             return
-        old_id = self._selected_home_chip()["id"]
+        state = data.get("home_state") or "unavailable"
+        self._home_state = state if state in (
+            "loaded", "not_connected", "web_auth_rejected",
+            "not_authenticated", "no_chips", "network",
+            "http_failure", "invalid_response", "unavailable"
+        ) else "unavailable"
+        old_id = self._selected_home_chip()["id"
         cursor_id = (self._home_chips[self._category_cursor]["id"]
                      if 0 <= self._category_cursor < len(self._home_chips)
                      else old_id)
@@ -1403,8 +1435,7 @@ class WarderYouTubeHome(Screen):
             if subscription:
                 self._open_subscription_login()
             else:
-                self["status"].setText(_(
-                    "Real YouTube Home categories are unavailable for this account."))
+                self["status"].setText(_(self._home_status_message()))
             return
         from .quick_select_ui import WarderYouTubeQuickSelect
         self._quick_select_open = True
