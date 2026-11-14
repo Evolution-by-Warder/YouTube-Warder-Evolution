@@ -117,6 +117,30 @@ class PreviewThumbTests(unittest.TestCase):
         self.assertEqual(screen["preview_thumb0"].image, "native ePixmap pointer")
         self.assertEqual(len(jobs), 1)  # No duplicate network request.
 
+    def test_fast_page_revisit_reuses_inflight_download(self):
+        thumbs, screen, jobs, decoder = load()
+        thumbs.start()
+        thumbs.show(items(2))
+        self.assertEqual(len(jobs), 2)
+        thumbs.show(items(1))
+        self.assertEqual(len(jobs), 2)  # same URL was already in flight
+        jobs[0][1].success("/tmp/reused.jpg")
+        self.assertEqual(decoder.decode_paths, ["/tmp/reused.jpg"])
+        decoder.callbacks[0]()
+        self.assertTrue(screen["preview_thumb0"].visible)
+
+    def test_old_page_download_does_not_block_new_visible_queue(self):
+        thumbs, screen, jobs, decoder = load()
+        thumbs.start()
+        thumbs.show(items(2))
+        thumbs.show(items(3)[2:])  # third, distinct URL
+        self.assertEqual(len(jobs), 2)
+        jobs[0][1].success("/tmp/stale.jpg")
+        self.assertEqual(len(decoder.decode_paths), 0)
+        self.assertEqual(len(jobs), 3)  # newly visible item now starts
+        jobs[2][1].success("/tmp/visible.jpg")
+        self.assertEqual(decoder.decode_paths, ["/tmp/visible.jpg"])
+
     def test_stale_image_never_reappears_after_switching_section(self):
         thumbs, screen, jobs, decoder = load()
         thumbs.start()
