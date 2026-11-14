@@ -22,9 +22,16 @@ class WarderYouTubeContext(Screen):
         ]
         if mode == "search":
             self.options.append(("search", _("New search")))
-        else:
+        elif mode == "favourites":
+            # In Favourites, "Remove from favourites" already removes this
+            # video. A second "Delete" would do exactly the same thing.
+            # Keep only the distinct, confirmation-protected clear-all action.
+            self.options.append(("clear", _("Clear all favourites")))
+        elif mode == "history":
+            # In History, "Delete" removes just the selected history record;
+            # "Remove from favourites" is a separate, optional operation.
             self.options.append(("remove", _("Delete")))
-            self.options.append(("clear", _("Clear")))
+            self.options.append(("clear", _("Clear entire history")))
         self["brand"] = Label("YouTube Warder Evolution")
         self["heading"] = Label(_("Video actions"))
         self["video"] = Label(str((video or {}).get("title") or _("No video selected"))[:155])
@@ -38,7 +45,7 @@ class WarderYouTubeContext(Screen):
         self["key_red"] = Label(_("Back"))
         self["key_green"] = Label(_("Open"))
         self["key_yellow"] = Label(_("Details"))
-        self["key_blue"] = Label(_("New search") if mode == "search" else _("Clear"))
+        self["key_blue"] = Label(_("New search") if mode == "search" else _("Clear all"))
         self.mode = mode
         self["actions"] = ActionMap(["NavigationActions", "OkCancelActions", "ColorActions"], {
             "up": self.up, "down": self.down,
