@@ -559,6 +559,55 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(screen._category_cursor, 8)
         self.assertLessEqual(screen._category_offset, previous_offset)
 
+    def test_real_native_category_widgets_resize_to_single_line_widths(self):
+        mod, key, saved, jobs = load(key="configured-api-key")
+        screen, session = ready(mod)
+        source = [{"channel_id": "UC" + chr(97 + i) * 22,
+                   "title": ["DREVOSTAVBY PAVLEM", "Florida Filip Family",
+                             "Tech Channel", "Game Channel"][i % 4]}
+                  for i in range(12)]
+        screen._personalization_ready(
+            {"connected": True, "channels": source}, screen._personal_epoch)
+
+        class Native:
+            def __init__(self):
+                self.position = None
+                self.size = None
+                self.no_wrap = False
+            def move(self, point):
+                self.position = point
+            def resize(self, size):
+                self.size = size
+            def setNoWrap(self, enabled):
+                self.no_wrap = bool(enabled)
+
+        fake_e2 = fake("enigma", ePoint=lambda x, y: (x, y),
+                       eSize=lambda w, h: (w, h))
+        for slot in range(7):
+            for prefix in ("category_panel", "category_focus", "category"):
+                screen["%s%d" % (prefix, slot)].instance = Native()
+        with patch.dict(sys.modules, {"enigma": fake_e2}):
+            screen._enter_categories()
+            for _ in range(8):
+                screen.right()
+        self.assertGreater(screen._category_offset, 0)
+        visible = []
+        for slot in range(7):
+            label = screen["category%d" % slot]
+            if label.visible:
+                native = label.instance
+                x, y = native.position
+                width, height = native.size
+                self.assertTrue(native.no_wrap)
+                self.assertGreaterEqual(x, 427)
+                self.assertLessEqual(x + width, 1495)
+                self.assertEqual(y, 198)
+                self.assertEqual(height, 38)
+                visible.append((x, width))
+        self.assertGreater(len(visible), 1)
+        self.assertLess(len(visible), 7)
+        self.assertEqual(visible, sorted(visible))
+
     def test_more_home_chart_pages_are_fetched_on_demand(self):
         mod, key, saved, jobs = load(key="test-key")
         screen, session = ready(mod)
