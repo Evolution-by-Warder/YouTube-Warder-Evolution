@@ -240,7 +240,7 @@ class AccountUiTests(unittest.TestCase):
             self.assertEqual(screen['section_search'].text, 'YOUTUBE ACCOUNT')
             self.assertIn('No personal API key is needed', screen['key_state'].text)
             self.assertEqual(screen['key_green'].text, 'Manage account')
-            self.assertEqual(screen['key_yellow'].text, 'Advanced')
+            self.assertEqual(screen['key_yellow'].text, 'Prehrávač')
             self.assertNotIn('stored-backup-key', ' '.join(v.text for v in screen.values() if hasattr(v, 'text')))
             self.assertNotIn('********', screen['key_state'].text)
             self.assertEqual(key.value, 'stored-backup-key')
@@ -249,7 +249,7 @@ class AccountUiTests(unittest.TestCase):
         from test_settings_api_mask import environment
         with environment(configured='stored-backup-key', advanced=False) as env:
             ui, screen, session, key = env[:4]
-            screen.secondary_action()
+            screen.toggle_advanced()
             self.assertTrue(screen._advanced)
             self.assertIn('********', screen['key_state'].text)
             self.assertEqual(screen['key_yellow'].text, 'Delete API key')
