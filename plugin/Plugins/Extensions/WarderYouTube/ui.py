@@ -422,8 +422,7 @@ class WarderYouTubeHome(Screen):
             return
         self.inline_keyboard.show()
         self["kb_hint"].setText(
-            _("Arrows: select  ·  OK: enter  ·  GREEN: search  ·  "
-              "YELLOW: delete  ·  BLUE: space  ·  MENU: Shift")
+            _("Arrows: choose · OK: type · GREEN: search · YELLOW: delete character · BLUE: space · MENU: Shift")
         )
         self["kb_feedback"].setText("")
 
