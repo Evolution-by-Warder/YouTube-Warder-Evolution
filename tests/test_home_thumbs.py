@@ -76,6 +76,16 @@ def items(count=6):
 
 
 class PreviewThumbTests(unittest.TestCase):
+    def test_native_decoder_fills_entire_sixteen_nine_tile(self):
+        """Square/4:3 inputs must not produce bars beside video artwork."""
+        thumbs, screen, jobs, decoder = load()
+        self.assertEqual(thumbs.decode_parameters()[:4], (473, 266, 0, 0))
+        thumbs.start()
+        self.assertEqual(decoder.para[:4], (473, 266, 0, 0))
+        self.assertEqual(decoder.para[4], False)
+        thumbs.show(items(1))
+        self.assertEqual(len(jobs), 1)
+
     def test_no_more_than_two_downloads_for_six_visible_tiles(self):
         thumbs, screen, jobs, decoder = load()
         thumbs.start()
