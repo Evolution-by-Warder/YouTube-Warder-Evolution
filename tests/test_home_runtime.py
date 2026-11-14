@@ -270,7 +270,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertTrue(screen["nav_focus1"].visible)  # left menu still has focus
         self.assertEqual(len(screen.video_items), 0)
         screen.down()  # Subscriptions
-        self.assertIn("YouTube subscriptions", screen["preview_message"].text)
+        self.assertIn("TV code", screen["preview_message"].text)
         screen.down()  # History
         self.assertEqual(screen["heading"].text, "History")
         self.assertEqual(screen["preview_title0"].text, saved["history"][0]["title"])
@@ -279,10 +279,11 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertTrue(screen["nav_focus3"].visible)
         self.assertEqual(session.opens, [])
         self.assertEqual(session.callbacks, [])
-        # Initial Home requests the public anonymous feed once, but merely
-        # moving between sections never opens modal dialogs or issues more.
-        self.assertEqual(len(jobs), 1)
+        # Odbery now discovers the read-only account in the right pane; it
+        # does not open a full-screen dialog.
+        self.assertEqual(len(jobs), 2)
         self.assertEqual(jobs[0][0], (mod.public_home_videos,))
+        self.assertEqual(jobs[1][0][0].__name__, "_discover_home_subscriptions")
 
     def test_search_keyboard_appears_inline_on_highlight_without_modal(self):
         mod, key, saved, jobs = load()
@@ -418,8 +419,9 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(screen.focus_area, "nav")
         self.assertEqual(session.opens, [])
         self.assertEqual(session.callbacks, [])
-        # Scrolling around never starts new network requests after initial Home.
-        self.assertEqual(len(jobs), 1)
+        # Only one bounded subscription discovery, never one per cursor move.
+        self.assertEqual(len(jobs), 2)
+        self.assertEqual(jobs[1][0][0].__name__, "_discover_home_subscriptions")
 
     def test_arrow_right_enters_tiles_and_ok_is_not_automatic(self):
         mod, key, saved, jobs = load()
@@ -500,18 +502,18 @@ class HomeLivePreviewTests(unittest.TestCase):
         }, screen._personal_epoch)
         self.assertEqual(
             [x["label"] for x in screen._home_chips[:5]],
-            ["Všetko", "Nové odbery", "Hudba", "Hry", "Príroda"])
+            ["Všetko", "Hudba", "Hry", "Príroda"])
         self.assertNotIn("Obľúbené", [c["label"] for c in screen._home_chips])
         self.assertNotIn("Pozreté", [c["label"] for c in screen._home_chips])
         screen.right()   # Home nav -> first video
         screen.up()      # first video row -> horizontal chips
         self.assertEqual(screen.focus_area, "categories")
-        for _ in range(3):
+        for _ in range(2):
             screen.right()
-        self.assertEqual(screen._category_cursor, 3)
-        self.assertEqual(screen["category3"].text, "Hry")
+        self.assertEqual(screen._category_cursor, 2)
+        self.assertEqual(screen["category2"].text, "Hry")
         screen.activate()
-        self.assertEqual(screen._category_index, 3)
+        self.assertEqual(screen._category_index, 2)
         self.assertEqual(len(jobs), 2)
         self.assertEqual(jobs[1][0][0].__name__, "_load_personal_channel_videos")
         self.assertEqual(jobs[1][0][1]["kind"], "topic")
@@ -519,7 +521,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         # A second chip may be selected before the first worker completes.
         screen.right()
         screen.activate()
-        self.assertEqual(screen._category_index, 4)
+        self.assertEqual(screen._category_index, 3)
         self.assertEqual(len(jobs), 3)
         jobs[1][2].success([video(90)])
         self.assertEqual(screen.video_items, [])  # stale response discarded
@@ -533,7 +535,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(screen.focus_area, "nav")
         self.assertEqual(len(session.opens), 0)
 
-    def test_dynamic_chip_rail_scrolls_beyond_seven_visible_items(self):
+    def test_subscription_chip_rail_scrolls_beyond_seven_visible_channels(self):
         mod, key, saved, jobs = load(key="configured-api-key")
         screen, session = ready(mod)
         channels = [
@@ -543,21 +545,25 @@ class HomeLivePreviewTests(unittest.TestCase):
         ]
         screen._personalization_ready(
             {"connected": True, "channels": channels}, screen._personal_epoch)
-        self.assertGreater(len(screen._home_chips), 7)
+        self.assertEqual(len(screen._subscription_chips), 13)
+        self.assertFalse(any(c["kind"] == "channel" for c in screen._home_chips))
+        screen._select_nav(2)
+        self.assertEqual(screen.index, 2)
+        self.assertEqual(len(session.opens), 0)
         screen._enter_categories()
         for _ in range(9):
             screen.right()
-        self.assertEqual(screen._category_cursor, 9)
-        self.assertGreater(screen._category_offset, 0)
-        selected_slot = 9 - screen._category_offset
+        self.assertEqual(screen._subscription_cursor, 9)
+        self.assertGreater(screen._subscription_offset, 0)
+        selected_slot = 9 - screen._subscription_offset
         self.assertLess(selected_slot, 7)
         self.assertEqual(screen["category%d" % selected_slot].text,
-                         screen._home_chips[9]["label"])
+                         screen._subscription_chips[9]["label"])
         self.assertTrue(screen["category_focus%d" % selected_slot].visible)
-        previous_offset = screen._category_offset
+        previous_offset = screen._subscription_offset
         screen.left()
-        self.assertEqual(screen._category_cursor, 8)
-        self.assertLessEqual(screen._category_offset, previous_offset)
+        self.assertEqual(screen._subscription_cursor, 8)
+        self.assertLessEqual(screen._subscription_offset, previous_offset)
 
     def test_real_native_category_widgets_resize_to_single_line_widths(self):
         mod, key, saved, jobs = load(key="configured-api-key")
@@ -587,10 +593,11 @@ class HomeLivePreviewTests(unittest.TestCase):
             for prefix in ("category_panel", "category_focus", "category"):
                 screen["%s%d" % (prefix, slot)].instance = Native()
         with patch.dict(sys.modules, {"enigma": fake_e2}):
+            screen._select_nav(2)
             screen._enter_categories()
             for _ in range(8):
                 screen.right()
-        self.assertGreater(screen._category_offset, 0)
+        self.assertGreater(screen._subscription_offset, 0)
         visible = []
         for slot in range(7):
             label = screen["category%d" % slot]
