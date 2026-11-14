@@ -19,6 +19,13 @@ from .skin import INFO_SKIN
 LINE_WIDTH = 84
 VISIBLE_LINES = 14
 
+# Track and thumb stay entirely inside the existing INFO frame.
+SCROLL_X = 1798
+SCROLL_Y = 313
+SCROLL_HEIGHT = 580
+SCROLL_WIDTH = 8
+MIN_THUMB_HEIGHT = 38
+
 
 def wrap_info_lines(message, width=LINE_WIDTH):
     lines = []
@@ -45,6 +52,10 @@ class WarderYouTubeInfo(Screen):
         self["brand"] = Label("YouTube Warder Evolution")
         self["title"] = Label(title or _("Video details"))
         self["body"] = Label(self._visible_text())
+        # Keep the proven plain Label text: the firmware ScrollLabel was blank.
+        self["scroll_track"] = Label(" ")
+        self["scroll_thumb"] = Label(" ")
+        self.onLayoutFinish.append(self._refresh_scrollbar)
         self["key_red"] = Label(_("Back"))
         self["key_green"] = Label(_("Close"))
         self["key_yellow"] = Label(_("Scroll up"))
@@ -67,11 +78,46 @@ class WarderYouTubeInfo(Screen):
             self._top_line:self._top_line + VISIBLE_LINES
         ])
 
+    def _refresh_scrollbar(self):
+        """Display a proportional vertical thumb for the current text position.
+
+        Only native eLabel widgets are used. Position and size are updated
+        after screen layout and on remote-key navigation. Short texts do not
+        show a misleading scrollbar.
+        """
+        maximum = self._max_top_line()
+        if maximum <= 0:
+            self["scroll_track"].hide()
+            self["scroll_thumb"].hide()
+            return
+
+        self["scroll_track"].show()
+        self["scroll_thumb"].show()
+        visible = min(VISIBLE_LINES, len(self._info_lines))
+        height = max(MIN_THUMB_HEIGHT, int(
+            SCROLL_HEIGHT * float(visible) / len(self._info_lines)
+        ))
+        height = min(SCROLL_HEIGHT, height)
+        travel = SCROLL_HEIGHT - height
+        top = SCROLL_Y + (travel * self._top_line // maximum)
+        self._scroll_thumb_top = top
+        self._scroll_thumb_height = height
+        instance = getattr(self["scroll_thumb"], "instance", None)
+        if instance is not None:
+            try:
+                from enigma import ePoint, eSize
+                instance.resize(eSize(SCROLL_WIDTH, height))
+                instance.move(ePoint(SCROLL_X, top))
+            except (ImportError, RuntimeError, TypeError, AttributeError):
+                # Native static skin position remains as a safe fallback.
+                pass
+
     def _move(self, amount):
         new_top = max(0, min(self._max_top_line(), self._top_line + amount))
         if new_top != self._top_line:
             self._top_line = new_top
             self["body"].setText(self._visible_text())
+            self._refresh_scrollbar()
 
     def scroll_up(self):
         self._move(-1)
