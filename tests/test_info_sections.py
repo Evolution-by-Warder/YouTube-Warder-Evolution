@@ -88,7 +88,7 @@ class DetailInfoTests(unittest.TestCase):
         self.assertIn("Video ID", session.opens[0][0][1])
         self.assertIn("YouTube API key", session.opens[0][0][1])
         self.assertEqual(session.opens[0][1]["video"]["video_id"], storage["history"][0]["video_id"])
-        self.assertEqual(len(jobs), 1)  # initial Home feed only
+        self.assertEqual(len(jobs), 2)  # initial Home feed only
 
     def test_home_tiles_info_fetches_metadata_only_after_info(self):
         mod, key, storage, jobs = load_home(key="user-api-key")
@@ -98,12 +98,12 @@ class DetailInfoTests(unittest.TestCase):
         screen.right()
         mock_info = fake("_warder_home.info_ui", WarderYouTubeInfo=object)
         with patch.dict("sys.modules", {"_warder_home.info_ui": mock_info}):
-            self.assertEqual(len(jobs), 1)
-            screen.info()
-            screen.info()
             self.assertEqual(len(jobs), 2)
+            screen.info()
+            screen.info()
+            self.assertEqual(len(jobs), 3)
             self.assertEqual(session.opens, [])
-            jobs[1][2].success({
+            jobs[2][2].success({
                 "title": "Remote video", "channel": "Publisher",
                 "duration": "12:30", "views": "999",
                 "description": "Fetched explicitly"
@@ -123,7 +123,7 @@ class DetailInfoTests(unittest.TestCase):
         with patch.dict("sys.modules", {"_warder_home.info_ui": mock_info}):
             screen.info()
         screen.dispose()
-        jobs[1][2].success({"title": "Late response"})
+        jobs[2][2].success({"title": "Late response"})
         self.assertEqual(session.opens, [])
 
     def test_four_language_info_labels(self):
