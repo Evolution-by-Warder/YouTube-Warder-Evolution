@@ -24,6 +24,15 @@ class Label:
         self.visible = True
 
 
+class Pixmap(Label):
+    def __init__(self):
+        super().__init__("")
+        self.pixmap = None
+
+    def setPixmap(self, pixmap):
+        self.pixmap = pixmap
+
+
 class ScrollLabel(Label):
     def __init__(self, text=""):
         super().__init__(text)
@@ -106,6 +115,7 @@ def load(name):
             "Components.ActionMap", ActionMap=ActionBindings
         ),
         "Components.Label": mod("Components.Label", Label=Label),
+        "Components.Pixmap": mod("Components.Pixmap", Pixmap=Pixmap),
         "Components.ScrollLabel": mod("Components.ScrollLabel", ScrollLabel=ScrollLabel),
         "Screens.MessageBox": mod("Screens.MessageBox", MessageBox=object),
         "_test_warder_design.update_core": mod(
@@ -500,6 +510,121 @@ class WarderNativeUiTests(unittest.TestCase):
         self.assertEqual(widgets["scroll_thumb"]["position"], "1798,313")
         self.assertEqual(widgets["scroll_thumb"]["backgroundColor"], "#54D6FF")
         self.assertEqual(widgets["scroll_thumb"]["transparent"], "0")
+
+    def test_info_displays_same_cached_home_video_thumbnail(self):
+        m = load("info_ui")
+        video = {"video_id": "abcdefghijk",
+                 "thumbnail_url": "https://i.ytimg.com/vi/abcdefghijk/mqdefault.jpg"}
+        cached_frame = object()
+        screen = m.WarderYouTubeInfo(
+            None, "Video title\\nChannel: Music", video=video,
+            thumbnail_pixmap=cached_frame
+        )
+        self.assertFalse(screen["video_thumbnail"].visible)
+        for callback in screen.onLayoutFinish:
+            callback()
+        self.assertIs(screen["video_thumbnail"].pixmap, cached_frame)
+        self.assertTrue(screen["video_thumbnail"].visible)
+        self.assertIn("Video title", screen["body"].text)
+        self.assertEqual(screen["key_blue"].text, "Scroll down")
+        screen.close()
+        self.assertTrue(screen._thumbnail_disposed)
+
+    def test_info_thumbnail_safe_async_decode_and_late_close(self):
+        m = load("info_ui")
+        video = {"video_id": "abcdefghijk",
+                 "thumbnail_url": "https://i.ytimg.com/vi/abcdefghijk/mqdefault.jpg"}
+        tasks = []
+        decoders = []
+
+        class Deferred:
+            def addCallbacks(self, success, failed):
+                self.success, self.failed = success, failed
+
+        class FakePicture:
+            def __init__(self):
+                self.handlers = []
+            def get(self):
+                return self.handlers
+
+        class FakeDecoder:
+            def __init__(self):
+                self.PictureData = FakePicture()
+                self.frame = object()
+                self.path = None
+                decoders.append(self)
+            def setPara(self, settings):
+                self.settings = settings
+            def startDecode(self, path):
+                self.path = path
+                return 0
+            def getData(self):
+                return self.frame
+
+        def worker(function, *args):
+            task = Deferred()
+            tasks.append((function, args, task))
+            return task
+
+        package = mod("_test_warder_design")
+        package.__path__ = [str(ROOT)]
+        thumbs = mod("_test_warder_design.thumbnails",
+                     validate_thumbnail_url=lambda url: url,
+                     fetch_thumbnail=lambda url: url)
+        fake_twisted = mod("twisted")
+        fake_twisted.__path__ = []
+        fake_internet = mod("twisted.internet")
+        fake_internet.__path__ = []
+        fake_enigma = mod("enigma", ePicLoad=FakeDecoder)
+        with patch.dict(sys.modules, {
+            "_test_warder_design": package,
+            "_test_warder_design.thumbnails": thumbs,
+            "twisted": fake_twisted,
+            "twisted.internet": fake_internet,
+            "twisted.internet.threads": mod("twisted.internet.threads", deferToThread=worker),
+            "enigma": fake_enigma
+        }):
+            screen = m.WarderYouTubeInfo(None, "Available details", video=video)
+            for callback in screen.onLayoutFinish:
+                callback()
+            self.assertEqual(len(tasks), 1)
+            self.assertEqual(tasks[0][1], (video["thumbnail_url"],))
+            self.assertFalse(screen["video_thumbnail"].visible)
+            tasks[0][2].success("/tmp/warder-youtube-thumbs/validated.jpg")
+            self.assertEqual(decoders[0].path, "/tmp/warder-youtube-thumbs/validated.jpg")
+            decoders[0].PictureData.handlers[0]()
+            self.assertTrue(screen["video_thumbnail"].visible)
+            self.assertIs(screen["video_thumbnail"].pixmap, decoders[0].frame)
+            screen.close()
+            self.assertEqual(decoders[0].PictureData.handlers, [])
+            self.assertTrue(screen._thumbnail_disposed)
+
+            late = m.WarderYouTubeInfo(None, "Still readable", video=video)
+            for callback in late.onLayoutFinish:
+                callback()
+            self.assertEqual(len(tasks), 2)
+            late.close()
+            tasks[1][2].success("/tmp/unused.jpg")
+            self.assertIsNone(decoders[1].path)
+            self.assertEqual(late["body"].text, "Still readable")
+
+    def test_info_thumbnail_stays_inside_original_blue_frame(self):
+        tree = ast.parse((ROOT / "skin.py").read_text(encoding="utf-8"))
+        info_xml = next(
+            ast.literal_eval(stmt.value) for stmt in tree.body
+            if isinstance(stmt, ast.Assign) and any(
+                isinstance(x, ast.Name) and x.id == "INFO_SKIN"
+                for x in stmt.targets
+            )
+        )
+        ui = ET.fromstring(info_xml)
+        widgets = {w.get("name"): w for w in ui.findall("widget")}
+        photo = widgets["video_thumbnail"]
+        self.assertEqual(photo.get("position"), "1347,279")
+        self.assertEqual(photo.get("size"), "410,230")
+        self.assertEqual(widgets["body"].get("size"), "1198,580")
+        self.assertEqual(widgets["scroll_thumb"].get("position"), "1798,313")
+        self.assertIn("warder_header.png", info_xml)
 
     def test_info_uses_extra_two_rows_within_original_frame(self):
         m = load("info_ui")
