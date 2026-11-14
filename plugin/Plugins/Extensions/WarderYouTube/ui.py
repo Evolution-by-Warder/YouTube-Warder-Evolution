@@ -19,6 +19,7 @@ from .grid_model import move_index
 from .system_keyboard_pane import SystemKeyboardPane
 from .home_feed import popular_videos, public_home_videos
 from .home_thumbs import HomeThumbs
+from .tile_scrollbar import TilePageScrollbar
 from .local_library import (
     LibraryError, list_videos, toggle_favourite, record_opened,
     remove_video, clear_videos,
@@ -123,6 +124,12 @@ class WarderYouTubeHome(Screen):
         self["key_yellow"] = Label(_("History"))
         self["key_blue"] = Label(_("Search"))
         self.thumbs = HomeThumbs(self)
+        self["video_scroll_track"] = Label(" ")
+        self["video_scroll_thumb"] = Label(" ")
+        self.page_scroll = TilePageScrollbar(
+            self["video_scroll_track"], self["video_scroll_thumb"],
+            1874, 252, 5, 667
+        )
 
         self["actions"] = ActionMap(
             ["NavigationActions", "OkCancelActions", "ColorActions",
@@ -219,6 +226,7 @@ class WarderYouTubeHome(Screen):
         self.video_items = []
         self.tile_index = 0
         self["page_info"].setText("")
+        self.page_scroll.update(0, 1)
 
     def _show_message(self, message, details=None):
         self._clear_preview()
@@ -253,6 +261,7 @@ class WarderYouTubeHome(Screen):
             "%d / %d  •  %d" % (self.page_index + 1, pages, len(all_videos))
             if len(all_videos) > VISIBLE_TILES else ""
         )
+        self.page_scroll.update(self.page_index, pages)
         if not self.video_items:
             self["preview_message"].setText(_("No saved videos in this section."))
             self["preview_message"].show()
