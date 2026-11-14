@@ -440,6 +440,67 @@ class WarderNativeUiTests(unittest.TestCase):
         controls.bindings["ok"]()
         self.assertEqual(screen.closed_args, ())
 
+    def test_info_scrollbar_is_visible_and_tracks_real_text_position(self):
+        m = load("info_ui")
+        long_message = "\n".join("Line %02d" % n for n in range(70))
+        screen = m.WarderYouTubeInfo(None, long_message)
+
+        class NativeLabelInstance:
+            def __init__(self):
+                self.point = None
+                self.size = None
+            def move(self, point):
+                self.point = point
+            def resize(self, size):
+                self.size = size
+
+        native = NativeLabelInstance()
+        screen["scroll_thumb"].instance = native
+        fake_enigma = mod("enigma",
+                          ePoint=lambda x, y: (x, y),
+                          eSize=lambda w, h: (w, h))
+        with patch.dict(sys.modules, {"enigma": fake_enigma}):
+            for callback in screen.onLayoutFinish:
+                callback()
+            self.assertTrue(screen["scroll_track"].visible)
+            self.assertTrue(screen["scroll_thumb"].visible)
+            self.assertEqual(native.point, (m.SCROLL_X, m.SCROLL_Y))
+            self.assertLess(native.size[1], m.SCROLL_HEIGHT)
+            self.assertGreaterEqual(native.size[1], m.MIN_THUMB_HEIGHT)
+            screen.scroll_down()
+            self.assertGreater(native.point[1], m.SCROLL_Y)
+            screen.page_down()
+            self.assertGreater(native.point[1], m.SCROLL_Y)
+            for _ in range(100):
+                screen.scroll_down()
+            self.assertEqual(native.point[1] + native.size[1],
+                             m.SCROLL_Y + m.SCROLL_HEIGHT)
+            screen.scroll_up()
+            self.assertLess(native.point[1] + native.size[1],
+                            m.SCROLL_Y + m.SCROLL_HEIGHT)
+
+        short = m.WarderYouTubeInfo(None, "Title\nDuration\nViews")
+        for callback in short.onLayoutFinish:
+            callback()
+        self.assertFalse(short["scroll_track"].visible)
+        self.assertFalse(short["scroll_thumb"].visible)
+        self.assertEqual(short["body"].text, "Title\nDuration\nViews")
+
+        xml_tree = ast.parse((ROOT / "skin.py").read_text(encoding="utf-8"))
+        info_skin = next(
+            ast.literal_eval(stmt.value)
+            for stmt in xml_tree.body if isinstance(stmt, ast.Assign)
+            and any(isinstance(target, ast.Name) and target.id == "INFO_SKIN"
+                    for target in stmt.targets)
+        )
+        widgets = {w.attrib.get("name"): w.attrib
+                   for w in ET.fromstring(info_skin).findall("widget")}
+        self.assertEqual(widgets["scroll_track"]["position"], "1796,313")
+        self.assertEqual(widgets["scroll_track"]["size"], "12,580")
+        self.assertEqual(widgets["scroll_thumb"]["position"], "1798,313")
+        self.assertEqual(widgets["scroll_thumb"]["backgroundColor"], "#54D6FF")
+        self.assertEqual(widgets["scroll_thumb"]["transparent"], "0")
+
     def test_info_uses_extra_two_rows_within_original_frame(self):
         m = load("info_ui")
         self.assertEqual(m.VISIBLE_LINES, 14)
