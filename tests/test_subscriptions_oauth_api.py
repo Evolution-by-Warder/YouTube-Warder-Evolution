@@ -145,6 +145,43 @@ class ApiTests(unittest.TestCase):
                          "https://i.ytimg.com/vi/abcdefghijk/mqdefault.jpg")
         self.assertEqual(len(requests), 3)
 
+    def test_channel_avatar_uses_only_youtube_image_cdn(self):
+        sample = {"items":[{"snippet":{
+            "title": "Music Channel",
+            "resourceId": {"channelId": UC_A},
+            "thumbnails": {"medium": {
+                "url": "https://yt3.ggpht.com/channel-avatar-example"
+            }}
+        }}]}
+        items = api.parse_subscriptions(sample)
+        self.assertEqual(items[0]["thumbnail_url"],
+                         "https://yt3.ggpht.com/channel-avatar-example")
+        sample["items"][0]["snippet"]["thumbnails"]["medium"]["url"] = (
+            "https://attacker.invalid/private-token"
+        )
+        self.assertEqual(api.parse_subscriptions(sample)[0]["thumbnail_url"], "")
+
+    def test_channel_image_cache_allows_only_youtube_image_domains(self):
+        spec = importlib.util.spec_from_file_location(
+            "_warder_thumbnail_security_unit", ROOT / "thumbnails.py"
+        )
+        thumb = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(thumb)
+        self.assertEqual(
+            thumb.validate_thumbnail_url(
+                "https://yt3.ggpht.com/abc_channel_avatar_123"
+            ), "https://yt3.ggpht.com/abc_channel_avatar_123"
+        )
+        for url in (
+            "http://yt3.ggpht.com/abc_channel_avatar_123",
+            "https://yt3.ggpht.com.attacker.invalid/abc",
+            "https://attacker.invalid/channel-avatar",
+            "https://yt3.ggpht.com:666/abcd",
+        ):
+            with self.subTest(url=url):
+                with self.assertRaises(thumb.ThumbnailError):
+                    thumb.validate_thumbnail_url(url)
+
     def test_unauthorized_token_does_not_expose_request(self):
         with self.assertRaises(api.SubscriptionsApiError):
             api.subscriptions_list("", opener=lambda *a, **k: None)
