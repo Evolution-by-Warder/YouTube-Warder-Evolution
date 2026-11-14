@@ -238,24 +238,22 @@ class AccountUiTests(unittest.TestCase):
             with patch.object(ui, 'account_available', return_value=True):
                 screen.refresh()
             self.assertEqual(screen['section_search'].text, 'YOUTUBE ACCOUNT')
-            self.assertIn('No personal API key is needed', screen['key_state'].text)
+            self.assertIn('Your YouTube subscriptions are available.', screen['key_state'].text)
             self.assertEqual(screen['key_green'].text, 'Manage account')
             self.assertEqual(screen['key_yellow'].text, 'Prehrávač')
             self.assertNotIn('stored-backup-key', ' '.join(v.text for v in screen.values() if hasattr(v, 'text')))
             self.assertNotIn('********', screen['key_state'].text)
             self.assertEqual(key.value, 'stored-backup-key')
 
-    def test_advanced_backup_remains_masked_and_back_returns_to_account(self):
+    def test_legacy_api_key_is_invisible_and_remains_saved(self):
         from test_settings_api_mask import environment
         with environment(configured='stored-backup-key', advanced=False) as env:
             ui, screen, session, key = env[:4]
-            screen.toggle_advanced()
-            self.assertTrue(screen._advanced)
-            self.assertIn('********', screen['key_state'].text)
-            self.assertEqual(screen['key_yellow'].text, 'Delete API key')
-            screen.back()
-            self.assertFalse(screen._advanced)
-            self.assertEqual(screen['key_yellow'].text, 'Prehrávač')
+            all_labels = ' '.join(v.text for v in screen.values() if hasattr(v, 'text'))
+            self.assertNotIn('API key', all_labels)
+            self.assertNotIn('stored-backup-key', all_labels)
+            self.assertFalse(hasattr(screen, 'prompt_key'))
+            self.assertFalse(hasattr(screen, 'toggle_advanced'))
             self.assertEqual(key.value, 'stored-backup-key')
 
     def test_settings_signin_routes_to_existing_right_hand_subscriptions(self):
