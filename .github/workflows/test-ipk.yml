@@ -1,4 +1,4 @@
-name: Build 0.0.8~test37 refreshed Warder native receiver IPK
+name: Build 0.0.8~test38 refreshed Warder native receiver IPK
 
 on:
   workflow_dispatch:
@@ -28,7 +28,7 @@ jobs:
           cd dist && sha256sum -c *.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: WarderYouTube-0.0.8-test37-IPK
+          name: WarderYouTube-0.0.8-test38-IPK
           path: |
             dist/*.ipk
             dist/*.sha256
