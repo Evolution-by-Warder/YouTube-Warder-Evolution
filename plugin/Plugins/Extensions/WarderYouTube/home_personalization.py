@@ -1,24 +1,30 @@
-# -*- coding: utf-8 -*-
-"""Dynamic Home chips from actual subscribed YouTube channels.
+"""Dynamic topical Home chips from real YouTube subscription interests.
 
-No imitation of YouTube's private web recommendations or Mixes, and no
-duplicate History/Favourites chips: these already live in the left menu.
-Only matching real channels produce topical chips. Network I/O is handled
-by the caller in a Twisted worker, not in the Enigma2 GUI.
+Subscriptions, individual channel links, History and Favourites already have
+separate main-menu entries and MUST NOT appear in the Home filter row.
+Only truthful topic labels inferred from actual subscribed channel names
+are exposed. No unsupported web Mixes or fake recommendations.
 """
+
 import re
 import unicodedata
 
 VISIBLE_CHIPS = 7
-MAX_CHANNEL_CHIPS = 12
-MAX_TOPIC_CHIPS = 5
+MAX_TOPIC_CHIPS = 8
 
 TOPICS = (
+    ("build", "Stavba", ("drevostav", "stavba", "stavebn", "construction",
+                         "carpenter", "stolar", "woodwork", "tesar")),
+    ("cars", "Autá", ("auto", "automobil", "garaz", "mechanic", "motor",
+                      "car repair", "moto", "vehicle", "maranello")),
+    ("workshop", "Dielňa", ("oprav", "dielna", "repair", "workshop",
+                            "naradie", "tools", "kutil", "diy")),
     ("music", "Hudba", ("hudba", "music", "muzik", "radio", "pesne", "songs", "records", "dj")),
     ("gaming", "Hry", ("gaming", "games", "gameplay", "minecraft", "fortnite", "hranie")),
     ("audio", "Audioknihy", ("audioknih", "audiobook", "poviedky", "spoken word")),
     ("nature", "Príroda", ("priroda", "nature", "wildlife", "animals", "zvierata")),
     ("sport", "Šport", ("sport", "futbal", "football", "hokej", "hockey", "fitness")),
+    ("travel", "Cestovanie", ("cestov", "travel", "trip", "dovolen", "exploring")),
     ("tech", "Technika", ("technolog", "science", "hardware", "tech", "linux", "pc build")),
     ("news", "Správy", ("spravy", "news", "aktuality", "report", "televizia")),
 )
@@ -29,19 +35,17 @@ def _normal(text):
     return "".join(ch for ch in value if not unicodedata.combining(ch)).lower()
 
 
-def _short(text, limit=13):
-    text = " ".join(str(text or "").split())
-    return text if len(text) <= limit else text[:limit - 1].rstrip() + "…"
-
-
 def build_home_chips(channels=(), authenticated=False):
-    """Return stable IDs/labels backed only by available account resources.
+    """Create Home filter chips only for topics backed by real subscriptions.
 
-    The list can be longer than seven; the Home UI exposes a sliding window
-    of seven chip widgets. All records refer only to genuine channel IDs.
+    No duplicates of main-menu Odbery, Obľúbené, História and no individual
+    channel titles. There is always a useful Všetko entry. A disconnected
+    user has no account-derived filters; nothing is invented.
     """
     chips = [{"kind": "all", "id": "all", "label": "Všetko",
               "title": "Populárne na Slovensku"}]
+    if not authenticated:
+        return chips
     safe, seen = [], set()
     for raw in channels:
         if not isinstance(raw, dict):
@@ -54,25 +58,15 @@ def build_home_chips(channels=(), authenticated=False):
             continue
         safe.append((cid, title))
         seen.add(cid)
-    if authenticated and safe:
-        chips.append({"kind": "recent", "id": "recent",
-                      "label": "Nové odbery", "title": "Nové videá z odberov"})
-
-    topic_count = 0
     for topic_id, label, words in TOPICS:
-        matches = [cid for cid, name in safe if any(w in _normal(name) for w in words)]
+        matches = [cid for cid, name in safe
+                   if any(word in _normal(name) for word in words)]
         if matches:
             chips.append({"kind": "topic", "id": "topic:" + topic_id,
                           "label": label, "title": label,
                           "channels": tuple(matches[:8])})
-            topic_count += 1
-            if topic_count >= MAX_TOPIC_CHIPS:
+            if len(chips) > MAX_TOPIC_CHIPS:
                 break
-    # Expose a bounded set of actual channels, not guessed personalized feeds.
-    for cid, title in safe[:MAX_CHANNEL_CHIPS]:
-        chips.append({"kind": "channel", "id": "channel:" + cid,
-                      "label": _short(title), "title": title,
-                      "channels": (cid,)})
     return chips
 
 
