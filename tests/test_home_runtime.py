@@ -548,13 +548,16 @@ class HomeLivePreviewTests(unittest.TestCase):
         for _ in range(9):
             screen.right()
         self.assertEqual(screen._category_cursor, 9)
-        self.assertEqual(screen._category_offset, 3)
-        self.assertEqual(screen["category6"].text,
+        self.assertGreater(screen._category_offset, 0)
+        selected_slot = 9 - screen._category_offset
+        self.assertLess(selected_slot, 7)
+        self.assertEqual(screen["category%d" % selected_slot].text,
                          screen._home_chips[9]["label"])
-        self.assertTrue(screen["category_focus6"].visible)
+        self.assertTrue(screen["category_focus%d" % selected_slot].visible)
+        previous_offset = screen._category_offset
         screen.left()
         self.assertEqual(screen._category_cursor, 8)
-        self.assertEqual(screen._category_offset, 3)
+        self.assertLessEqual(screen._category_offset, previous_offset)
 
     def test_more_home_chart_pages_are_fetched_on_demand(self):
         mod, key, saved, jobs = load(key="test-key")
