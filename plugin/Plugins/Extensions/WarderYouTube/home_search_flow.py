@@ -241,8 +241,8 @@ class HomeSearchFlow:
             from .local_library import toggle_favourite, LibraryError
             try:
                 saved = toggle_favourite(video)
-                self._status("Add to favourites ✓" if saved
-                             else "Remove from favourites ✓", override=True)
+                self._status(_("Add video to favourites") + " ✓" if saved
+                             else _("Remove video from favourites") + " ✓", override=True)
             except LibraryError as error:
                 self._status(str(error), override=True)
         elif action == "search" and self.grid is not None:
