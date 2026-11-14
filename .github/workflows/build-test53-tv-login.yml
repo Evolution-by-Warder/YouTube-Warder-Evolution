@@ -34,16 +34,16 @@ jobs:
 
           client_id = os.environ.get("TV_CLIENT_ID", "").strip()
           secret = os.environ.get("TV_CLIENT_SECRET", "").strip()
-          if not re.fullmatch(r"[0-9A-Za-z._-]{8,200}\\.apps\\.googleusercontent\\.com", client_id):
+          if not re.fullmatch(r"[0-9A-Za-z._-]{8,200}\.apps\.googleusercontent\.com", client_id):
               raise SystemExit("FAIL: YOUTUBE_API_CLIENT_ID missing or invalid (must be Google TV OAuth client ID)")
           if not secret or len(secret) > 256:
               raise SystemExit("FAIL: YOUTUBE_API_CLIENT_SECRET missing or invalid")
           package_dir = Path("plugin/Plugins/Extensions/WarderYouTube")
           configuration = package_dir / "oauth_app_config.py"
           configuration.write_text(
-              '"""TV OAuth identity injected at package build time. Not a Google user token."""\\n'
-              'OAUTH_TV_CLIENT_ID = ' + json.dumps(client_id) + '\\n'
-              'OAUTH_TV_CLIENT_SECRET = ' + json.dumps(secret) + '\\n',
+              '"""TV OAuth identity injected at package build time. Not a Google user token."""\n'
+              'OAUTH_TV_CLIENT_ID = ' + json.dumps(client_id) + '\n'
+              'OAUTH_TV_CLIENT_SECRET = ' + json.dumps(secret) + '\n',
               encoding="utf-8",
           )
           for f in (Path("tools/build_test_ipk.py"), package_dir / "update_core.py"):
