@@ -420,20 +420,50 @@ class WarderNativeUiTests(unittest.TestCase):
     def test_info_screen_is_full_native_and_bounded(self):
         m = load("info_ui")
         screen = m.WarderYouTubeInfo(None, "Video\n" + "A" * 5000)
-        self.assertIsInstance(screen["body"], ScrollLabel)
-        self.assertEqual(len(screen["body"].text), 2500)
+        self.assertIsInstance(screen["body"], Label)
+        self.assertEqual(screen._top_line, 0)
+        self.assertIn("Video", screen["body"].text)
+        self.assertLessEqual(len(screen["body"].text.splitlines()), m.VISIBLE_LINES)
+        self.assertTrue(all(len(line) <= m.LINE_WIDTH for line in screen._info_lines))
         self.assertEqual(screen["key_yellow"].text, "Scroll up")
         self.assertEqual(screen["key_blue"].text, "Scroll down")
         controls = screen["actions"]
         self.assertIn("DirectionActions", controls.contexts)
-        for key in ("up", "yellow", "pageUp"):
-            controls.bindings[key]()
-        for key in ("down", "blue", "pageDown"):
-            controls.bindings[key]()
-        self.assertEqual(screen["body"].page_up_calls, 3)
-        self.assertEqual(screen["body"].page_down_calls, 3)
+        controls.bindings["down"]()
+        self.assertEqual(screen._top_line, 1)
+        controls.bindings["up"]()
+        self.assertEqual(screen._top_line, 0)
+        controls.bindings["blue"]()
+        self.assertEqual(screen._top_line, m.VISIBLE_LINES)
+        controls.bindings["yellow"]()
+        self.assertEqual(screen._top_line, 0)
         controls.bindings["ok"]()
         self.assertEqual(screen.closed_args, ())
+
+    def test_info_readable_to_final_line_and_back(self):
+        m = load("info_ui")
+        message = "Video details\n" + "\n".join(
+            "Entry %02d - %s" % (i, "very long information " * 5)
+            for i in range(15)) + "\nEND OF VIDEO DESCRIPTION"
+        screen = m.WarderYouTubeInfo(None, message)
+        first_page = screen["body"].text
+        self.assertIn("Video details", first_page)
+        self.assertNotIn("END OF VIDEO DESCRIPTION", first_page)
+        actions = screen["actions"].bindings
+        for _ in range(150):
+            actions["down"]()
+        self.assertIn("END OF VIDEO DESCRIPTION", screen["body"].text)
+        self.assertEqual(screen._top_line, screen._max_top_line())
+        for _ in range(150):
+            actions["up"]()
+        self.assertEqual(screen._top_line, 0)
+        self.assertEqual(screen["body"].text, first_page)
+        # The original native Label must show short details without scrolling.
+        short = m.WarderYouTubeInfo(None, "Title\nChannel\nDuration")
+        self.assertEqual(short["body"].text, "Title\nChannel\nDuration")
+        short["actions"].bindings["pageDown"]()
+        self.assertEqual(short["body"].text, "Title\nChannel\nDuration")
+
 
     def test_all_twelve_screens_use_colored_text_and_thin_lines_not_rectangles(self):
         tree = ast.parse((ROOT / "skin.py").read_text(encoding="utf-8"))
