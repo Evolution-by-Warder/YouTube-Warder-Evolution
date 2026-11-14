@@ -208,8 +208,9 @@ class WarderYouTubeSubscriptions(Screen):
         first = self.page_index * VISIBLE_TILES
         self.thumbs.show(self.mode_items[first:first + VISIBLE_TILES])
 
-    def _hide_tiles(self):
-        self.thumbs.show([])
+    def _hide_tiles(self, clear_thumbnails=True):
+        if clear_thumbnails:
+            self.thumbs.show([])
         for i in range(VISIBLE_TILES):
             for prefix in ("tile_border", "tile_panel", "tile_focus", "preview_thumb",
                            "tile_title", "tile_channel"):
@@ -218,7 +219,8 @@ class WarderYouTubeSubscriptions(Screen):
         self.page_scroll.update(0, 1)
 
     def _render_items(self):
-        self._hide_tiles()
+        # Keep active thumbnail fetches across channel/video page changes.
+        self._hide_tiles(clear_thumbnails=not self._video_mode())
         if not self._video_mode():
             self["results"].setList([
                 (item.get("title") or _("Untitled"))[:115]
