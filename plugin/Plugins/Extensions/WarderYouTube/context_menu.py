@@ -47,8 +47,8 @@ class WarderYouTubeContext(Screen):
         self["key_yellow"] = Label(_("Details"))
         self["key_blue"] = Label(
             _("New search") if mode == "search" else
-            _("Clear favourites") if mode == "favourites" else
-            _("Clear history")
+            _("Clear all favourite videos") if mode == "favourites" else
+            _("Clear entire history")
         )
         self.mode = mode
         self["actions"] = ActionMap(["NavigationActions", "OkCancelActions", "ColorActions"], {
