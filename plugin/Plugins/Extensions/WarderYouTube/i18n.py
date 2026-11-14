@@ -36,6 +36,7 @@ MESSAGES = {
         "Loading subscribed channels…": "Loading subscribed channels…",
         "Recent subscriptions: limited channel sample.": "Recent uploads from a limited sample of subscribed channels.",
         "Topic: videos from matching subscribed channels.": "Topic: videos from matching subscribed channels.",
+        "No videos from subscribed channels found.": "No videos from subscribed channels found.",
     },
     "sk": {
         "Change API key": "Zmeniť API kľúč",
@@ -232,6 +233,7 @@ MESSAGES = {
         "Loading subscribed channels…": "Načítavam odoberané kanály…",
         "Recent subscriptions: limited channel sample.": "Najnovšie videá z obmedzeného výberu kanálov.",
         "Topic: videos from matching subscribed channels.": "Téma: videá zo zodpovedajúcich odoberaných kanálov.",
+        "No videos from subscribed channels found.": "V odoberaných kanáloch sa nenašli videá.",
     },
     "cs": {
         "Change API key": "Změnit API klíč",
@@ -422,6 +424,7 @@ MESSAGES = {
         "Loading subscribed channels…": "Načítám odebírané kanály…",
         "Recent subscriptions: limited channel sample.": "Nejnovější videa z omezeného výběru kanálů.",
         "Topic: videos from matching subscribed channels.": "Téma: videa z odpovídajících odebíraných kanálů.",
+        "No videos from subscribed channels found.": "V odebíraných kanálech nebyla nalezena videa.",
     },
     "de": {
         "Change API key": "API-Schlüssel ändern",
@@ -612,6 +615,7 @@ MESSAGES = {
         "Loading subscribed channels…": "Abonnierte Kanäle laden…",
         "Recent subscriptions: limited channel sample.": "Neue Videos aus einer begrenzten Kanalauswahl.",
         "Topic: videos from matching subscribed channels.": "Thema: Videos aus passenden abonnierten Kanälen.",
+        "No videos from subscribed channels found.": "Keine Videos aus abonnierten Kanälen gefunden.",
     }
 }
 
