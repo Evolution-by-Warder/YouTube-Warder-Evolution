@@ -18,6 +18,9 @@ class Widget:
     def setText(self, value):
         self.text = value
 
+    def setValue(self, value):
+        self.value = value
+
     def show(self):
         self.visible = True
 
@@ -221,6 +224,7 @@ def load(key="", history=None, fav=None):
         "Components.ActionMap": fake("Components.ActionMap", ActionMap=lambda *a, **kw: Widget()),
         "Components.Label": fake("Components.Label", Label=Widget),
         "Components.Pixmap": fake("Components.Pixmap", Pixmap=Widget),
+        "Components.ProgressBar": fake("Components.ProgressBar", ProgressBar=Widget),
         "Screens": screens,
         "Screens.Screen": fake("Screens.Screen", Screen=FakeScreen),
         "twisted": twisted,
