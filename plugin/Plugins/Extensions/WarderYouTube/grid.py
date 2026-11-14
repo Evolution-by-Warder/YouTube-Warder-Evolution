@@ -55,6 +55,8 @@ class WarderYouTubeGrid(Screen):
         self._picload = None
         self._picload_connection = None
         self._picload_signal = None
+        self._picload_generation = 0
+        self._picload_callback = None
         self._thumb_failures = 0
         self._thumb_shown = 0
         self._thumb_expected = 0
@@ -105,24 +107,49 @@ class WarderYouTubeGrid(Screen):
         self.onShown.append(self._restore_thumbnails)
         self.onClose.append(self._mark_closed)
 
+    def _create_decoder(self):
+        # Enigma2 ePicLoad may become unusable after fast screen switching.
+        # Keep each PictureData callback bound to its decoder generation.
+        self._picload_generation += 1
+        generation = self._picload_generation
+        try:
+            decoder = ePicLoad()
+            signal = decoder.PictureData
+            callback = lambda *args: self._decoded_for_generation(generation, *args)
+            self._picload = decoder
+            self._picload_callback = callback
+            if hasattr(signal, "get"):
+                self._picload_signal = signal.get()
+                self._picload_signal.append(callback)
+            else:
+                self._picload_connection = signal.connect(callback)
+            self._picload.setPara(self._decode_parameters())
+            return True
+        except Exception:
+            self._release_decoder()
+            self._picload = None
+            return False
+
+    def _decoded_for_generation(self, generation, *args):
+        if generation != self._picload_generation or self._closed:
+            return
+        self._decode_finished(*args)
+
+    def _restart_decoder(self):
+        # Drop abandoned PictureData jobs instead of keeping the whole gallery
+        # without thumbnails until the user closes and reopens the plugin.
+        self._picload_generation += 1
+        self._release_decoder()
+        self._picload = None
+        self._decoding = None
+        if not self._closed:
+            self._create_decoder()
+
     def _layout_ready(self):
         if self._closed:
             return
         self._ready = True
-        try:
-            self._picload = ePicLoad()
-            picture_data = self._picload.PictureData
-            if hasattr(picture_data, "get"):
-                self._picload_signal = picture_data.get()
-                self._picload_signal.append(self._decode_finished)
-            else:
-                # Modern Enigma2 signal bindings expose .connect().
-                self._picload_connection = picture_data.connect(self._decode_finished)
-            self._picload.setPara(self._decode_parameters())
-        except Exception:
-            # Titles and remote navigation still work without a decoder.
-            self._release_decoder()
-            self._picload = None
+        self._create_decoder()
         self._render_page()
 
     def _restore_thumbnails(self):
@@ -180,9 +207,10 @@ class WarderYouTubeGrid(Screen):
                 pass
         if signal is not None:
             try:
-                signal.remove(self._decode_finished)
+                signal.remove(self._picload_callback)
             except (ValueError, AttributeError, RuntimeError):
                 pass
+        self._picload_callback = None
 
     def _mark_closed(self):
         self._closed = True
@@ -193,6 +221,8 @@ class WarderYouTubeGrid(Screen):
         self._visible_urls.clear()
         self._release_decoder()
         self._picload = None
+        self._picload_generation += 1
+        self._picload_callback = None
         self.on_play = None
         self.on_info = None
         self.on_favorite = None
@@ -208,6 +238,10 @@ class WarderYouTubeGrid(Screen):
             return
         self._epoch += 1
         epoch = self._epoch
+        if self._decoding is not None:
+            self._restart_decoder()
+        elif self._picload is None:
+            self._create_decoder()
         self._pending_downloads = []
         self._pending_decodes = []
         self._thumb_failures = 0
