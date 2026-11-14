@@ -147,6 +147,8 @@ class WarderYouTubeHome(Screen):
         self._personal_epoch = 0
         self._personal_video_epoch = 0
         self._personal_video_cache = {}
+        self._subscription_video_cache = {}
+        self._inline_tv_login = None
         self._auth_maybe_changed = False
         self._busy = False
         self._playback_active = False
@@ -255,7 +257,7 @@ class WarderYouTubeHome(Screen):
         # Returning from player/library refreshes local data, but does not
         # automatically poll the update server or repeat the popular feed.
         if self._mounted and not self._disposed and not self._playback_active:
-            if self.index in (0, 1, 3, 5, 6, 7):
+            if self.index in (0, 1, 2, 3, 5, 6, 7):
                 self._update_preview()
             if (self.index == 0 and self._popular_cache
                     and not self._popular_loading
@@ -283,6 +285,8 @@ class WarderYouTubeHome(Screen):
         self._play_request += 1
         if self._home_search_flow is not None:
             self._home_search_flow.dispose()
+        if self._inline_tv_login is not None:
+            self._inline_tv_login.close()
         if self.inline_keyboard is not None:
             self.inline_keyboard.cleanup()
         self.thumbs.close()
@@ -464,6 +468,28 @@ class WarderYouTubeHome(Screen):
         if old_id not in lookup and self.index == 0:
             self.page_index = 0
             self._show_selected_home_chip()
+
+        # Keep Odbery separate from the topical Home chips; the left Odbery
+        # entry owns its own "Najnovšie" and actual channel-name rail.
+        sub_id = (self._selected_subscription_chip() or {}).get("id")
+        sub_cursor_id = (self._subscription_chips[self._subscription_cursor]["id"]
+                         if 0 <= self._subscription_cursor < len(self._subscription_chips)
+                         else sub_id)
+        self._subscriptions_connected = bool(data.get("connected"))
+        new_subs = subscription_chips(self._home_channels,
+                                      connected=self._subscriptions_connected)
+        sub_lookup = {chip["id"]: i for i, chip in enumerate(new_subs)}
+        if [chip["id"] for chip in new_subs] != [
+                chip["id"] for chip in self._subscription_chips]:
+            self._subscription_video_cache.clear()
+            self._personal_video_epoch += 1
+        self._subscription_chips = new_subs
+        self._subscription_index = sub_lookup.get(sub_id, 0)
+        self._subscription_cursor = sub_lookup.get(sub_cursor_id,
+                                                    self._subscription_index)
+        if self.index == 2:
+            self.page_index = 0
+            self._show_selected_subscription_chip()
         self._render_categories()
 
     def _personalization_failed(self, epoch):
@@ -494,7 +520,7 @@ class WarderYouTubeHome(Screen):
             return
         self._request_personal_videos(chip)
 
-    def _request_personal_videos(self, chip):
+    def _request_personal_videos(self, chip, subscribed=False):
         self._personal_video_epoch += 1
         epoch = self._personal_video_epoch
         selected = chip["id"]
@@ -504,30 +530,85 @@ class WarderYouTubeHome(Screen):
             task = deferToThread(
                 _load_personal_channel_videos, dict(chip), tuple(self._home_channels))
             task.addCallbacks(
-                lambda videos: self._personal_videos_ready(selected, videos, epoch),
-                lambda err: self._personal_videos_failed(selected, epoch))
+                lambda videos: self._personal_videos_ready(selected, videos, epoch,
+                                                           subscribed),
+                lambda err: self._personal_videos_failed(selected, epoch, subscribed))
         except Exception:
             self._personal_videos_failed(selected, epoch)
 
-    def _personal_videos_ready(self, chip_id, videos, epoch):
+    def _personal_videos_ready(self, chip_id, videos, epoch, subscribed=False):
         if self._disposed or epoch != self._personal_video_epoch:
             return
         rows = dedupe_videos(videos if isinstance(videos, list) else [])
-        self._personal_video_cache[chip_id] = rows
+        cache = (self._subscription_video_cache if subscribed
+                 else self._personal_video_cache)
+        cache[chip_id] = rows
+        if subscribed:
+            chip = self._selected_subscription_chip()
+            if self.index == 2 and chip is not None and chip["id"] == chip_id:
+                self._show_tiles(rows, chip["title"])
+                self._render_categories()
+                if chip["kind"] == "recent":
+                    self["status"].setText(
+                        _("Recent subscriptions: limited channel sample."))
+            return
         if self.index == 0 and self._selected_home_chip()["id"] == chip_id:
             self._show_tiles(rows, self._selected_home_chip()["title"])
             self._render_categories()
-            if self._selected_home_chip()["kind"] == "recent":
-                self["status"].setText(_("Recent subscriptions: limited channel sample."))
-            elif self._selected_home_chip()["kind"] == "topic":
+            if self._selected_home_chip()["kind"] == "topic":
                 self["status"].setText(_("Topic: videos from matching subscribed channels."))
 
-    def _personal_videos_failed(self, chip_id, epoch):
+    def _personal_videos_failed(self, chip_id, epoch, subscribed=False):
         if self._disposed or epoch != self._personal_video_epoch:
             return
-        if self.index == 0 and self._selected_home_chip()["id"] == chip_id:
+        current = (self._selected_subscription_chip() if subscribed
+                   else self._selected_home_chip())
+        if (self.index == (2 if subscribed else 0)
+                and current is not None and current["id"] == chip_id):
             self._show_message("YouTube subscriptions are temporarily unavailable.")
             self._render_categories()
+
+    def _show_selected_subscription_chip(self):
+        """Odbery are displayed in the same right pane, never a new Screen."""
+        if not self._subscriptions_connected:
+            self._show_message(
+                "Press OK to connect your YouTube account using a TV code."
+                if not self._personal_requested else
+                "Checking YouTube account connection…"
+            )
+            return
+        chip = self._selected_subscription_chip()
+        if chip is None:
+            self._show_message("No subscribed channels found.")
+            return
+        cache = self._subscription_video_cache.get(chip["id"])
+        if cache is not None:
+            self._show_tiles(cache, chip["title"])
+            return
+        self._request_personal_videos(chip, subscribed=True)
+
+    def _open_subscription_login(self):
+        """TV-code authentication also stays in the Home right panel."""
+        if self._disposed or self._busy or self.index != 2:
+            return
+        if self._subscriptions_connected:
+            self._enter_categories()
+            return
+        if self._personal_requested:
+            self["status"].setText(_("Checking YouTube account connection…"))
+            return
+        if self._inline_tv_login is None:
+            from .home_tv_auth import HomeTVLogin
+            self._inline_tv_login = HomeTVLogin(self)
+        self._inline_tv_login.start()
+
+    def _subscription_login_ready(self):
+        if self._disposed:
+            return
+        self._subscriptions_connected = True
+        self._personal_fetched_at = 0
+        self._personal_requested = False
+        self._request_personalization(force=True)
 
     def _clear_preview(self):
         self.thumbs.show([])
@@ -791,7 +872,9 @@ class WarderYouTubeHome(Screen):
         elif self.index == 1:
             self._show_inline_keyboard()
         elif self.index == 2:
-            self._show_message("Press OK to open YouTube subscriptions and TV account login.")
+            self._show_selected_subscription_chip()
+            if not self._subscriptions_connected and not self._personal_requested:
+                self._request_personalization(force=True)
         elif self.index == 3:
             self._show_tiles(self._local_items("history"), "Recently played videos")
         elif self.index == 4:
@@ -954,7 +1037,7 @@ class WarderYouTubeHome(Screen):
             self._keyboard_move("up")
         elif self.focus_area == "nav":
             self._select_nav(self.index - 1)
-        elif (self.focus_area == "tiles" and self.index == 0
+        elif (self.focus_area == "tiles" and self.index in (0, 2)
                 and self.page_index == 0 and self.tile_index < 3):
             self._enter_categories()
         else:
@@ -978,7 +1061,11 @@ class WarderYouTubeHome(Screen):
 
     def left(self):
         if self.focus_area == "categories":
-            self._category_cursor = (self._category_cursor - 1) % len(self._home_chips)
+            if self.index == 2 and self._subscription_chips:
+                self._subscription_cursor = (
+                    self._subscription_cursor - 1) % len(self._subscription_chips)
+            else:
+                self._category_cursor = (self._category_cursor - 1) % len(self._home_chips)
             self._render_categories()
             return
         if self.focus_area == "keyboard":
@@ -1001,7 +1088,11 @@ class WarderYouTubeHome(Screen):
 
     def right(self):
         if self.focus_area == "categories":
-            self._category_cursor = (self._category_cursor + 1) % len(self._home_chips)
+            if self.index == 2 and self._subscription_chips:
+                self._subscription_cursor = (
+                    self._subscription_cursor + 1) % len(self._subscription_chips)
+            else:
+                self._category_cursor = (self._category_cursor + 1) % len(self._home_chips)
             self._render_categories()
             return
         if self.focus_area == "keyboard":
@@ -1044,6 +1135,12 @@ class WarderYouTubeHome(Screen):
         return True
 
     def _enter_tiles(self):
+        if self.index == 2 and self.focus_area == "nav":
+            if self._subscription_chips:
+                self._enter_categories()
+            else:
+                self._open_subscription_login()
+            return
         if (self.index == 0 and not self.video_items
                 and self.focus_area == "nav"):
             self._enter_categories()
@@ -1115,7 +1212,7 @@ class WarderYouTubeHome(Screen):
             self._choose_category()
         elif self.index == 1:
             self._enter_keyboard_focus()
-        elif self.index in (0, 3, 5) and self.video_items:
+        elif self.index in (0, 2, 3, 5) and self.video_items:
             self._enter_tiles()
         else:
             self._open_index(self.index)
@@ -1127,9 +1224,12 @@ class WarderYouTubeHome(Screen):
             self._select_nav(1)
             self._enter_keyboard_focus()
         elif index == 2:
-            self._auth_maybe_changed = True
-            from .subscriptions_ui import WarderYouTubeSubscriptions
-            self.session.open(WarderYouTubeSubscriptions)
+            # No full-screen Odbery dialog. Use the same Home right pane.
+            self._select_nav(2)
+            if self._subscription_chips:
+                self._enter_categories()
+            else:
+                self._open_subscription_login()
         elif index in (3, 5):
             from .library_ui import WarderYouTubeLibrary
             self.session.open(WarderYouTubeLibrary,
