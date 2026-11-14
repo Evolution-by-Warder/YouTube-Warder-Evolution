@@ -19,10 +19,10 @@ class Tests(unittest.TestCase):
         screen = ET.fromstring(xml)
         self.assertEqual(screen.attrib["size"], "1920,1080")
         self.assertEqual(screen.attrib["backgroundColor"], "#08182D")
-        self.assertTrue({"nav0", "nav7", "heading", "subtitle", "status", "preview_thumb0", "preview_thumb5", "preview_message"}.issubset(
+        self.assertTrue({"nav0", "nav6", "heading", "subtitle", "status", "preview_thumb0", "preview_thumb5", "preview_message"}.issubset(
             {w.attrib.get("name") for w in screen.findall("widget")}))
         self.assertIn("images/warder_header.png", xml)
-        self.assertEqual(xml.count("<ePixmap"), 9)
+        self.assertEqual(xml.count("<ePixmap"), 8)
         self.assertIn('name="hdr_clock"', xml)
         # Search must display the actual system VirtualKeyBoard list/Input,
         # not a second fake 50-letter matrix made from Warder Labels.
@@ -42,13 +42,13 @@ class Tests(unittest.TestCase):
         self.assertIn('name="hdr_version"', xml)
         icons = [p.attrib["pixmap"] for p in screen.findall("ePixmap")
                  if "/nav_" in p.attrib.get("pixmap", "")]
-        self.assertEqual(len(icons), 8)
+        self.assertEqual(len(icons), 7)
         self.assertEqual(set(icons), {
             "/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_%d.png" % i
-            for i in range(8)
+            for i in (0, 1, 2, 3, 5, 6, 7)
         })
         widgets = {w.attrib.get("name"): w for w in screen.findall("widget")}
-        for i in range(8):
+        for i in range(7):
             self.assertIn("/nav_focus.png", widgets["nav_focus%d" % i].attrib["pixmap"])
             self.assertEqual(widgets["nav_focus%d" % i].attrib["zPosition"], "2")
         for i in range(6):
