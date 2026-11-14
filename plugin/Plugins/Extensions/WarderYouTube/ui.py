@@ -726,8 +726,8 @@ class WarderYouTubeHome(Screen):
         self.page_scroll.update(self.page_index, actual_pages)
         if not self.video_items:
             self["preview_message"].setText(
-                _("No videos from subscribed channels found.")
-                if self.index == 0 and self._selected_home_chip()["kind"] != "all"
+                _("No videos in this YouTube category.")
+                if self.index == 0 and self._selected_home_chip()["kind"] == "live"
                 else _("No saved videos in this section."))
             self["preview_message"].show()
             return
