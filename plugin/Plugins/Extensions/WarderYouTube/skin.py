@@ -46,6 +46,8 @@ HOME_SKIN = """
   <widget name="heading" position="0,0" size="1,1" font="Regular;45" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
   <widget name="subtitle" position="427,198" size="1090,42" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" zPosition="4"/>
   <widget name="page_info" position="1560,198" size="300,42" font="Regular;24" foregroundColor="#62D9F8" transparent="1" halign="right" zPosition="4"/>
+  <widget name="video_scroll_track" position="1872,252" size="9,667" font="Regular;1" foregroundColor="#264A68" backgroundColor="#264A68" transparent="0" zPosition="6"/>
+  <widget name="video_scroll_thumb" position="1874,252" size="5,100" font="Regular;1" foregroundColor="#54D6FF" backgroundColor="#54D6FF" transparent="0" zPosition="7"/>
   <widget name="preview_focus0" position="413,251" size="477,324" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
   <widget name="preview_panel0" position="415,253" size="473,320" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
   <widget name="preview_thumb0" position="446,261" size="410,230" zPosition="4"/>
@@ -281,6 +283,8 @@ GRID_SKIN = """
   <widget name="title5" position="1390,839" size="473,72" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
   <widget name="channel5" position="1390,911" size="473,25" font="Regular;20" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
   <widget name="status" position="358,953" size="1460,43" font="Regular;25" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
+  <widget name="video_scroll_track" position="1878,217" size="9,722" font="Regular;1" foregroundColor="#264A68" backgroundColor="#264A68" transparent="0" zPosition="6"/>
+  <widget name="video_scroll_thumb" position="1880,217" size="5,100" font="Regular;1" foregroundColor="#54D6FF" backgroundColor="#54D6FF" transparent="0" zPosition="7"/>
   <eLabel position="0,999" size="1920,81" backgroundColor="#08182D"/>
   <widget name="footer" position="28,1014" size="1880,52" font="Regular;24" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="150,1070" size="195,3" backgroundColor="#FF526A" zPosition="5"/>
