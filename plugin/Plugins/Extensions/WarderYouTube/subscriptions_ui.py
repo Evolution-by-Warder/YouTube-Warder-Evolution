@@ -9,6 +9,7 @@ import time
 
 from Components.ActionMap import ActionMap
 from Components.Label import Label
+from Components.Pixmap import Pixmap
 from Components.MenuList import MenuList
 from Screens.Screen import Screen
 from twisted.internet.threads import deferToThread
@@ -16,6 +17,56 @@ from twisted.internet.threads import deferToThread
 from .header_ui import add_header
 from .i18n import tr as _
 from .skin import LIBRARY_SKIN
+from .home_thumbs import HomeThumbs
+
+
+VISIBLE_TILES = 6
+
+
+def _short_title(value, limit=48):
+    text = " ".join(str(value or "").split())
+    return text if len(text) <= limit else text[:limit - 1].rstrip() + "…"
+
+
+def _subscriptions_skin():
+    """Reuse the already-approved blue container and native Home focus art.
+
+    The base native list is still used for channel names and TV login.
+    Six video cards are displayed only for latest/channel-upload pages.
+    These are plain Enigma2 Label/Pixmap widgets; no extra renderer.
+    """
+    skin = LIBRARY_SKIN.replace(
+        'name="WarderYouTubeLibrary"', 'name="WarderYouTubeSubscriptions"', 1
+    )
+    widgets = [
+        '<widget name="page_info" position="1540,175" size="290,38" '
+        'font="Regular;24" foregroundColor="#63D9FA" transparent="1" '
+        'halign="right" zPosition="6"/>',
+    ]
+    for slot in range(VISIBLE_TILES):
+        col, row = slot % 3, slot // 3
+        x = 62 + 589 * col
+        y = 239 + 321 * row
+        thumb_x, thumb_y = x + 13, y + 12
+        widgets.extend([
+            '<widget name="tile_panel%d" position="%d,%d" size="568,310" '
+            'font="Regular;1" backgroundColor="#142C47" '
+            'foregroundColor="#142C47" transparent="0" zPosition="3"/>' % (slot, x, y),
+            '<widget name="tile_focus%d" position="%d,%d" size="568,310" '
+            'pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" '
+            'alphatest="on" zPosition="8"/>' % (slot, x, y),
+            '<widget name="preview_thumb%d" position="%d,%d" size="540,196" '
+            'zPosition="4"/>' % (slot, thumb_x, thumb_y),
+            '<widget name="tile_title%d" position="%d,%d" size="540,62" '
+            'font="Regular;25" foregroundColor="#FFFFFF" transparent="1" '
+            'zPosition="5"/>' % (slot, thumb_x, y + 208),
+            '<widget name="tile_channel%d" position="%d,%d" size="540,29" '
+            'font="Regular;21" foregroundColor="#B9D9F5" transparent="1" '
+            'zPosition="5"/>' % (slot, thumb_x, y + 272),
+        ])
+    return skin.replace("</screen>", "\n  ".join(widgets) + "\n</screen>", 1)
+
+
 from .subscriptions_auth import (
     SubscriptionsAuthError, account_connected, read_client,
     request_device_code, poll_device_code, save_tokens, clear_tokens, access_token,
@@ -49,10 +100,8 @@ def _fetch_channel(channel_id):
 
 
 class WarderYouTubeSubscriptions(Screen):
-    # The same approved blue container, no global skin or external renderer.
-    skin = LIBRARY_SKIN.replace(
-        'name="WarderYouTubeLibrary"', 'name="WarderYouTubeSubscriptions"', 1
-    )
+    # Native screen with the owner's approved colors, header and key bar.
+    skin = _subscriptions_skin()
 
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -60,6 +109,8 @@ class WarderYouTubeSubscriptions(Screen):
         self.mode = "recent"
         # Do not shadow Screen.items(): Enigma2 calls it on window teardown.
         self.mode_items = []
+        self.page_index = 0
+        self.tile_index = 0
         self.channels = []
         self.busy = False
         self.disposed = False
@@ -77,6 +128,14 @@ class WarderYouTubeSubscriptions(Screen):
         self["title"] = Label("")
         self["subtitle"] = Label(_("Subscriptions"))
         self["results"] = MenuList([])
+        self["page_info"] = Label("")
+        for i in range(VISIBLE_TILES):
+            self["tile_panel%d" % i] = Label(" ")
+            self["tile_focus%d" % i] = Pixmap()
+            self["preview_thumb%d" % i] = Pixmap()
+            self["tile_title%d" % i] = Label("")
+            self["tile_channel%d" % i] = Label("")
+        self.thumbs = HomeThumbs(self)
         self["status"] = Label("")
         self["footer"] = Label(_("OK: open video or channel · MENU: disconnect account"))
         self["key_red"] = Label(_("Back"))
@@ -84,16 +143,104 @@ class WarderYouTubeSubscriptions(Screen):
         self["key_yellow"] = Label(_("Latest videos"))
         self["key_blue"] = Label(_("All subscriptions"))
         self["actions"] = ActionMap(
-            ["OkCancelActions", "ColorActions", "MenuActions", "InfoActions"],
+            ["OkCancelActions", "ColorActions", "MenuActions", "InfoActions",
+             "DirectionActions", "NavigationActions"],
             {"ok": self.choose, "green": self.choose,
              "red": self.close, "cancel": self.close,
              "yellow": self.latest, "blue": self.all_channels,
-             "menu": self.disconnect_confirm, "info": self.show_info},
+             "menu": self.disconnect_confirm, "info": self.show_info,
+             "up": lambda: self.navigate("up"),
+             "down": lambda: self.navigate("down"),
+             "left": lambda: self.navigate("left"),
+             "right": lambda: self.navigate("right")},
             -1
         )
+        self.onLayoutFinish.append(self._start_thumbs)
         self.onLayoutFinish.append(self._start_timer)
         self.onShown.append(self.on_show)
         self.onClose.append(self.dispose)
+
+    def _start_thumbs(self):
+        if not self.disposed:
+            self.thumbs.start()
+            self._render_items()
+
+    def _video_mode(self):
+        return self.mode in ("recent", "channel_videos")
+
+    def _hide_tiles(self):
+        self.thumbs.show([])
+        for i in range(VISIBLE_TILES):
+            for prefix in ("tile_panel", "tile_focus", "preview_thumb",
+                           "tile_title", "tile_channel"):
+                self["%s%d" % (prefix, i)].hide()
+        self["page_info"].setText("")
+
+    def _render_items(self):
+        self._hide_tiles()
+        if not self._video_mode():
+            self["results"].setList([
+                (item.get("title") or _("Untitled"))[:115]
+                for item in self.mode_items
+            ])
+            self["results"].show()
+            return
+        self["results"].hide()
+        total = len(self.mode_items)
+        pages = max(1, (total + VISIBLE_TILES - 1) // VISIBLE_TILES)
+        self.page_index = min(max(self.page_index, 0), pages - 1)
+        current = self.mode_items[self.page_index * VISIBLE_TILES:
+                                  (self.page_index + 1) * VISIBLE_TILES]
+        self.tile_index = min(max(self.tile_index, 0), max(0, len(current) - 1))
+        self["page_info"].setText("%d / %d  •  %d" % (self.page_index + 1, pages, total)
+                                   if total else "")
+        for i, video in enumerate(current):
+            self["tile_panel%d" % i].show()
+            self["tile_title%d" % i].setText(_short_title(video.get("title")))
+            self["tile_title%d" % i].show()
+            self["tile_channel%d" % i].setText(
+                _short_title(video.get("channel"), 41))
+            self["tile_channel%d" % i].show()
+        self._update_focus()
+        self.thumbs.show(current)
+
+    def _update_focus(self):
+        count = min(VISIBLE_TILES, max(0, len(self.mode_items) -
+                         self.page_index * VISIBLE_TILES))
+        for i in range(VISIBLE_TILES):
+            widget = self["tile_focus%d" % i]
+            if self._video_mode() and i == self.tile_index and i < count:
+                widget.show()
+            else:
+                widget.hide()
+
+    def navigate(self, direction):
+        if self.disposed or self.busy or self.playing or not self.mode_items:
+            return
+        if self._video_mode():
+            old = self.page_index * VISIBLE_TILES + self.tile_index
+            delta = {"up": -3, "down": 3, "left": -1, "right": 1}.get(direction, 0)
+            updated = max(0, min(len(self.mode_items) - 1, old + delta))
+            next_page = updated // VISIBLE_TILES
+            self.tile_index = updated % VISIBLE_TILES
+            if next_page != self.page_index:
+                self.page_index = next_page
+                self._render_items()
+            else:
+                self._update_focus()
+            return
+        # Real Enigma2 MenuList owns the selection in channel/login mode.
+        widget = self["results"]
+        instance = getattr(widget, "instance", None)
+        if instance is not None:
+            move = {"up": "moveUp", "down": "moveDown",
+                    "left": "pageUp", "right": "pageDown"}.get(direction)
+            if move and hasattr(instance, move):
+                instance.moveSelection(getattr(instance, move))
+        else:
+            method = getattr(widget, direction, None)
+            if callable(method):
+                method()
 
     def _start_timer(self):
         try:
@@ -155,13 +302,13 @@ class WarderYouTubeSubscriptions(Screen):
 
     def _rows(self, rows):
         self.mode_items = list(rows)
-        self["results"].setList(
-            [(item.get("title") or _("Untitled"))[:115]
-             for item in self.mode_items]
-        )
+        self.page_index = 0
+        self.tile_index = 0
+        self._render_items()
 
     def _selected(self):
-        index = self["results"].getCurrentIndex()
+        index = (self.page_index * VISIBLE_TILES + self.tile_index
+                 if self._video_mode() else self["results"].getCurrentIndex())
         return (self.mode_items[index]
                 if 0 <= index < len(self.mode_items) else None)
 
@@ -336,7 +483,9 @@ class WarderYouTubeSubscriptions(Screen):
             return
         from .info_ui import WarderYouTubeInfo
         from .video_info_display import format_video_info
-        self.session.open(WarderYouTubeInfo, format_video_info(item, translate=_), video=item)
+        self.session.open(WarderYouTubeInfo, format_video_info(item, translate=_),
+                          video=item,
+                          thumbnail_pixmap=self.thumbs.image_cache.get(item.get("thumbnail_url")))
 
     def disconnect_confirm(self):
         if not self.connected or self.disposed or self.busy or self.disconnect_prompt_open:
@@ -361,6 +510,7 @@ class WarderYouTubeSubscriptions(Screen):
 
     def dispose(self):
         self.disposed = True
+        self.thumbs.close()
         self.request_id += 1
         self.login = None
         if self.polling_timer is not None:
