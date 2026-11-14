@@ -6,6 +6,7 @@ third-party OAuth credentials or access tokens are displayed. All disk/network
 operations run in workers; remote actions do not block the Enigma2 GUI.
 """
 import time
+import xml.etree.ElementTree as ET
 
 from Components.ActionMap import ActionMap
 from Components.Label import Label
@@ -16,8 +17,9 @@ from twisted.internet.threads import deferToThread
 
 from .header_ui import add_header
 from .i18n import tr as _
-from .skin import LIBRARY_SKIN
+from .skin import LIBRARY_SKIN, HOME_SKIN
 from .home_thumbs import HomeThumbs
+from .tile_scrollbar import TilePageScrollbar
 
 
 VISIBLE_TILES = 6
@@ -29,42 +31,62 @@ def _short_title(value, limit=48):
 
 
 def _subscriptions_skin():
-    """Reuse the already-approved blue container and native Home focus art.
+    """Clone the proven Home tile widgets and their exact geometry/font sizes.
 
-    The base native list is still used for channel names and TV login.
-    Six video cards are displayed only for latest/channel-upload pages.
-    These are plain Enigma2 Label/Pixmap widgets; no extra renderer.
+    Only whole-card position is translated to the full-width Odbery canvas.
+    Thumb 410x230, title 444x56, channel 444x20 and 477x324 focus art
+    are all reused verbatim from Home, not redrawn or stretched.
     """
     skin = LIBRARY_SKIN.replace(
         'name="WarderYouTubeLibrary"', 'name="WarderYouTubeSubscriptions"', 1
     )
-    widgets = [
-        '<widget name="page_info" position="1540,175" size="290,38" '
+    # The two rows leave the original status readable below the last card.
+    skin = skin.replace(
+        'name="status" position="55,876" size="1790,93"',
+        'name="status" position="55,902" size="1790,40"',
+        1
+    )
+    home = ET.fromstring(HOME_SKIN)
+    existing = {w.attrib.get("name"): w for w in home.findall("widget")}
+    rename = (
+        ("preview_border", "tile_border"),
+        ("preview_panel", "tile_panel"),
+        ("preview_focus", "tile_focus"),
+        ("preview_thumb", "preview_thumb"),
+        ("preview_title", "tile_title"),
+        ("preview_channel", "tile_channel"),
+    )
+    new_widgets = [
+        '<widget name="page_info" position="1500,175" size="330,38" '
         'font="Regular;24" foregroundColor="#63D9FA" transparent="1" '
         'halign="right" zPosition="6"/>',
+        '<widget name="video_scroll_track" position="1781,231" size="9,664" '
+        'font="Regular;1" foregroundColor="#264A68" backgroundColor="#264A68" '
+        'transparent="0" zPosition="6"/>',
+        '<widget name="video_scroll_thumb" position="1783,231" size="5,110" '
+        'font="Regular;1" foregroundColor="#54D6FF" backgroundColor="#54D6FF" '
+        'transparent="0" zPosition="7"/>',
     ]
+    x_positions = (160, 708, 1256)
+    y_positions = (231, 571)
     for slot in range(VISIBLE_TILES):
         col, row = slot % 3, slot // 3
-        x = 62 + 589 * col
-        y = 239 + 321 * row
-        thumb_x, thumb_y = x + 13, y + 12
-        widgets.extend([
-            '<widget name="tile_panel%d" position="%d,%d" size="568,310" '
-            'font="Regular;1" backgroundColor="#142C47" '
-            'foregroundColor="#142C47" transparent="0" zPosition="3"/>' % (slot, x, y),
-            '<widget name="tile_focus%d" position="%d,%d" size="568,310" '
-            'pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" '
-            'alphatest="on" zPosition="8"/>' % (slot, x, y),
-            '<widget name="preview_thumb%d" position="%d,%d" size="540,196" '
-            'zPosition="4"/>' % (slot, thumb_x, thumb_y),
-            '<widget name="tile_title%d" position="%d,%d" size="540,62" '
-            'font="Regular;25" foregroundColor="#FFFFFF" transparent="1" '
-            'zPosition="5"/>' % (slot, thumb_x, y + 208),
-            '<widget name="tile_channel%d" position="%d,%d" size="540,29" '
-            'font="Regular;21" foregroundColor="#B9D9F5" transparent="1" '
-            'zPosition="5"/>' % (slot, thumb_x, y + 272),
-        ])
-    return skin.replace("</screen>", "\n  ".join(widgets) + "\n</screen>", 1)
+        original_left = (413, 902, 1391)[col]
+        original_top = (251, 601)[row]
+        dx = x_positions[col] - original_left
+        dy = y_positions[row] - original_top
+        for original, target in rename:
+            source = existing.get("%s%d" % (original, slot))
+            if source is None:
+                raise ValueError("Home tile component not found: %s%d" % (original, slot))
+            attributes = dict(source.attrib)
+            x, y = (int(value) for value in attributes["position"].split(","))
+            attributes["position"] = "%d,%d" % (x + dx, y + dy)
+            attributes["name"] = "%s%d" % (target, slot)
+            new_widgets.append(ET.tostring(
+                ET.Element("widget", attributes), encoding="unicode"
+            ))
+    return skin.replace("</screen>", "\n  ".join(new_widgets) + "\n</screen>", 1)
 
 
 from .subscriptions_auth import (
@@ -130,12 +152,19 @@ class WarderYouTubeSubscriptions(Screen):
         self["results"] = MenuList([])
         self["page_info"] = Label("")
         for i in range(VISIBLE_TILES):
+            self["tile_border%d" % i] = Label(" ")
             self["tile_panel%d" % i] = Label(" ")
             self["tile_focus%d" % i] = Pixmap()
             self["preview_thumb%d" % i] = Pixmap()
             self["tile_title%d" % i] = Label("")
             self["tile_channel%d" % i] = Label("")
         self.thumbs = HomeThumbs(self)
+        self["video_scroll_track"] = Label(" ")
+        self["video_scroll_thumb"] = Label(" ")
+        self.page_scroll = TilePageScrollbar(
+            self["video_scroll_track"], self["video_scroll_thumb"],
+            1783, 231, 5, 664
+        )
         self["status"] = Label("")
         self["footer"] = Label(_("OK: open video or channel · MENU: disconnect account"))
         self["key_red"] = Label(_("Back"))
@@ -166,15 +195,16 @@ class WarderYouTubeSubscriptions(Screen):
             self._render_items()
 
     def _video_mode(self):
-        return self.mode in ("recent", "channel_videos")
+        return self.mode in ("recent", "channel_videos", "channels")
 
     def _hide_tiles(self):
         self.thumbs.show([])
         for i in range(VISIBLE_TILES):
-            for prefix in ("tile_panel", "tile_focus", "preview_thumb",
+            for prefix in ("tile_border", "tile_panel", "tile_focus", "preview_thumb",
                            "tile_title", "tile_channel"):
                 self["%s%d" % (prefix, i)].hide()
         self["page_info"].setText("")
+        self.page_scroll.update(0, 1)
 
     def _render_items(self):
         self._hide_tiles()
@@ -194,11 +224,14 @@ class WarderYouTubeSubscriptions(Screen):
         self.tile_index = min(max(self.tile_index, 0), max(0, len(current) - 1))
         self["page_info"].setText("%d / %d  •  %d" % (self.page_index + 1, pages, total)
                                    if total else "")
+        self.page_scroll.update(self.page_index, pages)
         for i, video in enumerate(current):
+            self["tile_border%d" % i].show()
             self["tile_panel%d" % i].show()
             self["tile_title%d" % i].setText(_short_title(video.get("title")))
             self["tile_title%d" % i].show()
             self["tile_channel%d" % i].setText(
+                _("Channel") if self.mode == "channels" else
                 _short_title(video.get("channel"), 41))
             self["tile_channel%d" % i].show()
         self._update_focus()
