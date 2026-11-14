@@ -14,14 +14,26 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Archive exact tracked sources for reproducible receiver tests
+        run: |
+          mkdir -p source-snapshot
+          git archive --format=tar.gz HEAD > source-snapshot/warder-youtube-source.tar.gz
+          git rev-parse HEAD > source-snapshot/COMMIT.txt
+      - name: Upload source checkpoint
+        uses: actions/upload-artifact@v4
+        with:
+          name: WarderYouTube-source-checkpoint
+          path: source-snapshot/*
+          retention-days: 7
+          if-no-files-found: error
       - name: Run unit tests only
         run: python3 -m unittest discover -s tests -v
       - name: Build receiver-test-only IPK
         run: python3 tools/build_test_ipk.py --output dist
-      - name: Upload private testing candidate as Actions artifact
+      - name: Upload testing candidate as Actions artifact
         uses: actions/upload-artifact@v4
         with:
-          name: WarderYouTube-test43-inline-odbery-quick-selection-IPK
+          name: WarderYouTube-receiver-test-IPK
           path: |
             dist/*.ipk
             dist/*.sha256
