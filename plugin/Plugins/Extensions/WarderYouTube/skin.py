@@ -46,6 +46,7 @@ HOME_SKIN = """
   <widget name="heading" position="0,0" size="1,1" font="Regular;45" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
   <widget name="subtitle" position="427,198" size="1090,42" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" zPosition="4"/>
   <widget name="page_info" position="1560,198" size="300,42" font="Regular;24" foregroundColor="#62D9F8" transparent="1" halign="right" zPosition="4"/>
+  <widget name="category_more" position="1507,198" size="48,39" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" halign="center" valign="center" zPosition="6"/>
   <widget name="category_panel0" position="427,194" size="146,47" font="Regular;1" foregroundColor="#17364F" backgroundColor="#17364F" transparent="0" zPosition="4"/>
   <widget name="category_focus0" position="427,194" size="146,47" font="Regular;1" foregroundColor="#087EC7" backgroundColor="#087EC7" transparent="0" zPosition="5"/>
   <widget name="category0" position="427,198" size="146,38" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" halign="center" valign="center" zPosition="6"/>
