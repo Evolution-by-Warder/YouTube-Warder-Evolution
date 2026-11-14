@@ -18,8 +18,8 @@ from .skin import GRID_SKIN
 from .tile_scrollbar import TilePageScrollbar
 from .i18n import tr as _
 
-THUMB_WIDTH = 476
-THUMB_HEIGHT = 268
+THUMB_WIDTH = 491
+THUMB_HEIGHT = 276
 MAX_DOWNLOADS = 2
 CARD_TITLE_LIMIT = 52
 
@@ -191,16 +191,11 @@ class WarderYouTubeGrid(Screen):
                 width, height = int(actual[0]), int(actual[1])
         except (AttributeError, TypeError, ValueError, RuntimeError):
             pass
-        scale_x, scale_y = 1, 1
-        try:
-            from Components.AVSwitch import AVSwitch
-            scale = AVSwitch().getFramebufferScale()
-            if (isinstance(scale, (tuple, list)) and len(scale) == 2
-                    and all(isinstance(n, int) and 0 < n <= 16 for n in scale)):
-                scale_x, scale_y = scale
-        except (ImportError, AttributeError, TypeError, ValueError, RuntimeError):
-            pass
-        return (width, height, scale_x, scale_y, False, 1, "#00000000")
+        # OpenATV ePicLoad sets aspect_ratio=0 when the fourth setPara
+        # parameter is 0. This fills the entire target pixmap even for
+        # square/4:3 thumbnail sources instead of inserting blue side bars.
+        # The approved card remains 16:9 with no video-data crop dependency.
+        return (width, height, 0, 0, False, 1, "#00000000")
 
     def _release_decoder(self):
         """Disconnect on either Enigma2 signal API, including during teardown."""
