@@ -32,7 +32,7 @@ from .video_info_display import format_video_info
 SECTIONS = (
     ("Home", "Popular in Slovakia"),
     ("Search", "Enter your YouTube search"),
-    ("Subscriptions", "Subscriptions are not supported yet."),
+    ("Subscriptions", "Your YouTube subscriptions"),
     ("History", "Recently played videos"),
     ("Playlists", "Playlists are not supported yet."),
     ("Favourites", "Saved videos"),
@@ -380,7 +380,7 @@ class WarderYouTubeHome(Screen):
         elif self.index == 1:
             self._show_inline_keyboard()
         elif self.index == 2:
-            self._show_message("Subscriptions are not supported yet.")
+            self._show_message("Press OK to open YouTube subscriptions and TV account login.")
         elif self.index == 3:
             self._show_tiles(self._local_items("history"), "Recently played videos")
         elif self.index == 4:
@@ -671,6 +671,9 @@ class WarderYouTubeHome(Screen):
         if index == 1:
             self._select_nav(1)
             self._enter_keyboard_focus()
+        elif index == 2:
+            from .subscriptions_ui import WarderYouTubeSubscriptions
+            self.session.open(WarderYouTubeSubscriptions)
         elif index in (3, 5):
             from .library_ui import WarderYouTubeLibrary
             self.session.open(WarderYouTubeLibrary,
