@@ -28,7 +28,7 @@ from .local_library import (
     LibraryError, list_videos, toggle_favourite, record_opened,
     remove_video, clear_videos,
 )
-from .settings import get_api_key, get_quality
+from .settings import get_api_key, get_quality, get_player_mode, PLAYER_LABELS
 from .resolver import ResolverError, resolve_video_streams, is_available
 from .api import SearchError
 from .video_metadata import fetch_video_info
@@ -1029,7 +1029,7 @@ class WarderYouTubeHome(Screen):
         elif self.index == 5:
             self._show_details([
                 _("YouTube account") + ": " + (_("Signed in") if account_available() else _("Not signed in")),
-                _("No personal API key is needed when signed in."),
+                _("Player") + ": " + _(PLAYER_LABELS[get_player_mode()]),
                 _("Maximum video quality") + ": %sp" % get_quality(),
                 "yt-dlp: " + (_("Available") if is_available() else _("Not installed")),
                 _("Language from Enigma2"),
