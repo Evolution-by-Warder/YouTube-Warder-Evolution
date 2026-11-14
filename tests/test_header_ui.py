@@ -116,6 +116,90 @@ class HeaderTests(unittest.TestCase):
                 callback()
             self.assertTrue(c.closed)
 
+    def test_real_installed_version_is_shared_across_modal_headers(self):
+        """INFO must not keep an older built-in test version."""
+        with header_module() as m:
+            futures = []
+            calls = []
+            installed = types.ModuleType("_warder_header_test.installed_version")
+            installed.read_installed_version = lambda: "0.0.8~test33"
+            twisted = types.ModuleType("twisted")
+            twisted.__path__ = []
+            internet = types.ModuleType("twisted.internet")
+            internet.__path__ = []
+            threads = types.ModuleType("twisted.internet.threads")
+
+            class Deferred:
+                def addCallbacks(self, good, bad):
+                    self.good, self.bad = good, bad
+
+            def defer_to_thread(function):
+                calls.append(function)
+                future = Deferred()
+                futures.append(future)
+                return future
+
+            threads.deferToThread = defer_to_thread
+            with patch.dict(sys.modules, {
+                "_warder_header_test.installed_version": installed,
+                "twisted": twisted, "twisted.internet": internet,
+                "twisted.internet.threads": threads,
+            }):
+                first, second = Screen(), Screen()
+                first_header = m.add_header(first)
+                m.add_header(second)
+                for cb in first.onShown:
+                    cb()
+                for cb in first.onShow:
+                    cb()
+                for cb in second.onShown:
+                    cb()
+                self.assertEqual(len(calls), 1)
+                self.assertEqual(first["hdr_version"].text, "0.0.8~test25")
+                self.assertEqual(second["hdr_version"].text, "0.0.8~test25")
+
+                # A completed lookup must never revive a closed screen.
+                for cb in first.onClose:
+                    cb()
+                futures[0].good("0.0.8~test33")
+                self.assertTrue(first_header.closed)
+                self.assertEqual(first["hdr_version"].text, "0.0.8~test25")
+                self.assertEqual(second["hdr_version"].text, "0.0.8~test33")
+
+                third = Screen()
+                m.add_header(third)
+                for cb in third.onShown:
+                    cb()
+                self.assertEqual(third["hdr_version"].text, "0.0.8~test33")
+                self.assertEqual(len(calls), 1)
+
+    def test_header_version_lookup_failure_does_not_block_info(self):
+        with header_module() as m:
+            installed = types.ModuleType("_warder_header_test.installed_version")
+            installed.read_installed_version = lambda: "0.0.8~test33"
+            twisted = types.ModuleType("twisted")
+            twisted.__path__ = []
+            internet = types.ModuleType("twisted.internet")
+            internet.__path__ = []
+            threads = types.ModuleType("twisted.internet.threads")
+
+            class FailingDeferred:
+                def addCallbacks(self, good, bad):
+                    bad(RuntimeError("test failure"))
+
+            threads.deferToThread = lambda fn: FailingDeferred()
+            with patch.dict(sys.modules, {
+                "_warder_header_test.installed_version": installed,
+                "twisted": twisted, "twisted.internet": internet,
+                "twisted.internet.threads": threads,
+            }):
+                screen = Screen()
+                m.add_header(screen)
+                for cb in screen.onShown:
+                    cb()
+                self.assertEqual(screen["hdr_version"].text, "0.0.8~test25")
+                self.assertTrue(screen._warder_header.timer.running)
+
     def test_header_uses_the_owner_original_emblem_not_a_second_drawn_skull(self):
         artwork = (PKG / "images" / "warder_skull.png").read_bytes()
         self.assertEqual(artwork[:8], bytes((137, 80, 78, 71, 13, 10, 26, 10)))
