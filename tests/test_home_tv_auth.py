@@ -115,7 +115,7 @@ class InlineLoginTests(unittest.TestCase):
             tasks[1][1].success(("connected", {"access_token": "private-access",
                                                "refresh_token": "private-refresh"}))
             self.assertEqual(len(tasks), 3)
-            self.assertEqual(tasks[2][0][0].__name__, "<lambda>" if False else "save_tokens")
+            self.assertIs(tasks[2][0][0], modules["_home_tv_test.subscriptions_auth"].save_tokens)
             tasks[2][1].success(None)
             self.assertTrue(home.connected)
             self.assertTrue(login.closed)
