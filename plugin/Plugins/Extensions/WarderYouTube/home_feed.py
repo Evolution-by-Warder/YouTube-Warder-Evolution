@@ -11,6 +11,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from .api import SearchError, MAX_RESPONSE_BYTES, VIDEO_ID
+from .home_categories import CATEGORY_IDS
 
 POPULAR_ENDPOINT = "https://www.googleapis.com/youtube/v3/videos"
 REGION = "SK"
@@ -48,7 +49,6 @@ def popular_videos_page(api_key, category_id="0", page_token="", region=REGION,
     A category selection does not claim to reproduce the personalized
     recommendations or "Mixes" from the YouTube website.
     """
-    from .home_categories import CATEGORY_IDS
     if not isinstance(api_key, str) or not api_key.strip():
         raise SearchError("YouTube API key is required for popular videos.")
     if category_id not in CATEGORY_IDS:
