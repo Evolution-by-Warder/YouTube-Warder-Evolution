@@ -35,12 +35,11 @@ class UiTests(unittest.TestCase):
     def test_no_key_committed_or_logged(self):
         settings = (PKG / "settings.py").read_text(encoding="utf-8")
         self.assertIn("ConfigText(default=\"\", fixed_size=False)", settings)
-        self.assertIn('value=""', settings)
-        # Owner intentionally wants to see each newly typed key before
-        # confirming it; previously saved credentials are never prefilled.
-        self.assertIn("secret=False", settings)
-        self.assertIn('value=""', settings)
-        self.assertIn("VALID_KEY.fullmatch(value)", settings)
+        # Old Enigma2 key remains a read-only, invisible fallback.
+        self.assertIn("def get_api_key():", settings)
+        self.assertNotIn("def prompt_key(", settings)
+        self.assertNotIn("def clear_key(", settings)
+        self.assertNotIn("Enter API key", settings)
         self.assertNotIn("VirtualKeyBoard", settings)
         for name in ("settings.py", "search.py", "api.py"):
             self.assertNotIn("print(", (PKG / name).read_text(encoding="utf-8"))
