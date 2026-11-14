@@ -17,7 +17,8 @@ from .i18n import tr as _
 from .update_core import CURRENT_VERSION
 from .grid_model import move_index
 from .system_keyboard_pane import SystemKeyboardPane
-from .home_feed import popular_videos, public_home_videos
+from .home_feed import popular_videos_page, public_home_videos
+from .home_categories import HOME_CATEGORIES
 from .home_thumbs import HomeThumbs
 from .tile_scrollbar import TilePageScrollbar
 from .local_library import (
@@ -77,6 +78,12 @@ class WarderYouTubeHome(Screen):
         self._popular_cache = None
         self._popular_error = False
         self._popular_source = "api"
+        self._popular_request_epoch = 0
+        self._popular_next_page_token = ""
+        self._popular_total_results = None
+        self._popular_more_loading = False
+        self._category_index = 0
+        self._category_cursor = 0
         self._busy = False
         self._playback_active = False
         self._context_open = False
@@ -93,6 +100,10 @@ class WarderYouTubeHome(Screen):
         self["heading"] = Label("")
         self["subtitle"] = Label("")
         self["page_info"] = Label("")
+        for i, (_category_id, label) in enumerate(HOME_CATEGORIES):
+            self["category_panel%d" % i] = Label(" ")
+            self["category_focus%d" % i] = Label(" ")
+            self["category%d" % i] = Label(_(label))
         self["kb_hint"] = Label("")
         self["kb_feedback"] = Label("")
         try:
@@ -216,6 +227,63 @@ class WarderYouTubeHome(Screen):
             else:
                 focus.hide()
 
+    def _render_categories(self):
+        visible = self.index == 0
+        if visible:
+            self["subtitle"].hide()
+        else:
+            self["subtitle"].show()
+        selected = (self._category_cursor if self.focus_area == "categories"
+                    else self._category_index)
+        for i in range(len(HOME_CATEGORIES)):
+            for name in ("category_panel", "category"):
+                widget = self["%s%d" % (name, i)]
+                if visible:
+                    widget.show()
+                else:
+                    widget.hide()
+            focus = self["category_focus%d" % i]
+            if visible and i == selected:
+                focus.show()
+            else:
+                focus.hide()
+
+    def _enter_categories(self):
+        if self.index != 0 or self._disposed:
+            return
+        self.focus_area = "categories"
+        self._category_cursor = self._category_index
+        self["status"].setText(_("Choose a category and press OK"))
+        self._update_nav()
+        self._update_tile_focus()
+        self._render_categories()
+        self._update_keys()
+
+    def _choose_category(self):
+        if self.index != 0 or self._busy or self._playback_active:
+            return
+        if self._category_cursor == self._category_index and self._popular_cache:
+            # Keep the already fetched category unless the user picked a new one.
+            self.focus_area = "tiles"
+            self.tile_index = 0
+            self._update_tile_focus()
+            self._render_categories()
+            self._update_keys()
+            return
+        self._category_index = self._category_cursor
+        self._popular_next_page_token = ""
+        self._popular_total_results = None
+        self._popular_more_loading = False
+        self._popular_requested = False
+        self._popular_loading = False
+        self._popular_cache = None
+        self._popular_error = False
+        self._popular_request_epoch += 1  # discard callbacks for old category
+        self.page_index = 0
+        self._request_popular()
+        self._render_categories()
+        self._update_keys()
+
     def _clear_preview(self):
         self.thumbs.show([])
         for i in range(VISIBLE_TILES):
@@ -257,11 +325,22 @@ class WarderYouTubeHome(Screen):
         first = self.page_index * VISIBLE_TILES
         self.video_items = all_videos[first:first + VISIBLE_TILES]
         self["subtitle"].setText(_(subtitle))
-        self["page_info"].setText(
-            "%d / %d  •  %d" % (self.page_index + 1, pages, len(all_videos))
-            if len(all_videos) > VISIBLE_TILES else ""
-        )
-        self.page_scroll.update(self.page_index, pages)
+        if self.index == 0 and self._popular_source == "api":
+            reported = self._popular_total_results
+            actual_pages = max(pages, (reported + VISIBLE_TILES - 1) // VISIBLE_TILES) if reported else (
+                pages + (1 if self._popular_next_page_token else 0))
+            shown_count = reported if reported else len(all_videos)
+            # The displayed total is the YouTube chart count, never a claim
+            # about all videos on the platform or a user's channel.
+            self["page_info"].setText(
+                "%d / %d  •  %d" % (self.page_index + 1, actual_pages, shown_count)
+                if actual_pages > 1 else "")
+        else:
+            actual_pages = pages
+            self["page_info"].setText(
+                "%d / %d  •  %d" % (self.page_index + 1, pages, len(all_videos))
+                if len(all_videos) > VISIBLE_TILES else "")
+        self.page_scroll.update(self.page_index, actual_pages)
         if not self.video_items:
             self["preview_message"].setText(_("No saved videos in this section."))
             self["preview_message"].show()
@@ -315,42 +394,66 @@ class WarderYouTubeHome(Screen):
         if self._popular_requested or self._disposed:
             return
         key = get_api_key()
+        category_id = HOME_CATEGORIES[self._category_index][0]
         self._popular_source = "api" if key else "public"
+        if not key and category_id != "0":
+            self._popular_error = True
+            self._show_message("Choose an API key to browse video categories.")
+            self._render_categories()
+            return
         self._popular_requested = True
         self._popular_loading = True
+        self._popular_more_loading = False
+        self._popular_request_epoch += 1
+        request_epoch = self._popular_request_epoch
         if key and not refresh:
             self._show_message("Loading popular videos for Slovakia…")
+            self._render_categories()
         elif refresh:
             self["status"].setText(_("Refreshing real YouTube videos…"))
         else:
-            # Show a useful local cache while public videos load. Never
-            # block Enigma2 or claim anonymous results are personalized.
             self._fallback_home()
             self["status"].setText(_("Loading public YouTube videos…"))
+            self._render_categories()
         try:
-            work = (deferToThread(popular_videos, key) if key else
-                    deferToThread(public_home_videos))
-            work.addCallbacks(self._popular_loaded, self._popular_failed)
+            work = (deferToThread(popular_videos_page, key,
+                                  category_id=category_id)
+                    if key else deferToThread(public_home_videos))
+            work.addCallbacks(
+                lambda payload: self._popular_loaded(payload, request_epoch),
+                lambda failure: self._popular_failed(failure, request_epoch))
         except Exception:
-            self._popular_failed(None)
+            self._popular_failed(None, request_epoch)
 
-    def _popular_loaded(self, videos):
-        if self._disposed:
+    def _popular_loaded(self, payload, request_epoch=None):
+        if (self._disposed or (request_epoch is not None
+                and request_epoch != self._popular_request_epoch)):
             return
         self._popular_loading = False
+        if isinstance(payload, dict):
+            videos = payload.get("items") or []
+            token = payload.get("next_page_token") or ""
+            total = payload.get("total_results")
+        else:
+            videos, token, total = payload, "", None
         self._popular_cache = videos[:24] if isinstance(videos, list) else []
+        self._popular_next_page_token = token if isinstance(token, str) else ""
+        self._popular_total_results = total if type(total) is int and total > 0 else None
         self._popular_fetched_at = monotonic()
         self._popular_error = False
         if self.index == 0:
             if self._popular_cache:
-                self._show_tiles(self._popular_cache,
-                                 "Popular in Slovakia" if self._popular_source == "api"
-                                 else "Public YouTube selection (no API key)")
+                self._show_tiles(
+                    self._popular_cache,
+                    "Popular in Slovakia" if self._popular_source == "api"
+                    else "Public YouTube selection (no API key)")
             else:
-                self._fallback_home()
+                self._show_message("No videos in selected category.")
+            self._render_categories()
 
-    def _popular_failed(self, failure):
-        if self._disposed:
+    def _popular_failed(self, failure, request_epoch=None):
+        if (self._disposed or (request_epoch is not None
+                and request_epoch != self._popular_request_epoch)):
             return
         self._popular_loading = False
         self._popular_error = True
@@ -364,6 +467,63 @@ class WarderYouTubeHome(Screen):
                 _("Popular videos are temporarily unavailable.") if self._popular_source == "api"
                 else _("Public YouTube list unavailable; showing local videos.")
             )
+            self._render_categories()
+
+    def _request_more_popular(self):
+        if (self.index != 0 or self._disposed or self._popular_more_loading
+                or not self._popular_next_page_token or not get_api_key()):
+            return False
+        token = self._popular_next_page_token
+        category_id = HOME_CATEGORIES[self._category_index][0]
+        request_epoch = self._popular_request_epoch
+        next_page = self.page_index + 1
+        self._popular_more_loading = True
+        self["status"].setText(_("Loading more videos…"))
+        try:
+            job = deferToThread(popular_videos_page, get_api_key(),
+                                category_id=category_id, page_token=token)
+            job.addCallbacks(
+                lambda response: self._more_popular_ready(response, request_epoch, next_page),
+                lambda failure: self._more_popular_failed(request_epoch))
+        except Exception:
+            self._more_popular_failed(request_epoch)
+        return True
+
+    def _more_popular_ready(self, response, request_epoch, next_page):
+        if self._disposed or request_epoch != self._popular_request_epoch:
+            return
+        self._popular_more_loading = False
+        if not isinstance(response, dict):
+            self._more_popular_failed(request_epoch)
+            return
+        old_ids = {video.get("video_id") for video in self._popular_cache}
+        new_items = [
+            v for v in response.get("items", []) if isinstance(v, dict)
+            and v.get("video_id") not in old_ids
+        ]
+        self._popular_cache.extend(new_items[:24])
+        next_token = response.get("next_page_token") or ""
+        # Avoid a server accidentally returning a token that loops forever.
+        self._popular_next_page_token = (
+            next_token if isinstance(next_token, str) and next_token != token
+            else ""
+        ) if (token := self._popular_next_page_token) else ""
+        new_total = response.get("total_results")
+        if type(new_total) is int and new_total > 0:
+            self._popular_total_results = new_total
+        if self.index == 0 and self._popular_cache:
+            if next_page * VISIBLE_TILES < len(self._popular_cache):
+                self.page_index = next_page
+            self._show_tiles(self._popular_cache, "Popular in Slovakia")
+            self._render_categories()
+        self["status"].setText(_("More videos loaded.") if new_items
+                              else _("No more videos in this category."))
+
+    def _more_popular_failed(self, request_epoch):
+        if self._disposed or request_epoch != self._popular_request_epoch:
+            return
+        self._popular_more_loading = False
+        self["status"].setText(_("More videos could not be loaded. Try again."))
 
     def _update_preview(self):
         if self._disposed or not self._mounted:
