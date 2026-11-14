@@ -19,6 +19,7 @@ from .grid_model import move_index
 from .system_keyboard_pane import SystemKeyboardPane
 from .home_feed import popular_videos_page, public_home_videos
 from .home_personalization import VISIBLE_CHIPS, build_home_chips, dedupe_videos
+from .home_subscription_rail import subscription_chips
 from .chip_layout import layout_chips
 from .home_thumbs import HomeThumbs
 from .tile_scrollbar import TilePageScrollbar
@@ -136,6 +137,11 @@ class WarderYouTubeHome(Screen):
         self._category_offset = 0
         self._home_chips = build_home_chips()
         self._home_channels = []
+        self._subscription_chips = []
+        self._subscription_index = 0
+        self._subscription_cursor = 0
+        self._subscription_offset = 0
+        self._subscriptions_connected = False
         self._personal_requested = False
         self._personal_fetched_at = 0
         self._personal_epoch = 0
@@ -296,21 +302,41 @@ class WarderYouTubeHome(Screen):
             return self._home_chips[self._category_index]
         return self._home_chips[0]
 
+    def _selected_subscription_chip(self):
+        if 0 <= self._subscription_index < len(self._subscription_chips):
+            return self._subscription_chips[self._subscription_index]
+        return None
+
+    def _active_chips(self):
+        return self._subscription_chips if self.index == 2 else self._home_chips
+
+    def _active_chip_index(self):
+        return self._subscription_index if self.index == 2 else self._category_index
+
+    def _active_chip_cursor(self):
+        return self._subscription_cursor if self.index == 2 else self._category_cursor
+
     def _render_categories(self):
-        """Native one-line category rail with as many real chips as fit."""
-        visible = self.index == 0
+        """One-line scrolling rail in the SAME right pane for Home and Odbery."""
+        visible = self.index in (0, 2)
         if visible:
             self["subtitle"].hide()
         else:
             self["subtitle"].show()
-        selection = (self._category_cursor if self.focus_area == "categories"
-                     else self._category_index)
-        labels = [_(item["label"]) for item in self._home_chips]
+        chips = self._active_chips() if visible else []
+        selected = (self._active_chip_cursor() if self.focus_area == "categories"
+                    else self._active_chip_index())
+        old_offset = (self._subscription_offset if self.index == 2
+                      else self._category_offset)
+        labels = [_(chip["label"]) for chip in chips]
         offset, slots, has_before, has_after = layout_chips(
-            labels, selection, self._category_offset
+            labels, selected, old_offset
         )
-        self._category_offset = offset
-        from_visible = {item[0]: (item[1], item[2]) for item in slots}
+        if self.index == 2:
+            self._subscription_offset = offset
+        else:
+            self._category_offset = offset
+        fitted_by_index = {position: (x, width) for position, x, width in slots}
 
         def place(widget, x, y, width, height, nowrap=False):
             instance = getattr(widget, "instance", None)
@@ -323,12 +349,11 @@ class WarderYouTubeHome(Screen):
                 if nowrap and hasattr(instance, "setNoWrap"):
                     instance.setNoWrap(True)
             except (ImportError, AttributeError, RuntimeError, TypeError):
-                # Unusual firmware uses the original valid static skin values.
                 pass
 
         for slot in range(VISIBLE_CHIPS):
             item_index = offset + slot
-            fitted = item_index in from_visible and visible
+            fitted = visible and item_index in fitted_by_index
             for prefix in ("category_panel", "category"):
                 widget = self["%s%d" % (prefix, slot)]
                 if fitted:
@@ -337,12 +362,12 @@ class WarderYouTubeHome(Screen):
                     widget.hide()
             focus = self["category_focus%d" % slot]
             if fitted:
-                x, width = from_visible[item_index]
+                x, width = fitted_by_index[item_index]
                 place(self["category_panel%d" % slot], x, 194, width, 47)
                 place(focus, x, 194, width, 47)
                 place(self["category%d" % slot], x, 198, width, 38, nowrap=True)
                 self["category%d" % slot].setText(labels[item_index])
-            if fitted and item_index == selection:
+            if fitted and item_index == selected:
                 focus.show()
             else:
                 focus.hide()
@@ -353,10 +378,17 @@ class WarderYouTubeHome(Screen):
             self["category_more"].hide()
 
     def _enter_categories(self):
-        if self.index != 0 or self._disposed:
+        if self.index not in (0, 2) or self._disposed:
+            return
+        if not self._active_chips():
+            # A disconnected account cannot yet offer channel chips.
+            self._open_subscription_login() if self.index == 2 else None
             return
         self.focus_area = "categories"
-        self._category_cursor = self._category_index
+        if self.index == 2:
+            self._subscription_cursor = self._subscription_index
+        else:
+            self._category_cursor = self._category_index
         self["status"].setText(_("Choose a category and press OK"))
         self._update_nav()
         self._update_tile_focus()
@@ -364,19 +396,28 @@ class WarderYouTubeHome(Screen):
         self._update_keys()
 
     def _choose_category(self):
-        if self.index != 0 or self._disposed or self._busy or self._playback_active:
+        if (self.index not in (0, 2) or self._disposed or self._busy
+                or self._playback_active):
             return
-        if self._category_cursor == self._category_index and self.video_items:
+        current = self._active_chip_cursor()
+        selected = self._active_chip_index()
+        if current == selected and self.video_items:
             self.focus_area = "tiles"
             self.tile_index = 0
             self._update_tile_focus()
             self._render_categories()
             self._update_keys()
             return
-        self._category_index = self._category_cursor
-        self._personal_video_epoch += 1  # ignore callbacks for older chips
+        if self.index == 2:
+            self._subscription_index = current
+        else:
+            self._category_index = current
+        self._personal_video_epoch += 1
         self.page_index = 0
-        self._show_selected_home_chip()
+        if self.index == 2:
+            self._show_selected_subscription_chip()
+        else:
+            self._show_selected_home_chip()
         self._render_categories()
         self._update_keys()
 
