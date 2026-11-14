@@ -21,42 +21,39 @@ class DynamicChipsTests(unittest.TestCase):
             ["all"]
         )
 
-    def test_real_channels_produce_thematic_and_channel_chips(self):
+    def test_topics_appear_without_duplicate_odbery_or_channel_names(self):
         chips = mod.build_home_chips(
             channels=[channel("a", "Music & Radio"),
                       channel("b", "Nature World"),
                       channel("c", "Games Factory")],
             authenticated=True)
         ids = [c["id"] for c in chips]
-        self.assertEqual(ids[:5], [
-            "all", "recent", "topic:music", "topic:gaming", "topic:nature"
+        self.assertEqual(ids, [
+            "all", "topic:music", "topic:gaming", "topic:nature"
         ])
-        self.assertIn("channel:UC" + "a" * 22, ids)
-        self.assertIn("channel:UC" + "b" * 22, ids)
+        self.assertNotIn("recent", ids)
+        self.assertFalse(any(item.startswith("channel:") for item in ids))
         self.assertNotIn("history", ids)
         self.assertNotIn("favourites", ids)
         self.assertFalse(any("mix" in c["label"].lower() for c in chips))
-        self.assertEqual(
-            chips[3]["channels"], ("UC" + "c" * 22,)
-        )
+        self.assertEqual(chips[2]["channels"], ("UC" + "c" * 22,))
 
-    def test_deduplicate_channels_ignore_invalid_id_and_bound_size(self):
+    def test_dedupe_channels_and_limit_real_topic_results(self):
         source = [channel("a", "Nature"),
                   channel("a", "Old duplicate"),
                   {"channel_id": "bad", "title": "Games"}]
         source.extend(channel(chr(98 + j), "Channel %d" % j) for j in range(12))
         chips = mod.build_home_chips(source, authenticated=True)
-        channel_chips = [c for c in chips if c["kind"] == "channel"]
-        self.assertEqual(len(channel_chips), 12)
-        self.assertEqual(channel_chips[0]["title"], "Nature")
+        self.assertEqual([c["id"] for c in chips], ["all", "topic:nature"])
+        self.assertEqual(chips[1]["channels"], ("UC" + "a" * 22,))
         self.assertEqual(len(set(c["id"] for c in chips)), len(chips))
-        self.assertLessEqual(len(chips), 1 + 1 + mod.MAX_TOPIC_CHIPS + 12)
+        self.assertLessEqual(len(chips), 1 + mod.MAX_TOPIC_CHIPS)
 
-    def test_no_unsupported_topic_from_unknown_channel_name(self):
+    def test_unknown_subscription_titles_never_create_fake_topics(self):
         chips = mod.build_home_chips(
             [channel("a", "ZXCV Company Limited")], authenticated=True)
-        self.assertFalse(any(c["kind"] == "topic" for c in chips))
-        self.assertEqual(chips[-1]["title"], "ZXCV Company Limited")
+        self.assertEqual([c["id"] for c in chips], ["all"])
+        self.assertEqual(chips[0]["title"], "Populárne na Slovensku")
 
     def test_only_real_youtube_ids_in_video_grid(self):
         def video(value):
