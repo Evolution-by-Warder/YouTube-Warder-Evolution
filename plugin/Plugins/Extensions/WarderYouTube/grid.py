@@ -19,7 +19,7 @@ from .tile_scrollbar import TilePageScrollbar
 from .i18n import tr as _
 
 THUMB_WIDTH = 476
-THUMB_HEIGHT = 249
+THUMB_HEIGHT = 268
 MAX_DOWNLOADS = 2
 CARD_TITLE_LIMIT = 52
 
