@@ -9,6 +9,52 @@ from datetime import datetime
 
 from Components.Label import Label
 
+# All YouTube screens share one non-blocking installed-package lookup.
+# The GUI may keep an older imported module around after an IPK upgrade;
+# opkg is the authoritative source, not a hard-coded test build value.
+_version_cache = None
+_version_pending = []
+_version_busy = False
+
+
+def _version_ready(actual):
+    global _version_cache, _version_busy
+    from .update_core import CURRENT_VERSION
+    _version_cache = actual if isinstance(actual, str) and actual else CURRENT_VERSION
+    _version_busy = False
+    subscribers = list(_version_pending)
+    _version_pending[:] = []
+    for controller in subscribers:
+        controller.set_installed_version(_version_cache)
+    return actual
+
+
+def _version_failed(_error):
+    return _version_ready(None)
+
+
+def _request_installed_version(controller):
+    global _version_busy
+    if controller.closed:
+        return
+    if _version_cache is not None:
+        controller.set_installed_version(_version_cache)
+        return
+    if controller not in _version_pending:
+        _version_pending.append(controller)
+    if _version_busy:
+        return
+    _version_busy = True
+    try:
+        from .installed_version import read_installed_version
+        from twisted.internet.threads import deferToThread
+        deferred = deferToThread(read_installed_version)
+        deferred.addCallbacks(_version_ready, _version_failed)
+    except (ImportError, AttributeError, RuntimeError, TypeError):
+        # Never stall or crash the UI for a status label.
+        _version_failed(None)
+
+
 
 DAY_NAMES = {
     "sk": ("Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota", "Nedeľa"),
@@ -78,6 +124,10 @@ class HeaderController:
             if callbacks is not None:
                 callbacks.append(action)
 
+    def set_installed_version(self, version):
+        if not self.closed and isinstance(version, str) and version:
+            self.screen["hdr_version"].setText(version)
+
     def update(self):
         if self.closed:
             return
@@ -95,6 +145,7 @@ class HeaderController:
         if self.closed:
             return
         self.update()
+        _request_installed_version(self)
         if self.timer is None:
             try:
                 from enigma import eTimer
@@ -124,6 +175,8 @@ class HeaderController:
         if self.closed:
             return
         self.closed = True
+        if self in _version_pending:
+            _version_pending.remove(self)
         self.stop()
         if self.connection is not None:
             try:
