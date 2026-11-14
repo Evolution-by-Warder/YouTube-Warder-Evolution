@@ -188,6 +188,7 @@ class WarderYouTubeHome(Screen):
         self._play_request = 0
         self.installed_version = CURRENT_VERSION
         self._version_checked = False
+        self._inline_updater = None
 
         self["brand"] = Label("YouTube Warder Evolution")
         self["version"] = Label(CURRENT_VERSION + "  •  Enigma2")
@@ -325,6 +326,8 @@ class WarderYouTubeHome(Screen):
             self._inline_tv_login.close()
         if self.inline_keyboard is not None:
             self.inline_keyboard.cleanup()
+        if self._inline_updater is not None:
+            self._inline_updater.close()
         self.thumbs.close()
 
     def _update_nav(self):
@@ -1045,15 +1048,21 @@ class WarderYouTubeHome(Screen):
                 _("Account access is stored locally on this receiver."),
             ])
         elif self.index == 6:
-            self._show_details([
-                _("Installed") + ": " + self.installed_version,
-                _("Channel") + ": " + _("Testing"),
-                _("Updates") + ": " + _("Check on demand"),
-            ])
+            if self._inline_updater is None:
+                self._show_details([
+                    _("Installed") + ": " + self.installed_version,
+                    _("Channel") + ": " + _("Testing"),
+                    _("Updates") + ": " + _("Check on demand"),
+                    _("Press OK to check updates."),
+                ])
+            else:
+                self._inline_updater.show()
         self._update_nav()
         self._update_tile_focus()
         self._render_categories()
         self._update_keys()
+        if self.index == 6 and self._inline_updater is not None:
+            self._inline_updater.show()
 
     def _hide_inline_keyboard(self):
         self.kb_shown = False
@@ -1146,6 +1155,12 @@ class WarderYouTubeHome(Screen):
             self._home_search_flow = HomeSearchFlow(self)
         self._home_search_flow.start(query)
 
+    def _get_inline_updater(self):
+        if self._inline_updater is None:
+            from .inline_update import InlineUpdater
+            self._inline_updater = InlineUpdater(self)
+        return self._inline_updater
+
     def _update_keys(self):
         if self.focus_area == "categories":
             self["key_red"].setText(_("Back"))
@@ -1175,6 +1190,10 @@ class WarderYouTubeHome(Screen):
         # Down from Updates -> Home. Only the left menu wraps; the
         # right-hand video grid keeps its existing navigation semantics.
         index = index % len(self.sections)
+        if self.index == 6 and index != 6 and self._inline_updater is not None:
+            if self._inline_updater.is_busy():
+                return
+            self._inline_updater.leave()
         if (self.index == 1 and index != 1
                 and self._home_search_flow is not None):
             # Discard late worker results when navigating away from Search.
@@ -1312,6 +1331,8 @@ class WarderYouTubeHome(Screen):
             self._update_keys()
 
     def back(self):
+        if self._busy or (self._inline_updater is not None and self._inline_updater.is_busy()):
+            return
         if self.focus_area == "categories":
             self.focus_area = "nav"
             self["status"].setText("")
@@ -1339,6 +1360,9 @@ class WarderYouTubeHome(Screen):
             self.activate()
 
     def yellow(self):
+        if self.index == 6:
+            self._get_inline_updater().details_toggle()
+            return
         if self.focus_area == "keyboard":
             self._keyboard_delete()
             return
@@ -1348,6 +1372,9 @@ class WarderYouTubeHome(Screen):
             self._select_nav(3)
 
     def blue(self):
+        if self.index == 6:
+            self._get_inline_updater().check()
+            return
         if self.focus_area == "keyboard":
             self._keyboard_append(" ")
             return
@@ -1362,6 +1389,9 @@ class WarderYouTubeHome(Screen):
 
     def activate(self):
         if self._disposed or self._busy or self._playback_active or self._context_open:
+            return
+        if self.index == 6:
+            self._get_inline_updater().activate()
             return
         if self.focus_area == "keyboard":
             self._keyboard_press()
@@ -1398,8 +1428,7 @@ class WarderYouTubeHome(Screen):
             from .settings import WarderYouTubeSettings
             self.session.openWithCallback(self._settings_closed, WarderYouTubeSettings)
         elif index == 6:
-            from .update_ui import WarderYouTubeUpdateCheck
-            self.session.open(WarderYouTubeUpdateCheck)
+            self._get_inline_updater().activate()
         elif index == 0:
             if not self.video_items:
                 self._open_index(5)
