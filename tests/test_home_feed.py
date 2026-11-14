@@ -69,6 +69,38 @@ class HomeFeedTests(unittest.TestCase):
         self.assertEqual(q["maxResults"], ["24"])
         self.assertEqual(requests[0][1], 8)
 
+    def test_categories_and_real_youtube_pagination_are_requested(self):
+        mod = load()
+        requests = []
+        def opener(request, timeout):
+            requests.append(request)
+            body = sample()
+            body["nextPageToken"] = "tokenB"
+            body["pageInfo"] = {"totalResults": 144, "resultsPerPage": 24}
+            return FakeResponse(body)
+        page = mod.popular_videos_page(
+            "private-key", category_id="20", page_token="tokenA", opener=opener
+        )
+        self.assertEqual(len(page["items"]), 2)
+        self.assertEqual(page["next_page_token"], "tokenB")
+        self.assertEqual(page["total_results"], 144)
+        parsed = urlparse(requests[0].full_url)
+        params = parse_qs(parsed.query)
+        self.assertEqual(params["videoCategoryId"], ["20"])
+        self.assertEqual(params["pageToken"], ["tokenA"])
+        self.assertEqual(params["regionCode"], ["SK"])
+
+    def test_invalid_category_or_unsafe_paging_is_rejected_before_network(self):
+        mod = load()
+        def no_network(req, timeout):
+            self.fail("Never call network for invalid data")
+        for category, page in (("99", ""), ("0", "bad\nvalue"),
+                               ("0", "x" * 151)):
+            with self.subTest(category=category, page=page):
+                with self.assertRaises(mod.SearchError):
+                    mod.popular_videos_page("private-key", category_id=category,
+                                           page_token=page, opener=no_network)
+
     def test_errors_keep_key_out_of_user_message(self):
         mod = load()
         def rejected(request, timeout):
