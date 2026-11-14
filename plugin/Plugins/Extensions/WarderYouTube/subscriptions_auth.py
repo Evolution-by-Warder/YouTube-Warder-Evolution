@@ -14,7 +14,7 @@ import threading
 import time
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
 
 CLIENT_PATH = Path("/etc/enigma2/warderyoutube-oauth-client.json")
@@ -103,6 +103,7 @@ def request_device_code(client, opener=urlopen):
         if (not isinstance(device_code, str) or not 10 <= len(device_code) <= 1000
                 or not isinstance(user_code, str) or not 2 <= len(user_code) <= 64
                 or not isinstance(url, str) or not url.startswith("https://")
+                or urlsplit(url).hostname not in ("google.com", "www.google.com", "accounts.google.com")
                 or not 30 <= expires <= 3600):
             raise ValueError("bad device response")
     except (KeyError, ValueError, TypeError):
@@ -193,9 +194,13 @@ def access_token(client=None, path=TOKEN_PATH, opener=urlopen):
     """Refresh on demand. Never return an expired token to a Google API call."""
     with _LOCK:
         data = _read_private_json(path)
+        try:
+            expiry = int(data.get("expires_at") or 0)
+        except (ValueError, TypeError):
+            expiry = 0
         if (isinstance(data.get("access_token"), str)
                 and data["access_token"] and
-                int(data.get("expires_at") or 0) > int(time.time()) + 90):
+                expiry > int(time.time()) + 90):
             return data["access_token"]
         refresh = data.get("refresh_token")
         if not isinstance(refresh, str) or not refresh:
