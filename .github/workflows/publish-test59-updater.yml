@@ -115,7 +115,7 @@ jobs:
           HASH="$(sha256sum "$ASSET" | cut -d ' ' -f1)"
           SIZE="$(stat -c %s "$ASSET")"
           printf '%s  %s\n' "$HASH" "$(basename "$ASSET")" > "$ASSET.sha256"
-          sha256sum -c "$ASSET.sha256"
+          (cd dist && sha256sum -c "$(basename "$ASSET.sha256")")
           gh release create "$TAG" "$ASSET" "$ASSET.sha256" --target "$GITHUB_SHA" --prerelease --title "YouTube Warder Evolution test59" --notes "TEST ONLY. In-plugin updater verification from test58: native progress, SHA256, opkg, GUI restart; SK/CS/EN/DE text. Stable channel unchanged."
           echo "PUBLISHED test59 asset sha256=$HASH bytes=$SIZE"
       - uses: actions/upload-artifact@v4
