@@ -22,6 +22,13 @@ MAX_CHIPS = 48
 MAX_VIDEOS = 96
 
 
+class HomeBrowseError(SearchError):
+    """Publicly safe failure reason; never contains HTTP headers or tokens."""
+    def __init__(self, reason):
+        self.reason = reason
+        SearchError.__init__(self, "Signed-in YouTube Home unavailable.")
+
+
 def _text(node):
     if isinstance(node, str):
         return html.unescape(node)
@@ -122,7 +129,7 @@ def _filter_rows(payload):
 def parse_live_home(payload):
     """Return exact, ordered Home chips with their actual YouTube commands."""
     if not isinstance(payload, dict) or not _authenticated(payload):
-        raise SearchError("Could not verify signed-in YouTube Home filters.")
+        raise HomeBrowseError("not_authenticated")
     chips = []
     for entries in _filter_rows(payload):
         for entry in entries[:MAX_CHIPS]:
@@ -153,7 +160,7 @@ def parse_live_home(payload):
         if chips:
             break
     if not chips:
-        raise SearchError("YouTube did not provide usable Home category chips.")
+        raise HomeBrowseError("no_chips")
     return {"chips": chips, "videos": parse_live_videos(payload)}
 
 
@@ -240,9 +247,17 @@ def _browse(access_token, command=None, opener=urlopen, timeout=10):
         if not isinstance(parsed, dict) or parsed.get("error"):
             raise SearchError("YouTube categories are unavailable.")
         return parsed
-    except (HTTPError, URLError, OSError, UnicodeError, ValueError):
-        # Never leak the Bearer token or response headers in error messages.
-        raise SearchError("Could not load signed-in YouTube Home categories.")
+    except HTTPError as error:
+        # The Google Data API read-only OAuth token is not necessarily
+        # accepted by YouTube's signed-in WEB Innertube client.
+        # Never store or display raw HTTP bodies, headers or credentials.
+        if error.code in (401, 403):
+            raise HomeBrowseError("web_auth_rejected")
+        raise HomeBrowseError("http_failure")
+    except (URLError, OSError):
+        raise HomeBrowseError("network")
+    except (UnicodeError, ValueError):
+        raise HomeBrowseError("invalid_response")
 
 
 def live_home(access_token, opener=urlopen):
