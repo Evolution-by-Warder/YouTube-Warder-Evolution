@@ -1,0 +1,31 @@
+name: Prepare shared Warder logo reference (development only)
+
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/brand-reference.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  brand:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get pinned approved branding from PiconHub
+        run: |
+          set -eu
+          mkdir -p references
+          base="https://raw.githubusercontent.com/Evolution-by-Warder/PiconHub-Warder-Evolution/59ec70708d4d05a28f17c741742c78451d4fc45b/plugin/artwork/templates/warder-brand"
+          curl --fail --retry 2 --max-time 25 "$base/warder-shared-skull.png" -o references/warder-shared-skull.png
+          curl --fail --retry 2 --max-time 25 "$base/piconhub-master.png" -o references/piconhub-master.png
+          file references/*.png
+          sha256sum references/*.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Warder-approved-brand-reference
+          path: references/*.png
+          retention-days: 2

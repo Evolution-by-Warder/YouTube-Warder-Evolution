@@ -1,0 +1,24 @@
+name: yt-dlp live stream resolver smoke (no credentials)
+
+# Manual diagnostic only. GitHub datacenter IPs may fail YouTube anti-bot
+# verification even when the same video works on a residential receiver.
+# This is not a required source CI check; failed extraction remains visible.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  extraction-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install yt-dlp in disposable GitHub test runner only
+        run: python -m pip install --disable-pip-version-check "yt-dlp==2026.10.26"
+      - name: Test real public video extraction without downloads or secrets
+        run: python tests/live_stream_smoke.py

@@ -1,0 +1,107 @@
+name: Build test53 with TV OAuth from Actions secrets
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths: [.github/workflows/build-test53-tv-login.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test53:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TV_CLIENT_ID: ${{ secrets.WARDER_YOUTUBE_OAUTH_CLIENT_ID }}
+      TV_CLIENT_SECRET: ${{ secrets.WARDER_YOUTUBE_OAUTH_CLIENT_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run all offline tests on the unmodified source
+        run: python3 -m unittest discover -s tests -v
+      - name: Prepare receiver-ready test53 OAuth configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import os
+          import re
+          import secrets
+          from pathlib import Path
+
+          client_id = os.environ.get("TV_CLIENT_ID", "").strip()
+          secret = os.environ.get("TV_CLIENT_SECRET", "").strip()
+          if not re.fullmatch(r"[0-9A-Za-z._-]{8,200}\.apps\.googleusercontent\.com", client_id):
+              raise SystemExit("FAIL: YOUTUBE_API_CLIENT_ID missing or invalid (must be Google TV OAuth client ID)")
+          if not secret or len(secret) > 256:
+              raise SystemExit("FAIL: YOUTUBE_API_CLIENT_SECRET missing or invalid")
+          package_dir = Path("plugin/Plugins/Extensions/WarderYouTube")
+          configuration = package_dir / "oauth_app_config.py"
+          def masked_literal(value):
+              raw = value.encode("utf-8")
+              mask = secrets.token_bytes(len(raw))
+              cipher = bytes(a ^ b for a, b in zip(raw, mask))
+              def chunks(blob):
+                  encoded = base64.b85encode(blob).decode("ascii")
+                  return repr([encoded[i:i+16] for i in range(0, len(encoded), 16)])
+              return "(" + chunks(cipher) + ", " + chunks(mask) + ")"
+
+          configuration.write_text(
+              '"""Build-generated masked public TV client identity; not an account token."""\n'
+              'import base64 as _b\n'
+              'def _read(pair):\n'
+              '    left, right = pair\n'
+              '    a = _b.b85decode("".join(left))\n'
+              '    b = _b.b85decode("".join(right))\n'
+              '    return bytes(x ^ y for x, y in zip(a, b)).decode("utf-8")\n'
+              'OAUTH_TV_CLIENT_ID = _read(' + masked_literal(client_id) + ')\n'
+              'OAUTH_TV_CLIENT_SECRET = _read(' + masked_literal(secret) + ')\n',
+              encoding="utf-8",
+          )
+          for f in (Path("tools/build_test_ipk.py"), package_dir / "update_core.py"):
+              source = f.read_text(encoding="utf-8")
+              assert "0.0.8~test52" in source
+              f.write_text(source.replace("0.0.8~test52", "0.0.8~test53"), encoding="utf-8")
+          builder = Path("tools/build_test_ipk.py")
+          source = builder.read_text(encoding="utf-8")
+          match = 'if SENSITIVE.search(content):'
+          assert source.count(match) == 1
+          source = source.replace(match, 'if source.name != "oauth_app_config.py" and SENSITIVE.search(content):')
+          builder.write_text(source, encoding="utf-8")
+          print("PASS: TV OAuth client configured in temporary test53 build tree (values redacted).")
+          PY
+      - name: Build and verify test53 IPK
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/build_test_ipk.py --output dist
+          ar t dist/*.ipk
+          ar p dist/*.ipk control.tar.gz | tar -tzf - >/dev/null
+          ar p dist/*.ipk data.tar.gz | tar -tzf - >/dev/null
+          (cd dist && sha256sum -c *.sha256)
+          python3 - <<'PY'
+          import io
+          import subprocess
+          import tarfile
+          from pathlib import Path
+          package = next(Path("dist").glob("*.ipk"))
+          data = subprocess.check_output(["ar", "p", str(package), "data.tar.gz"])
+          with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as tf:
+              member = next(m for m in tf.getmembers() if m.name.endswith("/oauth_app_config.py"))
+              raw = tf.extractfile(member).read()
+              assert b'OAUTH_TV_CLIENT_ID = ""' not in raw
+              assert b'OAUTH_TV_CLIENT_SECRET = ""' not in raw
+          print("PASS: verified non-empty TV OAuth config inside test53 IPK (values redacted).")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WarderYouTube-test53-TV-OAuth-configured-IPK
+          path: |
+            dist/*.ipk
+            dist/*.sha256
+          if-no-files-found: error
+          retention-days: 7

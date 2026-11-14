@@ -1,0 +1,24 @@
+name: Warder YouTube TV OAuth device-code smoke (manual)
+
+# Manual only. Uses GitHub encrypted Secrets, not the repository files.
+# Does not print authorization codes, client IDs, secrets or tokens.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  google-tv-device-code:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      WARDER_TEST_OAUTH_CLIENT_ID: ${{ secrets.WARDER_YOUTUBE_OAUTH_CLIENT_ID }}
+      WARDER_TEST_OAUTH_CLIENT_SECRET: ${{ secrets.WARDER_YOUTUBE_OAUTH_CLIENT_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check Google TV OAuth device-code request without revealing secrets
+        run: python3 tests/live_oauth_device_smoke.py

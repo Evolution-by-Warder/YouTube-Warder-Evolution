@@ -1,0 +1,37 @@
+name: Build 0.0.8~test52 refreshed Warder native receiver IPK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-ipk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate source and IPK package scripts
+        run: python3 -m unittest discover -s tests -v
+      - name: Build test IPK
+        run: python3 tools/build_test_ipk.py --output dist
+      - name: Inspect Debian/opkg archive members
+        run: |
+          set -eu
+          ar t dist/*.ipk
+          ar p dist/*.ipk control.tar.gz | tar -tzf -
+          ar p dist/*.ipk data.tar.gz | tar -tzf -
+          cd dist && sha256sum -c *.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WarderYouTube-0.0.8-test52-IPK
+          path: |
+            dist/*.ipk
+            dist/*.sha256
+            dist/warder-header-preview.png
+          if-no-files-found: error
+          retention-days: 14
