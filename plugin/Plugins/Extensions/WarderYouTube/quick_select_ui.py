@@ -38,7 +38,8 @@ class WarderYouTubeQuickSelect(Screen):
         # Home rail does; users should see the actual full channel title.
         self["choices"] = MenuList([
             _(chip.get("title") or chip["label"]) if self.subscriptions
-            else _(chip["label"]) for chip in self.chips
+            else (chip["label"] if chip.get("kind") == "live"
+                  else _(chip["label"])) for chip in self.chips
         ])
         self["hint"] = Label(_("Arrows: select · OK: confirm · EXIT: cancel"))
         self["actions"] = ActionMap(
