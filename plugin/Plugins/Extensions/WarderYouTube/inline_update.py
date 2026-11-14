@@ -24,6 +24,7 @@ class InlineUpdater:
         self.checking = False
         self.installing = False
         self.confirming = False
+        self.confirm_yes = False
         self.release = None
         self.installed = ""
         self.phase = ""
@@ -62,16 +63,31 @@ class InlineUpdater:
             _("Installed") + ": " + (self.installed or h.installed_version),
             _("Updates") + ": " + (self.release["version"] if self.release else _("Check on demand")),
             self._state_text(),
-            self._bar() if self.installing or self.completed else "",
+            (_("Confirm update") + ": " + self.release["version"]) if self.confirming else "",
             ("%d%%" % self.percent) if self.installing or self.completed else "",
             self._note()
         ])
-        h["key_green"].setText(_("Install") if self.release and not self.is_busy()
-                               else _("Checking updates") if self.checking
-                               else _("Check for updates"))
-        h["key_yellow"].setText(_("Details") if self.release else "")
-        h["key_blue"].setText(_("Refresh"))
-        h["key_red"].setText(_("Back") if self.installing else _("Close"))
+        if hasattr(h, "_hide_update_widgets"):
+            h._hide_update_widgets()
+        if self.confirming:
+            h["update_no"].setText(_("No"))
+            h["update_yes"].setText(_("Yes"))
+            h["update_no"].show()
+            h["update_yes"].show()
+            h["update_yes_focus" if self.confirm_yes else "update_no_focus"].show()
+        elif self.installing or self.completed:
+            h["update_progress"].setValue(self.percent)
+            h["update_progress"].show()
+        h["key_green"].setText(
+            _("Confirm") if self.confirming else
+            _("Install") if self.release and not self.is_busy() else
+            _("Checking updates") if self.checking else
+            _("Check for updates"))
+        h["key_yellow"].setText(
+            _("No") if self.confirming else _("Details") if self.release else "")
+        h["key_blue"].setText("" if self.confirming or self.installing else _("Refresh"))
+        h["key_red"].setText(_("Cancel") if self.confirming else
+                             _("Back") if self.installing else _("Close"))
 
     def _state_text(self):
         if self.error:
@@ -91,11 +107,9 @@ class InlineUpdater:
             return _("Update found")
         return _("Press OK to check updates.")
 
-    def _bar(self):
-        filled = max(0, min(28, self.percent * 28 // 100))
-        return "━" * filled + "─" * (28 - filled)
-
     def _note(self):
+        if self.confirming:
+            return _("Arrows: select · OK: confirm · EXIT: cancel")
         if self.error:
             return _("Stlačte OK alebo EXIT na návrat. Žiadny reštart.")
         if self.installing:
@@ -157,23 +171,25 @@ class InlineUpdater:
     def confirm(self):
         if self.home is None or self.checking or self.is_busy() or self.release is None:
             return
-        from .confirm_ui import WarderYouTubeConfirm
         self.confirming = True
-        token = self.generation
-        try:
-            self.home.session.openWithCallback(
-                lambda answer: self._confirmed(token, answer),
-                WarderYouTubeConfirm,
-                _("Confirm update") + ": " + self.release["version"] + " • GUI Enigma2")
-        except Exception:
-            self.confirming = False
-            self.error = _("Potvrdenie aktualizácie sa nepodarilo otvoriť.")
-            self.show()
+        self.confirm_yes = False
+        self.show()
+
+    def select(self, yes):
+        if self.home is None or not self.confirming:
+            return
+        self.confirm_yes = bool(yes)
+        self.show()
+
+    def answer(self, approved):
+        if self.confirming:
+            self._confirmed(self.generation, approved)
 
     def _confirmed(self, token, approved):
         if self.home is None or token != self.generation or not self.confirming:
             return
         self.confirming = False
+        self.confirm_yes = False
         if not approved or self.release is None:
             self.show()
             return
