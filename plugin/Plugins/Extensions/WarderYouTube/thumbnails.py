@@ -72,8 +72,8 @@ def _prune(cache_dir):
 
 
 # Only files created by this module may be removed. Never clean /tmp itself.
-_CACHE_IMAGE_NAME = re.compile(r"^[0-9a-f]{64}\\.(?:jpg|png)$")
-_CACHE_PARTIAL_NAME = re.compile(r"^tmp[^/]*\\.partial$")
+_CACHE_IMAGE_NAME = re.compile(r"^[0-9a-f]{64}\.(?:jpg|png)$")
+_CACHE_PARTIAL_NAME = re.compile(r"^tmp[^/]*\.partial$")
 
 
 def cleanup_cache(cache_dir=CACHE_DIR):
