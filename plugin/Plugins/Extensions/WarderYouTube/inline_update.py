@@ -74,8 +74,10 @@ class InlineUpdater:
         if self.confirming:
             h["update_no"].setText(_("No"))
             h["update_yes"].setText(_("Yes"))
-            h["update_no"].show()
-            h["update_yes"].show()
+            # Only the selected word changes colour, never a filled rectangle.
+            h["update_no_focus"].setText(_("No"))
+            h["update_yes_focus"].setText(_("Yes"))
+            h["update_no" if self.confirm_yes else "update_yes"].show()
             h["update_yes_focus" if self.confirm_yes else "update_no_focus"].show()
         elif self.installing or self.completed:
             h["update_progress"].setValue(self.percent)
