@@ -402,16 +402,16 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(screen.index, 0)
 
         screen.up()  # Domov -> Aktualizacie
-        self.assertEqual(screen.index, 7)
+        self.assertEqual(screen.index, 6)
         self.assertEqual(screen["heading"].text, "Updates")
-        self.assertTrue(screen["nav_focus7"].visible)
+        self.assertTrue(screen["nav_focus6"].visible)
         self.assertFalse(screen["nav_focus0"].visible)
 
         screen.down()  # Aktualizacie -> Domov
         self.assertEqual(screen.index, 0)
         self.assertEqual(screen["heading"].text, "Home")
         self.assertTrue(screen["nav_focus0"].visible)
-        self.assertFalse(screen["nav_focus7"].visible)
+        self.assertFalse(screen["nav_focus6"].visible)
 
         for _ in range(len(screen.sections) * 3):
             screen.down()
@@ -483,7 +483,6 @@ class HomeLivePreviewTests(unittest.TestCase):
         for _ in range(3):
             screen.down()
         self.assertIn("No saved videos", screen["preview_message"].text)
-        screen.down()
         screen.down()
         self.assertEqual(screen["heading"].text, "Favourites")
         self.assertEqual(screen.video_items[0]["video_id"], video(2)["video_id"])
