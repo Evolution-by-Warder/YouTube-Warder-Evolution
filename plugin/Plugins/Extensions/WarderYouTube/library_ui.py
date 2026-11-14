@@ -45,13 +45,20 @@ class WarderYouTubeLibrary(Screen):
         self["subtitle"] = Label("")
         self["key_red"] = Label(_("Back"))
         self["key_green"] = Label(_("Play video"))
-        self["key_yellow"] = Label(_("Delete"))
-        self["key_blue"] = Label(_("Clear"))
+        self["key_yellow"] = Label(
+            _("Remove from favourites") if kind == "favourites"
+            else _("Delete from history")
+        )
+        self["key_blue"] = Label(
+            _("Clear favourites") if kind == "favourites"
+            else _("Clear history")
+        )
         self["results"] = MenuList([])
         self["status"] = Label("")
         self["footer"] = Label(
-            "OK: prehrať   INFO: podrobnosti   MENU: obľúbené   "
-            "ŽLTÉ: odstrániť   MODRÉ: vymazať zoznam   EXIT: domov"
+            _("Favourites controls: OK play, INFO details, MENU actions, YELLOW remove video, BLUE clear favourites, EXIT home")
+            if kind == "favourites" else
+            _("History controls: OK play, INFO details, MENU actions, YELLOW delete video, BLUE clear history, EXIT home")
         )
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions", "InfoActions", "MenuActions"],
@@ -169,7 +176,10 @@ class WarderYouTubeLibrary(Screen):
             removed = remove_video(self.kind, item["video_id"])
             self.refresh()
             if removed:
-                self["status"].setText("Video bolo odstránené zo zoznamu.")
+                self["status"].setText(
+                    _("Video removed from favourites.") if self.kind == "favourites"
+                    else _("Video removed from history.")
+                )
         except LibraryError as error:
             self["status"].setText(str(error))
 
@@ -181,7 +191,7 @@ class WarderYouTubeLibrary(Screen):
         try:
             self.session.openWithCallback(
                 self.clear_confirmed, WarderYouTubeConfirm,
-                (_("Clear all favourites") if self.kind == "favourites"
+                (_("Clear all favourite videos") if self.kind == "favourites"
                  else _("Clear entire history")) + "?"
             )
         except Exception:
@@ -195,7 +205,10 @@ class WarderYouTubeLibrary(Screen):
         try:
             clear_videos(self.kind)
             self.refresh()
-            self["status"].setText("Zoznam bol vymazaný.")
+            self["status"].setText(
+                _("All favourite videos removed.") if self.kind == "favourites"
+                else _("Entire history cleared.")
+            )
         except LibraryError as error:
             self["status"].setText(str(error))
 
