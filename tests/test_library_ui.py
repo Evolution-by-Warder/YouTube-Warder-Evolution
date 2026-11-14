@@ -177,6 +177,35 @@ class LibraryUiTests(unittest.TestCase):
             self.assertEqual(len(screen.video_items), 1)
         self.assertEqual(jobs, [])
 
+    def test_coloured_keys_name_exact_favourite_or_history_action(self):
+        ui, fake, videos, jobs, played, recorded = load()
+        for kind, yellow, blue, token in (
+            ("favourites", "Remove from favourites", "Clear favourites", "favourites"),
+            ("history", "Delete from history", "Clear history", "history"),
+        ):
+            with self.subTest(kind=kind):
+                screen = ui.WarderYouTubeLibrary(Session(), kind)
+                self.assertEqual(screen["key_yellow"].text, yellow)
+                self.assertEqual(screen["key_blue"].text, blue)
+                self.assertIn(token, screen["footer"].text)
+                self.assertNotIn("YELLOW: remove video", screen["footer"].text)
+
+    def test_clear_confirmation_identifies_whole_favourites_or_history(self):
+        ui, fake, videos, jobs, played, recorded = load()
+        for kind, question in (
+            ("favourites", "Clear all favourite videos?"),
+            ("history", "Clear entire history?"),
+        ):
+            with self.subTest(kind=kind):
+                session = Session()
+                screen = ui.WarderYouTubeLibrary(session, kind)
+                screen.refresh()
+                screen.confirm_clear()
+                self.assertEqual(len(session.confirmations), 1)
+                self.assertEqual(session.confirmations[0][2][0], question)
+                session.confirmations[0][0](False)  # no deletion without yes
+                self.assertEqual(len(videos[kind]), 1)
+
     def test_menu_from_history_saves_favourite_and_yellow_removes(self):
         ui, fake, videos, jobs, played, recorded = load()
         screen = ui.WarderYouTubeLibrary(Session(), "history")
