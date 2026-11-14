@@ -27,6 +27,25 @@ class LanguageTests(unittest.TestCase):
         self.assertEqual(self.translate("de_DE", "Search"), "Suche")
         self.assertEqual(self.translate("en_GB", "Search"), "Search")
 
+    def test_single_favourite_removal_is_distinct_from_clear_all(self):
+        strings = {
+            "sk_SK": ("Odobrať z obľúbených", "Vymazať všetky obľúbené",
+                      "Vymazať celú históriu", "Vymazať všetko"),
+            "cs_CZ": ("Odebrat z oblíbených", "Vymazat všechny oblíbené",
+                      "Vymazat celou historii", "Vymazat vše"),
+            "de_DE": ("Aus Favoriten entfernen", "Alle Favoriten löschen",
+                      "Gesamten Verlauf löschen", "Alles löschen"),
+            "en_GB": ("Remove from favourites", "Clear all favourites",
+                      "Clear entire history", "Clear all")
+        }
+        for locale, expected in strings.items():
+            with self.subTest(locale=locale):
+                values = tuple(self.translate(locale, key) for key in (
+                    "Remove from favourites", "Clear all favourites",
+                    "Clear entire history", "Clear all"
+                ))
+                self.assertEqual(values, expected)
+
     def test_key_legends_follow_receiver_language(self):
         self.assertEqual(self.translate("sk_SK", "Updates"), "Aktualizácie")
         self.assertEqual(self.translate("cs_CZ", "Updates"), "Aktualizace")
