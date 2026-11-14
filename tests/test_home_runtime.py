@@ -615,6 +615,87 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertLess(len(visible), 7)
         self.assertEqual(visible, sorted(visible))
 
+    def test_menu_quick_choose_category_works_from_last_video_page(self):
+        mod, key, saved, jobs = load(key="api")
+        screen, session = ready(mod)
+        jobs[0][2].success([video(i) for i in range(24)])
+        screen._personalization_ready({
+            "connected": True,
+            "channels": [
+                {"channel_id": "UC" + "a" * 22, "title": "Gaming Factory"},
+                {"channel_id": "UC" + "b" * 22, "title": "Nature World"}
+            ]
+        }, screen._personal_epoch)
+        screen.right()
+        for _ in range(7):
+            screen.down()
+        self.assertEqual(screen.page_index, 3)
+        ctx = fake("_warder_home.context_menu", WarderYouTubeContext=object)
+        chooser = fake("_warder_home.quick_select_ui",
+                       WarderYouTubeQuickSelect=object)
+        with patch.dict(sys.modules, {
+            "_warder_home.context_menu": ctx,
+            "_warder_home.quick_select_ui": chooser
+        }):
+            screen.menu()
+            self.assertEqual(session.callbacks[-1][1][0], object)
+            self.assertEqual(session.callbacks[-1][1][-1], "home")
+            context_callback = session.callbacks[-1][0]
+            context_callback("choose_category")
+            self.assertEqual(session.callbacks[-1][1][0], object)
+            self.assertEqual(session.callbacks[-1][1][-1], False)
+            quick_callback = session.callbacks[-1][0]
+            quick_callback("topic:gaming")
+        self.assertFalse(screen._quick_select_open)
+        self.assertEqual(screen._category_index, 1)
+        self.assertEqual(screen.page_index, 0)
+        self.assertEqual(screen.focus_area, "tiles")
+        latest_job = jobs[-1]
+        self.assertEqual(latest_job[0][0].__name__, "_load_personal_channel_videos")
+        latest_job[2].success([video(5), video(6)])
+        self.assertEqual(screen.video_items[0]["video_id"], video(5)["video_id"])
+        self.assertEqual(len(session.opens), 0)
+
+    def test_menu_quick_choose_odber_uses_independent_real_channel_list(self):
+        mod, key, saved, jobs = load(key="api")
+        screen, session = ready(mod)
+        jobs[0][2].success([video(0)])
+        channel_id = "UC" + "x" * 22
+        screen._personalization_ready({
+            "connected": True,
+            "channels": [
+                {"channel_id": channel_id, "title": "Florida Filip Family"},
+                {"channel_id": "UC" + "b" * 22, "title": "Nature World"}
+            ]
+        }, screen._personal_epoch)
+        self.assertEqual(len(screen._home_chips), 2)  # no channel names on Home
+        self.assertEqual(len(screen._subscription_chips), 3)
+        screen._select_nav(2)  # Odbery opens in right pane, not separate Screen
+        self.assertEqual(len(session.opens), 0)
+        ctx = fake("_warder_home.context_menu", WarderYouTubeContext=object)
+        chooser = fake("_warder_home.quick_select_ui",
+                       WarderYouTubeQuickSelect=object)
+        with patch.dict(sys.modules, {
+            "_warder_home.context_menu": ctx,
+            "_warder_home.quick_select_ui": chooser
+        }):
+            screen.menu()
+            self.assertEqual(session.callbacks[-1][1][-1], "subscriptions")
+            session.callbacks[-1][0]("choose_subscription")
+            self.assertTrue(session.callbacks[-1][1][-1])
+            self.assertEqual(len(session.callbacks[-1][1][1]), 3)
+            session.callbacks[-1][0]("channel:" + channel_id)
+        self.assertEqual(screen.index, 2)
+        self.assertEqual(screen._subscription_index, 1)
+        self.assertEqual(screen._subscription_cursor, 1)
+        self.assertEqual(screen.page_index, 0)
+        self.assertEqual(screen.focus_area, "tiles")
+        self.assertEqual(jobs[-1][0][1]["kind"], "channel")
+        self.assertEqual(jobs[-1][0][1]["channels"], (channel_id,))
+        jobs[-1][2].success([video(7)])
+        self.assertEqual(screen.video_items[0]["video_id"], video(7)["video_id"])
+        self.assertEqual(len(session.opens), 0)
+
     def test_more_home_chart_pages_are_fetched_on_demand(self):
         mod, key, saved, jobs = load(key="test-key")
         screen, session = ready(mod)
