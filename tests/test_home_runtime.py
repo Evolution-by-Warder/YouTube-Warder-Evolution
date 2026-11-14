@@ -265,7 +265,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertTrue(screen["nav_focus1"].visible)  # left menu still has focus
         self.assertEqual(len(screen.video_items), 0)
         screen.down()  # Subscriptions
-        self.assertIn("not supported", screen["preview_message"].text)
+        self.assertIn("YouTube subscriptions", screen["preview_message"].text)
         screen.down()  # History
         self.assertEqual(screen["heading"].text, "History")
         self.assertEqual(screen["preview_title0"].text, saved["history"][0]["title"])
