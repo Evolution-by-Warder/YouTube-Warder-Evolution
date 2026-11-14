@@ -233,8 +233,8 @@ class WarderYouTubeHome(Screen):
         # Update confirmation and progress remain native widgets in Home's right pane.
         self["update_progress"] = ProgressBar()
         self["update_progress"].setValue(0)
-        for name in ("update_no_focus", "update_yes_focus"):
-            self[name] = Label(" ")
+        self["update_no_focus"] = Label(_("No"))
+        self["update_yes_focus"] = Label(_("Yes"))
         self["update_no"] = Label(_("No"))
         self["update_yes"] = Label(_("Yes"))
         self["key_red"] = Label(_("Close"))
