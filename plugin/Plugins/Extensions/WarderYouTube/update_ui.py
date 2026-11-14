@@ -49,11 +49,11 @@ class WarderYouTubeUpdateProgress(Screen):
         self["key_green"] = Label(_("Install"))
         self["key_yellow"] = Label(_("Details"))
         self["key_blue"] = Label(_("Refresh"))
-        self["version"] = Label("Nová verzia: " + release["version"])
-        self["phase"] = Label("Príprava overenej aktualizácie...")
+        self["version"] = Label(_("Nová verzia: ") + release["version"])
+        self["phase"] = Label(_("Príprava overenej aktualizácie..."))
         self["detail"] = Label("")
         self["percentage"] = Label("")
-        self["footer"] = Label("Aktualizáciu neprerušujte. Po úspechu sa obnoví GUI Enigma2.")
+        self["footer"] = Label(_("Aktualizáciu neprerušujte. Po úspechu sa obnoví GUI Enigma2."))
         self["progress"] = ProgressBar()
         self["progress"].setValue(0)
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {
@@ -80,12 +80,12 @@ class WarderYouTubeUpdateProgress(Screen):
         if self.disposed or self.finished:
             return
         titles = {
-            "download": "Sťahovanie overeného IPK...",
-            "verify": "Kontrola SHA256 a obsahu IPK...",
-            "install": "Inštalácia cez opkg...",
-            "complete": "Kontrola nainštalovanej verzie dokončená."
+            "download": _("Sťahovanie overeného IPK..."),
+            "verify": _("Kontrola SHA256 a obsahu IPK..."),
+            "install": _("Inštalácia cez opkg..."),
+            "complete": _("Kontrola nainštalovanej verzie dokončená.")
         }
-        self["phase"].setText(titles.get(phase, "Aktualizácia..."))
+        self["phase"].setText(titles.get(phase, _("Aktualizácia...")))
         if phase == "download" and total > 0:
             progress = max(0, min(100, int(100 * count / total)))
             self["progress"].setValue(progress)
@@ -93,7 +93,7 @@ class WarderYouTubeUpdateProgress(Screen):
             self["detail"].setText("%d / %d kB" % (count // 1024, total // 1024))
         elif phase in ("verify", "install"):
             self["percentage"].setText("")
-            self["detail"].setText("Nástroje prijímača pripravujú bezpečný prechod.")
+            self["detail"].setText(_("Nástroje prijímača pripravujú bezpečný prechod."))
         elif phase == "complete":
             self["progress"].setValue(100)
 
@@ -102,10 +102,10 @@ class WarderYouTubeUpdateProgress(Screen):
             return
         self.finished = True
         self["progress"].setValue(100)
-        self["phase"].setText("Aktualizácia na %s prebehla úspešne." % installed_version)
+        self["phase"].setText(_("Aktualizácia na %s prebehla úspešne.") % installed_version)
         self["percentage"].setText("100%")
-        self["detail"].setText("Grafické rozhranie Enigma2 sa obnoví.")
-        self["footer"].setText("Inštalácia je hotová.")
+        self["detail"].setText(_("Grafické rozhranie Enigma2 sa obnoví."))
+        self["footer"].setText(_("Inštalácia je hotová."))
         self.restart_timer.start(3000, True)
 
     def failure(self, failure):
@@ -116,11 +116,11 @@ class WarderYouTubeUpdateProgress(Screen):
         # Never display Twisted Failure repr; it could contain a request URL.
         safe_type = getattr(failure, "value", None)
         detail = str(safe_type) if isinstance(safe_type, UpdateError) else (
-            "Nepodarilo sa dokončiť aktualizáciu."
+            _("Nepodarilo sa dokončiť aktualizáciu.")
         )
-        self["phase"].setText("Aktualizácia zlyhala.")
+        self["phase"].setText(_("Aktualizácia zlyhala."))
         self["detail"].setText(detail)
-        self["footer"].setText("Stlačte OK alebo EXIT na návrat. Žiadny reštart.")
+        self["footer"].setText(_("Stlačte OK alebo EXIT na návrat. Žiadny reštart."))
         self["percentage"].setText("")
 
     def exit_failed(self):
@@ -157,9 +157,9 @@ class WarderYouTubeUpdateCheck(Screen):
         self["key_blue"] = Label(_("Refresh"))
         self._checking = False
         self.details_visible = False
-        self["status"] = Label("Kontrola testovacieho aktualizačného kanála...")
-        self["detail"] = Label("Aktuálna verzia: " + CURRENT_VERSION)
-        self["footer"] = Label("EXIT: späť")
+        self["status"] = Label(_("Kontrola testovacieho aktualizačného kanála..."))
+        self["detail"] = Label(_("Aktuálna verzia: ") + CURRENT_VERSION)
+        self["footer"] = Label(_("EXIT: späť"))
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {
             "ok": self.ask_install, "green": self.ask_install,
             "cancel": self.close, "red": self.close,
@@ -184,7 +184,7 @@ class WarderYouTubeUpdateCheck(Screen):
         if isinstance(release, tuple) and len(release) == 2:
             installed_version, release = release
             self["hdr_version"].setText(installed_version)
-            self["detail"].setText("Nainštalovaná verzia: " + installed_version)
+            self["detail"].setText(_("Nainštalovaná verzia: ") + installed_version)
         else:
             installed_version = CURRENT_VERSION
         self._checking = False
@@ -192,13 +192,13 @@ class WarderYouTubeUpdateCheck(Screen):
         if release is None:
             self["key_green"].setText("")
             self["status"].setText(_("Testovací kanál: používate najnovšiu dostupnú verziu."))
-            self["detail"].setText("Nainštalovaná verzia: " + installed_version)
-            self["footer"].setText("EXIT: späť")
+            self["detail"].setText(_("Nainštalovaná verzia: ") + installed_version)
+            self["footer"].setText(_("EXIT: späť"))
         else:
             self["key_green"].setText(_("Install"))
             self["status"].setText(_("Update found") + ": " + release["version"])
-            self["detail"].setText(release.get("notes") or "Oficiálne overená aktualizácia.")
-            self["footer"].setText("OK / ZELENÉ: aktualizovať    EXIT: späť")
+            self["detail"].setText(release.get("notes") or _("Oficiálne overená aktualizácia."))
+            self["footer"].setText(_("OK / ZELENÉ: aktualizovať    EXIT: späť"))
 
     def failed_check(self, failure):
         if self.disposed:
@@ -206,10 +206,10 @@ class WarderYouTubeUpdateCheck(Screen):
         self._checking = False
         self["key_green"].setText("")
         problem = getattr(failure, "value", None)
-        self["status"].setText("Kontrola aktualizácie zlyhala.")
+        self["status"].setText(_("Kontrola aktualizácie zlyhala."))
         self["detail"].setText(str(problem) if isinstance(problem, UpdateError)
-                               else "Nepodarilo sa kontaktovať aktualizačný server.")
-        self["footer"].setText("EXIT: späť")
+                               else _("Nepodarilo sa kontaktovať aktualizačný server."))
+        self["footer"].setText(_("EXIT: späť"))
 
     def toggle_details(self):
         if self.disposed or self.release is None:
@@ -242,7 +242,7 @@ class WarderYouTubeUpdateCheck(Screen):
             )
         except Exception:
             self.confirmation_open = False
-            self["status"].setText("Potvrdenie aktualizácie sa nepodarilo otvoriť.")
+            self["status"].setText(_("Potvrdenie aktualizácie sa nepodarilo otvoriť."))
 
     def install_confirmed(self, confirmed):
         if self.disposed or not self.confirmation_open:
@@ -258,12 +258,12 @@ class WarderYouTubeUpdateCheck(Screen):
                 self.progress_closed, WarderYouTubeUpdateProgress, self.release)
         except Exception:
             self.install_started = False
-            self["status"].setText("Inštalátor aktualizácie sa nepodarilo otvoriť.")
+            self["status"].setText(_("Inštalátor aktualizácie sa nepodarilo otvoriť."))
 
     def progress_closed(self, *args):
         self.install_started = False
         if not self.disposed:
-            self["status"].setText("Inštalačné okno bolo zatvorené.")
+            self["status"].setText(_("Inštalačné okno bolo zatvorené."))
 
     def dispose(self):
         self.disposed = True
