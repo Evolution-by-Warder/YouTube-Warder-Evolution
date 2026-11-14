@@ -20,7 +20,13 @@ class WarderYouTubeContext(Screen):
             ("favorite", _("Remove video from favourites") if is_favourite else _("Add video to favourites")),
             ("info", _("Video details")),
         ]
-        if mode == "search":
+        if mode in ("home", "subscriptions"):
+            self.options.insert(0, (
+                "choose_subscription" if mode == "subscriptions" else "choose_category",
+                _("Select subscription") if mode == "subscriptions"
+                else _("Select category")
+            ))
+        if mode in ("home", "subscriptions", "search"):
             self.options.append(("search", _("New search")))
         elif mode == "favourites":
             # In Favourites, "Remove video from favourites" already removes this
@@ -46,7 +52,7 @@ class WarderYouTubeContext(Screen):
         self["key_green"] = Label(_("Open"))
         self["key_yellow"] = Label(_("Details"))
         self["key_blue"] = Label(
-            _("New search") if mode == "search" else
+            _("New search") if mode in ("search", "home", "subscriptions") else
             _("Clear all favourite videos") if mode == "favourites" else
             _("Clear entire history")
         )
@@ -56,7 +62,7 @@ class WarderYouTubeContext(Screen):
             "ok": self.choose, "green": self.choose,
             "cancel": self.cancel, "red": self.cancel,
             "yellow": lambda: self.close("info"),
-            "blue": lambda: self.close("search" if self.mode == "search" else "clear")
+            "blue": lambda: self.close("search" if self.mode in ("search", "home", "subscriptions") else "clear")
         }, -1)
         self.onLayoutFinish.append(self.update_focus)
         self.update_focus()
