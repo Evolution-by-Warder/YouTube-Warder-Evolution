@@ -56,7 +56,7 @@ def popular_videos_page(api_key, category_id="0", page_token="", region=REGION,
     if not isinstance(region, str) or len(region) != 2 or not region.isalpha():
         raise SearchError("Invalid YouTube region.")
     if (not isinstance(page_token, str) or len(page_token) > 150
-            or (page_token and not all(ch.isalnum() or ch in "-_" for ch in page_token))):
+            or (page_token and not all(ch.isascii() and (ch.isalnum() or ch in "-_+=/") for ch in page_token))):
         raise SearchError("Invalid YouTube page token.")
     params = {
         "part": "snippet",
