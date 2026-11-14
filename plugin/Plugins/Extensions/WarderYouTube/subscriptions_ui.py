@@ -203,7 +203,7 @@ class WarderYouTubeSubscriptions(Screen):
         # Recreate only visible image slots; the shared loader caches decoded
         # frames and recovers stale ePicLoad without restarting the plugin.
         if (self.disposed or not self._video_mode()
-                or not self.mode_items or not self.thumbs.ready):
+                or not self.mode_items or not getattr(self.thumbs, "ready", False)):
             return
         first = self.page_index * VISIBLE_TILES
         self.thumbs.show(self.mode_items[first:first + VISIBLE_TILES])
