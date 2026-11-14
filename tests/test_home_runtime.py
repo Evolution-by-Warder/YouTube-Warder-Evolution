@@ -483,44 +483,78 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(screen["heading"].text, "Favourites")
         self.assertEqual(screen.video_items[0]["video_id"], video(2)["video_id"])
 
-    def test_home_categories_arrows_and_ok_apply_real_chart_filter(self):
+    def test_dynamic_home_chips_use_real_channels_and_ignore_stale_results(self):
         mod, key, saved, jobs = load(key="configured-api-key")
         screen, session = ready(mod)
         jobs[0][2].success({
             "items": [video(i) for i in range(24)],
             "next_page_token": "next_page", "total_results": 72
         })
-        screen.right()  # Home nav -> first video
-        self.assertEqual(screen.focus_area, "tiles")
-        screen.up()     # from first video row -> horizontal categories
+        self.assertEqual(len(screen._home_chips), 1)  # before account discovery
+        screen._personalization_ready({
+            "connected": True, "channels": [
+                {"channel_id": "UC" + "a" * 22, "title": "Games Factory"},
+                {"channel_id": "UC" + "b" * 22, "title": "Nature World"},
+                {"channel_id": "UC" + "c" * 22, "title": "Music and Radio"},
+            ]
+        }, screen._personal_epoch)
+        self.assertEqual(
+            [x["label"] for x in screen._home_chips[:5]],
+            ["Všetko", "Nové odbery", "Hudba", "Hry", "Príroda"])
+        self.assertNotIn("Obľúbené", [c["label"] for c in screen._home_chips])
+        self.assertNotIn("Pozreté", [c["label"] for c in screen._home_chips])
+        screen.right()   # Home nav -> first video
+        screen.up()      # first video row -> horizontal chips
         self.assertEqual(screen.focus_area, "categories")
-        self.assertEqual(screen._category_index, 0)
-        self.assertEqual(screen._category_cursor, 0)
-        screen.right()
-        screen.right()
-        self.assertEqual(screen._category_cursor, 2)
-        self.assertEqual(screen["category2"].text, "Gaming")
-        screen.activate()  # OK: switch YouTube chart category
-        self.assertEqual(screen._category_index, 2)
+        for _ in range(3):
+            screen.right()
+        self.assertEqual(screen._category_cursor, 3)
+        self.assertEqual(screen["category3"].text, "Hry")
+        screen.activate()
+        self.assertEqual(screen._category_index, 3)
         self.assertEqual(len(jobs), 2)
-        self.assertEqual(jobs[1][0][1], "configured-api-key")
-        self.assertEqual(jobs[1][1]["category_id"], "20")
-        # Stale callback must not replace the selected category.
-        screen.left()
-        screen.activate()  # new category while old request still in flight
-        self.assertEqual(screen._category_index, 1)
-        jobs[1][2].success({"items": [video(90)], "next_page_token": ""})
-        self.assertIsNone(screen._popular_cache)
-        jobs[2][2].success({"items": [video(8)], "next_page_token": ""})
-        self.assertEqual(screen._popular_cache[0]["video_id"], video(8)["video_id"])
+        self.assertEqual(jobs[1][0][0].__name__, "_load_personal_channel_videos")
+        self.assertEqual(jobs[1][0][1]["kind"], "topic")
+        self.assertEqual(jobs[1][0][1]["channels"], ("UC" + "a" * 22,))
+        # A second chip may be selected before the first worker completes.
+        screen.right()
+        screen.activate()
+        self.assertEqual(screen._category_index, 4)
+        self.assertEqual(len(jobs), 3)
+        jobs[1][2].success([video(90)])
+        self.assertEqual(screen.video_items, [])  # stale response discarded
+        jobs[2][2].success([video(8)])
+        self.assertEqual(screen.video_items[0]["video_id"], video(8)["video_id"])
         screen.down()
         self.assertEqual(screen.focus_area, "tiles")
-        self.assertEqual(screen.tile_index, 0)
         screen.up()
         self.assertEqual(screen.focus_area, "categories")
         screen.back()
         self.assertEqual(screen.focus_area, "nav")
         self.assertEqual(len(session.opens), 0)
+
+    def test_dynamic_chip_rail_scrolls_beyond_seven_visible_items(self):
+        mod, key, saved, jobs = load(key="configured-api-key")
+        screen, session = ready(mod)
+        channels = [
+            {"channel_id": "UC" + chr(97 + i) * 22,
+             "title": "Unique Channel %d" % i}
+            for i in range(12)
+        ]
+        screen._personalization_ready(
+            {"connected": True, "channels": channels}, screen._personal_epoch)
+        self.assertGreater(len(screen._home_chips), 7)
+        screen._enter_categories()
+        for _ in range(9):
+            screen.right()
+        self.assertEqual(screen._category_cursor, 9)
+        self.assertEqual(screen._category_offset, 3)
+        self.assertEqual(screen["category6"].text,
+                         screen._home_chips[9]["label"])
+        self.assertTrue(screen["category_focus6"].visible)
+        screen.left()
+        self.assertEqual(screen._category_cursor, 8)
+        self.assertEqual(screen._category_offset, 3)
 
     def test_more_home_chart_pages_are_fetched_on_demand(self):
         mod, key, saved, jobs = load(key="test-key")
@@ -577,6 +611,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         jobs[0][2].success([video(i) for i in range(7)])
         screen._version_checked = True
         screen._popular_fetched_at = 0
+        screen._personal_fetched_at = 999
         with patch.object(mod, "monotonic", return_value=1000):
             screen._on_shown()
         self.assertEqual(len(jobs), 2)
