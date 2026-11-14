@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      TV_CLIENT_ID: ${{ secrets.YOUTUBE_API_CLIENT_ID }}
-      TV_CLIENT_SECRET: ${{ secrets.YOUTUBE_API_CLIENT_SECRET }}
+      TV_CLIENT_ID: ${{ secrets.WARDER_YOUTUBE_OAUTH_CLIENT_ID }}
+      TV_CLIENT_SECRET: ${{ secrets.WARDER_YOUTUBE_OAUTH_CLIENT_SECRET }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -27,9 +27,10 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import json
+          import base64
           import os
           import re
+          import secrets
           from pathlib import Path
 
           client_id = os.environ.get("TV_CLIENT_ID", "").strip()
@@ -40,10 +41,25 @@ jobs:
               raise SystemExit("FAIL: YOUTUBE_API_CLIENT_SECRET missing or invalid")
           package_dir = Path("plugin/Plugins/Extensions/WarderYouTube")
           configuration = package_dir / "oauth_app_config.py"
+          def masked_literal(value):
+              raw = value.encode("utf-8")
+              mask = secrets.token_bytes(len(raw))
+              cipher = bytes(a ^ b for a, b in zip(raw, mask))
+              def chunks(blob):
+                  encoded = base64.b85encode(blob).decode("ascii")
+                  return repr([encoded[i:i+16] for i in range(0, len(encoded), 16)])
+              return "(" + chunks(cipher) + ", " + chunks(mask) + ")"
+
           configuration.write_text(
-              '"""TV OAuth identity injected at package build time. Not a Google user token."""\n'
-              'OAUTH_TV_CLIENT_ID = ' + json.dumps(client_id) + '\n'
-              'OAUTH_TV_CLIENT_SECRET = ' + json.dumps(secret) + '\n',
+              '"""Build-generated masked public TV client identity; not an account token."""\n'
+              'import base64 as _b\n'
+              'def _read(pair):\n'
+              '    left, right = pair\n'
+              '    a = _b.b85decode("".join(left))\n'
+              '    b = _b.b85decode("".join(right))\n'
+              '    return bytes(x ^ y for x, y in zip(a, b)).decode("utf-8")\n'
+              'OAUTH_TV_CLIENT_ID = _read(' + masked_literal(client_id) + ')\n'
+              'OAUTH_TV_CLIENT_SECRET = _read(' + masked_literal(secret) + ')\n',
               encoding="utf-8",
           )
           for f in (Path("tools/build_test_ipk.py"), package_dir / "update_core.py"):
