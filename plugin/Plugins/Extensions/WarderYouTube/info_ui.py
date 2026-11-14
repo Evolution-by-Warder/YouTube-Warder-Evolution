@@ -14,10 +14,10 @@ from .i18n import tr as _
 from .skin import INFO_SKIN
 
 
-# Chosen conservatively for the existing 1660 x 556 rectangle, Regular 30.
-# Keeping fewer rows than the theoretical maximum avoids the original cut-off.
+# Match the enlarged INFO text area (1660 x 580, Regular 30).
+# Display two more lines without crossing the existing blue frame.
 LINE_WIDTH = 84
-VISIBLE_LINES = 12
+VISIBLE_LINES = 14
 
 
 def wrap_info_lines(message, width=LINE_WIDTH):
