@@ -721,9 +721,10 @@ class WarderYouTubeHome(Screen):
         self._personal_requested = False
         self._request_personalization(force=True)
 
-    def _clear_preview(self):
+    def _clear_preview(self, clear_thumbnails=True):
         self["status"].show()  # retain useful diagnostics on non-grid panes
-        self.thumbs.show([])
+        if clear_thumbnails:
+            self.thumbs.show([])
         for i in range(VISIBLE_TILES):
             for prefix in ("preview_focus", "preview_panel", "preview_border", "preview_thumb",
                            "preview_title", "preview_channel", "detail"):
@@ -754,7 +755,8 @@ class WarderYouTubeHome(Screen):
 
     def _show_tiles(self, items, subtitle):
         all_videos = list(items)
-        self._clear_preview()
+        # Do not cancel in-flight downloads between two video pages.
+        self._clear_preview(clear_thumbnails=False)
         self._section_items = all_videos
         self._section_subtitle = subtitle
         pages = max(1, (len(all_videos) + VISIBLE_TILES - 1) // VISIBLE_TILES)
