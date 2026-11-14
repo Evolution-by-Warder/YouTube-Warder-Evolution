@@ -63,16 +63,21 @@ def _discover_home_subscriptions():
     return {"connected": False, "channels": []}
 
 
-def _load_personal_channel_videos(chip):
-    """Retrieve actual channel uploads lazily; never fake YouTube web Mixes."""
+def _load_personal_channel_videos(chip, all_channels=()):
+    """Retrieve real uploads in one worker without repeating account discovery.
+
+    Recent uses a bounded sample, not the complete YouTube recommendations.
+    A single channel fetches up to 50 items. Never block the Enigma2 GUI.
+    """
     from .subscriptions_auth import access_token
-    from .subscriptions_api import (recent_subscription_videos, uploads_playlists,
-                                    playlist_videos, SubscriptionsApiError)
+    from .subscriptions_api import (uploads_playlists, playlist_videos,
+                                    SubscriptionsApiError)
     token = access_token()
-    if chip.get("kind") == "recent":
-        videos, channels = recent_subscription_videos(token)
-        return dedupe_videos(videos)
-    identifiers = list(chip.get("channels") or ())[:8]
+    recent = chip.get("kind") == "recent"
+    identifiers = (
+        [item.get("channel_id") for item in all_channels if isinstance(item, dict)][:12]
+        if recent else list(chip.get("channels") or ())[:8]
+    )
     if not identifiers:
         return []
     playlists = uploads_playlists(identifiers, token)
@@ -83,13 +88,14 @@ def _load_personal_channel_videos(chip):
             continue
         try:
             items = playlist_videos(
-                playlist, token, limit=50 if chip.get("kind") == "channel" else 10)
+                playlist, token, limit=3 if recent else
+                (50 if chip.get("kind") == "channel" else 10))
             videos.extend(items)
         except SubscriptionsApiError:
             continue
     videos.sort(key=lambda v: (v.get("published_at") or "",
                               v.get("video_id") or ""), reverse=True)
-    return dedupe_videos(videos)
+    return dedupe_videos(videos, limit=24 if recent else 96)
 
 
 class WarderYouTubeHome(Screen):
@@ -128,6 +134,7 @@ class WarderYouTubeHome(Screen):
         self._category_cursor = 0
         self._category_offset = 0
         self._home_chips = build_home_chips()
+        self._home_channels = []
         self._personal_requested = False
         self._personal_fetched_at = 0
         self._personal_epoch = 0
@@ -383,15 +390,16 @@ class WarderYouTubeHome(Screen):
         cursor_id = (self._home_chips[self._category_cursor]["id"]
                      if 0 <= self._category_cursor < len(self._home_chips)
                      else old_id)
+        channels = data.get("channels") or ()
         updated = build_home_chips(
-            channels=data.get("channels") or (),
-            authenticated=bool(data.get("connected")))
+            channels=channels, authenticated=bool(data.get("connected")))
         lookup = {chip["id"]: i for i, chip in enumerate(updated)}
         if [item["id"] for item in updated] != [
                 item["id"] for item in self._home_chips]:
             self._personal_video_cache.clear()
             self._personal_video_epoch += 1
         self._home_chips = updated
+        self._home_channels = list(channels)[:160]
         self._category_index = lookup.get(old_id, 0)
         self._category_cursor = lookup.get(cursor_id, self._category_index)
         if old_id not in lookup and self.index == 0:
@@ -434,7 +442,8 @@ class WarderYouTubeHome(Screen):
         self._show_message("Loading subscribed channels…")
         self._render_categories()
         try:
-            task = deferToThread(_load_personal_channel_videos, dict(chip))
+            task = deferToThread(
+                _load_personal_channel_videos, dict(chip), tuple(self._home_channels))
             task.addCallbacks(
                 lambda videos: self._personal_videos_ready(selected, videos, epoch),
                 lambda err: self._personal_videos_failed(selected, epoch))
@@ -520,7 +529,10 @@ class WarderYouTubeHome(Screen):
                 if len(all_videos) > VISIBLE_TILES else "")
         self.page_scroll.update(self.page_index, actual_pages)
         if not self.video_items:
-            self["preview_message"].setText(_("No saved videos in this section."))
+            self["preview_message"].setText(
+                _("No videos from subscribed channels found.")
+                if self.index == 0 and self._selected_home_chip()["kind"] != "all"
+                else _("No saved videos in this section."))
             self["preview_message"].show()
             return
         for i, video in enumerate(self.video_items):
