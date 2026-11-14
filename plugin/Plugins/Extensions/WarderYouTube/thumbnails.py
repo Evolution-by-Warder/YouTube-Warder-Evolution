@@ -17,6 +17,7 @@ MAX_CACHE_BYTES = 4 * 1024 * 1024
 MAX_CACHE_FILES = 36
 REQUEST_TIMEOUT = 6
 ALLOWED_HOSTS = ("i.ytimg.com", "img.youtube.com")
+CHANNEL_IMAGE_HOSTS = ("yt3.ggpht.com", "yt3.googleusercontent.com")
 
 
 class ThumbnailError(Exception):
@@ -32,9 +33,13 @@ def validate_thumbnail_url(url):
         port = parts.port
     except ValueError:
         raise ThumbnailError("Invalid thumbnail URL.")
-    if (parts.scheme != "https" or host not in ALLOWED_HOSTS
+    video_image = (host in ALLOWED_HOSTS and
+                   parts.path.startswith(("/vi/", "/vi_webp/")))
+    channel_image = (host in CHANNEL_IMAGE_HOSTS and
+                     parts.path.startswith("/") and len(parts.path) >= 5)
+    if (parts.scheme != "https" or not (video_image or channel_image)
             or port not in (None, 443) or parts.username or parts.password
-            or not parts.path.startswith(("/vi/", "/vi_webp/"))):
+            or parts.fragment):
         raise ThumbnailError("Unsupported thumbnail URL.")
     return url
 
