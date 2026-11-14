@@ -162,6 +162,7 @@ class InlineUpdateTests(unittest.TestCase):
         self.assertTrue(home["update_progress"].visible)
         progress("verify")
         self.assertIn("SHA256", home.details[2])
+        self.assertEqual(home.details[4], "Download finished: 100%")
         progress("install")
         self.assertIn("opkg", home.details[2])
         self.assertEqual(home.session.opens, [])
