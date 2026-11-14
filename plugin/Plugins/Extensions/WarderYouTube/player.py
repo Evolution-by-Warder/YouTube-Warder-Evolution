@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Native MoviePlayer failover adapted from our proven Warder Radio player.
+"""Native MoviePlayer failover with optional installed ServiceApp player selection.
 
-Only the image's existing 4097 / registered 5002 services are used. Nothing
-is installed or modified outside this plugin.
+Automatic mode preserves the current 4097/5002 priorities and TV restoration.
 """
 import shutil
 import enigma
@@ -11,15 +10,39 @@ from Components.ServiceEventTracker import ServiceEventTracker
 from Screens.InfoBar import MoviePlayer
 
 
-def dash_available():
-    """Use DASH only when both Exteplayer3 and service 5002 are available."""
-    if not shutil.which("exteplayer3"):
+def service_player_available(mode):
+    """Only offer installed, registered ServiceApp backends."""
+    specs = {"gst": (5001, "gstplayer"), "exte": (5002, "exteplayer3")}
+    if mode not in specs:
+        return False
+    kind, binary = specs[mode]
+    if not shutil.which(binary):
         return False
     try:
         center = enigma.eServiceCenter.getInstance()
-        return center.info(eServiceReference(5002, 0, "https://www.youtube.com/")) is not None
+        return center.info(eServiceReference(kind, 0, "https://www.youtube.com/")) is not None
     except (AttributeError, RuntimeError, TypeError):
         return False
+
+
+def prepare_player_streams(streams, mode="auto"):
+    """Convert only simple direct URLs; DASH suburi remains exteplayer3-only."""
+    streams = list(streams)
+    if mode not in ("gst", "exte") or not service_player_available(mode):
+        return streams
+    kind = 5001 if mode == "gst" else 5002
+    candidates = []
+    for item in streams:
+        copy = dict(item)
+        if copy.get("service_type") == 4097 and "&suburi=" not in copy.get("url", ""):
+            copy["service_type"] = kind
+        candidates.append(copy)
+    return candidates
+
+
+def dash_available():
+    """Use DASH only when both Exteplayer3 and service 5002 are available."""
+    return service_player_available("exte")
 
 
 class WarderYouTubePlayer(MoviePlayer):
@@ -28,7 +51,7 @@ class WarderYouTubePlayer(MoviePlayer):
     def __init__(self, session, streams, title, previous_service):
         streams = list(streams)[:8]
         if not streams or any(not isinstance(s, dict)
-                              or s.get("service_type") not in (4097, 5002)
+                              or s.get("service_type") not in (4097, 5001, 5002)
                               or not isinstance(s.get("url"), str)
                               for s in streams):
             raise ValueError("Unsupported YouTube stream candidates")
@@ -107,9 +130,10 @@ class WarderYouTubePlayer(MoviePlayer):
         self.close(True)
 
 
-def open_player(session, streams, video_title, on_close=None):
+def open_player(session, streams, video_title, on_close=None, player_mode="auto"):
     """Open native MoviePlayer; only restore manually if dialog creation fails."""
     previous = session.nav.getCurrentlyPlayingServiceOrGroup()
+    streams = prepare_player_streams(streams, player_mode)
     try:
         return session.openWithCallback(
             on_close or (lambda *args: None),
