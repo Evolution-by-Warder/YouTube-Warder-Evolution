@@ -154,6 +154,7 @@ class WarderYouTubeHome(Screen):
             self["category_panel%d" % i] = Label(" ")
             self["category_focus%d" % i] = Label(" ")
             self["category%d" % i] = Label("")
+        self["category_more"] = Label("")
         self["kb_hint"] = Label("")
         self["kb_feedback"] = Label("")
         try:
@@ -318,6 +319,13 @@ class WarderYouTubeHome(Screen):
                 focus.show()
             else:
                 focus.hide()
+        if visible and len(self._home_chips) > VISIBLE_CHIPS:
+            self["category_more"].setText(
+                "›" if self._category_offset + VISIBLE_CHIPS < len(self._home_chips)
+                else "‹")
+            self["category_more"].show()
+        else:
+            self["category_more"].hide()
 
     def _enter_categories(self):
         if self.index != 0 or self._disposed:
