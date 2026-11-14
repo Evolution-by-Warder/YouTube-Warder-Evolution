@@ -93,6 +93,11 @@ def load():
     module = importlib.util.module_from_spec(spec)
     with patch.dict(sys.modules, fake):
         spec.loader.exec_module(module)
+    # Imports inside confirm(), _installed() and _restart_gui() are lazy.
+    # Keep test-only module names accessible for those callback invocations.
+    for name in ("_inline_test", "_inline_test.confirm_ui", "enigma",
+                 "Screens", "Screens.Standby"):
+        sys.modules[name] = fake[name]
     return module, runs, fake
 
 
