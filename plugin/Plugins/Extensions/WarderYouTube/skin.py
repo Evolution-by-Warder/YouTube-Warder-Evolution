@@ -744,7 +744,7 @@ INFO_SKIN = """
   <eLabel position="72,181" size="1775,737" backgroundColor="#122C47"/>
   <eLabel position="72,181" size="1775,5" backgroundColor="#087EC7"/>
   <widget name="title" position="116,216" size="1690,68" font="Regular;42" foregroundColor="#6CCBFF" transparent="1" zPosition="3"/>
-  <widget name="body" position="116,313" size="1660,556" font="Regular;30" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="body" position="116,313" size="1660,580" font="Regular;30" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#08182D"/>
   <eLabel position="150,1070" size="195,3" backgroundColor="#FF526A" zPosition="5"/>
   <widget name="key_red" position="56,1020" size="381,45" font="Regular;29" foregroundColor="#FE637D" backgroundColor="#08182D" transparent="1" zPosition="3" halign="center"/>
