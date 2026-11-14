@@ -501,8 +501,10 @@ class WarderYouTubeSubscriptions(Screen):
         self["status"].setText(_("Looking for a compatible video stream…"))
         try:
             from .player import dash_available
+            from . import settings as _settings
+            player_mode = getattr(_settings, "get_player_mode", lambda: "auto")()
             self._working(lambda: resolve_video_streams(
-                item["video_id"], quality=get_quality(), dash=dash_available()),
+                item["video_id"], quality=get_quality(), dash=(dash_available() and player_mode != "gst")),
                 lambda streams: self._play_ready(item, streams))
         except Exception:
             self["status"].setText(_("Could not open the video player."))
@@ -510,8 +512,11 @@ class WarderYouTubeSubscriptions(Screen):
     def _play_ready(self, item, streams):
         try:
             from .player import open_player
+            from . import settings as _settings
             self.playing = True
-            open_player(self.session, streams, item["title"], on_close=self._player_closed)
+            player_mode = getattr(_settings, "get_player_mode", lambda: "auto")()
+            open_player(self.session, streams, item["title"], on_close=self._player_closed,
+                        player_mode=player_mode)
             try:
                 record_opened(item)
             except LibraryError:
