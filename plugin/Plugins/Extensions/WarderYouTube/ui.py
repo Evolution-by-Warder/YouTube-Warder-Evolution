@@ -499,7 +499,7 @@ class WarderYouTubeHome(Screen):
         if self.focus_area == "keyboard":
             self["key_red"].setText(_("Back"))
             self["key_green"].setText(_("Search"))
-            self["key_yellow"].setText(_("Delete"))
+            self["key_yellow"].setText(_("Delete character"))
             self["key_blue"].setText(_("Space"))
             return
         self["key_red"].setText(_("Back") if self.focus_area == "tiles" else _("Close"))
@@ -753,7 +753,7 @@ class WarderYouTubeHome(Screen):
             self._confirm_open = True
             self.session.openWithCallback(
                 self._clear_confirmed, WarderYouTubeConfirm,
-                (_("Clear all favourites") if self.index == 5
+                (_("Clear all favourite videos") if self.index == 5
                  else _("Clear entire history")) + "?"
             )
 
