@@ -1,4 +1,4 @@
-"""Account-derived Home chips without fake YouTube web personalization."""
+"""The Home rail must show real YouTube labels, never keyword guesses."""
 import importlib.util
 from pathlib import Path
 import unittest
@@ -10,60 +10,56 @@ mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 
 
-def channel(letter, name):
-    return {"channel_id": "UC" + letter * 22, "title": name}
-
-
 class DynamicChipsTests(unittest.TestCase):
-    def test_unconnected_receiver_stays_safe_and_plain(self):
-        self.assertEqual(
-            [c["id"] for c in mod.build_home_chips()],
-            ["all"]
-        )
+    def test_fallback_is_honest_regional_chart_not_fake_personalization(self):
+        self.assertEqual(mod.build_home_chips(), [
+            {"id": "all", "kind": "all", "label": "Populárne SK",
+             "title": "Populárne na Slovensku"}])
 
-    def test_topics_appear_without_duplicate_odbery_or_channel_names(self):
-        chips = mod.build_home_chips(
-            channels=[channel("a", "Music & Radio"),
-                      channel("b", "Nature World"),
-                      channel("c", "Games Factory")],
-            authenticated=True)
-        ids = [c["id"] for c in chips]
-        self.assertEqual(ids, [
-            "all", "topic:music", "topic:gaming", "topic:nature"
-        ])
-        self.assertNotIn("recent", ids)
-        self.assertFalse(any(item.startswith("channel:") for item in ids))
-        self.assertNotIn("history", ids)
-        self.assertNotIn("favourites", ids)
-        self.assertFalse(any("mix" in c["label"].lower() for c in chips))
-        self.assertEqual(chips[2]["channels"], ("UC" + "c" * 22,))
+    def test_only_exact_live_labels_and_order_from_youtube(self):
+        rows = [
+            {"id": "yt:a", "kind": "live", "label": "Všetko",
+             "title": "Všetko", "selected": True},
+            {"id": "yt:b", "kind": "live", "label": "Hudba",
+             "continuation": "serverToken"},
+            {"id": "yt:c", "kind": "live", "label": "Mixy",
+             "continuation": "serverToken2"},
+            {"id": "yt:d", "kind": "live", "label": "Domáci majstri",
+             "params": "serverParams"},
+        ]
+        actual = mod.build_home_chips(rows, authenticated=True)
+        self.assertEqual([chip["label"] for chip in actual],
+                         ["Všetko", "Hudba", "Mixy", "Domáci majstri"])
+        self.assertEqual(actual[1]["continuation"], "serverToken")
+        self.assertEqual(actual[0]["selected"], True)
 
-    def test_dedupe_channels_and_limit_real_topic_results(self):
-        source = [channel("a", "Nature"),
-                  channel("a", "Old duplicate"),
-                  {"channel_id": "bad", "title": "Games"}]
-        source.extend(channel(chr(98 + j), "Channel %d" % j) for j in range(12))
-        chips = mod.build_home_chips(source, authenticated=True)
-        self.assertEqual([c["id"] for c in chips], ["all", "topic:nature"])
-        self.assertEqual(chips[1]["channels"], ("UC" + "a" * 22,))
-        self.assertEqual(len(set(c["id"] for c in chips)), len(chips))
-        self.assertLessEqual(len(chips), 1 + mod.MAX_TOPIC_CHIPS)
+    def test_subscribed_channel_names_cannot_generate_topics(self):
+        self.assertEqual(mod.build_home_chips(
+            authenticated=True, channels=[
+                {"channel_id": "UC" + "a" * 22, "title": "Stavba Dielňa Autá"}]),
+            mod.build_home_chips())
+        self.assertEqual(mod.build_home_chips([
+            {"id": "yt:a", "kind": "live", "label": "Music",
+             "continuation": "ok"}], authenticated=False),
+            mod.build_home_chips())
 
-    def test_unknown_subscription_titles_never_create_fake_topics(self):
-        chips = mod.build_home_chips(
-            [channel("a", "ZXCV Company Limited")], authenticated=True)
-        self.assertEqual([c["id"] for c in chips], ["all"])
-        self.assertEqual(chips[0]["title"], "Populárne na Slovensku")
+    def test_duplicate_invalid_and_unusable_server_chips_are_rejected(self):
+        raw = [
+            {"id": "yt:1", "kind": "live", "label": "Nature", "params": "a"},
+            {"id": "yt:1", "kind": "live", "label": "Fake duplicate", "params": "b"},
+            {"id": "topic:cars", "kind": "topic", "label": "Autá"},
+            {"id": "yt:2", "kind": "live", "label": "No action"},
+        ]
+        self.assertEqual([c["label"] for c in mod.build_home_chips(raw, True)],
+                         ["Nature"])
 
     def test_only_real_youtube_ids_in_video_grid(self):
-        def video(value):
-            return {"video_id": value, "title": value}
         rows = mod.dedupe_videos([
-            video("abcdefghijk"), video("bad"), video("abcdefghijk"),
-            video("01234567890"), {"junk": "data"}, None
+            {"video_id": "abcdefghijk"}, {"video_id": "bad"},
+            {"video_id": "abcdefghijk"}, {"video_id": "01234567890"}
         ])
-        self.assertEqual(
-            [v["video_id"] for v in rows], ["abcdefghijk", "01234567890"])
+        self.assertEqual([v["video_id"] for v in rows],
+                         ["abcdefghijk", "01234567890"])
 
 
 if __name__ == "__main__":
