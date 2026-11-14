@@ -28,7 +28,7 @@ from .local_library import (
     LibraryError, list_videos, toggle_favourite, record_opened,
     remove_video, clear_videos,
 )
-from .settings import get_api_key, get_quality, get_player_mode, PLAYER_LABELS
+from .settings import get_api_key, get_quality
 from .resolver import ResolverError, resolve_video_streams, is_available
 from .api import SearchError
 from .video_metadata import fetch_video_info
@@ -1006,6 +1006,15 @@ class WarderYouTubeHome(Screen):
         self._popular_more_loading = False
         self["status"].setText(_("More videos could not be loaded. Try again."))
 
+    def _player_mode_label(self):
+        try:
+            from . import settings as settings_module
+            getter = getattr(settings_module, "get_player_mode", lambda: "auto")
+            names = getattr(settings_module, "PLAYER_LABELS", {"auto": "Automaticky"})
+            return _(names.get(getter(), "Automaticky"))
+        except (ImportError, AttributeError, TypeError, RuntimeError):
+            return _("Automaticky")
+
     def _update_preview(self):
         if self._disposed or not self._mounted:
             return
@@ -1029,7 +1038,7 @@ class WarderYouTubeHome(Screen):
         elif self.index == 5:
             self._show_details([
                 _("YouTube account") + ": " + (_("Signed in") if account_available() else _("Not signed in")),
-                _("Player") + ": " + _(PLAYER_LABELS[get_player_mode()]),
+                _("Player") + ": " + self._player_mode_label(),
                 _("Maximum video quality") + ": %sp" % get_quality(),
                 "yt-dlp: " + (_("Available") if is_available() else _("Not installed")),
                 _("Language from Enigma2"),
