@@ -9,6 +9,7 @@ from time import monotonic, time
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.Pixmap import Pixmap
+from Components.ProgressBar import ProgressBar
 from Screens.Screen import Screen
 from twisted.internet.threads import deferToThread
 
@@ -229,10 +230,18 @@ class WarderYouTubeHome(Screen):
             self["preview_title%d" % i] = Label("")
             self["preview_channel%d" % i] = Label("")
             self["detail%d" % i] = Label("")
+        # Update confirmation and progress remain native widgets in Home's right pane.
+        self["update_progress"] = ProgressBar()
+        self["update_progress"].setValue(0)
+        for name in ("update_no_focus", "update_yes_focus"):
+            self[name] = Label(" ")
+        self["update_no"] = Label(_("No"))
+        self["update_yes"] = Label(_("Yes"))
         self["key_red"] = Label(_("Close"))
         self["key_green"] = Label(_("Open"))
         self["key_yellow"] = Label(_("History"))
         self["key_blue"] = Label(_("Search"))
+        self._hide_update_widgets()
         self.thumbs = HomeThumbs(self)
         self["video_scroll_track"] = Label(" ")
         self["video_scroll_thumb"] = Label(" ")
@@ -1022,6 +1031,7 @@ class WarderYouTubeHome(Screen):
         if self._disposed or not self._mounted:
             return
         self._hide_inline_keyboard()
+        self._hide_update_widgets()
         self._clear_preview()
         self["heading"].setText(self.sections[self.index][0])
         self["subtitle"].setText(self.sections[self.index][1])
@@ -1155,6 +1165,15 @@ class WarderYouTubeHome(Screen):
             self._home_search_flow = HomeSearchFlow(self)
         self._home_search_flow.start(query)
 
+    def _hide_update_widgets(self):
+        for name in ("update_progress", "update_no_focus", "update_yes_focus",
+                     "update_no", "update_yes"):
+            self[name].hide()
+
+    def _inline_confirming(self):
+        return (self.index == 6 and self._inline_updater is not None
+                and self._inline_updater.confirming)
+
     def _get_inline_updater(self):
         if self._inline_updater is None:
             from .inline_update import InlineUpdater
@@ -1208,6 +1227,9 @@ class WarderYouTubeHome(Screen):
         self._update_preview()
 
     def up(self):
+        if self._inline_confirming():
+            self._inline_updater.select(False)
+            return
         if self.focus_area == "categories":
             return
         if self.focus_area == "keyboard":
@@ -1221,6 +1243,9 @@ class WarderYouTubeHome(Screen):
             self._move_tile("up")
 
     def down(self):
+        if self._inline_confirming():
+            self._inline_updater.select(True)
+            return
         if self.focus_area == "categories":
             if self.video_items:
                 self.focus_area = "tiles"
@@ -1237,6 +1262,9 @@ class WarderYouTubeHome(Screen):
             self._move_tile("down")
 
     def left(self):
+        if self._inline_confirming():
+            self._inline_updater.select(False)
+            return
         if self.focus_area == "categories":
             if self.index == 2 and self._subscription_chips:
                 self._subscription_cursor = (
@@ -1264,6 +1292,9 @@ class WarderYouTubeHome(Screen):
                 self._move_tile("left")
 
     def right(self):
+        if self._inline_confirming():
+            self._inline_updater.select(True)
+            return
         if self.focus_area == "categories":
             if self.index == 2 and self._subscription_chips:
                 self._subscription_cursor = (
@@ -1331,6 +1362,9 @@ class WarderYouTubeHome(Screen):
             self._update_keys()
 
     def back(self):
+        if self._inline_confirming():
+            self._inline_updater.answer(False)
+            return
         if self._busy or (self._inline_updater is not None and self._inline_updater.is_busy()):
             return
         if self.focus_area == "categories":
@@ -1360,6 +1394,9 @@ class WarderYouTubeHome(Screen):
             self.activate()
 
     def yellow(self):
+        if self._inline_confirming():
+            self._inline_updater.answer(False)
+            return
         if self.index == 6:
             self._get_inline_updater().details_toggle()
             return
@@ -1372,6 +1409,8 @@ class WarderYouTubeHome(Screen):
             self._select_nav(3)
 
     def blue(self):
+        if self._inline_confirming():
+            return
         if self.index == 6:
             self._get_inline_updater().check()
             return
@@ -1388,6 +1427,9 @@ class WarderYouTubeHome(Screen):
             self.context()
 
     def activate(self):
+        if self._inline_confirming():
+            self._inline_updater.answer(self._inline_updater.confirm_yes)
+            return
         if self._disposed or self._busy or self._playback_active or self._context_open:
             return
         if self.index == 6:
