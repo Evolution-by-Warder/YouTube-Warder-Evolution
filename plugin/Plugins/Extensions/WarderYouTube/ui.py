@@ -339,7 +339,12 @@ class WarderYouTubeHome(Screen):
         return None
 
     def _active_chips(self):
-        return self._subscription_chips if self.index == 2 else self._home_chips
+        if self.index == 2:
+            return self._subscription_chips
+        # An honest regional chart is not a personalized YouTube category.
+        # Keep it for video fallback, but NEVER display it as a Home chip.
+        return (self._home_chips if self._home_chips
+                and self._home_chips[0].get("kind") == "live" else [])
 
     def _active_chip_index(self):
         return self._subscription_index if self.index == 2 else self._category_index
@@ -414,7 +419,11 @@ class WarderYouTubeHome(Screen):
             return
         if not self._active_chips():
             # A disconnected account cannot yet offer channel chips.
-            self._open_subscription_login() if self.index == 2 else None
+            if self.index == 2:
+                self._open_subscription_login()
+            else:
+                self["status"].setText(_(
+                    "Real YouTube Home categories are unavailable for this account."))
             return
         self.focus_area = "categories"
         if self.index == 2:
@@ -1391,10 +1400,14 @@ class WarderYouTubeHome(Screen):
         if (self._disposed or self._quick_select_open or self._busy
                 or self._playback_active or self.index != (2 if subscription else 0)):
             return
-        chips = list(self._subscription_chips if subscription else self._home_chips)
+        chips = list(self._subscription_chips if subscription
+                     else self._active_chips())
         if not chips:
             if subscription:
                 self._open_subscription_login()
+            else:
+                self["status"].setText(_(
+                    "Real YouTube Home categories are unavailable for this account."))
             return
         from .quick_select_ui import WarderYouTubeQuickSelect
         self._quick_select_open = True
