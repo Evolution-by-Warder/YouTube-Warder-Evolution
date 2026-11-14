@@ -118,6 +118,17 @@ class MaskedKeyTests(unittest.TestCase):
     OLD = "AIza" + "x" * 35
     NEW = "AIza" + "y" * 35
 
+    def test_key_delete_is_explicitly_about_saved_api_key(self):
+        with environment(configured=self.OLD) as (mod, screen, session, key, cfgfile, confirm, keyboard):
+            self.assertEqual(screen["key_yellow"].text, "Delete API key")
+            self.assertIn("delete API key", screen["footer"].text if "footer" in screen else screen["status"].text)
+            screen.confirm_clear()
+            self.assertEqual(len(session.dialogs), 1)
+            self.assertIs(session.dialogs[-1][1], confirm)
+            self.assertEqual(session.dialogs[-1][2][0], "Delete saved API key?")
+            session.answer(False)
+            self.assertEqual(key.value, self.OLD)
+
     def test_saved_key_stays_masked_and_requires_explicit_change(self):
         with environment(configured=self.OLD) as (mod, screen, session, key, cfgfile, confirm, keyboard):
             self.assertIn("********", screen["key_state"].text)
