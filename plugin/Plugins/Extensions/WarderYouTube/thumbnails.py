@@ -8,6 +8,7 @@ import hashlib
 import os
 import re
 import tempfile
+import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
@@ -16,6 +17,8 @@ CACHE_DIR = "/tmp/warder-youtube-thumbs"
 MAX_BYTES_PER_IMAGE = 240 * 1024
 MAX_CACHE_BYTES = 4 * 1024 * 1024
 MAX_CACHE_FILES = 36
+MAX_CACHE_AGE = 30 * 60  # stale thumbnails after 30 minutes without reuse
+MAX_PARTIAL_AGE = 10 * 60  # only abandoned downloads, not active workers
 REQUEST_TIMEOUT = 6
 ALLOWED_HOSTS = ("i.ytimg.com", "img.youtube.com")
 CHANNEL_IMAGE_HOSTS = ("yt3.ggpht.com", "yt3.googleusercontent.com")
@@ -46,17 +49,40 @@ def validate_thumbnail_url(url):
 
 
 def _prune(cache_dir):
+    """Bound temp usage on every access, including existing cached images.
+
+    Remove old thumbnails and abandoned partial writes; keep recently used
+    files and retain at most 36 images/4 MiB for responsive page navigation.
+    """
+    if os.path.islink(cache_dir) or not os.path.isdir(cache_dir):
+        return
+    now = time.time()
     entries = []
     total = 0
     for name in os.listdir(cache_dir):
-        if not name.endswith((".jpg", ".png")):
-            continue
         path = os.path.join(cache_dir, name)
         if os.path.islink(path) or not os.path.isfile(path):
+            continue
+        if not (_CACHE_IMAGE_NAME.fullmatch(name)
+                or _CACHE_PARTIAL_NAME.fullmatch(name)):
             continue
         try:
             st = os.stat(path)
         except OSError:
+            continue
+        age = max(0, now - st.st_mtime)
+        if _CACHE_PARTIAL_NAME.fullmatch(name):
+            if age >= MAX_PARTIAL_AGE:
+                try:
+                    os.unlink(path)
+                except OSError:
+                    pass
+            continue
+        if age >= MAX_CACHE_AGE or st.st_size <= 0 or st.st_size > MAX_BYTES_PER_IMAGE:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
             continue
         total += st.st_size
         entries.append((st.st_mtime, path, st.st_size))
@@ -65,10 +91,9 @@ def _prune(cache_dir):
         _, path, size = entries.pop(0)
         try:
             os.unlink(path)
+            total -= size
         except OSError:
             pass
-        total -= size
-
 
 
 # Only files created by this module may be removed. Never clean /tmp itself.
@@ -108,11 +133,15 @@ def fetch_thumbnail(url, opener=urlopen, cache_dir=CACHE_DIR):
     validate_thumbnail_url(url)
     name = hashlib.sha256(url.encode("utf-8")).hexdigest()
     try:
+        if os.path.islink(cache_dir):
+            raise OSError('Unsafe thumbnail cache path')
         os.makedirs(cache_dir, mode=0o700, exist_ok=True)
+        _prune(cache_dir)
         for ext in (".jpg", ".png"):
             cached = os.path.join(cache_dir, name + ext)
             if os.path.isfile(cached) and 0 < os.path.getsize(cached) <= MAX_BYTES_PER_IMAGE:
                 os.utime(cached, None)
+                _prune(cache_dir)
                 return cached
     except OSError:
         raise ThumbnailError("Thumbnail cache is unavailable.")
