@@ -192,7 +192,12 @@ def load(key="", history=None, fav=None):
                                     language_code=lambda: "sk"),
         "_warder_home.update_core": fake("_warder_home.update_core", CURRENT_VERSION="0.0.8~test8"),
         "_warder_home.grid_model": fake("_warder_home.grid_model", move_index=move),
-        "_warder_home.home_feed": fake("_warder_home.home_feed", popular_videos=lambda key: [], public_home_videos=lambda: []),
+        "_warder_home.home_feed": fake("_warder_home.home_feed",
+            popular_videos=lambda key: [],
+            popular_videos_page=lambda key, **kwargs: {
+                "items": [], "next_page_token": "", "total_results": None
+            },
+            public_home_videos=lambda: []),
         "_warder_home.home_thumbs": fake("_warder_home.home_thumbs", HomeThumbs=FakeThumbs),
         "_warder_home.local_library": fake(
             "_warder_home.local_library", LibraryError=ValueError, list_videos=list_videos,
@@ -477,6 +482,73 @@ class HomeLivePreviewTests(unittest.TestCase):
         screen.down()
         self.assertEqual(screen["heading"].text, "Favourites")
         self.assertEqual(screen.video_items[0]["video_id"], video(2)["video_id"])
+
+    def test_home_categories_arrows_and_ok_apply_real_chart_filter(self):
+        mod, key, saved, jobs = load(key="configured-api-key")
+        screen, session = ready(mod)
+        jobs[0][2].success({
+            "items": [video(i) for i in range(24)],
+            "next_page_token": "next_page", "total_results": 72
+        })
+        screen.right()  # Home nav -> first video
+        self.assertEqual(screen.focus_area, "tiles")
+        screen.up()     # from first video row -> horizontal categories
+        self.assertEqual(screen.focus_area, "categories")
+        self.assertEqual(screen._category_index, 0)
+        self.assertEqual(screen._category_cursor, 0)
+        screen.right()
+        screen.right()
+        self.assertEqual(screen._category_cursor, 2)
+        self.assertEqual(screen["category2"].text, "Gaming")
+        screen.activate()  # OK: switch YouTube chart category
+        self.assertEqual(screen._category_index, 2)
+        self.assertEqual(len(jobs), 2)
+        self.assertEqual(jobs[1][0][1], "configured-api-key")
+        self.assertEqual(jobs[1][1]["category_id"], "20")
+        # Stale callback must not replace the selected category.
+        screen.left()
+        screen.activate()  # new category while old request still in flight
+        self.assertEqual(screen._category_index, 1)
+        jobs[1][2].success({"items": [video(90)], "next_page_token": ""})
+        self.assertIsNone(screen._popular_cache)
+        jobs[2][2].success({"items": [video(8)], "next_page_token": ""})
+        self.assertEqual(screen._popular_cache[0]["video_id"], video(8)["video_id"])
+        screen.down()
+        self.assertEqual(screen.focus_area, "tiles")
+        self.assertEqual(screen.tile_index, 0)
+        screen.up()
+        self.assertEqual(screen.focus_area, "categories")
+        screen.back()
+        self.assertEqual(screen.focus_area, "nav")
+        self.assertEqual(len(session.opens), 0)
+
+    def test_more_home_chart_pages_are_fetched_on_demand(self):
+        mod, key, saved, jobs = load(key="test-key")
+        screen, session = ready(mod)
+        jobs[0][2].success({
+            "items": [video(i) for i in range(24)],
+            "next_page_token": "yt-token-A", "total_results": 54
+        })
+        self.assertIn("1 / 9", screen["page_info"].text)
+        self.assertEqual(len(jobs), 1)
+        screen.right()
+        for _ in range(6):
+            screen.down()
+        self.assertEqual(screen.page_index, 3)
+        self.assertEqual(len(jobs), 1)  # navigate local cached four pages
+        screen.down()
+        self.assertEqual(len(jobs), 2)
+        self.assertEqual(jobs[1][1]["page_token"], "yt-token-A")
+        self.assertEqual(jobs[1][1]["category_id"], "0")
+        jobs[1][2].success({
+            "items": [video(i) for i in range(24, 48)],
+            "next_page_token": "yt-token-B", "total_results": 54
+        })
+        self.assertEqual(screen.page_index, 4)
+        self.assertEqual(screen.video_items[0]["video_id"], video(24)["video_id"])
+        self.assertIn("5 / 9", screen["page_info"].text)
+        self.assertEqual(len(screen._popular_cache), 48)
+        self.assertEqual(screen.page_scroll.pages, 9)
 
     def test_live_home_pages_through_all_youtube_results_not_fixed_six(self):
         mod, key, saved, jobs = load(key="configured-api-key")
