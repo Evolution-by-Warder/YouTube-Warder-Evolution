@@ -1,0 +1,61 @@
+name: One-off test52 account-first integration
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths:
+      - '.github/workflows/apply-test52.yml'
+      - 'tools/apply_test52.py'
+      - 'tools/test52.payload'
+permissions:
+  contents: write
+concurrency:
+  group: warder-test52-apply
+  cancel-in-progress: false
+jobs:
+  integrate:
+    if: github.repository == 'Evolution-by-Warder/YouTube-Warder-Evolution' && github.ref == 'refs/heads/feature/native-search-v002'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Apply exact locally tested source patch
+        run: python3 tools/apply_test52.py
+      - name: Run full tests and verify deterministic IPK
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests -v 2>&1 | tee /tmp/test52-tests.txt
+          python3 -m compileall -q plugin/Plugins/Extensions/WarderYouTube
+          python3 tools/build_test_ipk.py --output dist
+          printf '%s  %s\n' 'af2f1918e1c9aaebd8cbf480431c4b91953e91b322d30fb223b0bcb06154eeef' 'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test52_all.ipk' | sha256sum --check -
+      - name: Commit only validated runtime tests and documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/feature/native-search-v002'
+          git rm tools/apply_test52.py tools/test52.payload
+          git add plugin tests tools docs
+          test -z "$(git diff --cached --name-only -- .github update)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'test52: OAuth-first Home search and details, account-first Settings (325 tests)'
+          git push origin HEAD:refs/heads/feature/native-search-v002
+          git rev-parse HEAD > dist/SOURCE_COMMIT.txt
+          cp /tmp/test52-tests.txt dist/TEST_RESULTS.txt
+          git archive --format=tar.gz HEAD > dist/warder-youtube-test52-source.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WarderYouTube-test52-verified-account-first
+          path: |
+            dist/*.ipk
+            dist/*.sha256
+            dist/*.txt
+            dist/*.tar.gz
+          retention-days: 7
+          if-no-files-found: error
