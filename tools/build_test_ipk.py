@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PKG_DIR = ROOT / "plugin/Plugins/Extensions/WarderYouTube"
 TARGET_PREFIX = "usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube"
 PACKAGE = "enigma2-plugin-extensions-youtube-warder-evolution"
-VERSION = "0.0.8~test35"
+VERSION = "0.0.8~test36"
 FILENAME = "%s_%s_all.ipk" % (PACKAGE, VERSION)
 SENSITIVE = re.compile(rb"(?:AIza[0-9A-Za-z_-]{20,}|GOCSPX-[0-9A-Za-z_-]{20,})")
 
