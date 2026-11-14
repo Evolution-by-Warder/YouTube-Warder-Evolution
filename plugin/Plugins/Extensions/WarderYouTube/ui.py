@@ -1421,6 +1421,8 @@ class WarderYouTubeHome(Screen):
         self._enter_keyboard_focus()
 
     def menu(self):
+        if self._inline_confirming():
+            return
         if self.focus_area == "keyboard":
             self._keyboard_case()
         else:
