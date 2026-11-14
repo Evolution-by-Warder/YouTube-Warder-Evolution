@@ -4,14 +4,12 @@ from .header_ui import add_header
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.config import ConfigSelection, ConfigSubsection, ConfigText, config, configfile
-from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
 from .skin import SETTINGS_SKIN
 from .resolver import is_available
 from .i18n import tr as _
-from .confirm_ui import WarderYouTubeConfirm
-from .api_key_file import read_manual_key, VALID_KEY
+from .api_key_file import read_manual_key
 from .data_auth import account_available
 
 QUALITY_VALUES = ("360", "480", "720", "1080", "1440", "2160")
@@ -63,126 +61,79 @@ def get_quality():
 
 
 class WarderYouTubeSettings(Screen):
+    """Account-first, simple settings: no personal API-key editor in the UI."""
     skin = SETTINGS_SKIN
 
     def __init__(self, session):
         Screen.__init__(self, session)
         add_header(self)
         self["title"] = Label("YouTube Warder Evolution / " + _("Settings"))
-        self["section_search"] = Label(_("Search").upper())
+        self["section_search"] = Label(_("YouTube account").upper())
         self["section_playback"] = Label(_("Playback").upper())
         self["section_privacy"] = Label(_("Privacy").upper())
-        self["status"] = Label(_("Keep live TV audio"))
-        self["key_red"] = Label(_("Back"))
-        self["key_green"] = Label(_("API key"))
-        self["key_yellow"] = Label(_("Prehrávač"))
-        self["key_blue"] = Label(_("Change quality"))
         self["description"] = Label(
             _("About settings") + "\n" + _("Language from Enigma2")
         )
         self["key_state"] = Label("")
-        self._key_dialog_open = False
-        self._advanced = False
         self["quality"] = Label("")
         self["resolver_state"] = Label("")
-        self["warning"] = Label(
-            _("API stored unencrypted") + "\n" +
-            _("API key visible while typing")
-        )
-        self["footer"] = Label(
-            _("OK/Green: API key   Blue: quality   Yellow: delete API key   Exit: back")
-        )
+        self["warning"] = Label("")
+        self["status"] = Label("")
+        self["footer"] = Label("")
+        self["key_red"] = Label(_("Back"))
+        self["key_green"] = Label(_("Manage account"))
+        self["key_yellow"] = Label(_("Player"))
+        self["key_blue"] = Label(_("Change quality"))
         self["actions"] = ActionMap(
-            ["OkCancelActions", "ColorActions", "MenuActions"],
+            ["OkCancelActions", "ColorActions"],
             {"ok": self.primary_action, "green": self.primary_action,
-             "yellow": self.secondary_action, "blue": self.toggle_quality,
-             "menu": self.toggle_advanced, "red": self.back,
-             "cancel": self.back},
+             "yellow": self.toggle_player, "blue": self.toggle_quality,
+             "red": self.back, "cancel": self.back},
             -1
         )
         self.refresh()
 
     def refresh(self):
         connected = account_available()
-        if self._advanced:
-            in_config = bool(config.plugins.warderyoutube.api_key.value.strip())
-            in_file = bool(read_manual_key()) if not in_config else False
-            self["section_search"].setText(_("Optional API key").upper())
-            self["key_green"].setText(
-                _("Change API key") if in_config or in_file else _("API key"))
-            self["key_yellow"].setText(_("Delete API key"))
-            self["key_state"].setText(
-                _("API key") + ": ********" + (" (" + _("manual file") + ")" if in_file else "")
-                if in_config or in_file else _("Optional API key: not configured"))
-            self["warning"].setText(_("API stored unencrypted") + "\n" +
-                                    _("API key visible while typing"))
-            self["status"].setText(_("Optional backup for signed-out use. MENU: back to account."))
-            self["footer"].setText(_(
-                "OK/Green: API key   Blue: quality   Yellow: delete API key   Exit: back"))
-        else:
-            self["section_search"].setText(_("YouTube account").upper())
-            self["key_green"].setText(_("Manage account") if connected else _("Sign in to YouTube"))
-            self["key_yellow"].setText(_("Prehrávač"))
-            self["key_state"].setText(
-                _("Signed in") + "\n" + _("No personal API key is needed.")
-                if connected else _("Not signed in") + "\n" + _("Sign in using a TV code."))
-            self["warning"].setText(
-                _("Your Google password is never entered in this plugin.") + "\n" +
-                _("Confirm the TV code on a phone or computer.") + "\n" +
-                _("Account access is stored locally on this receiver."))
-            self["status"].setText(_("Signed-in account: Home, categories, search and video details.")
-                if connected else _("Sign in for categories and subscriptions. Public playback needs no sign-in."))
-            self["footer"].setText(_("OK/Green: účet   Yellow: prehrávač   Blue: kvalita   MENU: rozšírené"))
-        self["quality"].setText(_("Maximum video quality") + ": %sp" % get_quality())
+        self["key_green"].setText(
+            _("Manage account") if connected else _("Sign in to YouTube"))
+        self["key_state"].setText(
+            _("Signed in") + "\n" + _("Your YouTube subscriptions are available.")
+            if connected else _("Not signed in") + "\n" + _("Sign in using a TV code."))
+        self["quality"].setText(
+            _("Maximum video quality") + ": %sp" % get_quality())
         available = available_player_modes()
         selected = get_player_mode()
         effective = selected if selected in available else "auto"
         self["resolver_state"].setText(
-            _("Prehrávač") + ": " + _(PLAYER_LABELS[effective]) +
-            (" (" + _("nedostupný výber – automaticky") + ")" if selected != effective else "") +
-            "\n" +
-            ("yt-dlp: dostupný" if is_available() else "yt-dlp: nenainštalovaný")
+            _("Player") + ": " + _(PLAYER_LABELS[effective]) +
+            (" (" + _("Unavailable; using Automatic") + ")"
+             if selected != effective else "") + "\n" +
+            ("yt-dlp: " + (_("Available") if is_available()
+                          else _("Not installed")))
         )
+        self["warning"].setText(
+            _("Your Google password is never entered in this plugin.") + "\n" +
+            _("Account access is stored locally on this receiver."))
+        self["status"].setText(
+            _("Playback settings apply to all video sections."))
+        self["footer"].setText(
+            _("OK/Green: account   Yellow: player   Blue: quality   Exit: back"))
 
     def primary_action(self):
-        if self._key_dialog_open:
-            return
-        if self._advanced:
-            self.prompt_key()
-        else:
-            # The hosting Home opens its existing right-hand Odbery panel.
-            self.close("account")
-
-    def secondary_action(self):
-        if self._key_dialog_open:
-            return
-        if self._advanced:
-            self.confirm_clear()
-        else:
-            self.toggle_player()
-
-    def toggle_advanced(self):
-        if not self._key_dialog_open:
-            self._advanced = not self._advanced
-            self.refresh()
+        # Home will switch to the account management in the Odbery pane.
+        self.close("account")
 
     def back(self):
-        if self._key_dialog_open:
-            return
-        if self._advanced:
-            self._advanced = False
-            self.refresh()
-        else:
-            self.close()
+        self.close()
 
     def toggle_player(self):
-        """Yellow button cycles only supported native ServiceApp engines."""
-        modes = available_player_modes()
+        choices = available_player_modes()
         current = get_player_mode()
-        if current not in modes:
+        if current not in choices:
             current = "auto"
         setting = config.plugins.warderyoutube.player_mode
-        setting.value = modes[(modes.index(current) + 1) % len(modes)]
+        setting.value = choices[(choices.index(current) + 1) % len(choices)]
         setting.save()
         configfile.save()
         self.refresh()
@@ -196,73 +147,3 @@ class WarderYouTubeSettings(Screen):
         setting.save()
         configfile.save()
         self.refresh()
-
-    def prompt_key(self):
-        if self._key_dialog_open:
-            return
-        # Show the saved value ONLY as asterisks. Changing it is an explicit
-        # second action; cancelling the confirmation leaves the key intact.
-        if get_api_key():
-            self._key_dialog_open = True
-            try:
-                self.session.openWithCallback(
-                    self._key_change_confirmed, WarderYouTubeConfirm,
-                    _("API key") + ": ********" + "\n" +
-                    _("Change saved API key?"))
-            except Exception:
-                self._key_dialog_open = False
-        else:
-            self._open_key_editor()
-
-    def _key_change_confirmed(self, confirmed):
-        self._key_dialog_open = False
-        if confirmed:
-            self._open_key_editor()
-
-    def _open_key_editor(self):
-        if self._key_dialog_open:
-            return
-        # Newly typed text is visible and editable until GREEN/Confirm.
-        # The previously saved credential is never prefilled or shown.
-        from .keyboard import WarderYouTubeKeyboard
-        try:
-            from .native_keyboard import WarderNativeSearchKeyboard
-        except ImportError:
-            WarderNativeSearchKeyboard = None
-        editor = WarderNativeSearchKeyboard or WarderYouTubeKeyboard
-        self._key_dialog_open = True
-        try:
-            self.session.openWithCallback(
-                self.key_received, editor,
-                value="", title=_("Enter API key"), secret=False, limit=160
-            )
-        except Exception:
-            self._key_dialog_open = False
-
-    def key_received(self, value):
-        self._key_dialog_open = False
-        if value is None:
-            return
-        value = value.strip()
-        if not VALID_KEY.fullmatch(value):
-            self["status"].setText(_("Invalid API key format."))
-            return
-        config.plugins.warderyoutube.api_key.value = value
-        config.plugins.warderyoutube.api_key.save()
-        configfile.save()
-        self.refresh()
-
-    def confirm_clear(self):
-        self.session.openWithCallback(
-            self.clear_key, WarderYouTubeConfirm,
-            _("Delete saved API key") + "?"
-        )
-
-    def clear_key(self, confirmed):
-        if confirmed:
-            config.plugins.warderyoutube.api_key.value = ""
-            config.plugins.warderyoutube.api_key.save()
-            configfile.save()
-            self.refresh()
-            if read_manual_key():
-                self["status"].setText(_("Manual API key file remains active."))
