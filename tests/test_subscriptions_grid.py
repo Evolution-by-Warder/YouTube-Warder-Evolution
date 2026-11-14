@@ -158,11 +158,18 @@ def load():
         and any(isinstance(t, ast.Name) and t.id == "LIBRARY_SKIN"
                 for t in stmt.targets)
     )
+    home = next(
+        ast.literal_eval(stmt.value)
+        for stmt in tree.body
+        if isinstance(stmt, ast.Assign)
+        and any(isinstance(t, ast.Name) and t.id == "HOME_SKIN"
+                for t in stmt.targets)
+    )
     fake = {
         "_subs_grid": pkg,
         "_subs_grid.header_ui": module("_subs_grid.header_ui", add_header=lambda scr: scr.__setitem__("hdr_version", Widget())),
         "_subs_grid.i18n": module("_subs_grid.i18n", tr=lambda message: message),
-        "_subs_grid.skin": module("_subs_grid.skin", LIBRARY_SKIN=base),
+        "_subs_grid.skin": module("_subs_grid.skin", LIBRARY_SKIN=base, HOME_SKIN=home),
         "_subs_grid.home_thumbs": module("_subs_grid.home_thumbs", HomeThumbs=Thumbs),
         "_subs_grid.subscriptions_auth": module(
             "_subs_grid.subscriptions_auth", SubscriptionsAuthError=ValueError,
@@ -221,6 +228,13 @@ class SubscriptionGalleryTests(unittest.TestCase):
             len([name for name in nodes if name.startswith("tile_focus")]), 6
         )
         self.assertIn("/video_focus.png", nodes["tile_focus0"]["pixmap"])
+        self.assertEqual(nodes["preview_thumb0"]["size"], "410,230")
+        self.assertEqual(nodes["tile_title0"]["size"], "444,56")
+        self.assertEqual(nodes["tile_channel0"]["size"], "444,20")
+        self.assertEqual(nodes["tile_focus0"]["size"], "477,324")
+        self.assertEqual(nodes["tile_panel0"]["size"], "473,320")
+        self.assertEqual(nodes["video_scroll_track"]["position"], "1781,231")
+        self.assertEqual(nodes["video_scroll_thumb"]["position"], "1783,231")
         self.assertNotIn("render=", mod.WarderYouTubeSubscriptions.skin)
 
     def test_recent_videos_are_3x2_pages_with_real_selection(self):
@@ -238,6 +252,8 @@ class SubscriptionGalleryTests(unittest.TestCase):
         self.assertEqual(len(screen.thumbs.shown[-1]), 6)
         self.assertEqual(screen.thumbs.shown[-1][0]["video_id"], video(0)["video_id"])
         self.assertEqual(screen["page_info"].text, "1 / 3  •  13")
+        self.assertTrue(screen["video_scroll_thumb"].visible)
+        self.assertEqual(screen.page_scroll.pages, 3)
         self.assertTrue(screen["tile_focus0"].visible)
         self.assertFalse(screen["tile_focus1"].visible)
         screen.navigate("down")
@@ -255,7 +271,7 @@ class SubscriptionGalleryTests(unittest.TestCase):
         screen.close()
         self.assertTrue(screen.thumbs.closed)
 
-    def test_all_channels_returns_native_list_and_drops_hidden_thumbnails(self):
+    def test_all_channels_uses_tiles_with_channel_avatars_and_page_scrollbar(self):
         mod, fake, jobs = load()
         screen = mod.WarderYouTubeSubscriptions(Session())
         screen._start_thumbs()
@@ -263,14 +279,34 @@ class SubscriptionGalleryTests(unittest.TestCase):
         screen.mode = "recent"
         screen._rows([video(i) for i in range(9)])
         screen.mode = "channels"
-        screen._rows([channel(i) for i in range(3)])
-        self.assertTrue(screen["results"].visible)
-        self.assertEqual(len(screen["results"].values), 3)
-        self.assertFalse(screen["tile_focus0"].visible)
-        self.assertEqual(screen.thumbs.shown[-1], [])
-        screen.navigate("down")
+        avatars = [
+            dict(channel(i), thumbnail_url="https://yt3.ggpht.com/example-avatar-%d" % i)
+            for i in range(13)
+        ]
+        screen._rows(avatars)
+        self.assertFalse(screen["results"].visible)
+        self.assertEqual(len(screen.thumbs.shown[-1]), 6)
+        self.assertEqual(len(screen.mode_items), 13)
+        self.assertEqual(screen["page_info"].text, "1 / 3  •  13")
+        self.assertEqual(screen["tile_title0"].text, "Channel 0")
+        self.assertEqual(screen["tile_channel0"].text, "Channel")
+        self.assertTrue(screen["video_scroll_track"].visible)
+        self.assertTrue(screen["video_scroll_thumb"].visible)
+        screen.navigate("right")
         self.assertEqual(screen._selected()["title"], "Channel 1")
-        self.assertEqual(screen["page_info"].text, "")
+        screen.navigate("down")
+        screen.navigate("down")
+        self.assertEqual(screen.page_index, 1)
+        self.assertEqual(screen._selected()["title"], "Channel 7")
+        screen.navigate("down")
+        screen.navigate("down")
+        self.assertEqual(screen.page_index, 2)
+        self.assertEqual(screen._selected()["title"], "Channel 12")
+        self.assertEqual(screen.page_scroll.page, 2)
+        self.assertEqual(screen.page_scroll.pages, 3)
+        self.assertEqual(len(screen.thumbs.shown[-1]), 1)
+        screen.close()
+        self.assertTrue(screen.thumbs.closed)
 
     def test_logged_out_tv_authorization_keeps_readable_text_list(self):
         mod, fake, jobs = load()
