@@ -443,7 +443,7 @@ class WarderNativeUiTests(unittest.TestCase):
     def test_info_uses_extra_two_rows_within_original_frame(self):
         m = load("info_ui")
         self.assertEqual(m.VISIBLE_LINES, 14)
-        msg = "\\n".join("Line %02d" % n for n in range(18))
+        msg = "\n".join("Line %02d" % n for n in range(18))
         screen = m.WarderYouTubeInfo(None, msg)
         self.assertEqual(len(screen["body"].text.splitlines()), 14)
         screen["actions"].bindings["down"]()
