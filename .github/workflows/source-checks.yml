@@ -21,7 +21,7 @@ jobs:
       - name: Upload private testing candidate as Actions artifact
         uses: actions/upload-artifact@v4
         with:
-          name: WarderYouTube-test39-thumbnails-chip-width-IPK
+          name: WarderYouTube-test40-no-blue-gutters-IPK
           path: |
             dist/*.ipk
             dist/*.sha256
