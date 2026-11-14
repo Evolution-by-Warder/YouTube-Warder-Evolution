@@ -140,7 +140,7 @@ class WarderYouTubeSettings(Screen):
         self["resolver_state"].setText(
             _("Prehrávač") + ": " + _(PLAYER_LABELS[effective]) +
             (" (" + _("nedostupný výber – automaticky") + ")" if selected != effective else "") +
-            "\\n" +
+            "\n" +
             ("yt-dlp: dostupný" if is_available() else "yt-dlp: nenainštalovaný")
         )
 
