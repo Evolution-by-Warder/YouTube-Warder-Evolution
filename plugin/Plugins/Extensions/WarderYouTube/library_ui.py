@@ -46,12 +46,12 @@ class WarderYouTubeLibrary(Screen):
         self["key_red"] = Label(_("Back"))
         self["key_green"] = Label(_("Play video"))
         self["key_yellow"] = Label(
-            _("Remove from favourites") if kind == "favourites"
-            else _("Delete from history")
+            _("Remove video from favourites") if kind == "favourites"
+            else _("Delete video from history")
         )
         self["key_blue"] = Label(
-            _("Clear favourites") if kind == "favourites"
-            else _("Clear history")
+            _("Clear all favourite videos") if kind == "favourites"
+            else _("Clear entire history")
         )
         self["results"] = MenuList([])
         self["status"] = Label("")
