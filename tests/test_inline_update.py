@@ -118,6 +118,27 @@ def release():
     return {"version": "0.0.8~test60", "notes": "New updater in right pane"}
 
 
+class InlineConfirmationAppearanceTests(unittest.TestCase):
+    def test_selected_word_has_no_filled_selection_bar(self):
+        import ast
+        import xml.etree.ElementTree as ET
+        source = (PATH.parent / "skin.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        skin = next(ast.literal_eval(assign.value) for assign in tree.body
+                    if isinstance(assign, ast.Assign)
+                    and any(isinstance(t, ast.Name) and t.id == "HOME_SKIN"
+                            for t in assign.targets))
+        widgets = {w.attrib.get("name"): w.attrib
+                   for w in ET.fromstring(skin).findall("widget")}
+        for name in ("update_no_focus", "update_yes_focus"):
+            widget = widgets[name]
+            self.assertEqual(widget["transparent"], "1")
+            self.assertEqual(widget["font"], "Regular;32")
+            self.assertEqual(widget["size"], "555,50")
+            self.assertEqual(widget["foregroundColor"], "#32DFFF")
+            self.assertNotIn("backgroundColor", widget)
+
+
 class InlineUpdateTests(unittest.TestCase):
     def test_check_rendered_in_right_pane_and_no_install_without_confirmation(self):
         mod, jobs, fakes = load()
@@ -137,6 +158,8 @@ class InlineUpdateTests(unittest.TestCase):
         self.assertTrue(controller.confirming)
         self.assertFalse(controller.confirm_yes)
         self.assertTrue(home["update_no_focus"].visible)
+        self.assertFalse(home["update_no"].visible)
+        self.assertTrue(home["update_yes"].visible)
         controller.answer(False)
         self.assertEqual(len(jobs), 1)
         self.assertFalse(home._busy)
@@ -151,6 +174,8 @@ class InlineUpdateTests(unittest.TestCase):
         self.assertTrue(home["update_no_focus"].visible)
         controller.select(True)
         self.assertTrue(home["update_yes_focus"].visible)
+        self.assertFalse(home["update_yes"].visible)
+        self.assertTrue(home["update_no"].visible)
         controller.answer(True)
         self.assertTrue(controller.installing)
         self.assertTrue(home._busy)
