@@ -278,7 +278,7 @@ class WarderNativeUiTests(unittest.TestCase):
         k.toggle_case()
         self.assertEqual(k["letter10"].text, "Q")
 
-    def test_home_has_eight_direct_navigation_rows(self):
+    def test_home_has_seven_direct_navigation_rows(self):
         tree = ast.parse((ROOT / "skin.py").read_text(encoding="utf-8"))
         home = next(ast.literal_eval(stmt.value) for stmt in tree.body
                     if isinstance(stmt, ast.Assign) and any(
@@ -286,8 +286,9 @@ class WarderNativeUiTests(unittest.TestCase):
                         for target in stmt.targets))
         screen = ET.fromstring(home)
         names = {w.attrib["name"] for w in screen.findall("widget")}
-        self.assertTrue({"nav0", "nav7", "preview_thumb0", "preview_thumb5",
+        self.assertTrue({"nav0", "nav6", "preview_thumb0", "preview_thumb5",
                          "preview_message", "heading"}.issubset(names))
+        self.assertNotIn("nav7", names)
         self.assertNotIn("nav_title", names)
         self.assertNotIn("card1_title", names)
 
