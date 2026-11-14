@@ -255,7 +255,7 @@ class AccountUiTests(unittest.TestCase):
             self.assertEqual(screen['key_yellow'].text, 'Delete API key')
             screen.back()
             self.assertFalse(screen._advanced)
-            self.assertEqual(screen['key_yellow'].text, 'Advanced')
+            self.assertEqual(screen['key_yellow'].text, 'Prehrávač')
             self.assertEqual(key.value, 'stored-backup-key')
 
     def test_settings_signin_routes_to_existing_right_hand_subscriptions(self):
