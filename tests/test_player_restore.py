@@ -99,6 +99,33 @@ class RadioPlaybackTests(unittest.TestCase):
         s.player.leavePlayerOnExit()
         self.assertIs(s.nav.current,external)
 
+    def test_choose_gstplayer_when_registered(self):
+        m=load();s=Session()
+        with patch.object(m,"service_player_available",side_effect=lambda v:v=="gst"):
+            m.open_player(s,[item(1)],"Test",player_mode="gst")
+        self.assertEqual(s.nav.current.kind,5001)
+        s.player.leavePlayerOnExit()
+        self.assertIs(s.nav.current,s.nav.previous)
+
+    def test_choose_exteplayer3_when_registered(self):
+        m=load();s=Session()
+        with patch.object(m,"service_player_available",side_effect=lambda v:v=="exte"):
+            m.open_player(s,[item(1)],"Test",player_mode="exte")
+        self.assertEqual(s.nav.current.kind,5002)
+
+    def test_missing_player_falls_back_to_existing_automatic_reference(self):
+        m=load();s=Session()
+        with patch.object(m,"service_player_available",return_value=False):
+            m.open_player(s,[item(1)],"Test",player_mode="gst")
+        self.assertEqual(s.nav.current.kind,4097)
+
+    def test_dash_suburi_not_rewritten_for_gstplayer(self):
+        m=load()
+        dash={"url":"https://rr1.googlevideo.com/a&suburi=https://rr2.googlevideo.com/b",
+              "service_type":5002}
+        with patch.object(m,"service_player_available",return_value=True):
+            self.assertEqual(m.prepare_player_streams([dash],"gst"),[dash])
+
     def test_reject_unknown_service_type(self):
         m=load();s=Session()
         with self.assertRaises(ValueError):
