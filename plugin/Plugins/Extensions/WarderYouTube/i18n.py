@@ -8,6 +8,12 @@ import os
 
 MESSAGES = {
     "en": {
+        "Player": "Player",
+        "Automaticky": "Automatic",
+        "Your YouTube subscriptions are available.": "Your YouTube subscriptions are available.",
+        "Unavailable; using Automatic": "Unavailable; using Automatic",
+        "Playback settings apply to all video sections.": "Playback settings apply to all video sections.",
+        "OK/Green: account   Yellow: player   Blue: quality   Exit: back": "OK/Green: account   Yellow: player   Blue: quality   Exit: back",
         "YouTube account": "YouTube account",
         "Signed in": "Signed in",
         "Not signed in": "Not signed in",
@@ -106,6 +112,12 @@ MESSAGES = {
         "Waiting for Google account authorization…": "Waiting for Google account authorization…",
     },
     "sk": {
+        "Player": "Prehrávač",
+        "Automaticky": "Automaticky",
+        "Your YouTube subscriptions are available.": "Tvoje odbery YouTube sú dostupné.",
+        "Unavailable; using Automatic": "Nedostupné; používa sa Automaticky",
+        "Playback settings apply to all video sections.": "Nastavenia prehrávania platia pre všetky videá.",
+        "OK/Green: account   Yellow: player   Blue: quality   Exit: back": "OK/ZELENÉ: účet   ŽLTÉ: prehrávač   MODRÉ: kvalita   EXIT: späť",
         "YouTube account": "Účet YouTube",
         "Signed in": "Prihlásený",
         "Not signed in": "Neprihlásený",
@@ -372,6 +384,12 @@ MESSAGES = {
         "Google account connected.": "Google účet pripojený.",
     },
     "cs": {
+        "Player": "Přehrávač",
+        "Automaticky": "Automaticky",
+        "Your YouTube subscriptions are available.": "Vaše odběry YouTube jsou dostupné.",
+        "Unavailable; using Automatic": "Nedostupné; používá se Automaticky",
+        "Playback settings apply to all video sections.": "Nastavení přehrávání platí pro všechna videa.",
+        "OK/Green: account   Yellow: player   Blue: quality   Exit: back": "OK/ZELENÉ: účet   ŽLUTÉ: přehrávač   MODRÉ: kvalita   EXIT: zpět",
         "YouTube account": "Účet YouTube",
         "Signed in": "Přihlášený",
         "Not signed in": "Nepřihlášený",
@@ -632,6 +650,12 @@ MESSAGES = {
         "Google account connected.": "Google účet připojen.",
     },
     "de": {
+        "Player": "Player",
+        "Automaticky": "Automatisch",
+        "Your YouTube subscriptions are available.": "Deine YouTube-Abos sind verfügbar.",
+        "Unavailable; using Automatic": "Nicht verfügbar; Automatisch wird verwendet",
+        "Playback settings apply to all video sections.": "Wiedergabeeinstellungen gelten für alle Videos.",
+        "OK/Green: account   Yellow: player   Blue: quality   Exit: back": "OK/GRÜN: Konto   GELB: Player   BLAU: Qualität   EXIT: zurück",
         "YouTube account": "YouTube-Konto",
         "Signed in": "Angemeldet",
         "Not signed in": "Nicht angemeldet",
