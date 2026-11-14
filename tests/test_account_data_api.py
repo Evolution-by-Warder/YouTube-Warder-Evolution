@@ -240,7 +240,7 @@ class AccountUiTests(unittest.TestCase):
             self.assertEqual(screen['section_search'].text, 'YOUTUBE ACCOUNT')
             self.assertIn('Your YouTube subscriptions are available.', screen['key_state'].text)
             self.assertEqual(screen['key_green'].text, 'Manage account')
-            self.assertEqual(screen['key_yellow'].text, 'Prehrávač')
+            self.assertEqual(screen['key_yellow'].text, 'Player')
             self.assertNotIn('stored-backup-key', ' '.join(v.text for v in screen.values() if hasattr(v, 'text')))
             self.assertNotIn('********', screen['key_state'].text)
             self.assertEqual(key.value, 'stored-backup-key')
