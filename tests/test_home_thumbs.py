@@ -118,6 +118,36 @@ class PreviewThumbTests(unittest.TestCase):
         self.assertEqual(decoder.decode_paths, [])
         self.assertEqual(thumbs.queue, [])
 
+    def test_abandoned_decode_recovers_on_page_change_without_reopening(self):
+        thumbs, screen, jobs, decoder = load()
+        thumbs.start()
+        thumbs.show(items(2))
+        jobs[0][1].success("/tmp/first.jpg")
+        self.assertIsNotNone(thumbs.decoding)
+        old_callback = decoder.callbacks[0]
+        thumbs.show(items(1))  # next page while first ePicLoad never finishes
+        self.assertTrue(thumbs.ready)
+        self.assertIsNone(thumbs.decoding)
+        self.assertEqual(len(decoder.callbacks), 1)
+        self.assertIsNot(old_callback, decoder.callbacks[0])
+        # Old queued PictureData does not eat the new frame.
+        jobs[2][1].success("/tmp/new.jpg")
+        self.assertIsNotNone(thumbs.decoding)
+        old_callback()
+        self.assertIsNotNone(thumbs.decoding)
+        decoder.callbacks[0]()
+        self.assertTrue(screen["preview_thumb0"].visible)
+
+    def test_early_decoder_failure_can_be_retried_without_plugin_restart(self):
+        thumbs, screen, jobs, decoder = load()
+        thumbs.start()
+        thumbs.decoder = None
+        thumbs.ready = False
+        thumbs.show(items(1))
+        self.assertTrue(thumbs.ready)
+        self.assertIsNotNone(thumbs.decoder)
+        self.assertEqual(len(jobs), 1)
+
     def test_close_disconnects_decoder_and_ignores_callbacks(self):
         thumbs, screen, jobs, decoder = load()
         thumbs.start()
