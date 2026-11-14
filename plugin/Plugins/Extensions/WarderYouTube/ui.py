@@ -19,6 +19,7 @@ from .grid_model import move_index
 from .system_keyboard_pane import SystemKeyboardPane
 from .home_feed import popular_videos_page, public_home_videos
 from .home_personalization import VISIBLE_CHIPS, build_home_chips, dedupe_videos
+from .chip_layout import layout_chips
 from .home_thumbs import HomeThumbs
 from .tile_scrollbar import TilePageScrollbar
 from .local_library import (
@@ -296,6 +297,7 @@ class WarderYouTubeHome(Screen):
         return self._home_chips[0]
 
     def _render_categories(self):
+        """Native one-line category rail with as many real chips as fit."""
         visible = self.index == 0
         if visible:
             self["subtitle"].hide()
@@ -303,33 +305,49 @@ class WarderYouTubeHome(Screen):
             self["subtitle"].show()
         selection = (self._category_cursor if self.focus_area == "categories"
                      else self._category_index)
-        if selection < self._category_offset:
-            self._category_offset = selection
-        if selection >= self._category_offset + VISIBLE_CHIPS:
-            self._category_offset = selection - VISIBLE_CHIPS + 1
-        self._category_offset = max(0, min(
-            self._category_offset, max(0, len(self._home_chips) - VISIBLE_CHIPS)))
+        labels = [_(item["label"]) for item in self._home_chips]
+        offset, slots, has_before, has_after = layout_chips(
+            labels, selection, self._category_offset
+        )
+        self._category_offset = offset
+        from_visible = {item[0]: (item[1], item[2]) for item in slots}
+
+        def place(widget, x, y, width, height, nowrap=False):
+            instance = getattr(widget, "instance", None)
+            if instance is None:
+                return
+            try:
+                from enigma import ePoint, eSize
+                instance.move(ePoint(x, y))
+                instance.resize(eSize(width, height))
+                if nowrap and hasattr(instance, "setNoWrap"):
+                    instance.setNoWrap(True)
+            except (ImportError, AttributeError, RuntimeError, TypeError):
+                # Unusual firmware uses the original valid static skin values.
+                pass
+
         for slot in range(VISIBLE_CHIPS):
-            absolute = self._category_offset + slot
-            display = visible and absolute < len(self._home_chips)
+            item_index = offset + slot
+            fitted = item_index in from_visible and visible
             for prefix in ("category_panel", "category"):
                 widget = self["%s%d" % (prefix, slot)]
-                if display:
+                if fitted:
                     widget.show()
                 else:
                     widget.hide()
-            if display:
-                self["category%d" % slot].setText(
-                    _(self._home_chips[absolute]["label"]))
             focus = self["category_focus%d" % slot]
-            if display and absolute == selection:
+            if fitted:
+                x, width = from_visible[item_index]
+                place(self["category_panel%d" % slot], x, 194, width, 47)
+                place(focus, x, 194, width, 47)
+                place(self["category%d" % slot], x, 198, width, 38, nowrap=True)
+                self["category%d" % slot].setText(labels[item_index])
+            if fitted and item_index == selection:
                 focus.show()
             else:
                 focus.hide()
-        if visible and len(self._home_chips) > VISIBLE_CHIPS:
-            self["category_more"].setText(
-                "›" if self._category_offset + VISIBLE_CHIPS < len(self._home_chips)
-                else "‹")
+        if visible and (has_before or has_after):
+            self["category_more"].setText("›" if has_after else "‹")
             self["category_more"].show()
         else:
             self["category_more"].hide()
