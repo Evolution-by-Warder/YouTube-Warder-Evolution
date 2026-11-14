@@ -693,6 +693,15 @@ class WarderYouTubeHome(Screen):
             return self.video_items[self.tile_index]
         return None
 
+    def _info_cached_thumbnail(self, item):
+        """Reuse the Home tile's exact already-decoded image when available."""
+        if isinstance(item, dict):
+            url = item.get("thumbnail_url")
+            cache = getattr(self.thumbs, "image_cache", None)
+            if isinstance(url, str) and isinstance(cache, dict):
+                return cache.get(url)
+        return None
+
     def info(self):
         item = self.selected_video()
         if (item is None or self._busy or self._playback_active or
@@ -706,7 +715,7 @@ class WarderYouTubeHome(Screen):
                 format_video_info(
                     item, translate=_,
                     note="Detailed information requires a YouTube API key."
-                )
+                ), video=item, thumbnail_pixmap=self._info_cached_thumbnail(item)
             )
             return
         self._busy = True
@@ -730,7 +739,8 @@ class WarderYouTubeHome(Screen):
         self["status"].setText(_("Video details loaded."))
         self.session.open(
             WarderYouTubeInfo,
-            format_video_info(item, details, translate=_)
+            format_video_info(item, details, translate=_),
+            video=item, thumbnail_pixmap=self._info_cached_thumbnail(item)
         )
 
     def _info_failed(self, token, item, failure):
@@ -744,7 +754,7 @@ class WarderYouTubeHome(Screen):
             format_video_info(
                 item, translate=_,
                 note="Details unavailable; showing saved video information."
-            )
+            ), video=item, thumbnail_pixmap=self._info_cached_thumbnail(item)
         )
 
     def context(self):
