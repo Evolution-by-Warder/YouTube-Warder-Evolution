@@ -156,6 +156,8 @@ MESSAGES = {
         "Loading video details…": "Načítavam podrobnosti videa…",
         "Video details loaded.": "Podrobnosti videa boli načítané.",
         "Details unavailable; showing saved video information.": "Podrobnosti nie sú dostupné. Zobrazujem uložené údaje o videu.",
+        "Scroll up": "Posun textu hore",
+        "Scroll down": "Posun textu dole",
     },
     "cs": {
         "Change API key": "Změnit API klíč",
@@ -284,6 +286,8 @@ MESSAGES = {
         "Loading video details…": "Načítám podrobnosti videa…",
         "Video details loaded.": "Podrobnosti videa byly načteny.",
         "Details unavailable; showing saved video information.": "Podrobnosti nejsou dostupné. Zobrazuji uložené údaje o videu.",
+        "Scroll up": "Posun textu nahoru",
+        "Scroll down": "Posun textu dolů",
     },
     "de": {
         "Change API key": "API-Schlüssel ändern",
@@ -412,6 +416,8 @@ MESSAGES = {
         "Loading video details…": "Videodetails werden geladen…",
         "Video details loaded.": "Videodetails wurden geladen.",
         "Details unavailable; showing saved video information.": "Details nicht verfügbar. Gespeicherte Videodaten werden angezeigt.",
+        "Scroll up": "Text nach oben",
+        "Scroll down": "Text nach unten",
     }
 }
 
