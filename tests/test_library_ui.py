@@ -180,8 +180,8 @@ class LibraryUiTests(unittest.TestCase):
     def test_coloured_keys_name_exact_favourite_or_history_action(self):
         ui, fake, videos, jobs, played, recorded = load()
         for kind, yellow, blue, token in (
-            ("favourites", "Remove from favourites", "Clear favourites", "favourites"),
-            ("history", "Delete from history", "Clear history", "history"),
+            ("favourites", "Remove video from favourites", "Clear all favourite videos", "favourites"),
+            ("history", "Delete video from history", "Clear entire history", "history"),
         ):
             with self.subTest(kind=kind):
                 screen = ui.WarderYouTubeLibrary(Session(), kind)
