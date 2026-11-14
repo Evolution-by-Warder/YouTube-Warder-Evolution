@@ -504,10 +504,11 @@ class WarderYouTubeHome(Screen):
         self._popular_cache.extend(new_items[:24])
         next_token = response.get("next_page_token") or ""
         # Avoid a server accidentally returning a token that loops forever.
+        old_token = self._popular_next_page_token
         self._popular_next_page_token = (
-            next_token if isinstance(next_token, str) and next_token != token
+            next_token if isinstance(next_token, str) and next_token != old_token
             else ""
-        ) if (token := self._popular_next_page_token) else ""
+        )
         new_total = response.get("total_results")
         if type(new_total) is int and new_total > 0:
             self._popular_total_results = new_total
@@ -572,6 +573,7 @@ class WarderYouTubeHome(Screen):
             ])
         self._update_nav()
         self._update_tile_focus()
+        self._render_categories()
         self._update_keys()
 
     def _hide_inline_keyboard(self):
@@ -666,6 +668,12 @@ class WarderYouTubeHome(Screen):
         self._home_search_flow.start(query)
 
     def _update_keys(self):
+        if self.focus_area == "categories":
+            self["key_red"].setText(_("Back"))
+            self["key_green"].setText(_("Choose category"))
+            self["key_yellow"].setText(_("History"))
+            self["key_blue"].setText(_("Search"))
+            return
         if self.focus_area == "keyboard":
             self["key_red"].setText(_("Back"))
             self["key_green"].setText(_("Search"))
@@ -699,14 +707,27 @@ class WarderYouTubeHome(Screen):
         self._update_preview()
 
     def up(self):
+        if self.focus_area == "categories":
+            return
         if self.focus_area == "keyboard":
             self._keyboard_move("up")
         elif self.focus_area == "nav":
             self._select_nav(self.index - 1)
+        elif (self.focus_area == "tiles" and self.index == 0
+                and self.page_index == 0 and self.tile_index < 3):
+            self._enter_categories()
         else:
             self._move_tile("up")
 
     def down(self):
+        if self.focus_area == "categories":
+            if self.video_items:
+                self.focus_area = "tiles"
+                self.tile_index = 0
+                self._update_tile_focus()
+                self._render_categories()
+                self._update_keys()
+            return
         if self.focus_area == "keyboard":
             self._keyboard_move("down")
         elif self.focus_area == "nav":
@@ -715,6 +736,10 @@ class WarderYouTubeHome(Screen):
             self._move_tile("down")
 
     def left(self):
+        if self.focus_area == "categories":
+            self._category_cursor = (self._category_cursor - 1) % len(HOME_CATEGORIES)
+            self._render_categories()
+            return
         if self.focus_area == "keyboard":
             if self.inline_keyboard is not None and self.inline_keyboard.is_left_edge():
                 self._leave_keyboard_focus()
@@ -734,6 +759,10 @@ class WarderYouTubeHome(Screen):
                 self._move_tile("left")
 
     def right(self):
+        if self.focus_area == "categories":
+            self._category_cursor = (self._category_cursor + 1) % len(HOME_CATEGORIES)
+            self._render_categories()
+            return
         if self.focus_area == "keyboard":
             self._keyboard_move("right")
             return
@@ -765,6 +794,8 @@ class WarderYouTubeHome(Screen):
         max_page = (len(self._section_items) - 1) // VISIBLE_TILES
         new_page = self.page_index + delta
         if new_page < 0 or new_page > max_page:
+            if delta > 0 and self._request_more_popular():
+                return True
             return False
         self.page_index = new_page
         self._show_tiles(self._section_items, self._section_subtitle)
@@ -772,6 +803,10 @@ class WarderYouTubeHome(Screen):
         return True
 
     def _enter_tiles(self):
+        if (self.index == 0 and not self.video_items
+                and self.focus_area == "nav"):
+            self._enter_categories()
+            return
         if self.video_items and self.focus_area == "nav":
             self.focus_area = "tiles"
             self.tile_index = 0
@@ -780,6 +815,14 @@ class WarderYouTubeHome(Screen):
             self._update_keys()
 
     def back(self):
+        if self.focus_area == "categories":
+            self.focus_area = "nav"
+            self["status"].setText("")
+            self._update_nav()
+            self._render_categories()
+            self._update_tile_focus()
+            self._update_keys()
+            return
         if self.focus_area == "keyboard":
             self._leave_keyboard_focus()
             return
@@ -827,6 +870,8 @@ class WarderYouTubeHome(Screen):
             self._keyboard_press()
         elif self.focus_area == "tiles":
             self._play_selected()
+        elif self.focus_area == "categories":
+            self._choose_category()
         elif self.index == 1:
             self._enter_keyboard_focus()
         elif self.index in (0, 3, 5) and self.video_items:
