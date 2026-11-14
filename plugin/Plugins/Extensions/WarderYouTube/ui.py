@@ -259,7 +259,12 @@ class WarderYouTubeHome(Screen):
         # automatically poll the update server or repeat the popular feed.
         if self._mounted and not self._disposed and not self._playback_active:
             if self.index in (0, 1, 2, 3, 5, 6, 7):
-                self._update_preview()
+                login = self._inline_tv_login
+                if (self.index == 2 and login is not None
+                        and getattr(login, "active", False)):
+                    login.show_details()
+                else:
+                    self._update_preview()
             if (self.index == 0 and self._popular_cache
                     and not self._popular_loading
                     and monotonic() - self._popular_fetched_at > POPULAR_REFRESH_SECONDS):
@@ -536,7 +541,7 @@ class WarderYouTubeHome(Screen):
                                                            subscribed),
                 lambda err: self._personal_videos_failed(selected, epoch, subscribed))
         except Exception:
-            self._personal_videos_failed(selected, epoch)
+            self._personal_videos_failed(selected, epoch, subscribed)
 
     def _personal_videos_ready(self, chip_id, videos, epoch, subscribed=False):
         if self._disposed or epoch != self._personal_video_epoch:
@@ -599,7 +604,8 @@ class WarderYouTubeHome(Screen):
         if self._personal_requested:
             self["status"].setText(_("Checking YouTube account connection…"))
             return
-        if self._inline_tv_login is None:
+        if (self._inline_tv_login is None
+                or getattr(self._inline_tv_login, "closed", False)):
             from .home_tv_auth import HomeTVLogin
             self._inline_tv_login = HomeTVLogin(self)
         self._inline_tv_login.start()
