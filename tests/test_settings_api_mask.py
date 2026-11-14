@@ -117,6 +117,27 @@ def environment(configured="", file_key="", advanced=True):
         yield mod, screen, session, api_key, cfgfile, fake_confirm, fake_system_keyboard
 
 
+class PlayerModeSettingsTests(unittest.TestCase):
+    def test_yellow_cycles_available_players_and_persists(self):
+        with environment(advanced=False) as (mod, screen, session, key, cfgfile, *_):
+            self.assertEqual(mod.get_player_mode(), "auto")
+            with patch.object(mod, "available_player_modes", return_value=("auto", "gst", "exte")):
+                screen.secondary_action()
+                self.assertEqual(mod.get_player_mode(), "gst")
+                self.assertIn("gstplayer", screen["resolver_state"].text)
+                screen.secondary_action()
+                self.assertEqual(mod.get_player_mode(), "exte")
+                screen.secondary_action()
+                self.assertEqual(mod.get_player_mode(), "auto")
+            self.assertEqual(cfgfile.saves, 3)
+            self.assertFalse(screen._advanced)
+
+    def test_missing_serviceapp_offers_only_auto(self):
+        with environment(advanced=False) as (mod, screen, session, key, cfgfile, *_):
+            with patch.object(mod, "available_player_modes", return_value=("auto",)):
+                screen.secondary_action()
+            self.assertEqual(mod.get_player_mode(), "auto")
+
 class MaskedKeyTests(unittest.TestCase):
     OLD = "AIza" + "x" * 35
     NEW = "AIza" + "y" * 35
