@@ -26,6 +26,8 @@ from .local_library import (
 from .settings import get_api_key, get_quality
 from .resolver import ResolverError, resolve_video_streams, is_available
 from .api import SearchError
+from .video_metadata import fetch_video_info
+from .video_info_display import format_video_info
 
 SECTIONS = (
     ("Home", "Popular in Slovakia"),
@@ -693,13 +695,56 @@ class WarderYouTubeHome(Screen):
 
     def info(self):
         item = self.selected_video()
-        if item is None or self._busy or self._playback_active:
+        if (item is None or self._busy or self._playback_active or
+                self._disposed or self._context_open or self._confirm_open):
             return
         from .info_ui import WarderYouTubeInfo
+        key = get_api_key()
+        if not key:
+            self.session.open(
+                WarderYouTubeInfo,
+                format_video_info(
+                    item, translate=_,
+                    note="Detailed information requires a YouTube API key."
+                )
+            )
+            return
+        self._busy = True
+        self._play_request += 1
+        token = self._play_request
+        self["status"].setText(_("Loading video details…"))
+        try:
+            worker = deferToThread(fetch_video_info, item["video_id"], key)
+            worker.addCallbacks(
+                lambda details: self._info_ready(token, item, details),
+                lambda failure: self._info_failed(token, item, failure)
+            )
+        except Exception:
+            self._info_failed(token, item, None)
+
+    def _info_ready(self, token, item, details):
+        if self._disposed or token != self._play_request:
+            return
+        from .info_ui import WarderYouTubeInfo
+        self._busy = False
+        self["status"].setText(_("Video details loaded."))
         self.session.open(
             WarderYouTubeInfo,
-            "%s\n%s\n%s" % (item.get("title", ""), item.get("channel", ""),
-                             item.get("video_id", ""))
+            format_video_info(item, details, translate=_)
+        )
+
+    def _info_failed(self, token, item, failure):
+        if self._disposed or token != self._play_request:
+            return
+        from .info_ui import WarderYouTubeInfo
+        self._busy = False
+        self["status"].setText(_("Details unavailable; showing saved video information."))
+        self.session.open(
+            WarderYouTubeInfo,
+            format_video_info(
+                item, translate=_,
+                note="Details unavailable; showing saved video information."
+            )
         )
 
     def context(self):
