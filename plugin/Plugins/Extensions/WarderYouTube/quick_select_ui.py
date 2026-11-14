@@ -11,7 +11,15 @@ from Components.MenuList import MenuList
 from Screens.Screen import Screen
 
 from .i18n import tr as _
-from .skin import QUICK_SELECT_SKIN
+QUICK_SELECT_SKIN = """
+<screen name="WarderYouTubeQuickSelect" position="585,192" size="750,690" flags="wfNoBorder" title="Warder / Quick selection" backgroundColor="#102943">
+  <eLabel position="0,0" size="750,5" backgroundColor="#19C9FF" zPosition="1"/>
+  <widget name="heading" position="33,29" size="680,55" font="Regular;36" foregroundColor="#6CCBFF" backgroundColor="#102943" transparent="1" zPosition="3"/>
+  <widget name="choices" position="28,99" size="694,518" font="Regular;28" itemHeight="58" foregroundColor="#FFFFFF" backgroundColor="#17364F" foregroundColorSelected="#FFFFFF" backgroundColorSelected="#126BA5" transparent="0" scrollbarMode="showOnDemand" zPosition="3"/>
+  <eLabel position="18,636" size="714,2" backgroundColor="#264A68" zPosition="2"/>
+  <widget name="hint" position="30,644" size="700,38" font="Regular;23" foregroundColor="#B9D9F5" transparent="1" zPosition="3"/>
+</screen>
+"""
 
 
 class WarderYouTubeQuickSelect(Screen):
