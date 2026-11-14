@@ -299,7 +299,7 @@ class WarderYouTubeSearch(Screen):
             return
         self.show_play_status(
             _("Add to favourites") + " ✓" if saved
-            else _("Remove from favourites") + " ✓")
+            else _("Remove video from favourites") + " ✓")
 
     def info_selected(self):
         index = self["results"].getCurrentIndex()
