@@ -23,6 +23,8 @@ class HomeThumbs:
         self.active = 0
         self.queue = []
         self.decodes = []
+        self.visible_urls = {}
+        self.inflight_urls = set()
         self.decoding = None
         self.decoder = None
         self.signal = None
@@ -101,6 +103,7 @@ class HomeThumbs:
         self.epoch += 1
         self.queue = []
         self.decodes = []
+        self.visible_urls = {}
         # Never keep a stale decoder lock when another page is selected.
         if self.decoding is not None:
             self._restart_decoder()
@@ -114,6 +117,7 @@ class HomeThumbs:
             url = item.get("thumbnail_url") if isinstance(item, dict) else None
             if not url:
                 continue
+            self.visible_urls.setdefault(url, []).append(slot)
             cached = self.image_cache.get(url)
             if cached is not None:
                 try:
@@ -123,7 +127,10 @@ class HomeThumbs:
                     continue
                 except (AttributeError, TypeError, ValueError, RuntimeError):
                     self.image_cache.pop(url, None)
-            self.queue.append((self.epoch, slot, url))
+            # A worker from the previous page may already be fetching it.
+            # Its completion will be directed to this page by URL.
+            if url not in self.inflight_urls and not any(q[2] == url for q in self.queue):
+                self.queue.append((self.epoch, slot, url))
         self._pump()
 
     def _pump(self):
@@ -132,6 +139,7 @@ class HomeThumbs:
         while self.queue and self.active < MAX_DOWNLOADS:
             req = self.queue.pop(0)
             self.active += 1
+            self.inflight_urls.add(req[2])
             try:
                 work = deferToThread(fetch_thumbnail, req[2])
                 work.addCallbacks(
@@ -140,12 +148,19 @@ class HomeThumbs:
                 )
             except Exception:
                 self.active = max(0, self.active - 1)
+                self.inflight_urls.discard(req[2])
 
     def _downloaded(self, req, path):
         self.active = max(0, self.active - 1)
-        if not self.closed and path and req[0] == self.epoch:
-            self.decodes.append((req[0], req[1], path, req[2]))
-            self._start_decode()
+        self.inflight_urls.discard(req[2])
+        if not self.closed and path:
+            # Requests complete out of order. Render only URLs visible
+            # on the CURRENT page, even when a previous page launched them.
+            slots = self.visible_urls.get(req[2], ())
+            for slot in slots:
+                self.decodes.append((self.epoch, slot, path, req[2]))
+            if slots:
+                self._start_decode()
         self._pump()
 
     def _start_decode(self):
@@ -206,6 +221,7 @@ class HomeThumbs:
         self._decoder_generation += 1
         self.queue = []
         self.decodes = []
+        self.visible_urls = {}
         self.image_cache.clear()
         self._release()
         self.decoder = None
