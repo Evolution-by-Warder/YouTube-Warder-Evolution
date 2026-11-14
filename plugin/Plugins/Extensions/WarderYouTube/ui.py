@@ -142,6 +142,7 @@ class WarderYouTubeHome(Screen):
         self._personal_epoch = 0
         self._personal_video_epoch = 0
         self._personal_video_cache = {}
+        self._auth_maybe_changed = False
         self._busy = False
         self._playback_active = False
         self._context_open = False
@@ -240,6 +241,11 @@ class WarderYouTubeHome(Screen):
                 task.addCallbacks(self._version_ready, self._version_failed)
             except Exception:
                 pass
+        # Build account-dependent chips only after Home has become visible.
+        # Returning from the Odbery login screen refreshes them immediately.
+        if self._mounted and not self._disposed:
+            self._request_personalization(refresh=self._auth_maybe_changed)
+            self._auth_maybe_changed = False
         # Returning from player/library refreshes local data, but does not
         # automatically poll the update server or repeat the popular feed.
         if self._mounted and not self._disposed and not self._playback_active:
@@ -494,7 +500,8 @@ class WarderYouTubeHome(Screen):
         first = self.page_index * VISIBLE_TILES
         self.video_items = all_videos[first:first + VISIBLE_TILES]
         self["subtitle"].setText(_(subtitle))
-        if self.index == 0 and self._popular_source == "api":
+        if (self.index == 0 and self._selected_home_chip()["kind"] == "all"
+                and self._popular_source == "api"):
             reported = self._popular_total_results
             actual_pages = max(pages, (reported + VISIBLE_TILES - 1) // VISIBLE_TILES) if reported else (
                 pages + (1 if self._popular_next_page_token else 0))
@@ -563,7 +570,7 @@ class WarderYouTubeHome(Screen):
         if self._popular_requested or self._disposed:
             return
         key = get_api_key()
-        category_id = HOME_CATEGORIES[self._category_index][0]
+        category_id = "0"
         self._popular_source = "api" if key else "public"
         if not key and category_id != "0":
             self._popular_error = True
@@ -610,7 +617,7 @@ class WarderYouTubeHome(Screen):
         self._popular_total_results = total if type(total) is int and total > 0 else None
         self._popular_fetched_at = monotonic()
         self._popular_error = False
-        if self.index == 0:
+        if self.index == 0 and self._selected_home_chip()["kind"] == "all":
             if self._popular_cache:
                 self._show_tiles(
                     self._popular_cache,
@@ -627,10 +634,11 @@ class WarderYouTubeHome(Screen):
         self._popular_loading = False
         self._popular_error = True
         self._popular_fetched_at = monotonic()
-        if self.index == 0 and self._popular_cache:
+        if (self.index == 0 and self._selected_home_chip()["kind"] == "all"
+                and self._popular_cache):
             self["status"].setText(_("Live YouTube refresh unavailable; previous data shown."))
             return
-        if self.index == 0:
+        if self.index == 0 and self._selected_home_chip()["kind"] == "all":
             self._fallback_home()
             self["status"].setText(
                 _("Popular videos are temporarily unavailable.") if self._popular_source == "api"
@@ -640,10 +648,11 @@ class WarderYouTubeHome(Screen):
 
     def _request_more_popular(self):
         if (self.index != 0 or self._disposed or self._popular_more_loading
+                or self._selected_home_chip()["kind"] != "all"
                 or not self._popular_next_page_token or not get_api_key()):
             return False
         token = self._popular_next_page_token
-        category_id = HOME_CATEGORIES[self._category_index][0]
+        category_id = "0"
         request_epoch = self._popular_request_epoch
         next_page = self.page_index + 1
         self._popular_more_loading = True
@@ -681,7 +690,8 @@ class WarderYouTubeHome(Screen):
         new_total = response.get("total_results")
         if type(new_total) is int and new_total > 0:
             self._popular_total_results = new_total
-        if self.index == 0 and self._popular_cache:
+        if (self.index == 0 and self._selected_home_chip()["kind"] == "all"
+                and self._popular_cache):
             if next_page * VISIBLE_TILES < len(self._popular_cache):
                 self.page_index = next_page
             self._show_tiles(self._popular_cache, "Popular in Slovakia")
@@ -704,18 +714,7 @@ class WarderYouTubeHome(Screen):
         self["subtitle"].setText(self.sections[self.index][1])
         self["status"].setText("")
         if self.index == 0:
-            if self._popular_cache:
-                self._show_tiles(self._popular_cache, "Popular in Slovakia")
-            elif self._popular_loading:
-                if self._popular_source == "public":
-                    self._fallback_home()
-                    self["status"].setText(_("Loading public YouTube videos…"))
-                else:
-                    self._show_message("Loading popular videos for Slovakia…")
-            elif self._popular_error:
-                self._fallback_home()
-            else:
-                self._request_popular()
+            self._show_selected_home_chip()
         elif self.index == 1:
             self._show_inline_keyboard()
         elif self.index == 2:
@@ -906,7 +905,7 @@ class WarderYouTubeHome(Screen):
 
     def left(self):
         if self.focus_area == "categories":
-            self._category_cursor = (self._category_cursor - 1) % len(HOME_CATEGORIES)
+            self._category_cursor = (self._category_cursor - 1) % len(self._home_chips)
             self._render_categories()
             return
         if self.focus_area == "keyboard":
@@ -929,7 +928,7 @@ class WarderYouTubeHome(Screen):
 
     def right(self):
         if self.focus_area == "categories":
-            self._category_cursor = (self._category_cursor + 1) % len(HOME_CATEGORIES)
+            self._category_cursor = (self._category_cursor + 1) % len(self._home_chips)
             self._render_categories()
             return
         if self.focus_area == "keyboard":
@@ -1055,6 +1054,7 @@ class WarderYouTubeHome(Screen):
             self._select_nav(1)
             self._enter_keyboard_focus()
         elif index == 2:
+            self._auth_maybe_changed = True
             from .subscriptions_ui import WarderYouTubeSubscriptions
             self.session.open(WarderYouTubeSubscriptions)
         elif index in (3, 5):
