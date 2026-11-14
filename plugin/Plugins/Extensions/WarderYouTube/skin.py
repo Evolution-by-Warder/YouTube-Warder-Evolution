@@ -46,6 +46,27 @@ HOME_SKIN = """
   <widget name="heading" position="0,0" size="1,1" font="Regular;45" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
   <widget name="subtitle" position="427,198" size="1090,42" font="Regular;27" foregroundColor="#6CCBFF" transparent="1" zPosition="4"/>
   <widget name="page_info" position="1560,198" size="300,42" font="Regular;24" foregroundColor="#62D9F8" transparent="1" halign="right" zPosition="4"/>
+  <widget name="category_panel0" position="427,194" size="146,47" font="Regular;1" foregroundColor="#17364F" backgroundColor="#17364F" transparent="0" zPosition="4"/>
+  <widget name="category_focus0" position="427,194" size="146,47" font="Regular;1" foregroundColor="#087EC7" backgroundColor="#087EC7" transparent="0" zPosition="5"/>
+  <widget name="category0" position="427,198" size="146,38" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" halign="center" valign="center" zPosition="6"/>
+  <widget name="category_panel1" position="581,194" size="146,47" font="Regular;1" foregroundColor="#17364F" backgroundColor="#17364F" transparent="0" zPosition="4"/>
+  <widget name="category_focus1" position="581,194" size="146,47" font="Regular;1" foregroundColor="#087EC7" backgroundColor="#087EC7" transparent="0" zPosition="5"/>
+  <widget name="category1" position="581,198" size="146,38" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" halign="center" valign="center" zPosition="6"/>
+  <widget name="category_panel2" position="735,194" size="146,47" font="Regular;1" foregroundColor="#17364F" backgroundColor="#17364F" transparent="0" zPosition="4"/>
+  <widget name="category_focus2" position="735,194" size="146,47" font="Regular;1" foregroundColor="#087EC7" backgroundColor="#087EC7" transparent="0" zPosition="5"/>
+  <widget name="category2" position="735,198" size="146,38" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" halign="center" valign="center" zPosition="6"/>
+  <widget name="category_panel3" position="889,194" size="146,47" font="Regular;1" foregroundColor="#17364F" backgroundColor="#17364F" transparent="0" zPosition="4"/>
+  <widget name="category_focus3" position="889,194" size="146,47" font="Regular;1" foregroundColor="#087EC7" backgroundColor="#087EC7" transparent="0" zPosition="5"/>
+  <widget name="category3" position="889,198" size="146,38" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" halign="center" valign="center" zPosition="6"/>
+  <widget name="category_panel4" position="1043,194" size="146,47" font="Regular;1" foregroundColor="#17364F" backgroundColor="#17364F" transparent="0" zPosition="4"/>
+  <widget name="category_focus4" position="1043,194" size="146,47" font="Regular;1" foregroundColor="#087EC7" backgroundColor="#087EC7" transparent="0" zPosition="5"/>
+  <widget name="category4" position="1043,198" size="146,38" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" halign="center" valign="center" zPosition="6"/>
+  <widget name="category_panel5" position="1197,194" size="146,47" font="Regular;1" foregroundColor="#17364F" backgroundColor="#17364F" transparent="0" zPosition="4"/>
+  <widget name="category_focus5" position="1197,194" size="146,47" font="Regular;1" foregroundColor="#087EC7" backgroundColor="#087EC7" transparent="0" zPosition="5"/>
+  <widget name="category5" position="1197,198" size="146,38" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" halign="center" valign="center" zPosition="6"/>
+  <widget name="category_panel6" position="1351,194" size="146,47" font="Regular;1" foregroundColor="#17364F" backgroundColor="#17364F" transparent="0" zPosition="4"/>
+  <widget name="category_focus6" position="1351,194" size="146,47" font="Regular;1" foregroundColor="#087EC7" backgroundColor="#087EC7" transparent="0" zPosition="5"/>
+  <widget name="category6" position="1351,198" size="146,38" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" halign="center" valign="center" zPosition="6"/>
   <widget name="video_scroll_track" position="1872,252" size="9,667" font="Regular;1" foregroundColor="#264A68" backgroundColor="#264A68" transparent="0" zPosition="6"/>
   <widget name="video_scroll_thumb" position="1874,252" size="5,100" font="Regular;1" foregroundColor="#54D6FF" backgroundColor="#54D6FF" transparent="0" zPosition="7"/>
   <widget name="preview_focus0" position="413,251" size="477,324" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
