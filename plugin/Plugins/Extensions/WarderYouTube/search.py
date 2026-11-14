@@ -315,7 +315,8 @@ class WarderYouTubeSearch(Screen):
                 WarderYouTubeInfo,
                 "Názov: %s\nKanál: %s\n\n"
                 "Podrobné údaje vyžadujú vlastný YouTube Data API kľúč." %
-                (video.get("title") or "", video.get("channel") or "")
+                (video.get("title") or "", video.get("channel") or ""),
+                video=video
             )
             return
         self.busy = True
@@ -324,11 +325,11 @@ class WarderYouTubeSearch(Screen):
         self.show_play_status("Načítavam podrobnosti videa...")
         deferred = deferToThread(fetch_video_info, video["video_id"], api_key)
         deferred.addCallbacks(
-            lambda details: self.info_ready(version, details),
+            lambda details: self.info_ready(version, details, video),
             lambda failure: self.info_failed(version, failure)
         )
 
-    def info_ready(self, version, details):
+    def info_ready(self, version, details, video=None):
         if self.closed or version != self.request_version:
             return
         self.busy = False
@@ -339,7 +340,7 @@ class WarderYouTubeSearch(Screen):
              details["views"], description[:420])
         )
         self.show_play_status("Podrobnosti videa načítané.")
-        self.session.open(WarderYouTubeInfo, message)
+        self.session.open(WarderYouTubeInfo, message, video=video)
 
     def info_failed(self, version, failure):
         if self.closed or version != self.request_version:
