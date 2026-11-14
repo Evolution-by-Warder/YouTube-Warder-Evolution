@@ -50,7 +50,7 @@ class WarderYouTubeSettings(Screen):
         self["status"] = Label(_("Keep live TV audio"))
         self["key_red"] = Label(_("Back"))
         self["key_green"] = Label(_("API key"))
-        self["key_yellow"] = Label(_("Delete saved key"))
+        self["key_yellow"] = Label(_("Delete API key"))
         self["key_blue"] = Label(_("Change quality"))
         self["description"] = Label(
             _("About settings") + "\n" + _("Language from Enigma2")
@@ -64,7 +64,7 @@ class WarderYouTubeSettings(Screen):
             _("API key visible while typing")
         )
         self["footer"] = Label(
-            _("OK/Green: API key   Blue: quality   Yellow: remove key   Exit: back")
+            _("OK/Green: API key   Blue: quality   Yellow: delete API key   Exit: back")
         )
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
@@ -163,7 +163,7 @@ class WarderYouTubeSettings(Screen):
     def confirm_clear(self):
         self.session.openWithCallback(
             self.clear_key, WarderYouTubeConfirm,
-            _("Delete saved key") + "?"
+            _("Delete saved API key") + "?"
         )
 
     def clear_key(self, confirmed):
