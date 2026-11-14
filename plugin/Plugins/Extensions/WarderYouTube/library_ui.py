@@ -56,9 +56,9 @@ class WarderYouTubeLibrary(Screen):
         self["results"] = MenuList([])
         self["status"] = Label("")
         self["footer"] = Label(
-            _("Favourites controls: OK play, INFO details, MENU actions, YELLOW remove video, BLUE clear favourites, EXIT home")
+            _("OK: play · INFO: details · MENU: actions · YELLOW: remove favourite · BLUE: clear favourites · EXIT: home")
             if kind == "favourites" else
-            _("History controls: OK play, INFO details, MENU actions, YELLOW delete video, BLUE clear history, EXIT home")
+            _("OK: play · INFO: details · MENU: actions · YELLOW: delete from history · BLUE: clear history · EXIT: home")
         )
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions", "InfoActions", "MenuActions"],
