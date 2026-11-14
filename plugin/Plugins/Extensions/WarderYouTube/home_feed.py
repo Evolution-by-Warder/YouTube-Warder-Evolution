@@ -41,16 +41,34 @@ def parse_popular_response(payload):
     return items
 
 
-def popular_videos(api_key, opener=urlopen, timeout=8):
+def popular_videos_page(api_key, category_id="0", page_token="", region=REGION,
+                        opener=urlopen, timeout=8):
+    """One bounded YouTube chart page, including the API's real next token.
+
+    A category selection does not claim to reproduce the personalized
+    recommendations or "Mixes" from the YouTube website.
+    """
+    from .home_categories import CATEGORY_IDS
     if not isinstance(api_key, str) or not api_key.strip():
         raise SearchError("YouTube API key is required for popular videos.")
+    if category_id not in CATEGORY_IDS:
+        raise SearchError("Unsupported YouTube video category.")
+    if not isinstance(region, str) or len(region) != 2 or not region.isalpha():
+        raise SearchError("Invalid YouTube region.")
+    if (not isinstance(page_token, str) or len(page_token) > 150
+            or (page_token and not all(ch.isalnum() or ch in "-_" for ch in page_token))):
+        raise SearchError("Invalid YouTube page token.")
     params = {
         "part": "snippet",
         "chart": "mostPopular",
-        "regionCode": REGION,
+        "regionCode": region.upper(),
         "maxResults": MAX_RESULTS,
         "key": api_key.strip(),
     }
+    if category_id != "0":
+        params["videoCategoryId"] = category_id
+    if page_token:
+        params["pageToken"] = page_token
     request = Request(
         POPULAR_ENDPOINT + "?" + urlencode(params),
         headers={"Accept": "application/json", "User-Agent": "WarderYouTube/0.0.8"}
@@ -67,13 +85,27 @@ def popular_videos(api_key, opener=urlopen, timeout=8):
             result = json.loads(body.decode("utf-8"))
         except (UnicodeError, ValueError):
             raise SearchError("YouTube returned invalid popular video data.")
-        return parse_popular_response(result)
+        items = parse_popular_response(result)
+        token = result.get("nextPageToken") or ""
+        if not isinstance(token, str) or len(token) > 150:
+            token = ""
+        info = result.get("pageInfo") or {}
+        total = info.get("totalResults") if isinstance(info, dict) else None
+        if type(total) is not int or total <= 0 or total > 100000:
+            total = None
+        return {"items": items, "next_page_token": token,
+                "total_results": total}
     except HTTPError as error:
         if error.code in (400, 401, 403):
-            raise SearchError("YouTube API key or quota could not load popular videos.")
+            raise SearchError("YouTube API key, region, category or quota could not load videos.")
         raise SearchError("YouTube popular video request failed.")
     except (URLError, OSError):
         raise SearchError("Popular videos are temporarily unavailable.")
+
+
+def popular_videos(api_key, opener=urlopen, timeout=8):
+    """Backward-compatible one-page list for existing callers and tests."""
+    return popular_videos_page(api_key, opener=opener, timeout=timeout)["items"]
 
 
 # The anonymous YouTube home feed does not require an owner's Data API key.
