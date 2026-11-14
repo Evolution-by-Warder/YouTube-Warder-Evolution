@@ -81,7 +81,7 @@ class HomeThumbs:
                 self._start_decode()
 
     def decode_parameters(self):
-        width, height = 461, 259
+        width, height = 473, 266
         try:
             widget = self.screen["preview_thumb0"]
             actual = widget.getSize() if getattr(widget, "instance", None) else None
@@ -90,16 +90,11 @@ class HomeThumbs:
                 width, height = int(actual[0]), int(actual[1])
         except (AttributeError, TypeError, ValueError, RuntimeError):
             pass
-        x, y = 1, 1
-        try:
-            from Components.AVSwitch import AVSwitch
-            value = AVSwitch().getFramebufferScale()
-            if (isinstance(value, (tuple, list)) and len(value) == 2
-                    and all(type(i) is int and 0 < i <= 16 for i in value)):
-                x, y = value
-        except (ImportError, AttributeError, TypeError, ValueError, RuntimeError):
-            pass
-        return (width, height, x, y, False, 1, "#00000000")
+        # OpenATV ePicLoad sets aspect_ratio=0 when the fourth setPara
+        # parameter is 0. This fills the entire target pixmap even for
+        # square/4:3 thumbnail sources instead of inserting blue side bars.
+        # The approved card remains 16:9 with no video-data crop dependency.
+        return (width, height, 0, 0, False, 1, "#00000000")
 
     def show(self, items):
         self.epoch += 1
