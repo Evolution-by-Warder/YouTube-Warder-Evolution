@@ -39,7 +39,6 @@ SECTIONS = (
     ("Search", "Enter your YouTube search"),
     ("Subscriptions", "Your YouTube subscriptions"),
     ("History", "Recently played videos"),
-    ("Playlists", "Playlists are not supported yet."),
     ("Favourites", "Saved videos"),
     ("Settings", "Current configuration"),
     ("Updates", "Update status (check only on request)"),
@@ -279,7 +278,7 @@ class WarderYouTubeHome(Screen):
         # Returning from player/library refreshes local data, but does not
         # automatically poll the update server or repeat the popular feed.
         if self._mounted and not self._disposed and not self._playback_active:
-            if self.index in (0, 1, 2, 3, 5, 6, 7):
+            if self.index in (0, 1, 2, 3, 4, 5, 6):
                 login = self._inline_tv_login
                 if (self.index == 2 and login is not None
                         and getattr(login, "active", False)):
@@ -300,7 +299,7 @@ class WarderYouTubeHome(Screen):
         self.installed_version = version
         self["version"].setText(version + "  •  Enigma2")
         self["hdr_version"].setText(version)
-        if self._mounted and self.index == 7:
+        if self._mounted and self.index == 6:
             self._update_preview()
 
     def _version_failed(self, failure):
@@ -934,10 +933,8 @@ class WarderYouTubeHome(Screen):
         elif self.index == 3:
             self._show_tiles(self._local_items("history"), "Recently played videos")
         elif self.index == 4:
-            self._show_message("Playlists are not supported yet.")
-        elif self.index == 5:
             self._show_tiles(self._local_items("favourites"), "Saved videos")
-        elif self.index == 6:
+        elif self.index == 5:
             self._show_details([
                 _("API key") + ": " + (_("Configured") if get_api_key() else _("Not configured")),
                 _("Maximum video quality") + ": %sp" % get_quality(),
@@ -945,7 +942,7 @@ class WarderYouTubeHome(Screen):
                 _("Language from Enigma2"),
                 _("API stored unencrypted"),
             ])
-        elif self.index == 7:
+        elif self.index == 6:
             self._show_details([
                 _("Installed") + ": " + self.installed_version,
                 _("Channel") + ": " + _("Testing"),
@@ -1269,7 +1266,7 @@ class WarderYouTubeHome(Screen):
             self._choose_category()
         elif self.index == 1:
             self._enter_keyboard_focus()
-        elif self.index in (0, 2, 3, 5) and self.video_items:
+        elif self.index in (0, 2, 3, 4) and self.video_items:
             self._enter_tiles()
         else:
             self._open_index(self.index)
@@ -1287,19 +1284,19 @@ class WarderYouTubeHome(Screen):
                 self._enter_categories()
             else:
                 self._open_subscription_login()
-        elif index in (3, 5):
+        elif index in (3, 4):
             from .library_ui import WarderYouTubeLibrary
             self.session.open(WarderYouTubeLibrary,
                               "history" if index == 3 else "favourites")
-        elif index == 6:
+        elif index == 5:
             from .settings import WarderYouTubeSettings
             self.session.open(WarderYouTubeSettings)
-        elif index == 7:
+        elif index == 6:
             from .update_ui import WarderYouTubeUpdateCheck
             self.session.open(WarderYouTubeUpdateCheck)
         elif index == 0:
             if not self.video_items:
-                self._open_index(6)
+                self._open_index(5)
         else:
             self["status"].setText(_("This section is not supported yet."))
 
@@ -1383,7 +1380,7 @@ class WarderYouTubeHome(Screen):
         mode = ("home" if self.index == 0 else
                 "subscriptions" if self.index == 2 else
                 "history" if self.index == 3 else
-                "favourites" if self.index == 5 else "search")
+                "favourites" if self.index == 4 else "search")
         saved = any(v["video_id"] == item.get("video_id")
                     for v in self._local_items("favourites")) if item else False
         self._context_open = True
@@ -1470,7 +1467,7 @@ class WarderYouTubeHome(Screen):
                 self._update_preview()
             except LibraryError as error:
                 self["status"].setText(str(error))
-        elif action == "remove" and self.index in (3, 5):
+        elif action == "remove" and self.index in (3, 4):
             try:
                 remove_video("history" if self.index == 3 else "favourites",
                              item["video_id"])
@@ -1478,18 +1475,18 @@ class WarderYouTubeHome(Screen):
                 self._update_preview()
             except LibraryError as error:
                 self["status"].setText(str(error))
-        elif action == "clear" and self.index in (3, 5):
+        elif action == "clear" and self.index in (3, 4):
             from .confirm_ui import WarderYouTubeConfirm
             self._confirm_open = True
             self.session.openWithCallback(
                 self._clear_confirmed, WarderYouTubeConfirm,
-                (_("Clear all favourite videos") if self.index == 5
+                (_("Clear all favourite videos") if self.index == 4
                  else _("Clear entire history")) + "?"
             )
 
     def _clear_confirmed(self, confirmed):
         self._confirm_open = False
-        if not confirmed or self._disposed or self.index not in (3, 5):
+        if not confirmed or self._disposed or self.index not in (3, 4):
             return
         try:
             clear_videos("history" if self.index == 3 else "favourites")
