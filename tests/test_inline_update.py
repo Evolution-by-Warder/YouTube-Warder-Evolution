@@ -13,8 +13,15 @@ PATH = (Path(__file__).resolve().parents[1] /
 class Label:
     def __init__(self):
         self.value = ""
+        self.visible = False
     def setText(self, value):
         self.value = value
+    def setValue(self, value):
+        self.value = value
+    def show(self):
+        self.visible = True
+    def hide(self):
+        self.visible = False
 
 
 class Home:
@@ -24,12 +31,18 @@ class Home:
         self._busy = False
         self.details = []
         self.items = {k: Label() for k in ("key_green", "key_yellow",
-                                          "key_blue", "key_red", "version")}
+                                          "key_blue", "key_red", "version",
+                                          "update_progress", "update_no", "update_yes",
+                                          "update_no_focus", "update_yes_focus")}
         self.session = Session()
     def __getitem__(self, key):
         return self.items[key]
     def _show_details(self, rows):
         self.details = rows
+    def _hide_update_widgets(self):
+        for key in ("update_progress", "update_no", "update_yes",
+                    "update_no_focus", "update_yes_focus"):
+            self.items[key].hide()
 
 
 class Session:
@@ -120,8 +133,11 @@ class InlineUpdateTests(unittest.TestCase):
         self.assertIn("test60", home.details[1])
         self.assertEqual(home["key_green"].value, "Install")
         controller.activate()
-        self.assertEqual(len(home.session.dialogs), 1)
-        home.session.dialogs[-1][0](False)
+        self.assertEqual(len(home.session.dialogs), 0)
+        self.assertTrue(controller.confirming)
+        self.assertFalse(controller.confirm_yes)
+        self.assertTrue(home["update_no_focus"].visible)
+        controller.answer(False)
         self.assertEqual(len(jobs), 1)
         self.assertFalse(home._busy)
 
@@ -131,18 +147,25 @@ class InlineUpdateTests(unittest.TestCase):
         controller = mod.InlineUpdater(home)
         controller.release = release()
         controller.confirm()
-        home.session.dialogs[-1][0](True)
+        self.assertEqual(home.session.dialogs, [])
+        self.assertTrue(home["update_no_focus"].visible)
+        controller.select(True)
+        self.assertTrue(home["update_yes_focus"].visible)
+        controller.answer(True)
         self.assertTrue(controller.installing)
         self.assertTrue(home._busy)
         self.assertEqual(len(jobs), 1)
         progress = jobs[0][2]["progress"]
         progress("download", 250, 1000)
         self.assertIn("25%", home.details)
+        self.assertEqual(home["update_progress"].value, 25)
+        self.assertTrue(home["update_progress"].visible)
         progress("verify")
         self.assertIn("SHA256", home.details[2])
         progress("install")
         self.assertIn("opkg", home.details[2])
         self.assertEqual(home.session.opens, [])
+        self.assertEqual(home["update_progress"].value, 25)
         jobs[0][3].success("0.0.8~test60")
         self.assertTrue(controller.completed)
         self.assertEqual(controller._restart_timer.started, (3000, True))
