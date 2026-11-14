@@ -532,7 +532,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertIn("1 / 9", screen["page_info"].text)
         self.assertEqual(len(jobs), 1)
         screen.right()
-        for _ in range(5):
+        for _ in range(7):
             screen.down()
         self.assertEqual(screen.page_index, 3)
         self.assertEqual(len(jobs), 1)  # navigate local cached four pages
