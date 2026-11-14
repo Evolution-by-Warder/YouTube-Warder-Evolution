@@ -633,8 +633,10 @@ class HomeLivePreviewTests(unittest.TestCase):
             "home_videos": [video(i) for i in range(24)]
         }, screen._personal_epoch)
         screen.right()
-        for _ in range(7):
-            screen.down()
+        # Put the viewer explicitly on the final real-video page; MENU must
+        # work regardless of how the receiver's arrow repeat is configured.
+        screen.page_index = 3
+        screen._show_tiles(screen._section_items, screen._section_subtitle)
         self.assertEqual(screen.page_index, 3)
         ctx = fake("_warder_home.context_menu", WarderYouTubeContext=object)
         chooser = fake("_warder_home.quick_select_ui",
