@@ -64,7 +64,9 @@ class InlineUpdater:
             _("Updates") + ": " + (self.release["version"] if self.release else _("Check on demand")),
             self._state_text(),
             (_("Confirm update") + ": " + self.release["version"]) if self.confirming else "",
-            ("%d%%" % self.percent) if self.installing or self.completed else "",
+            (("%d%%" % self.percent) if self.phase in ("", "download") else
+             _("Download finished: 100%") if self.phase in ("verify", "install", "complete") else "")
+            if self.installing or self.completed else "",
             self._note()
         ])
         if hasattr(h, "_hide_update_widgets"):
