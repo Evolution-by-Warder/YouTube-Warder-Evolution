@@ -15,6 +15,7 @@ from twisted.internet.threads import deferToThread
 from .grid_model import move_index, page_number, local_slot, VISIBLE_TILES
 from .thumbnails import fetch_thumbnail
 from .skin import GRID_SKIN
+from .tile_scrollbar import TilePageScrollbar
 from .i18n import tr as _
 
 THUMB_WIDTH = 476
@@ -75,6 +76,12 @@ class WarderYouTubeGrid(Screen):
         self["key_green"] = Label(_("Next"))
         self["key_yellow"] = Label(_("Previous"))
         self["key_blue"] = Label(_("New search"))
+        self["video_scroll_track"] = Label(" ")
+        self["video_scroll_thumb"] = Label(" ")
+        self.page_scroll = TilePageScrollbar(
+            self["video_scroll_track"], self["video_scroll_thumb"],
+            1880, 217, 5, 722
+        )
         for i in range(7):
             self["side%d" % i] = Label("")
         for i in range(VISIBLE_TILES):
@@ -210,6 +217,12 @@ class WarderYouTubeGrid(Screen):
         self._thumb_decode_failures = 0
         self._status_override = False
         start = page_number(self.selected) * VISIBLE_TILES
+        count = (len(self.video_items) + VISIBLE_TILES - 1) // VISIBLE_TILES
+        total_pages = count + (1 if self.has_next_page else 0)
+        self.page_scroll.update(
+            page_number(self.selected) if self.selected >= 0 else 0,
+            total_pages if self.video_items else 1
+        )
         self._visible_urls = {}
 
         for slot in range(VISIBLE_TILES):
