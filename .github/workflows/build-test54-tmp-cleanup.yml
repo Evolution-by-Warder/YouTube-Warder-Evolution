@@ -2,7 +2,7 @@ name: Build test54 with TV OAuth from Actions secrets
 on:
   push:
     branches: [feature/native-search-v002]
-    paths: [.github/workflows/build-test54-tv-login.yml]
+    paths: [.github/workflows/build-test54-tmp-cleanup.yml]
   workflow_dispatch:
 
 permissions:
