@@ -412,6 +412,25 @@ class WarderNativeUiTests(unittest.TestCase):
                 self.assertNotIn("Clear all", [label for _, label in screen.options])
                 self.assertNotIn("Remove", [label for _, label in screen.options])
 
+    def test_menu_uses_distinct_quick_action_in_home_and_odbery(self):
+        m = load("context_menu")
+        home = m.WarderYouTubeContext(
+            None, {"video_id": "abcdefghijk", "title": "Home video"}, False, "home")
+        subs = m.WarderYouTubeContext(
+            None, {"video_id": "abcdefghijk", "title": "Subscription video"},
+            False, "subscriptions")
+        self.assertEqual(home.options[0], ("choose_category", "Select category"))
+        self.assertEqual(subs.options[0],
+                         ("choose_subscription", "Select subscription"))
+        self.assertEqual(home["context_row0"].text, "Select category")
+        self.assertEqual(subs["context_row0"].text, "Select subscription")
+        self.assertEqual(len(home.options), 5)
+        self.assertEqual(len(subs.options), 5)
+        home.choose()
+        self.assertEqual(home.closed_args, ("choose_category",))
+        subs.choose()
+        self.assertEqual(subs.closed_args, ("choose_subscription",))
+
     def test_native_confirmation_defaults_to_no(self):
         m = load("confirm_ui")
         screen = m.WarderYouTubeConfirm(None, "Install test7?")
