@@ -328,7 +328,7 @@ class WarderNativeUiTests(unittest.TestCase):
                          ["play", "favorite", "info", "clear"])
         self.assertEqual(screen.options[1][1], "Remove video from favourites")
         self.assertEqual(screen.options[3][1], "Clear all favourite videos")
-        self.assertEqual(screen["key_blue"].text, "Clear favourites")
+        self.assertEqual(screen["key_blue"].text, "Clear all favourite videos")
         self.assertNotIn("remove", [action for action, _ in screen.options])
         self.assertNotIn("Delete", [label for _, label in screen.options])
         self.assertEqual(screen["context_row4"].text, "")
@@ -358,7 +358,7 @@ class WarderNativeUiTests(unittest.TestCase):
                          ["play", "favorite", "info", "remove", "clear"])
         self.assertEqual(screen.options[3][1], "Delete video from history")
         self.assertEqual(screen.options[4][1], "Clear entire history")
-        self.assertEqual(screen["key_blue"].text, "Clear history")
+        self.assertEqual(screen["key_blue"].text, "Clear entire history")
 
     def test_every_video_context_action_identifies_exact_target(self):
         m = load("context_menu")
