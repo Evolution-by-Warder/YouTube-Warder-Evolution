@@ -15,11 +15,11 @@ class WarderYouTubeContext(Screen):
     def __init__(self, session, video=None, is_favourite=False, mode="search"):
         Screen.__init__(self, session)
         add_header(self)
-        self.options = [
+        self.options = ([
             ("play", _("Play video")),
             ("favorite", _("Remove video from favourites") if is_favourite else _("Add video to favourites")),
             ("info", _("Video details")),
-        ]
+        ] if isinstance(video, dict) and video.get("video_id") else [])
         if mode in ("home", "subscriptions"):
             self.options.insert(0, (
                 "choose_subscription" if mode == "subscriptions" else "choose_category",
