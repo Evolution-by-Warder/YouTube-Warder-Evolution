@@ -6,6 +6,7 @@ persistent flash cache), never exceed 240 KiB per image, 4 MiB total/36 files.
 """
 import hashlib
 import os
+import re
 import tempfile
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
@@ -68,6 +69,39 @@ def _prune(cache_dir):
             pass
         total -= size
 
+
+
+# Only files created by this module may be removed. Never clean /tmp itself.
+_CACHE_IMAGE_NAME = re.compile(r"^[0-9a-f]{64}\\.(?:jpg|png)$")
+_CACHE_PARTIAL_NAME = re.compile(r"^tmp[^/]*\\.partial$")
+
+
+def cleanup_cache(cache_dir=CACHE_DIR):
+    """Remove owned thumbnail files after the final worker finishes.
+
+    Do not follow symlinks, delete other apps' files or recursively delete
+    arbitrary content. A failed cleanup is harmless: /tmp cache is bounded.
+    """
+    try:
+        if os.path.islink(cache_dir) or not os.path.isdir(cache_dir):
+            return
+        for name in os.listdir(cache_dir):
+            if not (_CACHE_IMAGE_NAME.fullmatch(name)
+                    or _CACHE_PARTIAL_NAME.fullmatch(name)):
+                continue
+            path = os.path.join(cache_dir, name)
+            if os.path.islink(path) or not os.path.isfile(path):
+                continue
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+        try:
+            os.rmdir(cache_dir)  # only when empty, never recursive
+        except OSError:
+            pass
+    except OSError:
+        pass
 
 def fetch_thumbnail(url, opener=urlopen, cache_dir=CACHE_DIR):
     """Network I/O only from worker; never expose URL contents as GUI error."""
