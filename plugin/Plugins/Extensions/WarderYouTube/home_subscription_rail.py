@@ -7,7 +7,7 @@ channel names, with no fabricated topics, Mixes, or duplicated video lists.
 """
 import re
 
-MAX_CHANNELS = 160
+MAX_CHANNELS = 500
 MAX_LABEL_LENGTH = 21
 CHANNEL_ID = re.compile(r"^UC[A-Za-z0-9_-]{22}$")
 

@@ -65,10 +65,10 @@ class ChipLayoutTests(unittest.TestCase):
             ww, wh = map(int, panel.get("size").split(","))
             self.assertEqual(x1, x2)
             self.assertEqual(x1 + pw, x2 + ww)
-            self.assertAlmostEqual(pw / float(ph), 16 / 9, delta=0.02)
+            self.assertEqual((pw, ph), (473, 248))
             self.assertEqual(picture.get("zPosition"), "4")
             gthumb = grid["thumb%d" % i]
-            self.assertEqual(gthumb.get("size"), "491,276")
+            self.assertEqual(gthumb.get("size"), "473,248")
             self.assertEqual(gthumb.get("zPosition"), "2")
 
 

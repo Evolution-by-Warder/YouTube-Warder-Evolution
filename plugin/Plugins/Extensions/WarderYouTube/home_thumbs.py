@@ -8,6 +8,7 @@ from enigma import ePicLoad
 from twisted.internet.threads import deferToThread
 
 from .thumbnails import fetch_thumbnail
+from .tile_dimensions import THUMB_WIDTH, THUMB_HEIGHT
 
 VISIBLE = 6
 MAX_DOWNLOADS = 2
@@ -81,7 +82,7 @@ class HomeThumbs:
                 self._start_decode()
 
     def decode_parameters(self):
-        width, height = 473, 266
+        width, height = THUMB_WIDTH, THUMB_HEIGHT
         try:
             widget = self.screen["preview_thumb0"]
             actual = widget.getSize() if getattr(widget, "instance", None) else None

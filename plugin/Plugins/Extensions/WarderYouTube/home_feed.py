@@ -15,7 +15,7 @@ from .home_categories import CATEGORY_IDS
 
 POPULAR_ENDPOINT = "https://www.googleapis.com/youtube/v3/videos"
 REGION = "SK"
-MAX_RESULTS = 24
+MAX_RESULTS = 50
 
 
 def parse_popular_response(payload):

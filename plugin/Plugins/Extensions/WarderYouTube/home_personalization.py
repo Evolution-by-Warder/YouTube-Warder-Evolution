@@ -1,46 +1,27 @@
 # -*- coding: utf-8 -*-
-"""Render only the real YouTube Home chips returned for the signed-in account.
+"""General YouTube Home categories, without guessed account interests.
 
-Never infer topic labels from subscriptions. When YouTube's private Home
-interface refuses the request, use a plainly labelled regional popular chart
-instead of pretending that fabricated categories are personalized.
+One fixed Všetko + six rotating official categories. All Home chip labels are
+standard YouTube categories, never claimed to match the personalized web site.
 """
 import re
+from .home_categories import rotating_categories
 
 VISIBLE_CHIPS = 7
-MAX_TOPIC_CHIPS = 48
 
 
-def build_home_chips(chips=(), authenticated=False, **unused):
-    """Honor YouTube's exact live labels and ordering, without translations."""
-    result, seen = [], set()
-    if authenticated and isinstance(chips, (list, tuple)):
-        for raw in chips[:MAX_TOPIC_CHIPS]:
-            if not isinstance(raw, dict) or raw.get("kind") != "live":
-                continue
-            identifier = raw.get("id")
-            label = raw.get("label")
-            if (not isinstance(identifier, str) or not identifier.startswith("yt:")
-                    or not isinstance(label, str) or not label.strip()
-                    or identifier in seen or len(label) > 120):
-                continue
-            command = {}
-            for key in ("continuation", "params"):
-                value = raw.get(key)
-                if isinstance(value, str) and 0 < len(value) <= 8192:
-                    command[key] = value
-            if not command and not raw.get("selected"):
-                continue
-            entry = {"id": identifier, "kind": "live", "label": label,
-                     "title": label, "selected": raw.get("selected") is True}
-            entry.update(command)
-            seen.add(identifier)
-            result.append(entry)
-    if result:
-        return result
-    # Clearly distinct regional fallback, NOT represented as a YouTube chip.
-    return [{"kind": "all", "id": "all", "label": "Populárne SK",
-             "title": "Populárne na Slovensku"}]
+def build_home_chips(day=None, **unused):
+    result = []
+    for category_id, label in rotating_categories(day):
+        is_all = category_id == "0"
+        result.append({
+            "kind": "all" if is_all else "general",
+            "id": "category:" + category_id,
+            "category_id": category_id,
+            "label": label,
+            "title": "Popular in Slovakia" if is_all else label,
+        })
+    return result
 
 
 def dedupe_videos(items, limit=96):

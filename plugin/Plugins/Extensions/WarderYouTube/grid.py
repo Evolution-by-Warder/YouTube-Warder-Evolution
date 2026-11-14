@@ -15,11 +15,10 @@ from twisted.internet.threads import deferToThread
 from .grid_model import move_index, page_number, local_slot, VISIBLE_TILES
 from .thumbnails import fetch_thumbnail
 from .skin import GRID_SKIN
+from .tile_dimensions import THUMB_WIDTH, THUMB_HEIGHT
 from .tile_scrollbar import TilePageScrollbar
 from .i18n import tr as _
 
-THUMB_WIDTH = 491
-THUMB_HEIGHT = 276
 MAX_DOWNLOADS = 2
 CARD_TITLE_LIMIT = 52
 
@@ -82,7 +81,7 @@ class WarderYouTubeGrid(Screen):
         self["video_scroll_thumb"] = Label(" ")
         self.page_scroll = TilePageScrollbar(
             self["video_scroll_track"], self["video_scroll_thumb"],
-            1880, 217, 5, 722
+            1880, 252, 5, 719
         )
         for i in range(7):
             self["side%d" % i] = Label("")

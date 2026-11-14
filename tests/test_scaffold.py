@@ -75,7 +75,7 @@ class Tests(unittest.TestCase):
             panel = home_widgets["preview_panel%d" % i]
             focus = home_widgets["preview_focus%d" % i]
             self.assertEqual(border.attrib["backgroundColor"], "#0D5273")
-            self.assertEqual(panel.attrib["size"], "473,320")
+            self.assertEqual(panel.attrib["size"], "473,346")
             self.assertEqual(focus.attrib["zPosition"], "8")
             self.assertIn("video_focus.png", focus.attrib["pixmap"])
         grid = layouts["GRID_SKIN"]
@@ -84,12 +84,12 @@ class Tests(unittest.TestCase):
             focus = grid_widgets["focus%d" % i]
             self.assertEqual(focus.attrib["zPosition"], "8")
             self.assertEqual(focus.attrib["alphatest"], "on")
-            self.assertIn("grid_focus.png", focus.attrib["pixmap"])
+            self.assertIn("video_focus.png", focus.attrib["pixmap"])
             self.assertNotIn("backgroundColor", focus.attrib)
         subtle_borders = [item for item in grid.findall("eLabel")
                           if item.attrib.get("backgroundColor") == "#0D536F"]
         self.assertEqual(len(subtle_borders), 24)
-        self.assertTrue(all(item.attrib["size"].startswith(("491,1", "1,355"))
+        self.assertTrue(all(item.attrib["size"].startswith(("477,1", "1,350"))
                             for item in subtle_borders))
         self.assertNotIn('backgroundColor="#1AB4D5"', ET.tostring(grid, encoding="unicode"))
 

@@ -5,7 +5,7 @@ Navigation never opens modal dialogs, starts playback or installs updates
 without an explicit remote action. No global Enigma2 skin or custom renderer.
 """
 from .header_ui import add_header
-from time import monotonic
+from time import monotonic, time
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.Pixmap import Pixmap
@@ -19,7 +19,6 @@ from .grid_model import move_index
 from .system_keyboard_pane import SystemKeyboardPane
 from .home_feed import popular_videos_page, public_home_videos
 from .home_personalization import VISIBLE_CHIPS, build_home_chips, dedupe_videos
-from .home_live_chips import live_home, live_category_videos
 from .home_subscription_rail import subscription_chips
 from .chip_layout import layout_chips
 from .home_thumbs import HomeThumbs
@@ -53,64 +52,53 @@ def preview_title(text, limit=49):
 
 
 def _discover_home_subscriptions():
-    """Read authenticated subscriptions and real Home chips off the GUI thread.
+    """Read authorized subscriptions off the Enigma2 GUI thread.
 
-    These independent requests must not lose Odbery when the undocumented
-    Home endpoint changes. A failure NEVER triggers guessed category names.
+    Authentication failures and API outages are distinct from an account with
+    no subscriptions; the latter must never be falsely reported on 403/429.
     """
     try:
-        from .subscriptions_auth import account_connected, access_token
+        from .subscriptions_auth import account_connected, access_token, ReauthorizationRequired
         from .subscriptions_api import subscriptions_list
         if not account_connected():
-            return {"connected": False, "channels": [],
-                    "home_chips": [], "home_state": "not_connected"}
+            return {"connected": False, "channels": []}
         token = access_token()
+    except ReauthorizationRequired:
+        return {"connected": True, "channels": [], "reconnect": True}
     except Exception:
-        return {"connected": False, "channels": [],
-                "home_chips": [], "home_state": "not_connected"}
+        return {"connected": True, "channels": [], "load_error": True}
     try:
-        channels = subscriptions_list(token)
+        response = subscriptions_list(token, limit=500, with_metadata=True)
     except Exception:
-        channels = []
-    state = "loaded"
-    try:
-        home = live_home(token)
-    except Exception as error:
-        # A Data API OAuth token does not guarantee WEB Innertube access.
-        # Expose only a fixed status code, never exception text or tokens.
-        safe_codes = ("web_auth_rejected", "not_authenticated", "no_chips",
-                      "network", "http_failure", "invalid_response")
-        state = getattr(error, "reason", "unavailable")
-        if state not in safe_codes:
-            state = "unavailable"
-        home = {"chips": [], "videos": []}
-    return {"connected": True, "channels": channels,
-            "home_chips": home.get("chips") or [],
-            "home_videos": home.get("videos") or [],
-            "home_state": state}
-
-
-def _load_live_home_videos(chip):
-    """Select the exact endpoint supplied by YouTube, not a guessed search."""
-    from .subscriptions_auth import access_token
-    return live_category_videos(chip, access_token())
+        return {"connected": True, "channels": [], "load_error": True}
+    return {"connected": True, "channels": response["channels"],
+            "truncated": bool(response.get("truncated"))}
 
 
 def _load_personal_channel_videos(chip, all_channels=()):
     """Retrieve real uploads in one worker without repeating account discovery.
 
-    Recent uses a bounded sample, not the complete YouTube recommendations.
-    A single channel fetches up to 50 items. Never block the Enigma2 GUI.
+    Recent uses a rotating sample from the full account, NEVER claims a full
+    recommendations feed. A channel can fetch up to 100 uploads on demand.
+    Network calls must never block the Enigma2 GUI.
     """
     from .subscriptions_auth import access_token
     from .subscriptions_api import (uploads_playlists, playlist_videos,
                                     SubscriptionsApiError)
     token = access_token()
     recent = chip.get("kind") == "recent"
-    identifiers = (
-        [item.get("channel_id") for item in all_channels if isinstance(item, dict)][:12]
-        if recent else list(chip.get("channels") or ())[:8]
-    )
+    if recent:
+        from datetime import date
+        available = [item.get("channel_id") for item in all_channels
+                     if isinstance(item, dict) and item.get("channel_id")]
+        if available:
+            first = (date.today().toordinal() * 12) % len(available)
+            identifiers = [available[(first + j) % len(available)]
+                           for j in range(min(12, len(available)))]
+        else:
+            identifiers = []
+    else:
+        identifiers = list(chip.get("channels") or ())[:8]
     if not identifiers:
         return []
     playlists = uploads_playlists(identifiers, token)
@@ -122,7 +110,7 @@ def _load_personal_channel_videos(chip, all_channels=()):
         try:
             items = playlist_videos(
                 playlist, token, limit=3 if recent else
-                (50 if chip.get("kind") == "channel" else 10))
+                (100 if chip.get("kind") == "channel" else 10))
             videos.extend(items)
         except SubscriptionsApiError:
             continue
@@ -157,6 +145,11 @@ class WarderYouTubeHome(Screen):
         self._popular_requested = False
         self._popular_loading = False
         self._popular_cache = None
+        self._popular_by_category = {}   # bounded in-memory chart results, per ID
+        # Different genuine videos are shown first when Home is reopened.
+        # Two-hour slots vary even after an Enigma2 GUI restart.
+        self._home_rotation_step = int(time() // (2 * 3600))
+        self._popular_category_id = "0"
         self._popular_error = False
         self._popular_source = "api"
         self._popular_request_epoch = 0
@@ -174,6 +167,9 @@ class WarderYouTubeHome(Screen):
         self._subscription_cursor = 0
         self._subscription_offset = 0
         self._subscriptions_connected = False
+        self._subscription_load_error = False
+        self._subscriptions_reconnect = False
+        self._subscription_truncated = False
         self._personal_requested = False
         self._personal_fetched_at = 0
         self._personal_epoch = 0
@@ -239,7 +235,7 @@ class WarderYouTubeHome(Screen):
         self["video_scroll_thumb"] = Label(" ")
         self.page_scroll = TilePageScrollbar(
             self["video_scroll_track"], self["video_scroll_thumb"],
-            1874, 252, 5, 667
+            1874, 252, 5, 719
         )
 
         self["actions"] = ActionMap(
@@ -349,28 +345,10 @@ class WarderYouTubeHome(Screen):
             return self._subscription_chips[self._subscription_index]
         return None
 
-    def _home_status_message(self):
-        """Explain missing genuine chips without guessing categories."""
-        messages = {
-            "not_connected": "Connect your YouTube account under Subscriptions first.",
-            "web_auth_rejected": "YouTube Web rejected TV OAuth access to personal categories.",
-            "not_authenticated": "YouTube did not return an authenticated web Home feed.",
-            "no_chips": "YouTube did not return the Home category list.",
-            "network": "YouTube category service could not be reached.",
-            "http_failure": "YouTube category service returned an error.",
-            "invalid_response": "YouTube category response was not usable.",
-            "unavailable": "Real YouTube Home categories are unavailable for this account.",
-            "loaded": "Real YouTube Home categories are unavailable for this account.",
-        }
-        return messages.get(self._home_state, messages["unavailable"])
-
     def _active_chips(self):
-        if self.index == 2:
-            return self._subscription_chips
-        # An honest regional chart is not a personalized YouTube category.
-        # Keep it for video fallback, but NEVER display it as a Home chip.
-        return (self._home_chips if self._home_chips
-                and self._home_chips[0].get("kind") == "live" else [])
+        # Same rotating official Home selection for the horizontal rail and
+        # MENU -> Select category. Odbery retains independent real channels.
+        return self._subscription_chips if self.index == 2 else self._home_chips
 
     def _active_chip_index(self):
         return self._subscription_index if self.index == 2 else self._category_index
@@ -447,8 +425,6 @@ class WarderYouTubeHome(Screen):
             # A disconnected account cannot yet offer channel chips.
             if self.index == 2:
                 self._open_subscription_login()
-            else:
-                self["status"].setText(_(self._home_status_message()))
             return
         self.focus_area = "categories"
         if self.index == 2:
@@ -512,39 +488,16 @@ class WarderYouTubeHome(Screen):
         self._personal_fetched_at = monotonic()
         if not isinstance(data, dict):
             return
-        state = data.get("home_state") or "unavailable"
-        self._home_state = state if state in (
-            "loaded", "not_connected", "web_auth_rejected",
-            "not_authenticated", "no_chips", "network",
-            "http_failure", "invalid_response", "unavailable"
-        ) else "unavailable"
-        old_id = self._selected_home_chip()["id"]
-        cursor_id = (self._home_chips[self._category_cursor]["id"]
-                     if 0 <= self._category_cursor < len(self._home_chips)
-                     else old_id)
-        channels = data.get("channels") or ()
-        updated = build_home_chips(
-            chips=data.get("home_chips") or (),
-            authenticated=bool(data.get("connected")))
-        lookup = {chip["id"]: i for i, chip in enumerate(updated)}
-        if [item["id"] for item in updated] != [
-                item["id"] for item in self._home_chips]:
-            self._personal_video_cache.clear()
+        # General categories belong to the official public Data API chart.
+        # They NEVER depend on Google TV OAuth or on followed channel names.
+        self._subscriptions_reconnect = bool(data.get("reconnect"))
+        self._subscription_load_error = bool(data.get("load_error"))
+        if not self._subscription_load_error:
+            self._home_channels = list(data.get("channels") or [])[:500]
+            # A successful refresh may return the same channels with NEW uploads.
+            self._subscription_video_cache.clear()
             self._personal_video_epoch += 1
-        self._home_chips = updated
-        self._home_channels = list(channels)[:160]
-        selected_live = next((c for c in updated
-                              if c.get("kind") == "live" and c.get("selected")),
-                             updated[0])
-        if selected_live["kind"] == "live":
-            # The selected chip's videos come from the same signed-in response.
-            self._personal_video_cache[selected_live["id"]] = dedupe_videos(
-                data.get("home_videos") or [])
-        self._category_index = lookup.get(old_id, lookup[selected_live["id"]])
-        self._category_cursor = lookup.get(cursor_id, self._category_index)
-        if old_id not in lookup and self.index == 0:
-            self.page_index = 0
-            self._show_selected_home_chip()
+        self._subscription_truncated = bool(data.get("truncated"))
 
         # Keep Odbery separate from the topical Home chips; the left Odbery
         # entry owns its own "Najnovšie" and actual channel-name rail.
@@ -573,29 +526,88 @@ class WarderYouTubeHome(Screen):
         if not self._disposed and epoch == self._personal_epoch:
             self._personal_requested = False
 
-    def _show_selected_home_chip(self):
+    def _chart_items_for_display(self):
+        """Rotate a real category result set, not fake YouTube recommendations.
+
+        Six cards per Home visit are sampled in consecutive blocks. Keep the
+        same order for all subsequent page movements until the user leaves
+        Home or explicitly refreshes it. This affects no server-side cache,
+        pagination token, video ID, or metadata.
+        """
+        rows = list(self._popular_cache or ())
+        if len(rows) <= VISIBLE_TILES:
+            return rows
+        page_count = (len(rows) + VISIBLE_TILES - 1) // VISIBLE_TILES
+        offset = (self._home_rotation_step % page_count) * VISIBLE_TILES
+        return rows[offset:] + rows[:offset]
+
+    def _selected_chart_title(self):
         chip = self._selected_home_chip()
         if chip["kind"] == "all":
-            if self._popular_cache:
-                self._show_tiles(
-                    self._popular_cache,
-                    "Popular in Slovakia" if self._popular_source == "api"
+            return ("Popular in Slovakia" if self._popular_source == "api"
                     else "Public YouTube selection (no API key)")
-            elif self._popular_loading:
-                if self._popular_source == "public":
-                    self._fallback_home()
-                else:
-                    self._show_message("Loading popular videos for Slovakia…")
-            elif self._popular_error:
+        return chip["label"]
+
+    def _store_chart_cache(self):
+        if self._popular_cache is None:
+            return
+        self._popular_by_category[self._popular_category_id] = {
+            "items": list(self._popular_cache),
+            "next": self._popular_next_page_token,
+            "total": self._popular_total_results,
+            "source": self._popular_source,
+            "fetched": self._popular_fetched_at,
+        }
+        # We expose only seven topics per Home session, keep bounded memory.
+        if len(self._popular_by_category) > 8:
+            first = next(iter(self._popular_by_category))
+            self._popular_by_category.pop(first, None)
+
+    def _show_selected_home_chip(self):
+        """Show genuine popular videos filtered by the selected category ID."""
+        chip = self._selected_home_chip()
+        category_id = chip["category_id"]
+        if category_id != self._popular_category_id:
+            self._store_chart_cache()
+            self._popular_request_epoch += 1  # discard stale responses
+            self._popular_requested = False
+            self._popular_more_loading = False
+            self._popular_loading = False
+            self._popular_error = False
+            self._popular_category_id = category_id
+            previous = self._popular_by_category.get(category_id)
+            self._popular_cache = list(previous["items"]) if previous else None
+            self._popular_next_page_token = previous["next"] if previous else ""
+            self._popular_total_results = previous["total"] if previous else None
+            self._popular_fetched_at = previous["fetched"] if previous else 0
+            self._popular_source = previous["source"] if previous else "api"
+        if (category_id == "0" and self._popular_source == "public"
+                and get_api_key()):
+            # New API key entered in Settings since public Home was displayed.
+            self._popular_cache = None
+            self._popular_error = False
+            self._popular_requested = False
+        if self._popular_cache is not None:
+            if self._popular_cache:
+                self._show_tiles(self._chart_items_for_display(), self._selected_chart_title())
+            else:
+                self._show_message("No videos in selected category.")
+        elif self._popular_loading:
+            if category_id == "0" and self._popular_source == "public":
                 self._fallback_home()
             else:
+                self._show_message("Loading popular videos for Slovakia…")
+        elif self._popular_error and category_id != "0" and not get_api_key():
+            self._show_message("Choose an API key to browse video categories.")
+        elif self._popular_error:
+            if category_id == "0":
+                self._fallback_home()
+            else:
+                # Manual retry on reselect after transient category failure.
+                self._popular_error = False
                 self._request_popular()
-            return
-        cache = self._personal_video_cache.get(chip["id"])
-        if cache is not None:
-            self._show_tiles(cache, chip["title"])
-            return
-        self._request_personal_videos(chip)
+        else:
+            self._request_popular()
 
     def _request_personal_videos(self, chip, subscribed=False):
         self._personal_video_epoch += 1
@@ -663,6 +675,12 @@ class WarderYouTubeHome(Screen):
                 "Checking YouTube account connection…"
             )
             return
+        if self._subscriptions_reconnect:
+            self._show_message("YouTube authorization expired. Press OK to connect again.")
+            return
+        if self._subscription_load_error:
+            self._show_message("YouTube subscriptions could not be loaded. Reopen Odbery to retry.")
+            return
         chip = self._selected_subscription_chip()
         if chip is None:
             self._show_message("No subscribed channels found.")
@@ -677,7 +695,7 @@ class WarderYouTubeHome(Screen):
         """TV-code authentication also stays in the Home right panel."""
         if self._disposed or self._busy or self.index != 2:
             return
-        if self._subscriptions_connected:
+        if self._subscriptions_connected and not self._subscriptions_reconnect:
             self._request_personalization(force=True)
             return
         if self._personal_requested:
@@ -698,6 +716,7 @@ class WarderYouTubeHome(Screen):
         self._request_personalization(force=True)
 
     def _clear_preview(self):
+        self["status"].show()  # retain useful diagnostics on non-grid panes
         self.thumbs.show([])
         for i in range(VISIBLE_TILES):
             for prefix in ("preview_focus", "preview_panel", "preview_border", "preview_thumb",
@@ -738,7 +757,7 @@ class WarderYouTubeHome(Screen):
         first = self.page_index * VISIBLE_TILES
         self.video_items = all_videos[first:first + VISIBLE_TILES]
         self["subtitle"].setText(_(subtitle))
-        if (self.index == 0 and self._selected_home_chip()["kind"] == "all"
+        if (self.index == 0 and self._selected_home_chip()["kind"] in ("all", "general")
                 and self._popular_source == "api"):
             reported = self._popular_total_results
             actual_pages = max(pages, (reported + VISIBLE_TILES - 1) // VISIBLE_TILES) if reported else (
@@ -771,6 +790,7 @@ class WarderYouTubeHome(Screen):
             channel.setText(str(video.get("channel") or "")[:43])
             title.show()
             channel.show()
+        self["status"].hide()  # video cards fill the right pane; no duplicate title
         self.thumbs.show(self.video_items)
         self._update_tile_focus()
 
@@ -784,7 +804,9 @@ class WarderYouTubeHome(Screen):
             else:
                 focus.hide()
         if self.focus_area == "tiles" and self.video_items:
-            self["status"].setText(preview_title(self.video_items[self.tile_index].get("title"), 85))
+            # The tile already shows title + channel. Do not duplicate the
+            # selected title again on the bottom status line during browsing.
+            self["status"].setText("")
 
     def _local_items(self, kind):
         try:
@@ -807,11 +829,31 @@ class WarderYouTubeHome(Screen):
             "Recently played and saved videos will appear here."
         )
 
+    def _refresh_home_videos(self):
+        """Explicit MENU reload; never claim the API returns new recommendations.
+
+        If the API produces the same popular list, rotate its real items so
+        the first six do not remain frozen. Any stale in-flight result is
+        rejected via the request epoch.
+        """
+        if (self.index != 0 or self._disposed or self._busy
+                or self._playback_active or self._popular_loading):
+            return
+        self._home_rotation_step += 1
+        self.page_index = 0
+        self._popular_request_epoch += 1
+        self._popular_requested = False
+        self._popular_error = False
+        if self._popular_cache:
+            self._show_tiles(self._chart_items_for_display(), self._selected_chart_title())
+        self._request_popular(refresh=True)
+        self._render_categories()
+
     def _request_popular(self, refresh=False):
         if self._popular_requested or self._disposed:
             return
         key = get_api_key()
-        category_id = "0"
+        category_id = self._selected_home_chip()["category_id"]
         self._popular_source = "api" if key else "public"
         if not key and category_id != "0":
             self._popular_error = True
@@ -853,17 +895,15 @@ class WarderYouTubeHome(Screen):
             total = payload.get("total_results")
         else:
             videos, token, total = payload, "", None
-        self._popular_cache = videos[:24] if isinstance(videos, list) else []
+        self._popular_cache = videos[:50] if isinstance(videos, list) else []
         self._popular_next_page_token = token if isinstance(token, str) else ""
         self._popular_total_results = total if type(total) is int and total > 0 else None
         self._popular_fetched_at = monotonic()
         self._popular_error = False
-        if self.index == 0 and self._selected_home_chip()["kind"] == "all":
+        self._store_chart_cache()
+        if self.index == 0 and self._selected_home_chip()["category_id"] == self._popular_category_id:
             if self._popular_cache:
-                self._show_tiles(
-                    self._popular_cache,
-                    "Popular in Slovakia" if self._popular_source == "api"
-                    else "Public YouTube selection (no API key)")
+                self._show_tiles(self._chart_items_for_display(), self._selected_chart_title())
             else:
                 self._show_message("No videos in selected category.")
             self._render_categories()
@@ -873,27 +913,30 @@ class WarderYouTubeHome(Screen):
                 and request_epoch != self._popular_request_epoch)):
             return
         self._popular_loading = False
+        self._popular_requested = False
         self._popular_error = True
         self._popular_fetched_at = monotonic()
-        if (self.index == 0 and self._selected_home_chip()["kind"] == "all"
-                and self._popular_cache):
+        if self.index != 0:
+            return
+        if self._popular_cache:
             self["status"].setText(_("Live YouTube refresh unavailable; previous data shown."))
             return
-        if self.index == 0 and self._selected_home_chip()["kind"] == "all":
+        if self._popular_category_id == "0":
             self._fallback_home()
             self["status"].setText(
                 _("Popular videos are temporarily unavailable.") if self._popular_source == "api"
-                else _("Public YouTube list unavailable; showing local videos.")
-            )
-            self._render_categories()
+                else _("Public YouTube list unavailable; showing local videos."))
+        else:
+            self._show_message("YouTube category videos are temporarily unavailable.")
+        self._render_categories()
 
     def _request_more_popular(self):
         if (self.index != 0 or self._disposed or self._popular_more_loading
-                or self._selected_home_chip()["kind"] != "all"
+                or self._selected_home_chip()["kind"] not in ("all", "general")
                 or not self._popular_next_page_token or not get_api_key()):
             return False
         token = self._popular_next_page_token
-        category_id = "0"
+        category_id = self._popular_category_id
         request_epoch = self._popular_request_epoch
         next_page = self.page_index + 1
         self._popular_more_loading = True
@@ -920,7 +963,7 @@ class WarderYouTubeHome(Screen):
             v for v in response.get("items", []) if isinstance(v, dict)
             and v.get("video_id") not in old_ids
         ]
-        self._popular_cache.extend(new_items[:24])
+        self._popular_cache.extend(new_items[:50])
         next_token = response.get("next_page_token") or ""
         # Avoid a server accidentally returning a token that loops forever.
         old_token = self._popular_next_page_token
@@ -931,11 +974,12 @@ class WarderYouTubeHome(Screen):
         new_total = response.get("total_results")
         if type(new_total) is int and new_total > 0:
             self._popular_total_results = new_total
-        if (self.index == 0 and self._selected_home_chip()["kind"] == "all"
+        self._store_chart_cache()
+        if (self.index == 0 and self._selected_home_chip()["kind"] in ("all", "general")
                 and self._popular_cache):
             if next_page * VISIBLE_TILES < len(self._popular_cache):
                 self.page_index = next_page
-            self._show_tiles(self._popular_cache, "Popular in Slovakia")
+            self._show_tiles(self._chart_items_for_display(), self._selected_chart_title())
             self._render_categories()
         self["status"].setText(_("More videos loaded.") if new_items
                               else _("No more videos in this category."))
@@ -960,8 +1004,8 @@ class WarderYouTubeHome(Screen):
             self._show_inline_keyboard()
         elif self.index == 2:
             self._show_selected_subscription_chip()
-            if not self._subscriptions_connected and not self._personal_requested:
-                self._request_personalization(force=True)
+            if not self._personal_requested and not self._subscriptions_reconnect:
+                self._request_personalization(force=self._subscription_load_error)
         elif self.index == 3:
             self._show_tiles(self._local_items("history"), "Recently played videos")
         elif self.index == 4:
@@ -1111,6 +1155,8 @@ class WarderYouTubeHome(Screen):
             self._home_search_flow.cancel_pending()
         if self.index == index and self.focus_area == "nav":
             return
+        if index == 0 and self.index != 0:
+            self._home_rotation_step += 1
         self.index = index
         self.page_index = 0
         self.focus_area = "nav"
@@ -1222,7 +1268,8 @@ class WarderYouTubeHome(Screen):
 
     def _enter_tiles(self):
         if self.index == 2 and self.focus_area == "nav":
-            if self._subscription_chips:
+            if (self._subscription_chips and not self._subscription_load_error
+                    and not self._subscriptions_reconnect):
                 self._enter_categories()
             else:
                 self._open_subscription_login()
@@ -1312,7 +1359,8 @@ class WarderYouTubeHome(Screen):
         elif index == 2:
             # No full-screen Odbery dialog. Use the same Home right pane.
             self._select_nav(2)
-            if self._subscription_chips:
+            if (self._subscription_chips and not self._subscription_load_error
+                    and not self._subscriptions_reconnect):
                 self._enter_categories()
             else:
                 self._open_subscription_login()
@@ -1435,7 +1483,7 @@ class WarderYouTubeHome(Screen):
             if subscription:
                 self._open_subscription_login()
             else:
-                self["status"].setText(_(self._home_status_message()))
+                self["status"].setText(_("Category list is unavailable."))
             return
         from .quick_select_ui import WarderYouTubeQuickSelect
         self._quick_select_open = True
@@ -1467,6 +1515,9 @@ class WarderYouTubeHome(Screen):
             self._subscription_cursor = self._subscription_index = new_index
             self._show_selected_subscription_chip()
         else:
+            if self._category_index == new_index:
+                # Re-selecting the current category cycles the visible batch.
+                self._home_rotation_step += 1
             self._category_cursor = self._category_index = new_index
             self._show_selected_home_chip()
         self._update_nav()
@@ -1478,11 +1529,22 @@ class WarderYouTubeHome(Screen):
         self._context_open = False
         if self._disposed or action is None:
             return
+        if action == "refresh_home":
+            if self.index == 0:
+                self._refresh_home_videos()
+            return
         if action == "choose_category":
             self._open_quick_chip_picker(subscription=False)
             return
         if action == "choose_subscription":
             self._open_quick_chip_picker(subscription=True)
+            return
+        if action == "disconnect_account":
+            if self.index == 2 and self._subscriptions_connected and not self._confirm_open:
+                from .confirm_ui import WarderYouTubeConfirm
+                self._confirm_open = True
+                self.session.openWithCallback(self._disconnect_confirmed,
+                    WarderYouTubeConfirm, _("Disconnect YouTube account") + "?")
             return
         if item is None and action not in ("search",):
             return
@@ -1514,6 +1576,51 @@ class WarderYouTubeHome(Screen):
                 (_("Clear all favourite videos") if self.index == 4
                  else _("Clear entire history")) + "?"
             )
+
+    def _disconnect_confirmed(self, confirmed):
+        self._confirm_open = False
+        if (not confirmed or self._disposed or self.index != 2
+                or self._busy or self._playback_active):
+            return
+        from .subscriptions_auth import disconnect_account
+        self._busy = True
+        # Prevent an older account worker from repopulating the new empty list.
+        self._personal_epoch += 1
+        self._personal_requested = False
+        self._personal_video_epoch += 1
+        self._show_message("Disconnecting YouTube account…")
+        try:
+            task = deferToThread(disconnect_account)
+            task.addCallbacks(self._disconnect_ready, self._disconnect_failed)
+        except Exception:
+            self._disconnect_failed(None)
+
+    def _disconnect_ready(self, revoked):
+        if self._disposed:
+            return
+        self._busy = False
+        self._personal_fetched_at = 0
+        self._home_channels = []
+        self._subscription_chips = []
+        self._subscription_index = self._subscription_cursor = self._subscription_offset = 0
+        self._subscriptions_connected = False
+        self._subscription_load_error = False
+        self._subscriptions_reconnect = False
+        self._subscription_truncated = False
+        self._subscription_video_cache.clear()
+        self.focus_area = "nav"
+        if self._inline_tv_login is not None:
+            self._inline_tv_login.close()
+        self._render_categories()
+        self._update_nav()
+        self._update_keys()
+        self._show_message("YouTube account disconnected." if revoked else
+                           "YouTube signed out locally; Google revocation was unavailable.")
+
+    def _disconnect_failed(self, failure):
+        if not self._disposed:
+            self._busy = False
+            self._show_message("Could not disconnect YouTube account.")
 
     def _clear_confirmed(self, confirmed):
         self._confirm_open = False

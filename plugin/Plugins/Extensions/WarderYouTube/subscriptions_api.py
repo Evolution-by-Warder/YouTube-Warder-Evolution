@@ -16,7 +16,8 @@ MAX_RESPONSE_BYTES = 512 * 1024
 CHANNEL_ID = re.compile(r"^UC[A-Za-z0-9_-]{22}$")
 PLAYLIST_ID = re.compile(r"^[A-Za-z0-9_-]{10,64}$")
 VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
-MAX_CHANNEL_PAGES = 4
+MAX_CHANNEL_PAGES = 20
+MAX_SUBSCRIPTIONS = 500
 MAX_RECENT_CHANNELS = 16
 MAX_RECENT_VIDEOS = 24
 
@@ -92,27 +93,40 @@ def parse_subscriptions(data):
     return items
 
 
-def subscriptions_list(access_token, opener=urlopen, limit=160):
-    """Load up to 4 pages (200 entries), never silently claim all beyond cap."""
-    limit = max(1, min(int(limit), 200))
-    found, seen = [], set()
-    page = ""
+def subscriptions_list(access_token, opener=urlopen, limit=MAX_SUBSCRIPTIONS,
+                       with_metadata=False):
+    """Page through real subscriptions in alphabetical order, capped at 500.
+
+    with_metadata exposes whether more YouTube pages exist, so the UI never
+    claims a truncated list is the entire account. Older callers get a list.
+    """
+    limit = max(1, min(int(limit), MAX_SUBSCRIPTIONS))
+    found, seen_ids, used_tokens = [], set(), set()
+    page, more = "", False
     for _ in range(MAX_CHANNEL_PAGES):
         params = {"part": "snippet,contentDetails", "mine": "true",
-                  "maxResults": 50, "order": "alphabetical"}
+                  "maxResults": min(50, limit - len(found)),
+                  "order": "alphabetical"}
         if page:
             params["pageToken"] = page
         result = _get("subscriptions", params, access_token, opener)
         for subscription in parse_subscriptions(result):
-            if subscription["channel_id"] in seen:
-                continue
-            seen.add(subscription["channel_id"])
-            found.append(subscription)
+            cid = subscription["channel_id"]
+            if cid not in seen_ids:
+                found.append(subscription)
+                seen_ids.add(cid)
             if len(found) >= limit:
-                return found
-        page = result.get("nextPageToken") or ""
-        if not page or not isinstance(page, str) or len(page) > 150:
+                break
+        next_page = result.get("nextPageToken") or ""
+        next_page = (next_page if isinstance(next_page, str)
+                     and 0 < len(next_page) <= 150 else "")
+        more = bool(next_page)
+        if len(found) >= limit or not next_page or next_page in used_tokens:
             break
+        used_tokens.add(next_page)
+        page = next_page
+    if with_metadata:
+        return {"channels": found, "truncated": more}
     return found
 
 
@@ -134,32 +148,47 @@ def uploads_playlists(channel_ids, access_token, opener=urlopen):
 
 
 def playlist_videos(playlist_id, access_token, opener=urlopen, limit=12):
+    """Fetch up to 200 genuine uploaded videos through YouTube page tokens."""
     if not isinstance(playlist_id, str) or not PLAYLIST_ID.fullmatch(playlist_id):
         raise SubscriptionsApiError("YouTube channel uploads are unavailable.")
-    params = {"part": "snippet,contentDetails", "playlistId": playlist_id,
-              "maxResults": max(1, min(int(limit), 50))}
-    data = _get("playlistItems", params, access_token, opener)
-    result = []
-    for item in data["items"]:
-        if not isinstance(item, dict):
-            continue
-        snippet = item.get("snippet") or {}
-        details = item.get("contentDetails") or {}
-        resource = snippet.get("resourceId") or {}
-        video_id = details.get("videoId") or resource.get("videoId")
-        if (not isinstance(video_id, str) or not VIDEO_ID.fullmatch(video_id)
-                or snippet.get("title") in ("Private video", "Deleted video")):
-            continue
-        result.append({
-            "video_id": video_id,
-            "title": html.unescape(str(snippet.get("title") or "YouTube video"))[:200],
-            "channel": html.unescape(str(snippet.get("videoOwnerChannelTitle")
-                                         or snippet.get("channelTitle") or ""))[:120],
-            "published_at": str(details.get("videoPublishedAt")
-                                or snippet.get("publishedAt") or "")[:32],
-            "thumbnail_url": "https://i.ytimg.com/vi/%s/mqdefault.jpg" % video_id,
-        })
-    return result
+    limit = max(1, min(int(limit), 200))
+    items, seen, visited = [], set(), set()
+    page = ""
+    for _ in range(4):
+        params = {"part": "snippet,contentDetails", "playlistId": playlist_id,
+                  "maxResults": min(50, limit - len(items))}
+        if page:
+            params["pageToken"] = page
+        data = _get("playlistItems", params, access_token, opener)
+        for item in data["items"]:
+            if not isinstance(item, dict):
+                continue
+            snippet = item.get("snippet") or {}
+            details = item.get("contentDetails") or {}
+            resource = snippet.get("resourceId") or {}
+            video_id = details.get("videoId") or resource.get("videoId")
+            if (not isinstance(video_id, str) or not VIDEO_ID.fullmatch(video_id)
+                    or video_id in seen
+                    or snippet.get("title") in ("Private video", "Deleted video")):
+                continue
+            seen.add(video_id)
+            items.append({
+                "video_id": video_id,
+                "title": html.unescape(str(snippet.get("title") or "YouTube video"))[:200],
+                "channel": html.unescape(str(snippet.get("videoOwnerChannelTitle")
+                                             or snippet.get("channelTitle") or ""))[:120],
+                "published_at": str(details.get("videoPublishedAt")
+                                    or snippet.get("publishedAt") or "")[:32],
+                "thumbnail_url": "https://i.ytimg.com/vi/%s/mqdefault.jpg" % video_id,
+            })
+            if len(items) >= limit:
+                break
+        next_page = data.get("nextPageToken") or ""
+        if len(items) >= limit or not isinstance(next_page, str) or not next_page or len(next_page) > 150 or next_page in visited:
+            break
+        visited.add(next_page)
+        page = next_page
+    return items
 
 
 def recent_subscription_videos(access_token, opener=urlopen,
@@ -169,7 +198,7 @@ def recent_subscription_videos(access_token, opener=urlopen,
     This cap avoids issuing hundreds of YouTube Data API requests on receivers.
     The UI must label the partial scope, and expose 'All subscriptions' separately.
     """
-    channels = subscriptions_list(access_token, opener=opener, limit=160)
+    channels = subscriptions_list(access_token, opener=opener, limit=MAX_SUBSCRIPTIONS)
     if not channels:
         return [], channels
     limit = max(1, min(int(channel_limit), MAX_RECENT_CHANNELS))

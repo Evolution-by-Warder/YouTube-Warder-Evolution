@@ -25,11 +25,15 @@ REVOKE_URL = "https://oauth2.googleapis.com/revoke"
 SCOPE = "https://www.googleapis.com/auth/youtube.readonly"
 CLIENT_ID = re.compile(r"^[0-9A-Za-z._-]{8,200}\.apps\.googleusercontent\.com$")
 MAX_JSON = 64 * 1024
-_LOCK = threading.Lock()
+_LOCK = threading.RLock()  # token refresh/save/logout must not race
 
 
 class SubscriptionsAuthError(Exception):
     """Only user-safe messages, never raw OAuth responses or token URLs."""
+
+
+class ReauthorizationRequired(SubscriptionsAuthError):
+    """Google explicitly invalidated the authorization; not a network outage."""
 
 
 def _read_private_json(path):
@@ -51,11 +55,23 @@ def _read_private_json(path):
 
 
 def read_client(path=CLIENT_PATH):
-    info = _read_private_json(path)
+    """Resolve developer's installed TV OAuth identity; never a user's key.
+
+    A private receiver-local configuration can override the distributable TV
+    client. An existing but invalid file must fail closed, not silently fall
+    back to a different project (which could break stored refresh tokens).
+    """
+    target = Path(path)
+    if target.exists() or target.is_symlink():
+        info = _read_private_json(target)
+    else:
+        from .oauth_app_config import OAUTH_TV_CLIENT_ID, OAUTH_TV_CLIENT_SECRET
+        info = {"client_id": OAUTH_TV_CLIENT_ID,
+                "client_secret": OAUTH_TV_CLIENT_SECRET}
     client_id = info.get("client_id")
     secret = info.get("client_secret")
     if not isinstance(client_id, str) or not CLIENT_ID.fullmatch(client_id):
-        raise SubscriptionsAuthError("Configure a Google OAuth TV client ID.")
+        raise SubscriptionsAuthError("YouTube TV sign-in is not configured by the plugin developer.")
     if not isinstance(secret, str) or len(secret) > 256 or not secret:
         raise SubscriptionsAuthError("Configure the matching Google OAuth TV client secret.")
     return {"client_id": client_id, "client_secret": secret}
@@ -150,6 +166,20 @@ def _normalize_tokens(response, old_refresh=None):
 
 
 def save_tokens(tokens, path=TOKEN_PATH):
+    """Atomically persist only owner-granted tokens behind the shared lock."""
+    with _LOCK:
+        return _save_tokens_locked(tokens, path)
+
+
+def save_tokens_if_active(tokens, cancelled, path=TOKEN_PATH):
+    """Ignore a queued login save after its screen was closed/cancelled."""
+    with _LOCK:
+        if cancelled.is_set():
+            return False
+        return _save_tokens_locked(tokens, path, cancelled=cancelled)
+
+
+def _save_tokens_locked(tokens, path, cancelled=None):
     # Never store credentials in opkg, Enigma config, debug logs or /tmp.
     target = Path(path)
     payload = json.dumps(tokens, separators=(",", ":")).encode("utf-8")
@@ -164,8 +194,11 @@ def save_tokens(tokens, path=TOKEN_PATH):
             f.write(payload)
             f.flush()
             os.fsync(f.fileno())
+        if cancelled is not None and cancelled.is_set():
+            return False
         os.replace(temporary, str(target))
         os.chmod(str(target), 0o600)
+        return True
     except OSError:
         raise SubscriptionsAuthError("Could not save private YouTube account tokens.")
     finally:
@@ -190,6 +223,45 @@ def clear_tokens(path=TOKEN_PATH):
         raise SubscriptionsAuthError("Could not disconnect the YouTube account.")
 
 
+def disconnect_account(path=TOKEN_PATH, opener=urlopen):
+    """Revoke Google access if possible and always discard local tokens.
+
+    Serialize against token refresh and storage: a concurrent old refresh
+    must NEVER resurrect the account after the user confirms sign-out.
+    Run solely in a worker, not on the Enigma2 GUI thread.
+    """
+    with _LOCK:
+        return _disconnect_locked(path, opener)
+
+
+def _disconnect_locked(path, opener):
+    try:
+        data = _read_private_json(path)
+    except SubscriptionsAuthError:
+        clear_tokens(path=path)
+        return False
+    refresh = data.get("refresh_token")
+    revoked = False
+    try:
+        if isinstance(refresh, str) and 0 < len(refresh) <= 8192:
+            request = Request(REVOKE_URL,
+                              data=urlencode({"token": refresh}).encode("ascii"),
+                              headers={"Content-Type": "application/x-www-form-urlencoded",
+                                       "User-Agent": "WarderYouTube/0.0.8"})
+            try:
+                response = opener(request, timeout=8)
+                try:
+                    revoked = bool(getattr(response, "status", None) == 200
+                                   or response.getcode() == 200)
+                finally:
+                    response.close()
+            except (HTTPError, URLError, OSError, TimeoutError):
+                revoked = False
+    finally:
+        clear_tokens(path=path)
+    return revoked
+
+
 def access_token(client=None, path=TOKEN_PATH, opener=urlopen):
     """Refresh on demand. Never return an expired token to a Google API call."""
     with _LOCK:
@@ -211,8 +283,10 @@ def access_token(client=None, path=TOKEN_PATH, opener=urlopen):
             "client_secret": credentials["client_secret"],
             "refresh_token": refresh, "grant_type": "refresh_token",
         }, opener)
+        if response.get("error") == "invalid_grant":
+            raise ReauthorizationRequired("YouTube authorization expired. Connect the account again.")
         if response.get("error"):
-            raise SubscriptionsAuthError("YouTube authorization expired. Connect the account again.")
+            raise SubscriptionsAuthError("Google authorization service is unavailable.")
         updated = _normalize_tokens(response, old_refresh=refresh)
         save_tokens(updated, path=path)
         return updated["access_token"]

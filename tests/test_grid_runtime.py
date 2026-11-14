@@ -187,7 +187,7 @@ class TestNativeGrid(unittest.TestCase):
         g = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
         with patch.dict(sys.modules, {"Components.AVSwitch": mod._test_avswitch}):
             g._layout_ready()
-        self.assertEqual(g._picload.parameters[:4], (491, 276, 0, 0))
+        self.assertEqual(g._picload.parameters[:4], (473, 248, 0, 0))
         self.assertTrue(callable(g.items))
 
     def test_invalid_framebuffer_scale_falls_back_safely(self):
@@ -196,7 +196,7 @@ class TestNativeGrid(unittest.TestCase):
         g = mod.WarderYouTubeGrid(None, [self.video(0)], "test")
         with patch.dict(sys.modules, {"Components.AVSwitch": mod._test_avswitch}):
             g._layout_ready()
-        self.assertEqual(g._picload.parameters[:4], (491, 276, 0, 0))
+        self.assertEqual(g._picload.parameters[:4], (473, 248, 0, 0))
 
     def test_modern_signal_connect_and_disconnect(self):
         jobs = []

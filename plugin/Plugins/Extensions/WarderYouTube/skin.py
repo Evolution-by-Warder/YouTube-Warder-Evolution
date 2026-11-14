@@ -65,38 +65,38 @@ HOME_SKIN = """
   <widget name="category_panel6" position="1351,194" size="146,47" font="Regular;1" foregroundColor="#17364F" backgroundColor="#17364F" transparent="0" zPosition="4"/>
   <widget name="category_focus6" position="1351,194" size="146,47" font="Regular;1" foregroundColor="#087EC7" backgroundColor="#087EC7" transparent="0" zPosition="5"/>
   <widget name="category6" position="1351,198" size="146,38" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" halign="center" valign="center" zPosition="6"/>
-  <widget name="video_scroll_track" position="1872,252" size="9,667" font="Regular;1" foregroundColor="#264A68" backgroundColor="#264A68" transparent="0" zPosition="6"/>
+  <widget name="video_scroll_track" position="1872,252" size="9,719" font="Regular;1" foregroundColor="#264A68" backgroundColor="#264A68" transparent="0" zPosition="6"/>
   <widget name="video_scroll_thumb" position="1874,252" size="5,100" font="Regular;1" foregroundColor="#54D6FF" backgroundColor="#54D6FF" transparent="0" zPosition="7"/>
-  <widget name="preview_focus0" position="413,251" size="477,324" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="preview_panel0" position="415,253" size="473,320" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb0" position="415,253" size="473,266" zPosition="4"/>
-  <widget name="preview_title0" position="423,520" size="457,35" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel0" position="423,555" size="457,18" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_focus1" position="902,251" size="477,324" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="preview_panel1" position="904,253" size="473,320" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb1" position="904,253" size="473,266" zPosition="4"/>
-  <widget name="preview_title1" position="912,520" size="457,35" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel1" position="912,555" size="457,18" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_focus2" position="1391,251" size="477,324" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="preview_panel2" position="1393,253" size="473,320" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb2" position="1393,253" size="473,266" zPosition="4"/>
-  <widget name="preview_title2" position="1401,520" size="457,35" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel2" position="1401,555" size="457,18" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_focus3" position="413,601" size="477,324" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="preview_panel3" position="415,603" size="473,320" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb3" position="415,603" size="473,266" zPosition="4"/>
-  <widget name="preview_title3" position="423,870" size="457,35" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel3" position="423,905" size="457,18" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_focus4" position="902,601" size="477,324" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="preview_panel4" position="904,603" size="473,320" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb4" position="904,603" size="473,266" zPosition="4"/>
-  <widget name="preview_title4" position="912,870" size="457,35" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel4" position="912,905" size="457,18" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_focus5" position="1391,601" size="477,324" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="preview_panel5" position="1393,603" size="473,320" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
-  <widget name="preview_thumb5" position="1393,603" size="473,266" zPosition="4"/>
-  <widget name="preview_title5" position="1401,870" size="457,35" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
-  <widget name="preview_channel5" position="1401,905" size="457,18" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus0" position="413,251" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="preview_panel0" position="415,253" size="473,346" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb0" position="415,253" size="473,248" zPosition="4"/>
+  <widget name="preview_title0" position="423,506" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel0" position="423,568" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus1" position="902,251" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="preview_panel1" position="904,253" size="473,346" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb1" position="904,253" size="473,248" zPosition="4"/>
+  <widget name="preview_title1" position="912,506" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel1" position="912,568" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus2" position="1391,251" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="preview_panel2" position="1393,253" size="473,346" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb2" position="1393,253" size="473,248" zPosition="4"/>
+  <widget name="preview_title2" position="1401,506" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel2" position="1401,568" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus3" position="413,625" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="preview_panel3" position="415,627" size="473,346" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb3" position="415,627" size="473,248" zPosition="4"/>
+  <widget name="preview_title3" position="423,880" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel3" position="423,942" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus4" position="902,625" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="preview_panel4" position="904,627" size="473,346" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb4" position="904,627" size="473,248" zPosition="4"/>
+  <widget name="preview_title4" position="912,880" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel4" position="912,942" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_focus5" position="1391,625" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="preview_panel5" position="1393,627" size="473,346" font="Regular;22" foregroundColor="#142C47" backgroundColor="#142C47" transparent="0" zPosition="3"/>
+  <widget name="preview_thumb5" position="1393,627" size="473,248" zPosition="4"/>
+  <widget name="preview_title5" position="1401,880" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" backgroundColor="#142C47" transparent="1" zPosition="4"/>
+  <widget name="preview_channel5" position="1401,942" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
   <widget name="detail0" position="449,256" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
   <widget name="detail1" position="449,349" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
   <widget name="detail2" position="449,443" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
@@ -125,12 +125,12 @@ HOME_SKIN = """
   <eLabel position="394,173" size="2,805" backgroundColor="#168BAF" zPosition="2"/>
   <eLabel position="1882,173" size="2,805" backgroundColor="#168BAF" zPosition="2"/>
 
-  <widget name="preview_border0" position="413,251" size="477,324" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
-  <widget name="preview_border1" position="902,251" size="477,324" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
-  <widget name="preview_border2" position="1391,251" size="477,324" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
-  <widget name="preview_border3" position="413,601" size="477,324" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
-  <widget name="preview_border4" position="902,601" size="477,324" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
-  <widget name="preview_border5" position="1391,601" size="477,324" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
+  <widget name="preview_border0" position="413,251" size="477,350" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
+  <widget name="preview_border1" position="902,251" size="477,350" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
+  <widget name="preview_border2" position="1391,251" size="477,350" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
+  <widget name="preview_border3" position="413,625" size="477,350" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
+  <widget name="preview_border4" position="902,625" size="477,350" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
+  <widget name="preview_border5" position="1391,625" size="477,350" foregroundColor="#0D5273" backgroundColor="#0D5273" transparent="0" zPosition="1"/>
   <!-- Search system keyboard is rendered inside Home; no modal/overlay. -->
   <!-- Reuse system VirtualKeyBoard eListboxPythonMultiContent + Input, NOT Warder-made letter buttons. -->
   <widget name="kb_system_input" position="479,264" size="1325,59" font="Regular;32" foregroundColor="#FFFFFF" backgroundColor="#0C2038" transparent="0" zPosition="6"/>
@@ -271,39 +271,39 @@ GRID_SKIN = """
     <widget name="side5" position="26,730" size="270,77" font="Regular;26" foregroundColor="#FFFFFF" backgroundColor="#102A45" transparent="1" zPosition="3"/>
   
     <widget name="side6" position="26,838" size="273,109" font="Regular;24" foregroundColor="#C6DCEE" backgroundColor="#102A45" transparent="1" zPosition="3"/>
-  <eLabel position="355,216" size="491,355" backgroundColor="#142C47"/>
-  <widget name="focus0" position="355,216" size="491,364" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/grid_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="thumb0" position="355,216" size="491,276" zPosition="2"/>
-  <widget name="title0" position="363,493" size="475,51" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
-  <widget name="channel0" position="363,546" size="475,23" font="Regular;20" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
-  <eLabel position="868,216" size="491,355" backgroundColor="#142C47"/>
-  <widget name="focus1" position="868,216" size="491,364" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/grid_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="thumb1" position="868,216" size="491,276" zPosition="2"/>
-  <widget name="title1" position="876,493" size="475,51" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
-  <widget name="channel1" position="876,546" size="475,23" font="Regular;20" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
-  <eLabel position="1381,216" size="491,355" backgroundColor="#142C47"/>
-  <widget name="focus2" position="1381,216" size="491,364" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/grid_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="thumb2" position="1381,216" size="491,276" zPosition="2"/>
-  <widget name="title2" position="1389,493" size="475,51" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
-  <widget name="channel2" position="1389,546" size="475,23" font="Regular;20" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
-  <eLabel position="355,585" size="491,355" backgroundColor="#142C47"/>
-  <widget name="focus3" position="355,585" size="491,364" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/grid_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="thumb3" position="355,585" size="491,276" zPosition="2"/>
-  <widget name="title3" position="363,862" size="475,51" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
-  <widget name="channel3" position="363,915" size="475,23" font="Regular;20" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
-  <eLabel position="868,585" size="491,355" backgroundColor="#142C47"/>
-  <widget name="focus4" position="868,585" size="491,364" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/grid_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="thumb4" position="868,585" size="491,276" zPosition="2"/>
-  <widget name="title4" position="876,862" size="475,51" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
-  <widget name="channel4" position="876,915" size="475,23" font="Regular;20" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
-  <eLabel position="1381,585" size="491,355" backgroundColor="#142C47"/>
-  <widget name="focus5" position="1381,585" size="491,364" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/grid_focus.png" alphatest="on" zPosition="8"/>
-  <widget name="thumb5" position="1381,585" size="491,276" zPosition="2"/>
-  <widget name="title5" position="1389,862" size="475,51" font="Regular;26" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
-  <widget name="channel5" position="1389,915" size="475,23" font="Regular;20" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
-  <widget name="status" position="358,953" size="1460,43" font="Regular;25" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
-  <widget name="video_scroll_track" position="1878,217" size="9,722" font="Regular;1" foregroundColor="#264A68" backgroundColor="#264A68" transparent="0" zPosition="6"/>
-  <widget name="video_scroll_thumb" position="1880,217" size="5,100" font="Regular;1" foregroundColor="#54D6FF" backgroundColor="#54D6FF" transparent="0" zPosition="7"/>
+  <eLabel position="364,253" size="473,346" backgroundColor="#142C47"/>
+  <widget name="focus0" position="362,251" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="thumb0" position="364,253" size="473,248" zPosition="2"/>
+  <widget name="title0" position="372,506" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
+  <widget name="channel0" position="372,568" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
+  <eLabel position="877,253" size="473,346" backgroundColor="#142C47"/>
+  <widget name="focus1" position="875,251" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="thumb1" position="877,253" size="473,248" zPosition="2"/>
+  <widget name="title1" position="885,506" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
+  <widget name="channel1" position="885,568" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
+  <eLabel position="1390,253" size="473,346" backgroundColor="#142C47"/>
+  <widget name="focus2" position="1388,251" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="thumb2" position="1390,253" size="473,248" zPosition="2"/>
+  <widget name="title2" position="1398,506" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
+  <widget name="channel2" position="1398,568" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
+  <eLabel position="364,627" size="473,346" backgroundColor="#142C47"/>
+  <widget name="focus3" position="362,625" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="thumb3" position="364,627" size="473,248" zPosition="2"/>
+  <widget name="title3" position="372,880" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
+  <widget name="channel3" position="372,942" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
+  <eLabel position="877,627" size="473,346" backgroundColor="#142C47"/>
+  <widget name="focus4" position="875,625" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="thumb4" position="877,627" size="473,248" zPosition="2"/>
+  <widget name="title4" position="885,880" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
+  <widget name="channel4" position="885,942" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
+  <eLabel position="1390,627" size="473,346" backgroundColor="#142C47"/>
+  <widget name="focus5" position="1388,625" size="477,350" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/video_focus.png" alphatest="on" zPosition="8"/>
+  <widget name="thumb5" position="1390,627" size="473,248" zPosition="2"/>
+  <widget name="title5" position="1398,880" size="457,60" font="Regular;22" foregroundColor="#FFFFFF" transparent="1" zPosition="2"/>
+  <widget name="channel5" position="1398,942" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" transparent="1" zPosition="2"/>
+  <widget name="status" position="26,958" size="270,34" font="Regular;18" foregroundColor="#36B9FF" transparent="1" zPosition="3"/>
+  <widget name="video_scroll_track" position="1878,252" size="9,719" font="Regular;1" foregroundColor="#264A68" backgroundColor="#264A68" transparent="0" zPosition="6"/>
+  <widget name="video_scroll_thumb" position="1880,252" size="5,100" font="Regular;1" foregroundColor="#54D6FF" backgroundColor="#54D6FF" transparent="0" zPosition="7"/>
   <eLabel position="0,999" size="1920,81" backgroundColor="#08182D"/>
   <widget name="footer" position="28,1014" size="1880,52" font="Regular;24" foregroundColor="#FFFFFF" transparent="1" zPosition="0"/>
   <eLabel position="150,1070" size="195,3" backgroundColor="#FF526A" zPosition="5"/>
@@ -315,35 +315,35 @@ GRID_SKIN = """
   <eLabel position="1560,1070" size="195,3" backgroundColor="#60BCFF" zPosition="5"/>
   <widget name="key_blue" position="1466,1020" size="381,45" font="Regular;29" foregroundColor="#5EBEFF" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
 
-  <eLabel position="355,216" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="355,569" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="355,216" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="844,216" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="362,251" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="362,599" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="362,251" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="837,251" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
 
-  <eLabel position="355,585" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="355,938" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="355,585" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="844,585" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="362,625" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="362,973" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="362,625" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="837,625" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
 
-  <eLabel position="868,216" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="868,569" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="868,216" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="1357,216" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="875,251" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="875,599" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="875,251" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="1350,251" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
 
-  <eLabel position="868,585" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="868,938" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="868,585" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="1357,585" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="875,625" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="875,973" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="875,625" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="1350,625" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
 
-  <eLabel position="1381,216" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="1381,569" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="1381,216" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="1870,216" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="1388,251" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="1388,599" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="1388,251" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="1863,251" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
 
-  <eLabel position="1381,585" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="1381,938" size="491,1" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="1381,585" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
-  <eLabel position="1870,585" size="1,355" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="1388,625" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="1388,973" size="477,1" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="1388,625" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
+  <eLabel position="1863,625" size="1,350" backgroundColor="#0D536F" zPosition="5"/>
 </screen>
 """
 

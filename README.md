@@ -1,3 +1,21 @@
+## Current development checkpoint: 0.0.8~test51 (14 November 2026)
+
+Source reconciled from the exact receiver-tested test50 IPK. The owner accepted
+Home video rotation in test50 and the test47+ shared 477×350 tile/focus geometry,
+473×248 artwork and 24 px row gap. Those layout files and PNGs are SHA256-pinned;
+new packages must retain them byte-for-byte. Playlists stay removed.
+
+Test51 improves retry after subscription-service outages, distinguishes explicit
+OAuth expiry from temporary errors, clears stale upload caches on refresh, and
+prevents queued token saves after login cancellation. It does not claim private
+video playback or personal web-Home recommendations. The app TV OAuth identity
+is intentionally empty; real-account login remains pending legitimate developer
+configuration and receiver verification. No stable release or main merge.
+
+See `docs/TEST51-RECONCILIATION.md` for exact scope and validation.
+
+---
+
 # YouTube – Warder Evolution
 
 Native Enigma2 YouTube plugin with Warder blue Full HD interface. No browser,

@@ -27,7 +27,15 @@ class WarderYouTubeContext(Screen):
                 _("Select subscription") if mode == "subscriptions"
                 else _("Select category")
             ))
-        if mode in ("home", "subscriptions", "search"):
+        if mode == "subscriptions":
+            # Selected video: 1 quick selector + 3 video actions + logout.
+            # Keep at most five native context rows; BLUE still opens Search.
+            self.options.append(("disconnect_account", _("Disconnect YouTube account")))
+        elif mode == "home":
+            # One slot remains in the five-row context menu. The BLUE key
+            # still opens Search; the menu provides a direct genuine reload.
+            self.options.append(("refresh_home", _("Refresh Home videos")))
+        elif mode == "search":
             self.options.append(("search", _("New search")))
         elif mode == "favourites":
             # In Favourites, "Remove video from favourites" already removes this

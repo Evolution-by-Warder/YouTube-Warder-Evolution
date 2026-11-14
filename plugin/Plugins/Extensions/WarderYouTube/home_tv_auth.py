@@ -7,15 +7,20 @@ in the IPK. Blocking OAuth calls and disk writes run in Twisted workers;
 eTimer polls only at the interval returned by Google.
 """
 from time import monotonic
+from threading import Event
 from twisted.internet.threads import deferToThread
 
 from .i18n import tr as _
 from .subscriptions_auth import (read_client, request_device_code,
-                                 poll_device_code, save_tokens)
+                                 poll_device_code, save_tokens_if_active,
+                                 SubscriptionsAuthError)
 
 
 def _device_request():
-    client = read_client()
+    try:
+        client = read_client()
+    except SubscriptionsAuthError:
+        return None, {"missing_tv_client": True}
     return client, request_device_code(client)
 
 
@@ -33,6 +38,7 @@ class HomeTVLogin:
         self.timer = None
         self.connection = None
         self.signal = None
+        self.cancelled = Event()
 
     def start(self):
         if self.closed or self.home._disposed:
@@ -59,6 +65,9 @@ class HomeTVLogin:
             return
         try:
             self.client, self.device = data
+            if self.client is None and self.device.get("missing_tv_client"):
+                self._failed(epoch, "YouTube login needs a TV app configured by the developer.")
+                return
             self.interval = max(5, int(self.device["interval"]))
             self.deadline = monotonic() + int(self.device["expires_in"])
         except (TypeError, KeyError, ValueError):
@@ -122,9 +131,20 @@ class HomeTVLogin:
         try:
             task = deferToThread(poll_device_code, client, code)
             task.addCallbacks(lambda result: self._poll_ready(epoch, result),
-                              lambda err: self._failed(epoch, "YouTube TV login failed."))
+                              lambda err: self._poll_failed(epoch, err))
         except Exception:
             self._failed(epoch, "YouTube TV login is unavailable.")
+
+    def _poll_failed(self, epoch, failure):
+        error = getattr(failure, "value", failure)
+        safe = {
+            "YouTube account access was denied.",
+            "The YouTube login code has expired.",
+            "Read-only YouTube permission was not granted.",
+            "Google authorization service is unavailable.",
+        }
+        message = str(error) if isinstance(error, SubscriptionsAuthError) else ""
+        self._failed(epoch, message if message in safe else "YouTube TV login failed.")
 
     def _poll_ready(self, epoch, result):
         if not self._current(epoch):
@@ -138,8 +158,8 @@ class HomeTVLogin:
             self._schedule()
         elif state == "connected" and isinstance(tokens, dict):
             try:
-                task = deferToThread(save_tokens, tokens)
-                task.addCallbacks(lambda _: self._saved(epoch),
+                task = deferToThread(save_tokens_if_active, tokens, self.cancelled)
+                task.addCallbacks(lambda saved: self._saved(epoch) if saved is not False else None,
                                   lambda err: self._failed(epoch,
                                       "Could not save private YouTube account tokens."))
             except Exception:
@@ -165,6 +185,7 @@ class HomeTVLogin:
     def close(self):
         if self.closed:
             return
+        self.cancelled.set()
         self.closed = True
         self.active = False
         self.epoch += 1

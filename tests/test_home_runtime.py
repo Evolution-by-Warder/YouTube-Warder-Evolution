@@ -147,8 +147,9 @@ def fake(name, **members):
 
 
 def video(i):
-    return {"video_id": "abcdefghij" + str(i), "title": "A very long sample video title " + str(i),
-            "channel": "Channel", "thumbnail_url": "https://i.ytimg.com/vi/abcdefghij%d/mqdefault.jpg" % i}
+    identifier = "abcdefgh%03d" % i
+    return {"video_id": identifier, "title": "A very long sample video title " + str(i),
+            "channel": "Channel", "thumbnail_url": "https://i.ytimg.com/vi/%s/mqdefault.jpg" % identifier}
 
 
 def load(key="", history=None, fav=None):
@@ -241,6 +242,7 @@ def ready(module):
         screen = module.WarderYouTubeHome(session)
         for callback in screen.onLayoutFinish:
             callback()
+    screen._home_rotation_step = 0
     return screen, session
 
 
@@ -264,19 +266,15 @@ class HomeLivePreviewTests(unittest.TestCase):
         screen._select_nav(7)
         self.assertEqual(screen["heading"].text, "Home")
 
-    def test_no_authenticated_home_chips_exposes_real_reason(self):
+    def test_general_categories_do_not_require_account_login(self):
         mod, key, saved, jobs = load()
         screen, session = ready(mod)
-        screen._personalization_ready({
-            "connected": False, "channels": [], "home_chips": [],
-            "home_state": "not_connected"
-        }, screen._personal_epoch)
-        self.assertEqual(screen._active_chips(), [])
+        screen._personalization_ready({"connected": False, "channels": []}, screen._personal_epoch)
+        self.assertEqual(len(screen._active_chips()), 7)
+        self.assertEqual(screen._active_chips()[0]["category_id"], "0")
         screen._enter_categories()
-        self.assertIn("Connect your YouTube account",
-                      screen["status"].text)
-        self.assertNotEqual(screen.focus_area, "categories")
-        self.assertTrue(screen["subtitle"].visible)
+        self.assertEqual(screen.focus_area, "categories")
+        self.assertFalse(screen["subtitle"].visible)
 
     def test_screen_items_method_survives_home_navigation_and_close(self):
         # Enigma2 Screen.deleteGUIScreen calls list(self.items()); an instance
@@ -520,56 +518,31 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(screen["heading"].text, "Favourites")
         self.assertEqual(screen.video_items[0]["video_id"], video(2)["video_id"])
 
-    def test_live_home_chips_use_exact_server_labels_and_ignore_stale_results(self):
-        mod, key, saved, jobs = load(key="configured-api-key")
+    def test_official_category_requests_use_ids_and_ignore_stale_results(self):
+        mod, key, saved, jobs = load(key="api")
         screen, session = ready(mod)
-        jobs[0][2].success({
-            "items": [video(i) for i in range(24)],
-            "next_page_token": "next_page", "total_results": 72
-        })
-        self.assertEqual(len(screen._home_chips), 1)  # honest regional fallback
-        rows = [
-            {"id": "yt:0", "kind": "live", "label": "Všetko", "selected": True},
-            {"id": "yt:1", "kind": "live", "label": "Hudba",
-             "continuation": "SERVER_MUSIC"},
-            {"id": "yt:2", "kind": "live", "label": "Mixy",
-             "continuation": "SERVER_MIXES"},
-            {"id": "yt:3", "kind": "live", "label": "Domáci majstri",
-             "continuation": "SERVER_DIY"},
-        ]
-        screen._personalization_ready({
-            "connected": True, "channels": [],
-            "home_chips": rows, "home_videos": [video(i) for i in range(24)]
-        }, screen._personal_epoch)
-        self.assertEqual([x["label"] for x in screen._home_chips],
-                         ["Všetko", "Hudba", "Mixy", "Domáci majstri"])
+        jobs[0][2].success([video(i) for i in range(24)])
+        self.assertEqual(screen._home_chips[0]["category_id"], "0")
+        self.assertEqual(len(screen._home_chips), 7)
+        before = list(screen._home_chips)
+        screen._personalization_ready({"connected": True, "channels": [],
+                                      "home_chips": [{"id": "fake", "label": "Fake"}]},
+                                     screen._personal_epoch)
+        self.assertEqual(screen._home_chips, before)
         screen.right()
         screen.up()
-        self.assertEqual(screen.focus_area, "categories")
-        for _ in range(2):
-            screen.right()
-        self.assertEqual(screen._category_cursor, 2)
-        self.assertEqual(screen["category2"].text, "Mixy")
-        screen.activate()
-        self.assertEqual(screen._category_index, 2)
-        self.assertEqual(len(jobs), 2)
-        self.assertEqual(jobs[1][0][0].__name__, "_load_live_home_videos")
-        self.assertEqual(jobs[1][0][1]["continuation"], "SERVER_MIXES")
         screen.right()
         screen.activate()
-        self.assertEqual(screen._category_index, 3)
-        self.assertEqual(len(jobs), 3)
-        jobs[1][2].success([video(90)])
-        self.assertEqual(screen.video_items, [])  # stale response discarded
-        jobs[2][2].success([video(8)])
+        self.assertEqual(jobs[-1][1]["category_id"], screen._home_chips[1]["category_id"])
+        old = jobs[-1]
+        screen.right()
+        screen.activate()
+        self.assertEqual(jobs[-1][1]["category_id"], screen._home_chips[2]["category_id"])
+        old[2].success([video(90)])
+        self.assertEqual(screen.video_items, [])
+        jobs[-1][2].success([video(8)])
         self.assertEqual(screen.video_items[0]["video_id"], video(8)["video_id"])
-        screen.down()
-        self.assertEqual(screen.focus_area, "tiles")
-        screen.up()
-        self.assertEqual(screen.focus_area, "categories")
-        screen.back()
-        self.assertEqual(screen.focus_area, "nav")
-        self.assertEqual(len(session.opens), 0)
+        self.assertEqual(session.opens, [])
 
     def test_subscription_chip_rail_scrolls_beyond_seven_visible_channels(self):
         mod, key, saved, jobs = load(key="configured-api-key")
@@ -655,16 +628,6 @@ class HomeLivePreviewTests(unittest.TestCase):
         mod, key, saved, jobs = load(key="api")
         screen, session = ready(mod)
         jobs[0][2].success([video(i) for i in range(24)])
-        screen._personalization_ready({
-            "connected": True, "channels": [],
-            "home_chips": [
-                {"id": "yt:0", "kind": "live", "label": "Všetko", "selected": True},
-                {"id": "yt:1", "kind": "live", "label": "Hudba",
-                 "continuation": "SERVER_MUSIC"},
-            ],
-            "home_videos": [dict(video(i), video_id=("%011d" % i))
-                            for i in range(24)]
-        }, screen._personal_epoch)
         screen.right()
         # Put the viewer explicitly on the final real-video page; MENU must
         # work regardless of how the receiver's arrow repeat is configured.
@@ -686,13 +649,14 @@ class HomeLivePreviewTests(unittest.TestCase):
             self.assertEqual(session.callbacks[-1][1][0], object)
             self.assertEqual(session.callbacks[-1][1][-1], False)
             quick_callback = session.callbacks[-1][0]
-            quick_callback("yt:1")
+            quick_callback(screen._home_chips[1]["id"])
         self.assertFalse(screen._quick_select_open)
         self.assertEqual(screen._category_index, 1)
         self.assertEqual(screen.page_index, 0)
         self.assertEqual(screen.focus_area, "tiles")
         latest_job = jobs[-1]
-        self.assertEqual(latest_job[0][0].__name__, "_load_live_home_videos")
+        self.assertIs(latest_job[0][0], mod.popular_videos_page)
+        self.assertEqual(latest_job[1]["category_id"], screen._home_chips[1]["category_id"])
         latest_job[2].success([video(5), video(6)])
         self.assertEqual(screen.video_items[0]["video_id"], video(5)["video_id"])
         self.assertEqual(len(session.opens), 0)
@@ -709,7 +673,7 @@ class HomeLivePreviewTests(unittest.TestCase):
                 {"channel_id": "UC" + "b" * 22, "title": "Nature World"}
             ]
         }, screen._personal_epoch)
-        self.assertEqual(len(screen._home_chips), 1)  # fallback, no fake topics
+        self.assertEqual(len(screen._home_chips), 7)  # independent official categories
         self.assertEqual(len(screen._subscription_chips), 3)
         screen._select_nav(2)  # Odbery opens in right pane, not separate Screen
         self.assertEqual(len(session.opens), 0)

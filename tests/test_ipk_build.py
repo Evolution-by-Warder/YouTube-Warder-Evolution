@@ -61,8 +61,8 @@ class PackagingTests(unittest.TestCase):
                 # are real IPK members, not just concept artwork.
                 accent_names = [("nav_%d.png" % i, (64, 64)) for i in range(8)]
                 accent_names += [("nav_focus.png", (328, 72)),
-                                 ("video_focus.png", (477, 324)),
-                                 ("grid_focus.png", (491, 364))]
+                                 ("video_focus.png", (477, 350)),
+                                 ("grid_focus.png", (477, 350))]
                 for icon, dimensions in accent_names:
                     raw = tar.extractfile("./" + m.TARGET_PREFIX + "/images/" + icon).read()
                     self.assertEqual(raw[:8], b"\x89PNG\r\n\x1a\n")
@@ -80,8 +80,8 @@ class PackagingTests(unittest.TestCase):
         art = module_from_spec(spec)
         spec.loader.exec_module(art)
         for render, dims in (
-            (art.render_video_focus, (477, 324)),
-            (art.render_grid_focus, (491, 364))
+            (art.render_video_focus, (477, 350)),
+            (art.render_grid_focus, (477, 350))
         ):
             raw = render()
             self.assertEqual(raw[25], 6)
@@ -99,10 +99,11 @@ class PackagingTests(unittest.TestCase):
                     break
             pixels = zlib.decompress(bytes(compressed))
             row_size = dims[0]*4+1
-            self.assertTrue(all(pixels[i*row_size] == 0 for i in range(dims[1])))
+            from png_pixels import unfilter_rgba
+            decoded = unfilter_rgba(pixels, *dims)
             def at(x, y):
-                base = y*row_size+1+x*4
-                return pixels[base:base+4]
+                base = (y*dims[0]+x)*4
+                return decoded[base:base+4]
             border = at(0, dims[1]//2)
             inside = at(dims[0]//2, dims[1]//2)
             self.assertGreater(border[0], 140)

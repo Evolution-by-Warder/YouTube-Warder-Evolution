@@ -74,7 +74,8 @@ def load():
             read_client=lambda: {},
             request_device_code=lambda credentials: {},
             poll_device_code=lambda client, code: None,
-            save_tokens=lambda tokens: None),
+            SubscriptionsAuthError=type("SubscriptionsAuthError", (Exception,), {}),
+            save_tokens_if_active=lambda tokens, cancelled: not cancelled.is_set()),
         "twisted": mod("twisted"),
         "twisted.internet": mod("twisted.internet"),
         "twisted.internet.threads": mod("twisted.internet.threads",
@@ -115,7 +116,7 @@ class InlineLoginTests(unittest.TestCase):
             tasks[1][1].success(("connected", {"access_token": "private-access",
                                                "refresh_token": "private-refresh"}))
             self.assertEqual(len(tasks), 3)
-            self.assertIs(tasks[2][0][0], modules["_home_tv_test.subscriptions_auth"].save_tokens)
+            self.assertIs(tasks[2][0][0], modules["_home_tv_test.subscriptions_auth"].save_tokens_if_active)
             tasks[2][1].success(None)
             self.assertTrue(home.connected)
             self.assertTrue(login.closed)
