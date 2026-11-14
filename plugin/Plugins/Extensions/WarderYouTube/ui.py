@@ -518,7 +518,7 @@ class WarderYouTubeHome(Screen):
             "not_authenticated", "no_chips", "network",
             "http_failure", "invalid_response", "unavailable"
         ) else "unavailable"
-        old_id = self._selected_home_chip()["id"
+        old_id = self._selected_home_chip()["id"]
         cursor_id = (self._home_chips[self._category_cursor]["id"]
                      if 0 <= self._category_cursor < len(self._home_chips)
                      else old_id)
