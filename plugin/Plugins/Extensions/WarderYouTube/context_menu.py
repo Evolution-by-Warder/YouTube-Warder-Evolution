@@ -17,20 +17,20 @@ class WarderYouTubeContext(Screen):
         add_header(self)
         self.options = [
             ("play", _("Play video")),
-            ("favorite", _("Remove from favourites") if is_favourite else _("Add to favourites")),
+            ("favorite", _("Remove video from favourites") if is_favourite else _("Add video to favourites")),
             ("info", _("Video details")),
         ]
         if mode == "search":
             self.options.append(("search", _("New search")))
         elif mode == "favourites":
-            # In Favourites, "Remove from favourites" already removes this
-            # video. A second "Delete" would do exactly the same thing.
+            # In Favourites, "Remove video from favourites" already removes this
+            # video. A second single-video delete would do exactly the same thing.
             # Keep only the distinct, confirmation-protected clear-all action.
-            self.options.append(("clear", _("Clear all favourites")))
+            self.options.append(("clear", _("Clear all favourite videos")))
         elif mode == "history":
-            # In History, "Delete" removes just the selected history record;
+            # In History, "Delete video from history" removes only that record;
             # "Remove from favourites" is a separate, optional operation.
-            self.options.append(("remove", _("Delete")))
+            self.options.append(("remove", _("Delete video from history")))
             self.options.append(("clear", _("Clear entire history")))
         self["brand"] = Label("YouTube Warder Evolution")
         self["heading"] = Label(_("Video actions"))
@@ -45,7 +45,11 @@ class WarderYouTubeContext(Screen):
         self["key_red"] = Label(_("Back"))
         self["key_green"] = Label(_("Open"))
         self["key_yellow"] = Label(_("Details"))
-        self["key_blue"] = Label(_("New search") if mode == "search" else _("Clear all"))
+        self["key_blue"] = Label(
+            _("New search") if mode == "search" else
+            _("Clear favourites") if mode == "favourites" else
+            _("Clear history")
+        )
         self.mode = mode
         self["actions"] = ActionMap(["NavigationActions", "OkCancelActions", "ColorActions"], {
             "up": self.up, "down": self.down,
