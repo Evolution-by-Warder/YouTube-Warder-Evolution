@@ -1,0 +1,65 @@
+name: One-off test51 development reconciliation
+on:
+  push:
+    branches: [feature/native-search-v002]
+    paths:
+      - '.github/workflows/reconcile-test51.yml'
+      - 'tools/reconcile_test51.py'
+      - 'tools/test51-payload.part*'
+permissions:
+  contents: write
+concurrency:
+  group: warder-test51-reconcile
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    if: github.repository == 'Evolution-by-Warder/YouTube-Warder-Evolution' && github.ref == 'refs/heads/feature/native-search-v002'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Apply reviewed hash-checked source updates
+        run: |
+          python3 tools/reconcile_test51.py
+          # Workflow metadata is updated separately through the owner connector.
+          # This job deliberately does not push any workflow-file edits.
+          git restore -- .github/workflows/test-ipk.yml
+      - name: Validate exact receiver sources and package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests -v 2>&1 | tee /tmp/warder-test51-tests.log
+          python3 -m compileall -q plugin/Plugins/Extensions/WarderYouTube
+          python3 tools/build_test_ipk.py --output dist
+          printf '%s  %s\n' '509985f20f6b7c3c005f52e4bc57e4748730f00137b537aa672a38fbcf6e790d' 'dist/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8~test51_all.ipk' | sha256sum --check -
+      - name: Commit tested runtime to development branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/feature/native-search-v002'
+          git rm tools/reconcile_test51.py tools/test51-payload.part0 tools/test51-payload.part1 tools/test51-payload.part2
+          git add plugin tests tools docs README.md
+          test -z "$(git diff --cached --name-only -- .github update)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Reconcile approved test50 layout and Home rotation; test51 account recovery (304 tests)'
+          git push origin HEAD:refs/heads/feature/native-search-v002
+          git rev-parse HEAD > dist/SOURCE_COMMIT.txt
+          cp /tmp/warder-test51-tests.log dist/TEST_RESULTS.txt
+          git archive --format=tar.gz HEAD > dist/warder-youtube-test51-source.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WarderYouTube-test51-verified-reconciliation
+          path: |
+            dist/*.ipk
+            dist/*.sha256
+            dist/*.txt
+            dist/*.tar.gz
+          retention-days: 7
+          if-no-files-found: error
