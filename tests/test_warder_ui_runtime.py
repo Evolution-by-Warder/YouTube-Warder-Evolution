@@ -440,6 +440,34 @@ class WarderNativeUiTests(unittest.TestCase):
         controls.bindings["ok"]()
         self.assertEqual(screen.closed_args, ())
 
+    def test_info_uses_extra_two_rows_within_original_frame(self):
+        m = load("info_ui")
+        self.assertEqual(m.VISIBLE_LINES, 14)
+        msg = "\\n".join("Line %02d" % n for n in range(18))
+        screen = m.WarderYouTubeInfo(None, msg)
+        self.assertEqual(len(screen["body"].text.splitlines()), 14)
+        screen["actions"].bindings["down"]()
+        self.assertEqual(screen._top_line, 1)
+        self.assertEqual(len(screen["body"].text.splitlines()), 14)
+        xml_tree = ast.parse((ROOT / "skin.py").read_text(encoding="utf-8"))
+        info_skin = next(
+            ast.literal_eval(stmt.value)
+            for stmt in xml_tree.body
+            if isinstance(stmt, ast.Assign) and
+            any(isinstance(target, ast.Name) and target.id == "INFO_SKIN"
+                for target in stmt.targets)
+        )
+        xml = ET.fromstring(info_skin)
+        body = next(w for w in xml.findall("widget")
+                    if w.attrib.get("name") == "body")
+        self.assertEqual(body.attrib["position"], "116,313")
+        self.assertEqual(body.attrib["size"], "1660,580")
+        top = int(body.attrib["position"].split(",")[1])
+        height = int(body.attrib["size"].split(",")[1])
+        self.assertLessEqual(top + height, 904)
+        self.assertIn('position="72,916"', info_skin)
+        self.assertIn('size="1775,2"', info_skin)
+
     def test_info_readable_to_final_line_and_back(self):
         m = load("info_ui")
         message = "Video details\n" + "\n".join(
