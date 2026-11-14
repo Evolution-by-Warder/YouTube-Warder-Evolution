@@ -21,7 +21,7 @@ jobs:
       - name: Upload private testing candidate as Actions artifact
         uses: actions/upload-artifact@v4
         with:
-          name: WarderYouTube-test37-home-categories-IPK
+          name: WarderYouTube-test38-dynamic-home-chips-IPK
           path: |
             dist/*.ipk
             dist/*.sha256
