@@ -323,11 +323,12 @@ class WarderNativeUiTests(unittest.TestCase):
             None, {"title": "Saved song"}, True, "favourites"
         )
         # The user-confirmed test24 has two equivalent single-item actions.
-        # Keep 'Remove from favourites' but never show 'Delete' there.
+        # Keep 'Remove video from favourites' but never show a duplicate delete.
         self.assertEqual([action for action, _ in screen.options],
                          ["play", "favorite", "info", "clear"])
-        self.assertEqual(screen.options[1][1], "Remove from favourites")
-        self.assertEqual(screen.options[3][1], "Clear all favourites")
+        self.assertEqual(screen.options[1][1], "Remove video from favourites")
+        self.assertEqual(screen.options[3][1], "Clear all favourite videos")
+        self.assertEqual(screen["key_blue"].text, "Clear favourites")
         self.assertNotIn("remove", [action for action, _ in screen.options])
         self.assertNotIn("Delete", [label for _, label in screen.options])
         self.assertEqual(screen["context_row4"].text, "")
@@ -355,8 +356,30 @@ class WarderNativeUiTests(unittest.TestCase):
         )
         self.assertEqual([action for action, _ in screen.options],
                          ["play", "favorite", "info", "remove", "clear"])
-        self.assertEqual(screen.options[3][1], "Delete")
+        self.assertEqual(screen.options[3][1], "Delete video from history")
         self.assertEqual(screen.options[4][1], "Clear entire history")
+        self.assertEqual(screen["key_blue"].text, "Clear history")
+
+    def test_every_video_context_action_identifies_exact_target(self):
+        m = load("context_menu")
+        for mode, favourite, expected in (
+            ("search", False, ["Play video", "Add video to favourites",
+                               "Video details", "New search"]),
+            ("favourites", True, ["Play video", "Remove video from favourites",
+                                  "Video details", "Clear all favourite videos"]),
+            ("history", False, ["Play video", "Add video to favourites",
+                                "Video details", "Delete video from history",
+                                "Clear entire history"])
+        ):
+            with self.subTest(mode=mode):
+                screen = m.WarderYouTubeContext(
+                    None, {"title": "Example video"}, favourite, mode
+                )
+                self.assertEqual([label for _, label in screen.options], expected)
+                self.assertNotIn("Delete", [label for _, label in screen.options])
+                self.assertNotIn("Clear", [label for _, label in screen.options])
+                self.assertNotIn("Clear all", [label for _, label in screen.options])
+                self.assertNotIn("Remove", [label for _, label in screen.options])
 
     def test_native_confirmation_defaults_to_no(self):
         m = load("confirm_ui")
