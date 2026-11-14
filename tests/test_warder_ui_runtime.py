@@ -24,6 +24,26 @@ class Label:
         self.visible = True
 
 
+class ScrollLabel(Label):
+    def __init__(self, text=""):
+        super().__init__(text)
+        self.page_up_calls = 0
+        self.page_down_calls = 0
+
+    def pageUp(self):
+        self.page_up_calls += 1
+
+    def pageDown(self):
+        self.page_down_calls += 1
+
+
+class ActionBindings(Label):
+    def __init__(self, contexts, bindings, *args, **kwargs):
+        super().__init__()
+        self.contexts = contexts
+        self.bindings = bindings
+
+
 class MenuList:
     def __init__(self, rows):
         self.rows = rows
@@ -83,9 +103,10 @@ def load(name):
         ),
         "Components": components,
         "Components.ActionMap": mod(
-            "Components.ActionMap", ActionMap=lambda *args, **kwargs: Label()
+            "Components.ActionMap", ActionMap=ActionBindings
         ),
         "Components.Label": mod("Components.Label", Label=Label),
+        "Components.ScrollLabel": mod("Components.ScrollLabel", ScrollLabel=ScrollLabel),
         "Screens.MessageBox": mod("Screens.MessageBox", MessageBox=object),
         "_test_warder_design.update_core": mod(
             "_test_warder_design.update_core", CURRENT_VERSION="0.0.8~test7"
@@ -399,8 +420,19 @@ class WarderNativeUiTests(unittest.TestCase):
     def test_info_screen_is_full_native_and_bounded(self):
         m = load("info_ui")
         screen = m.WarderYouTubeInfo(None, "Video\n" + "A" * 5000)
+        self.assertIsInstance(screen["body"], ScrollLabel)
         self.assertEqual(len(screen["body"].text), 2500)
-        screen.close()
+        self.assertEqual(screen["key_yellow"].text, "Scroll up")
+        self.assertEqual(screen["key_blue"].text, "Scroll down")
+        controls = screen["actions"]
+        self.assertIn("DirectionActions", controls.contexts)
+        for key in ("up", "yellow", "pageUp"):
+            controls.bindings[key]()
+        for key in ("down", "blue", "pageDown"):
+            controls.bindings[key]()
+        self.assertEqual(screen["body"].page_up_calls, 3)
+        self.assertEqual(screen["body"].page_down_calls, 3)
+        controls.bindings["ok"]()
         self.assertEqual(screen.closed_args, ())
 
     def test_all_twelve_screens_use_colored_text_and_thin_lines_not_rectangles(self):
