@@ -753,7 +753,8 @@ class WarderYouTubeHome(Screen):
             self._confirm_open = True
             self.session.openWithCallback(
                 self._clear_confirmed, WarderYouTubeConfirm,
-                _("Clear") + ": " + self.sections[self.index][0] + "?"
+                (_("Clear all favourites") if self.index == 5
+                 else _("Clear entire history")) + "?"
             )
 
     def _clear_confirmed(self, confirmed):
