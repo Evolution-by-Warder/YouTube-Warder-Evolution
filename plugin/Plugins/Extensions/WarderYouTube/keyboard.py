@@ -30,10 +30,10 @@ class WarderYouTubeKeyboard(Screen):
         self["brand"] = Label("YouTube Warder Evolution  /  " + _("Search videos"))
         self["input"] = Label("")
         self["hint"] = Label(_("Press OK to type a letter"))
-        self["legend"] = Label(_("Space") + " · " + _("Delete") + " · MENU: Aa")
+        self["legend"] = Label(_("Space") + " · " + _("Delete character") + " · MENU: Aa")
         self["key_red"] = Label(_("Cancel"))
         self["key_green"] = Label(_("Confirm"))
-        self["key_yellow"] = Label(_("Delete"))
+        self["key_yellow"] = Label(_("Delete character"))
         self["key_blue"] = Label(_("Space"))
         for index, char in enumerate(self.characters):
             self["letter%d" % index] = Label(char)
