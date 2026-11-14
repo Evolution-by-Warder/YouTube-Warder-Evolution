@@ -245,6 +245,26 @@ class UpdateUiTests(unittest.TestCase):
         screen.restart_gui()
         self.assertEqual(session.opens, [(shutdown, (3,), {})])
 
+    def test_progress_phases_remain_inside_plugin_until_success(self):
+        ui, jobs, shutdown = load_updater()
+        session = Session()
+        screen = ui.WarderYouTubeUpdateProgress(session, sample_release())
+        screen.begin_once()
+        report = jobs[0][2]["progress"]
+        report("download", 32, 128)
+        self.assertEqual(screen["progress"].value, 25)
+        report("download", 128, 128)
+        self.assertEqual(screen["progress"].value, 100)
+        report("verify")
+        self.assertIn("SHA256", screen["phase"].text)
+        report("install")
+        self.assertIn("opkg", screen["phase"].text)
+        self.assertEqual(session.opens, [])
+        screen.restart_gui()
+        self.assertEqual(session.opens, [])
+        jobs[0][3].success("0.0.8~test59")
+        self.assertEqual(screen.restart_timer.started, (3000, True))
+
     def test_failed_install_never_restarts_and_allows_exit(self):
         ui, jobs, _ = load_updater()
         session = Session()
