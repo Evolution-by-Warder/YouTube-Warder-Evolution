@@ -26,26 +26,57 @@ class HomeThumbs:
         self.decoder = None
         self.signal = None
         self.connection = None
+        self._decoder_generation = 0
+        self._decode_callback = None
         # The on-screen ePixmap may lose its buffer while a dialog is open.
         # Retain at most 12 native ePtr frames for safe restoration.
         self.image_cache = {}
 
     def start(self):
-        if self.closed or self.ready:
+        if self.closed or (self.ready and self.decoder is not None):
             return
-        self.ready = True
+        # A missing ePicLoad may recover after an Enigma2 GUI transition.
+        self._decoder_generation += 1
+        generation = self._decoder_generation
         try:
-            self.decoder = ePicLoad()
-            picture_data = self.decoder.PictureData
-            if hasattr(picture_data, "get"):
-                self.signal = picture_data.get()
-                self.signal.append(self._decoded)
+            decoder = ePicLoad()
+            signal = decoder.PictureData
+            callback = lambda *args: self._decoded_if_current(generation, *args)
+            self.decoder = decoder
+            self._decode_callback = callback
+            if hasattr(signal, "get"):
+                self.signal = signal.get()
+                self.signal.append(callback)
             else:
-                self.connection = picture_data.connect(self._decoded)
+                self.connection = signal.connect(callback)
             self.decoder.setPara(self.decode_parameters())
+            self.ready = True
         except Exception:
+            self.ready = False
             self._release()
             self.decoder = None
+
+    def _decoded_if_current(self, generation, *args):
+        # A late callback from a released decoder must never consume the
+        # new decoder's in-flight image or leave its queue permanently stuck.
+        if generation != self._decoder_generation:
+            return
+        self._decoded(*args)
+
+    def _restart_decoder(self):
+        """Break an abandoned ePicLoad job after rapid page/menu changes.
+
+        ePicLoad sometimes never emits PictureData for an abandoned decode
+        on embedded receivers. Releasing it makes new visible frames progress
+        without requiring a full plugin restart.
+        """
+        self._decoder_generation += 1
+        self._release()
+        self.decoder = None
+        self.decoding = None
+        self.ready = False
+        if not self.closed:
+            self.start()
 
     def decode_parameters(self):
         width, height = 410, 230
@@ -72,6 +103,11 @@ class HomeThumbs:
         self.epoch += 1
         self.queue = []
         self.decodes = []
+        # Never keep a stale decoder lock when another page is selected.
+        if self.decoding is not None:
+            self._restart_decoder()
+        elif self.decoder is None:
+            self.start()
         for slot in range(VISIBLE):
             self.screen["preview_thumb%d" % slot].hide()
         if self.closed or not self.ready or self.decoder is None:
@@ -128,6 +164,11 @@ class HomeThumbs:
             except Exception:
                 pass
             self.decoding = None
+            # startDecode failures can leave this particular ePicLoad broken.
+            # Retry the next visible frame using a fresh decoder.
+            if not self.closed:
+                self._restart_decoder()
+                return
 
     def _decoded(self, *args):
         req, self.decoding = self.decoding, None
@@ -155,14 +196,16 @@ class HomeThumbs:
             self.connection = None
         if self.signal is not None:
             try:
-                self.signal.remove(self._decoded)
+                self.signal.remove(self._decode_callback)
             except (ValueError, AttributeError, RuntimeError):
                 pass
             self.signal = None
+        self._decode_callback = None
 
     def close(self):
         self.closed = True
         self.epoch += 1
+        self._decoder_generation += 1
         self.queue = []
         self.decodes = []
         self.image_cache.clear()
