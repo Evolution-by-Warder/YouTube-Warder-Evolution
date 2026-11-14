@@ -53,7 +53,7 @@ def load():
     fake_modules = {
         "_home_thumbs_test": package,
         "_home_thumbs_test.thumbnails": types.SimpleNamespace(
-            fetch_thumbnail=lambda url: url),
+            fetch_thumbnail=lambda url: url, cleanup_cache=lambda: None),
         "enigma": types.SimpleNamespace(ePicLoad=lambda: decoder),
         "twisted": types.ModuleType("twisted"),
         "twisted.internet": types.ModuleType("twisted.internet"),
