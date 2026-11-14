@@ -46,6 +46,54 @@ class LanguageTests(unittest.TestCase):
                 ))
                 self.assertEqual(values, expected)
 
+    def test_all_destructive_actions_specify_their_target_in_every_language(self):
+        keys = (
+            "Remove video from favourites", "Clear all favourite videos",
+            "Delete video from history", "Clear entire history",
+            "Clear favourites", "Clear history", "Delete from history",
+            "Delete character", "Add video to favourites",
+        )
+        values = {
+            "sk_SK": (
+                "Odobrať video z obľúbených", "Vymazať všetky obľúbené videá",
+                "Zmazať video z histórie", "Vymazať celú históriu",
+                "Vymazať obľúbené", "Vymazať históriu",
+                "Zmazať z histórie", "Zmazať znak", "Pridať video do obľúbených",
+            ),
+            "cs_CZ": (
+                "Odebrat video z oblíbených", "Vymazat všechna oblíbená videa",
+                "Smazat video z historie", "Vymazat celou historii",
+                "Vymazat oblíbené", "Vymazat historii",
+                "Smazat z historie", "Smazat znak", "Přidat video do oblíbených",
+            ),
+            "de_DE": (
+                "Video aus Favoriten entfernen", "Alle Favoritenvideos löschen",
+                "Video aus Verlauf löschen", "Gesamten Verlauf löschen",
+                "Favoriten löschen", "Verlauf löschen",
+                "Aus Verlauf löschen", "Zeichen löschen",
+                "Video zu Favoriten hinzufügen",
+            ),
+            "en_GB": keys,
+        }
+        for language, expected in values.items():
+            with self.subTest(language=language):
+                translated = tuple(self.translate(language, label) for label in keys)
+                self.assertEqual(translated, expected)
+
+    def test_library_key_legends_name_history_or_favourites(self):
+        keys = (
+            "OK: play · INFO: details · MENU: actions · YELLOW: remove favourite · BLUE: clear favourites · EXIT: home",
+            "OK: play · INFO: details · MENU: actions · YELLOW: delete from history · BLUE: clear history · EXIT: home",
+        )
+        for language in ("sk_SK", "cs_CZ", "de_DE", "en_GB"):
+            with self.subTest(language=language):
+                favourite, history = tuple(self.translate(language, key) for key in keys)
+                self.assertNotEqual(favourite, history)
+                self.assertTrue(favourite)
+                self.assertTrue(history)
+                self.assertNotIn("YELLOW: delete from history", favourite)
+                self.assertNotIn("BLUE: clear favourites", history)
+
     def test_key_legends_follow_receiver_language(self):
         self.assertEqual(self.translate("sk_SK", "Updates"), "Aktualizácie")
         self.assertEqual(self.translate("cs_CZ", "Updates"), "Aktualizace")
