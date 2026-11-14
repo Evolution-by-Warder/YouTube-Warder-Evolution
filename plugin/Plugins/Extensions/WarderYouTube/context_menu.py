@@ -19,7 +19,8 @@ class WarderYouTubeContext(Screen):
             ("play", _("Play video")),
             ("favorite", _("Remove video from favourites") if is_favourite else _("Add video to favourites")),
             ("info", _("Video details")),
-        ] if isinstance(video, dict) and video else [])
+        ] if mode not in ("home", "subscriptions") or (
+            isinstance(video, dict) and video.get("video_id")) else [])
         if mode in ("home", "subscriptions"):
             self.options.insert(0, (
                 "choose_subscription" if mode == "subscriptions" else "choose_category",
