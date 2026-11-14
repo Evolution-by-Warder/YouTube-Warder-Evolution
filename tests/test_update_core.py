@@ -79,7 +79,7 @@ class UpdateCoreTests(unittest.TestCase):
         release = u.parse_manifest(json.dumps(future).encode(), u.CURRENT_VERSION)
         self.assertEqual(release["version"], "0.0.8~test43")
         self.assertEqual(release["url"], u.expected_url("0.0.8~test43"))
-        self.assertTrue(release["url"].endswith("_0.0.8.test42_all.ipk"))
+        self.assertTrue(release["url"].endswith("_0.0.8.test43_all.ipk"))
 
     def test_manifest_rejects_mismatched_tag_url_or_digest(self):
         for change, value in [
