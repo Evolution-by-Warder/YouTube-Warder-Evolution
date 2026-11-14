@@ -8,7 +8,7 @@ import html
 import json
 import re
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
 
 BASE = "https://www.googleapis.com/youtube/v3/"
@@ -67,7 +67,27 @@ def parse_subscriptions(data):
         if not isinstance(channel, str) or not CHANNEL_ID.fullmatch(channel):
             continue
         title = html.unescape(str(snippet.get("title") or "YouTube channel")).strip()[:160]
+        thumbnails = snippet.get("thumbnails") or {}
+        avatar = ""
+        if isinstance(thumbnails, dict):
+            for size in ("medium", "high", "default"):
+                entry = thumbnails.get(size) or {}
+                url = entry.get("url") if isinstance(entry, dict) else ""
+                if not isinstance(url, str) or len(url) > 2048:
+                    continue
+                try:
+                    parts = urlsplit(url)
+                    if (parts.scheme == "https"
+                            and parts.hostname in ("yt3.ggpht.com", "yt3.googleusercontent.com")
+                            and parts.port in (None, 443)
+                            and not parts.username and not parts.password
+                            and parts.path.startswith("/") and len(parts.path) >= 5):
+                        avatar = url
+                        break
+                except ValueError:
+                    continue
         items.append({"channel_id": channel, "title": title,
+                      "thumbnail_url": avatar,
                       "published_at": str(snippet.get("publishedAt") or "")[:32]})
     return items
 
