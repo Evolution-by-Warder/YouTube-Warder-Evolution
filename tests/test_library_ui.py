@@ -137,7 +137,7 @@ def load():
             ResolverError=ValueError, resolve_video_streams=lambda *a, **k: []
         ),
         "_test_warder_library.settings": mkmod(
-            "_test_warder_library.settings", get_quality=lambda: "720"
+            "_test_warder_library.settings", get_quality=lambda: "720", get_api_key=lambda: ""
         ),
         "_test_warder_library.player": mkmod(
             "_test_warder_library.player",
