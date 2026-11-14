@@ -429,9 +429,9 @@ LIBRARY_SKIN = """
   <eLabel position="620,1070" size="195,3" backgroundColor="#36E884" zPosition="5"/>
   <widget name="key_green" position="526,1020" size="381,45" font="Regular;29" foregroundColor="#4CE58B" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1090,1070" size="195,3" backgroundColor="#FFE065" zPosition="5"/>
-  <widget name="key_yellow" position="996,1020" size="381,45" font="Regular;29" foregroundColor="#FFD367" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
+  <widget name="key_yellow" position="996,1020" size="381,45" font="Regular;22" foregroundColor="#FFD367" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1560,1070" size="195,3" backgroundColor="#60BCFF" zPosition="5"/>
-  <widget name="key_blue" position="1466,1020" size="381,45" font="Regular;29" foregroundColor="#5EBEFF" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
+  <widget name="key_blue" position="1466,1020" size="381,45" font="Regular;22" foregroundColor="#5EBEFF" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
 
   <eLabel position="43,223" size="1834,2" backgroundColor="#1886AD" zPosition="2"/>
   <eLabel position="43,950" size="1834,2" backgroundColor="#1886AD" zPosition="2"/>
@@ -671,9 +671,9 @@ CONTEXT_SKIN = """
   <eLabel position="620,1070" size="195,3" backgroundColor="#36E884" zPosition="5"/>
   <widget name="key_green" position="526,1020" size="381,45" font="Regular;29" foregroundColor="#4CE58B" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1090,1070" size="195,3" backgroundColor="#FFE065" zPosition="5"/>
-  <widget name="key_yellow" position="996,1020" size="381,45" font="Regular;29" foregroundColor="#FFD367" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
+  <widget name="key_yellow" position="996,1020" size="381,45" font="Regular;22" foregroundColor="#FFD367" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1560,1070" size="195,3" backgroundColor="#60BCFF" zPosition="5"/>
-  <widget name="key_blue" position="1466,1020" size="381,45" font="Regular;29" foregroundColor="#5EBEFF" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
+  <widget name="key_blue" position="1466,1020" size="381,45" font="Regular;22" foregroundColor="#5EBEFF" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
 
   <eLabel position="288,175" size="1345,2" backgroundColor="#168BAF" zPosition="2"/>
   <eLabel position="288,932" size="1345,2" backgroundColor="#168BAF" zPosition="2"/>
