@@ -8,6 +8,11 @@ import os
 
 MESSAGES = {
     "en": {
+        "Loading YouTube category…": "Loading YouTube category…",
+        "YouTube categories are temporarily unavailable.": "YouTube categories are temporarily unavailable.",
+        "Real YouTube Home categories are unavailable for this account.": "Real YouTube Home categories are unavailable for this account.",
+        "YouTube Home category from your account.": "YouTube Home category from your account.",
+        "No videos in this YouTube category.": "No videos in this YouTube category.",
         "sieť: %d, dekodér: %d": "network: %d, decoder: %d",
         "API kľúč: nastavený": "API key: configured",
         "API kľúč: nenastavený (vyhľadávanie cez yt-dlp)": "API key: not configured (yt-dlp search)",
@@ -52,6 +57,11 @@ MESSAGES = {
         "Waiting for Google account authorization…": "Waiting for Google account authorization…",
     },
     "sk": {
+        "Loading YouTube category…": "Načítavam kategóriu YouTube…",
+        "YouTube categories are temporarily unavailable.": "Kategórie YouTube sú momentálne nedostupné.",
+        "Real YouTube Home categories are unavailable for this account.": "Skutočné kategórie YouTube pre tento účet nie sú dostupné.",
+        "YouTube Home category from your account.": "Kategória z domovskej stránky tvojho YouTube účtu.",
+        "No videos in this YouTube category.": "V tejto kategórii YouTube sa nenašli videá.",
         "Change API key": "Zmeniť API kľúč",
         "Change saved API key?": "Zmeniť uložený API kľúč?",
         "manual file": "zo súboru",
@@ -258,6 +268,11 @@ MESSAGES = {
         "Google account connected.": "Google účet pripojený.",
     },
     "cs": {
+        "Loading YouTube category…": "Načítám kategorii YouTube…",
+        "YouTube categories are temporarily unavailable.": "Kategorie YouTube jsou momentálně nedostupné.",
+        "Real YouTube Home categories are unavailable for this account.": "Skutečné kategorie YouTube pro tento účet nejsou dostupné.",
+        "YouTube Home category from your account.": "Kategorie z domovské stránky tvého účtu YouTube.",
+        "No videos in this YouTube category.": "V této kategorii YouTube nebyla nalezena videa.",
         "Change API key": "Změnit API klíč",
         "Change saved API key?": "Změnit uložený API klíč?",
         "manual file": "ze souboru",
@@ -458,6 +473,11 @@ MESSAGES = {
         "Google account connected.": "Google účet připojen.",
     },
     "de": {
+        "Loading YouTube category…": "YouTube-Kategorie wird geladen…",
+        "YouTube categories are temporarily unavailable.": "YouTube-Kategorien sind derzeit nicht verfügbar.",
+        "Real YouTube Home categories are unavailable for this account.": "Die echten YouTube-Startseitenkategorien dieses Kontos sind nicht verfügbar.",
+        "YouTube Home category from your account.": "Kategorie von der Startseite deines YouTube-Kontos.",
+        "No videos in this YouTube category.": "Keine Videos in dieser YouTube-Kategorie gefunden.",
         "Change API key": "API-Schlüssel ändern",
         "Change saved API key?": "Gespeicherten API-Schlüssel ändern?",
         "manual file": "aus Datei",
