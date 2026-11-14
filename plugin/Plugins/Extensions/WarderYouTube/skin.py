@@ -99,8 +99,8 @@ HOME_SKIN = """
   <widget name="preview_channel5" position="1401,942" size="457,24" font="Regular;19" foregroundColor="#B9D9F5" backgroundColor="#142C47" transparent="1" zPosition="4"/>
   <!-- Native right-pane update UI: visible without modal screen. -->
   <widget name="update_progress" position="450,523" size="1190,30" foregroundColor="#36E884" backgroundColor="#264A68" borderWidth="1" borderColor="#168BAF" zPosition="9"/>
-  <widget name="update_no_focus" position="470,510" size="580,66" font="Regular;1" foregroundColor="#087EC7" backgroundColor="#087EC7" transparent="0" zPosition="9"/>
-  <widget name="update_yes_focus" position="1075,510" size="580,66" font="Regular;1" foregroundColor="#087EC7" backgroundColor="#087EC7" transparent="0" zPosition="9"/>
+  <widget name="update_no_focus" position="483,517" size="555,50" font="Regular;32" foregroundColor="#32DFFF" transparent="1" zPosition="11"/>
+  <widget name="update_yes_focus" position="1088,517" size="555,50" font="Regular;32" foregroundColor="#32DFFF" transparent="1" zPosition="11"/>
   <widget name="update_no" position="483,517" size="555,50" font="Regular;32" foregroundColor="#FFFFFF" transparent="1" zPosition="10"/>
   <widget name="update_yes" position="1088,517" size="555,50" font="Regular;32" foregroundColor="#FFFFFF" transparent="1" zPosition="10"/>
   <widget name="detail0" position="449,256" size="1350,76" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#10263E" transparent="1" zPosition="4"/>
