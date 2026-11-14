@@ -58,13 +58,13 @@ class UpdateCoreTests(unittest.TestCase):
         # Pinned, independently verified GitHub prerelease in the testing feed.
         # When publishing the next test candidate, update these values only
         # after its actual release asset and SHA256 have been verified.
-        self.assertEqual(rel["version"], "0.0.8~test63")
-        self.assertEqual(rel["sha256"], "591a623b38972d04909a81c27caf4416f87f163f7a0b189a090b70583e3d496a")
-        self.assertEqual(rel["bytes"], 601666)
+        self.assertEqual(rel["version"], "0.0.8~test65")
+        self.assertEqual(rel["sha256"], "92ed74a37ac13a3c6c82a2ead33d1f5c0ce3230b15b833516fb50144950ff30c")
+        self.assertEqual(rel["bytes"], 601700)
         self.assertEqual(rel["url"], u.expected_url(rel["version"]))
         self.assertEqual(len(rel["sha256"]), 64)
         self.assertGreater(rel["bytes"], 0)
-        self.assertEqual(u.parse_manifest(json.dumps(feed).encode(), u.CURRENT_VERSION)["version"], "0.0.8~test63")
+        self.assertEqual(u.parse_manifest(json.dumps(feed).encode(), u.CURRENT_VERSION)["version"], "0.0.8~test65")
         self.assertGreater(u.version_key(rel["version"]), u.version_key(u.CURRENT_VERSION))
 
     def test_installed_test6_is_offered_test7_for_opt_in_update(self):
