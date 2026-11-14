@@ -181,7 +181,8 @@ class WarderYouTubeLibrary(Screen):
         try:
             self.session.openWithCallback(
                 self.clear_confirmed, WarderYouTubeConfirm,
-                _("Clear") + " • " + self["title"].text + "?"
+                (_("Clear all favourites") if self.kind == "favourites"
+                 else _("Clear entire history")) + "?"
             )
         except Exception:
             self.confirmation_open = False
