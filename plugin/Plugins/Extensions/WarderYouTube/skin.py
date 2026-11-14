@@ -745,6 +745,8 @@ INFO_SKIN = """
   <eLabel position="72,181" size="1775,5" backgroundColor="#087EC7"/>
   <widget name="title" position="116,216" size="1690,68" font="Regular;42" foregroundColor="#6CCBFF" transparent="1" zPosition="3"/>
   <widget name="body" position="116,313" size="1660,580" font="Regular;30" foregroundColor="#FFFFFF" transparent="1" zPosition="3"/>
+  <widget name="scroll_track" position="1796,313" size="12,580" font="Regular;1" foregroundColor="#264A68" backgroundColor="#264A68" transparent="0" zPosition="4"/>
+  <widget name="scroll_thumb" position="1798,313" size="8,100" font="Regular;1" foregroundColor="#54D6FF" backgroundColor="#54D6FF" transparent="0" zPosition="5"/>
   <eLabel position="0,993" size="1920,87" backgroundColor="#08182D"/>
   <eLabel position="150,1070" size="195,3" backgroundColor="#FF526A" zPosition="5"/>
   <widget name="key_red" position="56,1020" size="381,45" font="Regular;29" foregroundColor="#FE637D" backgroundColor="#08182D" transparent="1" zPosition="3" halign="center"/>
