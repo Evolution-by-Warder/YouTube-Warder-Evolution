@@ -18,7 +18,7 @@ from .update_core import CURRENT_VERSION
 from .grid_model import move_index
 from .system_keyboard_pane import SystemKeyboardPane
 from .home_feed import popular_videos_page, public_home_videos
-from .home_personalization import (VISIBLE_CHIPS, build_home_chips, dedupe_videos)
+from .home_categories import HOME_CATEGORIES
 from .home_thumbs import HomeThumbs
 from .tile_scrollbar import TilePageScrollbar
 from .local_library import (
@@ -32,7 +32,7 @@ from .video_metadata import fetch_video_info
 from .video_info_display import format_video_info
 
 SECTIONS = (
-    ("Home", "Personal YouTube selection"),
+    ("Home", "Popular in Slovakia"),
     ("Search", "Enter your YouTube search"),
     ("Subscriptions", "Your YouTube subscriptions"),
     ("History", "Recently played videos"),
@@ -48,56 +48,6 @@ POPULAR_REFRESH_SECONDS = 600
 def preview_title(text, limit=49):
     result = " ".join(str(text or "").split())
     return result if len(result) <= limit else result[:limit - 1].rstrip() + "…"
-
-
-def _discover_home_chips():
-    """Read local taste + real subscriptions away from the Enigma2 GUI thread."""
-    def safe_local(name):
-        try:
-            return list_videos(name)
-        except LibraryError:
-            return []
-    history, saved = safe_local("history"), safe_local("favourites")
-    followed, connected = [], False
-    try:
-        from .subscriptions_auth import account_connected, access_token
-        from .subscriptions_api import subscriptions_list
-        if account_connected():
-            connected = True
-            followed = subscriptions_list(access_token())
-    except Exception:
-        # Login/network failure never prevents displaying the local Home.
-        pass
-    return {"history": history, "favourites": saved,
-            "channels": followed, "account": connected}
-
-
-def _load_chip_videos(chip):
-    """Fetch only the explicitly selected real subscribed channels."""
-    from .subscriptions_auth import access_token
-    from .subscriptions_api import (recent_subscription_videos, uploads_playlists,
-                                    playlist_videos, SubscriptionsApiError)
-    token = access_token()
-    if chip["kind"] == "recent":
-        videos, _channels = recent_subscription_videos(token)
-        return dedupe_videos(videos)
-    identifiers = list(chip.get("channels") or ())[:8]
-    if not identifiers:
-        return []
-    playlists = uploads_playlists(identifiers, token)
-    videos = []
-    for channel_id in identifiers:
-        playlist = playlists.get(channel_id)
-        if not playlist:
-            continue
-        try:
-            videos.extend(playlist_videos(playlist, token,
-                                         limit=50 if chip["kind"] == "channel" else 10))
-        except SubscriptionsApiError:
-            continue
-    videos.sort(key=lambda v: (v.get("published_at") or "", v.get("video_id") or ""),
-                reverse=True)
-    return dedupe_videos(videos)
 
 
 class WarderYouTubeHome(Screen):
@@ -134,15 +84,6 @@ class WarderYouTubeHome(Screen):
         self._popular_more_loading = False
         self._category_index = 0
         self._category_cursor = 0
-        self._category_offset = 0
-        self._home_chips = build_home_chips()
-        self._personal_sources = {"channels": [], "history": [], "favourites": []}
-        self._personal_requested = False
-        self._personal_fetched_at = 0
-        self._personal_epoch = 0
-        self._personal_video_epoch = 0
-        self._personal_video_cache = {}
-        self._auth_maybe_changed = False
         self._busy = False
         self._playback_active = False
         self._context_open = False
@@ -159,10 +100,10 @@ class WarderYouTubeHome(Screen):
         self["heading"] = Label("")
         self["subtitle"] = Label("")
         self["page_info"] = Label("")
-        for i in range(VISIBLE_CHIPS):
+        for i, (_category_id, label) in enumerate(HOME_CATEGORIES):
             self["category_panel%d" % i] = Label(" ")
             self["category_focus%d" % i] = Label(" ")
-            self["category%d" % i] = Label("")
+            self["category%d" % i] = Label(_(label))
         self["kb_hint"] = Label("")
         self["kb_feedback"] = Label("")
         try:
@@ -241,11 +182,6 @@ class WarderYouTubeHome(Screen):
                 task.addCallbacks(self._version_ready, self._version_failed)
             except Exception:
                 pass
-        # Build account-dependent chips only after Home has become visible.
-        # Returning from the Odbery login screen refreshes them immediately.
-        if self._mounted and not self._disposed:
-            self._request_personalization(refresh=self._auth_maybe_changed)
-            self._auth_maybe_changed = False
         # Returning from player/library refreshes local data, but does not
         # automatically poll the update server or repeat the popular feed.
         if self._mounted and not self._disposed and not self._playback_active:
@@ -291,11 +227,6 @@ class WarderYouTubeHome(Screen):
             else:
                 focus.hide()
 
-    def _selected_home_chip(self):
-        if 0 <= self._category_index < len(self._home_chips):
-            return self._home_chips[self._category_index]
-        return self._home_chips[0]
-
     def _render_categories(self):
         visible = self.index == 0
         if visible:
@@ -304,27 +235,15 @@ class WarderYouTubeHome(Screen):
             self["subtitle"].show()
         selected = (self._category_cursor if self.focus_area == "categories"
                     else self._category_index)
-        if selected < self._category_offset:
-            self._category_offset = selected
-        if selected >= self._category_offset + VISIBLE_CHIPS:
-            self._category_offset = selected - VISIBLE_CHIPS + 1
-        self._category_offset = max(0, min(
-            self._category_offset, max(0, len(self._home_chips) - VISIBLE_CHIPS)
-        ))
-        for slot in range(VISIBLE_CHIPS):
-            absolute = self._category_offset + slot
-            valid = visible and absolute < len(self._home_chips)
+        for i in range(len(HOME_CATEGORIES)):
             for name in ("category_panel", "category"):
-                widget = self["%s%d" % (name, slot)]
-                if valid:
+                widget = self["%s%d" % (name, i)]
+                if visible:
                     widget.show()
                 else:
                     widget.hide()
-            if valid:
-                self["category%d" % slot].setText(
-                    _(self._home_chips[absolute]["label"]))
-            focus = self["category_focus%d" % slot]
-            if valid and absolute == selected:
+            focus = self["category_focus%d" % i]
+            if visible and i == selected:
                 focus.show()
             else:
                 focus.hide()
@@ -343,7 +262,8 @@ class WarderYouTubeHome(Screen):
     def _choose_category(self):
         if self.index != 0 or self._busy or self._playback_active:
             return
-        if self._category_cursor == self._category_index and self.video_items:
+        if self._category_cursor == self._category_index and self._popular_cache:
+            # Keep the already fetched category unless the user picked a new one.
             self.focus_area = "tiles"
             self.tile_index = 0
             self._update_tile_focus()
@@ -351,113 +271,18 @@ class WarderYouTubeHome(Screen):
             self._update_keys()
             return
         self._category_index = self._category_cursor
+        self._popular_next_page_token = ""
+        self._popular_total_results = None
+        self._popular_more_loading = False
+        self._popular_requested = False
+        self._popular_loading = False
+        self._popular_cache = None
+        self._popular_error = False
+        self._popular_request_epoch += 1  # discard callbacks for old category
         self.page_index = 0
-        self._show_selected_home_chip()
+        self._request_popular()
         self._render_categories()
         self._update_keys()
-
-    def _request_personalization(self, refresh=False):
-        if self._disposed or self._personal_requested:
-            return
-        if (not refresh and self._personal_fetched_at
-                and monotonic() - self._personal_fetched_at < 300):
-            return
-        self._personal_requested = True
-        self._personal_epoch += 1
-        epoch = self._personal_epoch
-        try:
-            task = deferToThread(_discover_home_chips)
-            task.addCallbacks(
-                lambda data: self._personalization_ready(data, epoch),
-                lambda err: self._personalization_failed(epoch))
-        except Exception:
-            self._personalization_failed(epoch)
-
-    def _personalization_ready(self, data, epoch):
-        if self._disposed or epoch != self._personal_epoch:
-            return
-        self._personal_requested = False
-        self._personal_fetched_at = monotonic()
-        if not isinstance(data, dict):
-            return
-        selected_id = self._selected_home_chip()["id"]
-        cursor_id = (self._home_chips[self._category_cursor]["id"]
-                     if 0 <= self._category_cursor < len(self._home_chips)
-                     else selected_id)
-        new_chips = build_home_chips(
-            channels=data.get("channels") or (),
-            history=data.get("history") or (),
-            favourites=data.get("favourites") or (),
-            account=bool(data.get("account")))
-        self._personal_sources = data
-        self._home_chips = new_chips
-        lookup = {item["id"]: i for i, item in enumerate(new_chips)}
-        old_selected = selected_id
-        self._category_index = lookup.get(selected_id, 0)
-        self._category_cursor = lookup.get(cursor_id, self._category_index)
-        if old_selected not in lookup and self.index == 0:
-            self.page_index = 0
-            self._show_selected_home_chip()
-        self._render_categories()
-
-    def _personalization_failed(self, epoch):
-        if not self._disposed and epoch == self._personal_epoch:
-            self._personal_requested = False
-
-    def _show_selected_home_chip(self):
-        chip = self._selected_home_chip()
-        if chip["kind"] == "all":
-            if self._popular_cache:
-                self._show_tiles(self._popular_cache,
-                                 "Popular in Slovakia" if self._popular_source == "api"
-                                 else "Public YouTube selection (no API key)")
-            elif self._popular_loading:
-                self._show_message("Loading popular videos for Slovakia…")
-            elif self._popular_error:
-                self._fallback_home()
-            else:
-                self._request_popular()
-            return
-        if chip["kind"] in ("history", "favourites"):
-            self._show_tiles(self._local_items(chip["kind"]),
-                             chip["title"])
-            return
-        key = chip["id"]
-        cached = self._personal_video_cache.get(key)
-        if cached is not None:
-            self._show_tiles(cached, chip["title"])
-            return
-        self._request_personalized_videos(chip)
-
-    def _request_personalized_videos(self, chip):
-        self._personal_video_epoch += 1
-        epoch = self._personal_video_epoch
-        key = chip["id"]
-        self._show_message("Loading your YouTube subscriptions…")
-        self._render_categories()
-        try:
-            task = deferToThread(_load_chip_videos, dict(chip))
-            task.addCallbacks(
-                lambda videos: self._personal_videos_ready(key, videos, epoch),
-                lambda err: self._personal_videos_failed(key, epoch))
-        except Exception:
-            self._personal_videos_failed(key, epoch)
-
-    def _personal_videos_ready(self, key, videos, epoch):
-        if self._disposed or epoch != self._personal_video_epoch:
-            return
-        rows = dedupe_videos(videos if isinstance(videos, list) else [])
-        self._personal_video_cache[key] = rows
-        if self.index == 0 and self._selected_home_chip()["id"] == key:
-            self._show_tiles(rows, self._selected_home_chip()["title"])
-            self._render_categories()
-
-    def _personal_videos_failed(self, key, epoch):
-        if self._disposed or epoch != self._personal_video_epoch:
-            return
-        if self.index == 0 and self._selected_home_chip()["id"] == key:
-            self._show_message("YouTube subscriptions are temporarily unavailable.")
-            self._render_categories()
 
     def _clear_preview(self):
         self.thumbs.show([])
@@ -500,8 +325,7 @@ class WarderYouTubeHome(Screen):
         first = self.page_index * VISIBLE_TILES
         self.video_items = all_videos[first:first + VISIBLE_TILES]
         self["subtitle"].setText(_(subtitle))
-        if (self.index == 0 and self._selected_home_chip()["kind"] == "all"
-                and self._popular_source == "api"):
+        if self.index == 0 and self._popular_source == "api":
             reported = self._popular_total_results
             actual_pages = max(pages, (reported + VISIBLE_TILES - 1) // VISIBLE_TILES) if reported else (
                 pages + (1 if self._popular_next_page_token else 0))
@@ -570,7 +394,7 @@ class WarderYouTubeHome(Screen):
         if self._popular_requested or self._disposed:
             return
         key = get_api_key()
-        category_id = "0"
+        category_id = HOME_CATEGORIES[self._category_index][0]
         self._popular_source = "api" if key else "public"
         if not key and category_id != "0":
             self._popular_error = True
@@ -617,7 +441,7 @@ class WarderYouTubeHome(Screen):
         self._popular_total_results = total if type(total) is int and total > 0 else None
         self._popular_fetched_at = monotonic()
         self._popular_error = False
-        if self.index == 0 and self._selected_home_chip()["kind"] == "all":
+        if self.index == 0:
             if self._popular_cache:
                 self._show_tiles(
                     self._popular_cache,
@@ -634,11 +458,10 @@ class WarderYouTubeHome(Screen):
         self._popular_loading = False
         self._popular_error = True
         self._popular_fetched_at = monotonic()
-        if (self.index == 0 and self._selected_home_chip()["kind"] == "all"
-                and self._popular_cache):
+        if self.index == 0 and self._popular_cache:
             self["status"].setText(_("Live YouTube refresh unavailable; previous data shown."))
             return
-        if self.index == 0 and self._selected_home_chip()["kind"] == "all":
+        if self.index == 0:
             self._fallback_home()
             self["status"].setText(
                 _("Popular videos are temporarily unavailable.") if self._popular_source == "api"
@@ -648,11 +471,10 @@ class WarderYouTubeHome(Screen):
 
     def _request_more_popular(self):
         if (self.index != 0 or self._disposed or self._popular_more_loading
-                or self._selected_home_chip()["kind"] != "all"
                 or not self._popular_next_page_token or not get_api_key()):
             return False
         token = self._popular_next_page_token
-        category_id = "0"
+        category_id = HOME_CATEGORIES[self._category_index][0]
         request_epoch = self._popular_request_epoch
         next_page = self.page_index + 1
         self._popular_more_loading = True
@@ -690,8 +512,7 @@ class WarderYouTubeHome(Screen):
         new_total = response.get("total_results")
         if type(new_total) is int and new_total > 0:
             self._popular_total_results = new_total
-        if (self.index == 0 and self._selected_home_chip()["kind"] == "all"
-                and self._popular_cache):
+        if self.index == 0 and self._popular_cache:
             if next_page * VISIBLE_TILES < len(self._popular_cache):
                 self.page_index = next_page
             self._show_tiles(self._popular_cache, "Popular in Slovakia")
@@ -714,7 +535,18 @@ class WarderYouTubeHome(Screen):
         self["subtitle"].setText(self.sections[self.index][1])
         self["status"].setText("")
         if self.index == 0:
-            self._show_selected_home_chip()
+            if self._popular_cache:
+                self._show_tiles(self._popular_cache, "Popular in Slovakia")
+            elif self._popular_loading:
+                if self._popular_source == "public":
+                    self._fallback_home()
+                    self["status"].setText(_("Loading public YouTube videos…"))
+                else:
+                    self._show_message("Loading popular videos for Slovakia…")
+            elif self._popular_error:
+                self._fallback_home()
+            else:
+                self._request_popular()
         elif self.index == 1:
             self._show_inline_keyboard()
         elif self.index == 2:
@@ -905,7 +737,7 @@ class WarderYouTubeHome(Screen):
 
     def left(self):
         if self.focus_area == "categories":
-            self._category_cursor = (self._category_cursor - 1) % len(self._home_chips)
+            self._category_cursor = (self._category_cursor - 1) % len(HOME_CATEGORIES)
             self._render_categories()
             return
         if self.focus_area == "keyboard":
@@ -928,7 +760,7 @@ class WarderYouTubeHome(Screen):
 
     def right(self):
         if self.focus_area == "categories":
-            self._category_cursor = (self._category_cursor + 1) % len(self._home_chips)
+            self._category_cursor = (self._category_cursor + 1) % len(HOME_CATEGORIES)
             self._render_categories()
             return
         if self.focus_area == "keyboard":
@@ -1054,7 +886,6 @@ class WarderYouTubeHome(Screen):
             self._select_nav(1)
             self._enter_keyboard_focus()
         elif index == 2:
-            self._auth_maybe_changed = True
             from .subscriptions_ui import WarderYouTubeSubscriptions
             self.session.open(WarderYouTubeSubscriptions)
         elif index in (3, 5):
