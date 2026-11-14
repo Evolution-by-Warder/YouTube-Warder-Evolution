@@ -630,7 +630,8 @@ class HomeLivePreviewTests(unittest.TestCase):
                 {"id": "yt:1", "kind": "live", "label": "Hudba",
                  "continuation": "SERVER_MUSIC"},
             ],
-            "home_videos": [video(i) for i in range(24)]
+            "home_videos": [dict(video(i), video_id=("%011d" % i))
+                            for i in range(24)]
         }, screen._personal_epoch)
         screen.right()
         # Put the viewer explicitly on the final real-video page; MENU must
