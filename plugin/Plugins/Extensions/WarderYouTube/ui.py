@@ -19,6 +19,7 @@ from .grid_model import move_index
 from .system_keyboard_pane import SystemKeyboardPane
 from .home_feed import popular_videos_page, public_home_videos
 from .home_personalization import VISIBLE_CHIPS, build_home_chips, dedupe_videos
+from .home_live_chips import live_home, live_category_videos
 from .home_subscription_rail import subscription_chips
 from .chip_layout import layout_chips
 from .home_thumbs import HomeThumbs
@@ -53,16 +54,36 @@ def preview_title(text, limit=49):
 
 
 def _discover_home_subscriptions():
-    """Read-only authenticated subscriptions in a Twisted worker, not GUI."""
+    """Read authenticated subscriptions and real Home chips off the GUI thread.
+
+    These independent requests must not lose Odbery when the undocumented
+    Home endpoint changes. A failure NEVER triggers guessed category names.
+    """
     try:
         from .subscriptions_auth import account_connected, access_token
         from .subscriptions_api import subscriptions_list
-        if account_connected():
-            channels = subscriptions_list(access_token())
-            return {"connected": True, "channels": channels}
+        if not account_connected():
+            return {"connected": False, "channels": [], "home_chips": []}
+        token = access_token()
     except Exception:
-        return {"connected": False, "channels": []}
-    return {"connected": False, "channels": []}
+        return {"connected": False, "channels": [], "home_chips": []}
+    try:
+        channels = subscriptions_list(token)
+    except Exception:
+        channels = []
+    try:
+        home = live_home(token)
+    except Exception:
+        home = {"chips": [], "videos": []}
+    return {"connected": True, "channels": channels,
+            "home_chips": home.get("chips") or [],
+            "home_videos": home.get("videos") or []}
+
+
+def _load_live_home_videos(chip):
+    """Select the exact endpoint supplied by YouTube, not a guessed search."""
+    from .subscriptions_auth import access_token
+    return live_category_videos(chip, access_token())
 
 
 def _load_personal_channel_videos(chip, all_channels=()):
@@ -338,7 +359,8 @@ class WarderYouTubeHome(Screen):
                     else self._active_chip_index())
         old_offset = (self._subscription_offset if self.index == 2
                       else self._category_offset)
-        labels = [_(chip["label"]) for chip in chips]
+        labels = [chip["label"] if chip.get("kind") == "live"
+                  else _(chip["label"]) for chip in chips]
         offset, slots, has_before, has_after = layout_chips(
             labels, selected, old_offset
         )
@@ -462,7 +484,8 @@ class WarderYouTubeHome(Screen):
                      else old_id)
         channels = data.get("channels") or ()
         updated = build_home_chips(
-            channels=channels, authenticated=bool(data.get("connected")))
+            chips=data.get("home_chips") or (),
+            authenticated=bool(data.get("connected")))
         lookup = {chip["id"]: i for i, chip in enumerate(updated)}
         if [item["id"] for item in updated] != [
                 item["id"] for item in self._home_chips]:
@@ -470,7 +493,14 @@ class WarderYouTubeHome(Screen):
             self._personal_video_epoch += 1
         self._home_chips = updated
         self._home_channels = list(channels)[:160]
-        self._category_index = lookup.get(old_id, 0)
+        selected_live = next((c for c in updated
+                              if c.get("kind") == "live" and c.get("selected")),
+                             updated[0])
+        if selected_live["kind"] == "live":
+            # The selected chip's videos come from the same signed-in response.
+            self._personal_video_cache[selected_live["id"]] = dedupe_videos(
+                data.get("home_videos") or [])
+        self._category_index = lookup.get(old_id, lookup[selected_live["id"]])
         self._category_cursor = lookup.get(cursor_id, self._category_index)
         if old_id not in lookup and self.index == 0:
             self.page_index = 0
@@ -531,11 +561,17 @@ class WarderYouTubeHome(Screen):
         self._personal_video_epoch += 1
         epoch = self._personal_video_epoch
         selected = chip["id"]
-        self._show_message("Loading subscribed channels…")
+        self._show_message(
+            "Loading YouTube category…" if chip.get("kind") == "live"
+            else "Loading subscribed channels…")
         self._render_categories()
         try:
-            task = deferToThread(
-                _load_personal_channel_videos, dict(chip), tuple(self._home_channels))
+            if not subscribed and chip.get("kind") == "live":
+                task = deferToThread(_load_live_home_videos, dict(chip))
+            else:
+                task = deferToThread(
+                    _load_personal_channel_videos, dict(chip),
+                    tuple(self._home_channels))
             task.addCallbacks(
                 lambda videos: self._personal_videos_ready(selected, videos, epoch,
                                                            subscribed),
@@ -562,8 +598,8 @@ class WarderYouTubeHome(Screen):
         if self.index == 0 and self._selected_home_chip()["id"] == chip_id:
             self._show_tiles(rows, self._selected_home_chip()["title"])
             self._render_categories()
-            if self._selected_home_chip()["kind"] == "topic":
-                self["status"].setText(_("Topic: videos from matching subscribed channels."))
+            if self._selected_home_chip()["kind"] == "live":
+                self["status"].setText(_("YouTube Home category from your account."))
 
     def _personal_videos_failed(self, chip_id, epoch, subscribed=False):
         if self._disposed or epoch != self._personal_video_epoch:
@@ -572,7 +608,10 @@ class WarderYouTubeHome(Screen):
                    else self._selected_home_chip())
         if (self.index == (2 if subscribed else 0)
                 and current is not None and current["id"] == chip_id):
-            self._show_message("YouTube subscriptions are temporarily unavailable.")
+            self._show_message(
+                "YouTube categories are temporarily unavailable."
+                if not subscribed else
+                "YouTube subscriptions are temporarily unavailable.")
             self._render_categories()
 
     def _show_selected_subscription_chip(self):
