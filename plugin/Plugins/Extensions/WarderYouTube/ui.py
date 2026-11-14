@@ -154,6 +154,7 @@ class WarderYouTubeHome(Screen):
         self._playback_active = False
         self._context_open = False
         self._confirm_open = False
+        self._quick_select_open = False
         self._play_request = 0
         self.installed_version = CURRENT_VERSION
         self._version_checked = False
@@ -393,7 +394,8 @@ class WarderYouTubeHome(Screen):
             self._subscription_cursor = self._subscription_index
         else:
             self._category_cursor = self._category_index
-        self["status"].setText(_("Choose a category and press OK"))
+        self["status"].setText(_("Select a subscription and press OK") if self.index == 2
+                               else _("Choose a category and press OK"))
         self._update_nav()
         self._update_tile_focus()
         self._render_categories()
@@ -592,7 +594,7 @@ class WarderYouTubeHome(Screen):
         if self._disposed or self._busy or self.index != 2:
             return
         if self._subscriptions_connected:
-            self._enter_categories()
+            self._request_personalization(force=True)
             return
         if self._personal_requested:
             self["status"].setText(_("Checking YouTube account connection…"))
@@ -994,7 +996,8 @@ class WarderYouTubeHome(Screen):
     def _update_keys(self):
         if self.focus_area == "categories":
             self["key_red"].setText(_("Back"))
-            self["key_green"].setText(_("Choose category"))
+            self["key_green"].setText(_("Select subscription") if self.index == 2
+                                      else _("Choose category"))
             self["key_yellow"].setText(_("History"))
             self["key_blue"].setText(_("Search"))
             return
@@ -1318,15 +1321,17 @@ class WarderYouTubeHome(Screen):
 
     def context(self):
         item = self.selected_video()
-        if (item is None or self._context_open or self._busy or
-                self._playback_active or self._disposed):
+        if ((item is None and self.index not in (0, 2))
+                or self._context_open or self._quick_select_open
+                or self._busy or self._playback_active or self._disposed):
             return
         from .context_menu import WarderYouTubeContext
-        mode = "history" if self.index == 3 else (
-            "favourites" if self.index == 5 else "search"
-        )
+        mode = ("home" if self.index == 0 else
+                "subscriptions" if self.index == 2 else
+                "history" if self.index == 3 else
+                "favourites" if self.index == 5 else "search")
         saved = any(v["video_id"] == item.get("video_id")
-                    for v in self._local_items("favourites"))
+                    for v in self._local_items("favourites")) if item else False
         self._context_open = True
         try:
             self.session.openWithCallback(
@@ -1337,9 +1342,63 @@ class WarderYouTubeHome(Screen):
             self._context_open = False
             self["status"].setText(_("Video actions unavailable."))
 
+    def _open_quick_chip_picker(self, subscription=False):
+        if (self._disposed or self._quick_select_open or self._busy
+                or self._playback_active or self.index != (2 if subscription else 0)):
+            return
+        chips = list(self._subscription_chips if subscription else self._home_chips)
+        if not chips:
+            if subscription:
+                self._open_subscription_login()
+            return
+        from .quick_select_ui import WarderYouTubeQuickSelect
+        self._quick_select_open = True
+        try:
+            self.session.openWithCallback(
+                lambda identifier: self._quick_chip_selected(identifier, subscription),
+                WarderYouTubeQuickSelect, chips,
+                self._subscription_index if subscription else self._category_index,
+                subscription
+            )
+        except Exception:
+            self._quick_select_open = False
+            self["status"].setText(_("Category list is unavailable."))
+
+    def _quick_chip_selected(self, identifier, subscription):
+        self._quick_select_open = False
+        if (self._disposed or not isinstance(identifier, str)
+                or self.index != (2 if subscription else 0)):
+            return
+        chips = self._subscription_chips if subscription else self._home_chips
+        positions = {chip["id"]: n for n, chip in enumerate(chips)}
+        if identifier not in positions:
+            return  # account/chip list may have refreshed while modal was open
+        new_index = positions[identifier]
+        self._personal_video_epoch += 1  # invalidate any old async video job
+        self.page_index = 0
+        self.focus_area = "tiles"
+        if subscription:
+            self._subscription_cursor = self._subscription_index = new_index
+            self._show_selected_subscription_chip()
+        else:
+            self._category_cursor = self._category_index = new_index
+            self._show_selected_home_chip()
+        self._update_nav()
+        self._render_categories()
+        self._update_tile_focus()
+        self._update_keys()
+
     def _context_done(self, action, item):
         self._context_open = False
         if self._disposed or action is None:
+            return
+        if action == "choose_category":
+            self._open_quick_chip_picker(subscription=False)
+            return
+        if action == "choose_subscription":
+            self._open_quick_chip_picker(subscription=True)
+            return
+        if item is None and action not in ("search",):
             return
         if action == "play":
             self._play_selected()
