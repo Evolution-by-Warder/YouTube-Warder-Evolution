@@ -228,9 +228,9 @@ class SubscriptionGalleryTests(unittest.TestCase):
             len([name for name in nodes if name.startswith("tile_focus")]), 6
         )
         self.assertIn("/video_focus.png", nodes["tile_focus0"]["pixmap"])
-        self.assertEqual(nodes["preview_thumb0"]["size"], "461,259")
-        self.assertEqual(nodes["tile_title0"]["size"], "455,36")
-        self.assertEqual(nodes["tile_channel0"]["size"], "455,18")
+        self.assertEqual(nodes["preview_thumb0"]["size"], "473,266")
+        self.assertEqual(nodes["tile_title0"]["size"], "457,35")
+        self.assertEqual(nodes["tile_channel0"]["size"], "457,18")
         self.assertEqual(nodes["tile_focus0"]["size"], "477,324")
         self.assertEqual(nodes["tile_panel0"]["size"], "473,320")
         self.assertEqual(nodes["video_scroll_track"]["position"], "1781,231")
