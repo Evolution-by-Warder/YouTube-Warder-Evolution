@@ -245,6 +245,39 @@ def ready(module):
 
 
 class HomeLivePreviewTests(unittest.TestCase):
+    def test_playlist_removed_and_seven_menu_items_keep_their_actions(self):
+        mod, key, saved, jobs = load()
+        self.assertEqual([row[0] for row in mod.SECTIONS], [
+            "Home", "Search", "Subscriptions", "History",
+            "Favourites", "Settings", "Updates",
+        ])
+        screen, session = ready(mod)
+        self.assertEqual(len(screen.sections), 7)
+        screen._select_nav(4)
+        self.assertEqual(screen["heading"].text, "Favourites")
+        self.assertEqual(screen.video_items[0]["video_id"],
+                         saved["favourites"][0]["video_id"])
+        screen._select_nav(5)
+        self.assertEqual(screen["heading"].text, "Settings")
+        screen._select_nav(6)
+        self.assertEqual(screen["heading"].text, "Updates")
+        screen._select_nav(7)
+        self.assertEqual(screen["heading"].text, "Home")
+
+    def test_no_authenticated_home_chips_exposes_real_reason(self):
+        mod, key, saved, jobs = load()
+        screen, session = ready(mod)
+        screen._personalization_ready({
+            "connected": False, "channels": [], "home_chips": [],
+            "home_state": "not_connected"
+        }, screen._personal_epoch)
+        self.assertEqual(screen._active_chips(), [])
+        screen._enter_categories()
+        self.assertIn("Connect your YouTube account",
+                      screen["status"].text)
+        self.assertNotEqual(screen.focus_area, "categories")
+        self.assertTrue(screen["subtitle"].visible)
+
     def test_screen_items_method_survives_home_navigation_and_close(self):
         # Enigma2 Screen.deleteGUIScreen calls list(self.items()); an instance
         # attribute named "items" crashes GUI teardown after EXIT.
