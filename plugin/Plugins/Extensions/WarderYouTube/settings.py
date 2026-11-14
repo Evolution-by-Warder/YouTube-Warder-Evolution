@@ -15,6 +15,8 @@ from .api_key_file import read_manual_key, VALID_KEY
 from .data_auth import account_available
 
 QUALITY_VALUES = ("360", "480", "720", "1080", "1440", "2160")
+PLAYER_VALUES = ("auto", "gst", "exte")
+PLAYER_LABELS = {"auto": "Automaticky", "gst": "gstplayer", "exte": "exteplayer3"}
 
 if not hasattr(config.plugins, "warderyoutube"):
     config.plugins.warderyoutube = ConfigSubsection()
@@ -24,6 +26,28 @@ if not hasattr(config.plugins.warderyoutube, "max_quality"):
     config.plugins.warderyoutube.max_quality = ConfigSelection(
         choices=[(value, value + "p") for value in QUALITY_VALUES], default="720"
     )
+
+
+if not hasattr(config.plugins.warderyoutube, "player_mode"):
+    config.plugins.warderyoutube.player_mode = ConfigSelection(
+        choices=[("auto", "Automaticky"), ("gst", "gstplayer"), ("exte", "exteplayer3")],
+        default="auto"
+    )
+
+
+def get_player_mode():
+    value = config.plugins.warderyoutube.player_mode.value
+    return value if value in PLAYER_VALUES else "auto"
+
+
+def available_player_modes():
+    """Only installed and registered receivers' players; auto always works."""
+    try:
+        from .player import service_player_available
+        return ("auto",) + tuple(
+            mode for mode in ("gst", "exte") if service_player_available(mode))
+    except (ImportError, AttributeError, RuntimeError, TypeError):
+        return ("auto",)
 
 
 def get_api_key():
@@ -51,7 +75,7 @@ class WarderYouTubeSettings(Screen):
         self["status"] = Label(_("Keep live TV audio"))
         self["key_red"] = Label(_("Back"))
         self["key_green"] = Label(_("API key"))
-        self["key_yellow"] = Label(_("Delete API key"))
+        self["key_yellow"] = Label(_("Prehrávač"))
         self["key_blue"] = Label(_("Change quality"))
         self["description"] = Label(
             _("About settings") + "\n" + _("Language from Enigma2")
@@ -98,7 +122,7 @@ class WarderYouTubeSettings(Screen):
         else:
             self["section_search"].setText(_("YouTube account").upper())
             self["key_green"].setText(_("Manage account") if connected else _("Sign in to YouTube"))
-            self["key_yellow"].setText(_("Advanced"))
+            self["key_yellow"].setText(_("Prehrávač"))
             self["key_state"].setText(
                 _("Signed in") + "\n" + _("No personal API key is needed.")
                 if connected else _("Not signed in") + "\n" + _("Sign in using a TV code."))
@@ -108,11 +132,17 @@ class WarderYouTubeSettings(Screen):
                 _("Account access is stored locally on this receiver."))
             self["status"].setText(_("Signed-in account: Home, categories, search and video details.")
                 if connected else _("Sign in for categories and subscriptions. Public playback needs no sign-in."))
-            self["footer"].setText(_("OK/Green: account   Yellow/MENU: advanced   Blue: quality"))
+            self["footer"].setText(_("OK/Green: účet   Yellow: prehrávač   Blue: kvalita   MENU: rozšírené"))
         self["quality"].setText(_("Maximum video quality") + ": %sp" % get_quality())
+        available = available_player_modes()
+        selected = get_player_mode()
+        effective = selected if selected in available else "auto"
         self["resolver_state"].setText(
-            _("yt-dlp: dostupný (vyhľadávanie aj záložné prehrávanie)") if is_available() else
-            _("yt-dlp: nenainštalovaný (na prehrávanie nie je nutný)"))
+            _("Prehrávač") + ": " + _(PLAYER_LABELS[effective]) +
+            (" (" + _("nedostupný výber – automaticky") + ")" if selected != effective else "") +
+            "\\n" +
+            ("yt-dlp: dostupný" if is_available() else "yt-dlp: nenainštalovaný")
+        )
 
     def primary_action(self):
         if self._key_dialog_open:
@@ -129,7 +159,7 @@ class WarderYouTubeSettings(Screen):
         if self._advanced:
             self.confirm_clear()
         else:
-            self.toggle_advanced()
+            self.toggle_player()
 
     def toggle_advanced(self):
         if not self._key_dialog_open:
@@ -144,6 +174,18 @@ class WarderYouTubeSettings(Screen):
             self.refresh()
         else:
             self.close()
+
+    def toggle_player(self):
+        """Yellow button cycles only supported native ServiceApp engines."""
+        modes = available_player_modes()
+        current = get_player_mode()
+        if current not in modes:
+            current = "auto"
+        setting = config.plugins.warderyoutube.player_mode
+        setting.value = modes[(modes.index(current) + 1) % len(modes)]
+        setting.save()
+        configfile.save()
+        self.refresh()
 
     def toggle_quality(self):
         setting = config.plugins.warderyoutube.max_quality
