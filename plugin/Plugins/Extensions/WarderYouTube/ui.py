@@ -1683,9 +1683,11 @@ class WarderYouTubeHome(Screen):
             )
         try:
             from .player import dash_available
+            from . import settings as _settings
+            player_mode = getattr(_settings, "get_player_mode", lambda: "auto")()
             task = deferToThread(
                 resolve_video_streams, video["video_id"],
-                quality=get_quality(), dash=dash_available()
+                quality=get_quality(), dash=(dash_available() and player_mode != "gst")
             )
             task.addCallbacks(
                 lambda streams: self._play_ready(token, video, streams),
@@ -1704,8 +1706,10 @@ class WarderYouTubeHome(Screen):
         self._playback_active = True
         try:
             from .player import open_player
+            from . import settings as _settings
+            player_mode = getattr(_settings, "get_player_mode", lambda: "auto")()
             open_player(self.session, streams, video["title"],
-                        on_close=self._player_closed)
+                        on_close=self._player_closed, player_mode=player_mode)
         except Exception:
             self._playback_active = False
             self["status"].setText(_("Unable to open Enigma2 player."))
