@@ -58,9 +58,8 @@ class WarderYouTubeSubscriptions(Screen):
         Screen.__init__(self, session)
         add_header(self)
         self.mode = "recent"
-        self.items = []  # native Screen.items() must remain callable: overridden below
-        self.mode_items = []  # actual list items, Screen.items stays native
-        del self.items
+        # Do not shadow Screen.items(): Enigma2 calls it on window teardown.
+        self.mode_items = []
         self.channels = []
         self.busy = False
         self.disposed = False
@@ -74,7 +73,7 @@ class WarderYouTubeSubscriptions(Screen):
         self.poll_signal = None
         self.poll_connection = None
         self.request_id = 0
-        self["_dummy"] = Label("") if False else Label("")  # keep all widgets native
+        self.disconnect_prompt_open = False
         self["title"] = Label("")
         self["subtitle"] = Label(_("Subscriptions"))
         self["results"] = MenuList([])
@@ -115,6 +114,7 @@ class WarderYouTubeSubscriptions(Screen):
         if time.time() >= self.deadline:
             self.login = None
             self["status"].setText(_("YouTube login code expired. Try connecting again."))
+            self["key_green"].setText(_("Connect YouTube account"))
             return
         try:
             self.polling_timer.start(int(self.poll_interval) * 1000, True)
@@ -156,7 +156,7 @@ class WarderYouTubeSubscriptions(Screen):
     def _rows(self, rows):
         self.mode_items = list(rows)
         self["results"].setList(
-            [((item.get("title") or _("Untitled"))[:115],)
+            [(item.get("title") or _("Untitled"))[:115]
              for item in self.mode_items]
         )
 
@@ -166,7 +166,7 @@ class WarderYouTubeSubscriptions(Screen):
                 if 0 <= index < len(self.mode_items) else None)
 
     def on_show(self):
-        if self.disposed or self.busy or self.connected:
+        if self.disposed or self.busy or self.connected or self.login is not None:
             return
         self["status"].setText(_("Checking YouTube account connection…"))
         self._working(account_connected, self._account_ready)
@@ -216,6 +216,7 @@ class WarderYouTubeSubscriptions(Screen):
         if time.time() >= self.deadline:
             self.login = None
             self["status"].setText(_("YouTube login code expired. Try connecting again."))
+            self["key_green"].setText(_("Connect YouTube account"))
             return
         client = dict(self.client)
         code = self.login["device_code"]
@@ -338,13 +339,15 @@ class WarderYouTubeSubscriptions(Screen):
         self.session.open(WarderYouTubeInfo, format_video_info(item, translate=_), video=item)
 
     def disconnect_confirm(self):
-        if not self.connected or self.disposed or self.busy:
+        if not self.connected or self.disposed or self.busy or self.disconnect_prompt_open:
             return
         from .confirm_ui import WarderYouTubeConfirm
+        self.disconnect_prompt_open = True
         self.session.openWithCallback(self._disconnect_answer,
             WarderYouTubeConfirm, _("Disconnect the YouTube account from this receiver?"))
 
     def _disconnect_answer(self, approved):
+        self.disconnect_prompt_open = False
         if not approved or self.disposed or self.busy:
             return
         self._working(clear_tokens, self._disconnected)
