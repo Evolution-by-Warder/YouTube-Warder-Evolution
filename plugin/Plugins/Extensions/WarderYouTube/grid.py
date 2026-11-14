@@ -165,6 +165,12 @@ class WarderYouTubeGrid(Screen):
                     restored += 1
                 except (AttributeError, TypeError, ValueError, RuntimeError):
                     self._pixmap_cache.pop(url, None)
+        if (not restored and self._decoding is not None and self.video_items):
+            # A modal may interrupt PictureData forever on older Enigma2.
+            # A fresh decoder can repopulate the current page immediately.
+            self._restart_decoder()
+            self._render_page()
+            return
         if (not restored and not self._pending_downloads
                 and not self._active_requests and not self._pending_decodes
                 and self._decoding is None and self.video_items):
