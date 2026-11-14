@@ -317,6 +317,47 @@ class WarderNativeUiTests(unittest.TestCase):
         screen.choose()
         self.assertEqual(screen.closed_args, ("remove",))
 
+    def test_favourites_menu_has_no_duplicate_remove_action(self):
+        m = load("context_menu")
+        screen = m.WarderYouTubeContext(
+            None, {"title": "Saved song"}, True, "favourites"
+        )
+        # The user-confirmed test24 has two equivalent single-item actions.
+        # Keep 'Remove from favourites' but never show 'Delete' there.
+        self.assertEqual([action for action, _ in screen.options],
+                         ["play", "favorite", "info", "clear"])
+        self.assertEqual(screen.options[1][1], "Remove from favourites")
+        self.assertEqual(screen.options[3][1], "Clear all favourites")
+        self.assertNotIn("remove", [action for action, _ in screen.options])
+        self.assertNotIn("Delete", [label for _, label in screen.options])
+        self.assertEqual(screen["context_row4"].text, "")
+        self.assertFalse(screen["context_focus4"].visible)
+        screen.down()
+        screen.choose()
+        self.assertEqual(screen.closed_args, ("favorite",))
+
+    def test_favourites_clear_all_is_separate_confirmation_action(self):
+        m = load("context_menu")
+        screen = m.WarderYouTubeContext(
+            None, {"title": "Saved song"}, True, "favourites"
+        )
+        for _ in range(3):
+            screen.down()
+        self.assertTrue(screen["context_focus3"].visible)
+        self.assertFalse(screen["context_focus4"].visible)
+        screen.choose()
+        self.assertEqual(screen.closed_args, ("clear",))
+
+    def test_history_still_has_distinct_single_record_delete(self):
+        m = load("context_menu")
+        screen = m.WarderYouTubeContext(
+            None, {"title": "Watched song"}, False, "history"
+        )
+        self.assertEqual([action for action, _ in screen.options],
+                         ["play", "favorite", "info", "remove", "clear"])
+        self.assertEqual(screen.options[3][1], "Delete")
+        self.assertEqual(screen.options[4][1], "Clear entire history")
+
     def test_native_confirmation_defaults_to_no(self):
         m = load("confirm_ui")
         screen = m.WarderYouTubeConfirm(None, "Install test7?")
