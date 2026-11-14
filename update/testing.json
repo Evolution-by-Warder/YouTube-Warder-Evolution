@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test61",
-    "tag": "youtube-warder-v0.0.8-test61",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test61/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test61_all.ipk",
-    "sha256": "7bce8e3eaca16d46db4ecb34b903de32b55a944efcf69375fe4d1b00fab04d19",
-    "bytes": 601098,
-    "notes": "Test61: aktualizácia priamo v pravom paneli z test60. Potvrdenie ÁNO/NIE, priebeh, SHA256, opkg, reštart iba GUI. Testovacie vydanie; stabilný kanál bez zmeny."
+    "version": "0.0.8~test63",
+    "tag": "youtube-warder-v0.0.8-test63",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test63/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test63_all.ipk",
+    "sha256": "591a623b38972d04909a81c27caf4416f87f163f7a0b189a090b70583e3d496a",
+    "bytes": 601666,
+    "notes": "Test63: overenie aktualizácie z test62 priamo v pravom paneli. Potvrdenie Áno/Nie bez samostatného okna, grafický ukazovateľ sťahovania, overenie SHA256, opkg a reštart GUI Enigma2. Iba testovacia verzia."
   }
 }
