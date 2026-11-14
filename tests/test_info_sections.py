@@ -85,8 +85,9 @@ class DetailInfoTests(unittest.TestCase):
         with patch.dict("sys.modules", {"_warder_home.info_ui": mock_info}):
             screen.info()
         self.assertEqual(len(session.opens), 1)
-        self.assertIn("Video ID", session.opens[0][1])
-        self.assertIn("YouTube API key", session.opens[0][1])
+        self.assertIn("Video ID", session.opens[0][0][1])
+        self.assertIn("YouTube API key", session.opens[0][0][1])
+        self.assertEqual(session.opens[0][1]["video"]["video_id"], storage["history"][0]["video_id"])
         self.assertEqual(len(jobs), 1)  # initial Home feed only
 
     def test_home_tiles_info_fetches_metadata_only_after_info(self):
@@ -108,8 +109,8 @@ class DetailInfoTests(unittest.TestCase):
                 "description": "Fetched explicitly"
             })
         self.assertEqual(len(session.opens), 1)
-        self.assertIn("Duration: 12:30", session.opens[0][1])
-        self.assertIn("Views: 999", session.opens[0][1])
+        self.assertIn("Duration: 12:30", session.opens[0][0][1])
+        self.assertIn("Views: 999", session.opens[0][0][1])
         self.assertFalse(screen._busy)
 
     def test_home_closed_before_info_result_must_not_open_popup(self):
