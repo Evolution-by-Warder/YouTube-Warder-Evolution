@@ -406,17 +406,20 @@ class TestNativeGrid(unittest.TestCase):
         g._layout_ready()
         jobs[0][1].success("/tmp/old.jpg")
         self.assertIsNotNone(g._decoding)
-        g.next_page()
+        old_decoder = g._picload
+        old_callback = old_decoder.callbacks[0]
+        g.next_page()  # abandoned decode must not block the next page
+        self.assertEqual(old_decoder.callbacks, [])
         jobs[1][1].failure(Exception("old page"))
         new_jobs = [job for job in jobs[2:] if job[0][1].endswith("?x=6")]
         self.assertTrue(new_jobs)
         new_jobs[0][1].success("/tmp/new.jpg")
         self.assertFalse(g["thumb0"].visible)
-        self.assertEqual(g._decoding[0], 1)  # First page still decoding.
-        g._decode_finished()  # Old callback must not display in new page.
-        self.assertFalse(g["thumb0"].visible)
         self.assertEqual(g._decoding[0], 2)
-        g._decode_finished()
+        old_callback()  # late PictureData from the disposed old decoder
+        self.assertFalse(g["thumb0"].visible)
+        self.assertEqual(g._decoding[0], 2)  # new job remains untouched
+        g._picload.callbacks[0]()
         self.assertTrue(g["thumb0"].visible)
         self.assertEqual(g._thumb_shown, 1)
 
