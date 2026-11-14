@@ -154,6 +154,13 @@ def parse_live_home(payload):
             break
     if not chips:
         raise SearchError("YouTube did not provide usable Home category chips.")
+    return {"chips": chips, "videos": parse_live_videos(payload)}
+
+
+def parse_live_videos(payload):
+    """Read only concrete video entries from a YouTube browse response."""
+    if not isinstance(payload, dict) or payload.get("error"):
+        raise SearchError("YouTube category response is invalid.")
     videos = []
     seen = set()
     for node in _walk(payload):
@@ -184,7 +191,7 @@ def parse_live_home(payload):
             })
         if len(videos) >= MAX_VIDEOS:
             break
-    return {"chips": chips, "videos": videos}
+    return videos
 
 
 def _browse(access_token, command=None, opener=urlopen, timeout=10):
@@ -248,4 +255,4 @@ def live_category_videos(chip, access_token, opener=urlopen):
     command = {key: chip[key] for key in ("continuation", "params") if key in chip}
     if not command:
         raise SearchError("The YouTube category cannot be opened.")
-    return parse_live_home(_browse(access_token, command, opener=opener))["videos"]
+    return parse_live_videos(_browse(access_token, command, opener=opener))
