@@ -120,20 +120,20 @@ class PlayerModeSettingsTests(unittest.TestCase):
         with environment(advanced=False) as (mod, screen, session, key, cfgfile, *_):
             self.assertEqual(mod.get_player_mode(), "auto")
             with patch.object(mod, "available_player_modes", return_value=("auto", "gst", "exte")):
-                screen.secondary_action()
+                screen.toggle_player()
                 self.assertEqual(mod.get_player_mode(), "gst")
                 self.assertIn("gstplayer", screen["resolver_state"].text)
-                screen.secondary_action()
+                screen.toggle_player()
                 self.assertEqual(mod.get_player_mode(), "exte")
-                screen.secondary_action()
+                screen.toggle_player()
                 self.assertEqual(mod.get_player_mode(), "auto")
             self.assertEqual(cfgfile.saves, 3)
-            self.assertFalse(screen._advanced)
+            self.assertFalse(hasattr(screen, '_advanced'))
 
     def test_missing_serviceapp_offers_only_auto(self):
         with environment(advanced=False) as (mod, screen, session, key, cfgfile, *_):
             with patch.object(mod, "available_player_modes", return_value=("auto",)):
-                screen.secondary_action()
+                screen.toggle_player()
             self.assertEqual(mod.get_player_mode(), "auto")
 
 class HiddenLegacyKeyTests(unittest.TestCase):
