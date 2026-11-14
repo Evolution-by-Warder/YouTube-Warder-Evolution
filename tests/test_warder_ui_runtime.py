@@ -647,7 +647,7 @@ class WarderNativeUiTests(unittest.TestCase):
         body = next(w for w in xml.findall("widget")
                     if w.attrib.get("name") == "body")
         self.assertEqual(body.attrib["position"], "116,313")
-        self.assertEqual(body.attrib["size"], "1660,580")
+        self.assertEqual(body.attrib["size"], "1198,580")
         top = int(body.attrib["position"].split(",")[1])
         height = int(body.attrib["size"].split(",")[1])
         self.assertLessEqual(top + height, 904)
