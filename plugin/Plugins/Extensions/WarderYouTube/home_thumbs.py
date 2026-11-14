@@ -77,6 +77,8 @@ class HomeThumbs:
         self.ready = False
         if not self.closed:
             self.start()
+            if self.ready and self.decodes:
+                self._start_decode()
 
     def decode_parameters(self):
         width, height = 461, 259
