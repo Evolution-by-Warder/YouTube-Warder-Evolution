@@ -323,6 +323,40 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(jobs[0][0], (mod.public_home_videos,))
         self.assertEqual(jobs[1][0][0].__name__, "_discover_home_subscriptions")
 
+    def test_native_keyboard_viewport_crops_only_unused_rightmost_strip(self):
+        mod, key, saved, jobs = load()
+        screen, session = ready(mod)
+        pane = screen.inline_keyboard
+        # Test the actual listbox positioning on a plausible OpenATV 8.1
+        # system key size, not a substitute drawn keyboard.
+        class Dimensions:
+            def __init__(self, *values):
+                self.values = values
+
+        class Instance:
+            def __init__(self):
+                self.size = None
+                self.point = None
+            def resize(self, value):
+                self.size = value.values
+            def move(self, value):
+                self.point = value.values
+
+        instance = Instance()
+        pane.list.instance = instance
+        pane.backend.width = 57
+        pane.backend.height = 57
+        pane.backend.keyboardWidth = 14
+        pane.backend.keyboardHeight = 5
+        enigma = fake("enigma", eSize=Dimensions, ePoint=Dimensions)
+        with patch.dict(sys.modules, {"enigma": enigma}):
+            pane._center_original_list()
+        self.assertEqual(instance.size[0], 57 * 14)
+        self.assertEqual(instance.point[0], 1138 - (57 * 14 + 12) // 2)
+        # There must be no 12px horizontal spare area after the 14th key.
+        self.assertEqual(instance.point[0] + instance.size[0],
+                         1138 + (57 * 14 - 12) // 2)
+
     def test_search_keyboard_appears_inline_on_highlight_without_modal(self):
         mod, key, saved, jobs = load()
         screen, session = ready(mod)
