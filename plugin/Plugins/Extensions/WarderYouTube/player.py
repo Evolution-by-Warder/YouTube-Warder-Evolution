@@ -4,6 +4,7 @@
 Automatic mode preserves the current 4097/5002 priorities and TV restoration.
 """
 import shutil
+import os
 import enigma
 from enigma import eServiceReference, iPlayableService
 from Components.ServiceEventTracker import ServiceEventTracker
@@ -22,14 +23,15 @@ def service_player_available(mode):
             return False
         registered = center.info(
             eServiceReference(kind, 0, "https://www.youtube.com/")) is not None
-        if not registered:
-            return False
-        # ServiceApp's GStreamer backend (5001) is frequently loaded as an
-        # Enigma2 service factory, not a separate binary on older images.
+        serviceapp_plugin = os.path.isfile(
+            "/usr/lib/enigma2/python/Plugins/SystemPlugins/ServiceApp/plugin.py")
+        # Older images can have ServiceApp registered even if the probe URL
+        # produces no service information. An installed plugin is a useful
+        # second signal; do not rely on an unrelated binary alone.
         if mode == "gst":
-            return True
-        # exteplayer3 (5002) needs the actual external helper as well.
-        return bool(shutil.which(binary))
+            return registered or serviceapp_plugin
+        # ExtePlayer3 additionally needs its external executable.
+        return bool(shutil.which(binary)) and (registered or serviceapp_plugin)
     except (AttributeError, RuntimeError, TypeError, OSError):
         return False
 
