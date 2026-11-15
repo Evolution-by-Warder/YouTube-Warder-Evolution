@@ -87,5 +87,51 @@ class PublicFeedTests(unittest.TestCase):
         self.assertNotIn("Authorization", captured[0][2])
 
 
+    def test_anonymous_home_without_recommendations_falls_back_to_search(self):
+        mod = load()
+        calls = []
+        valid = {"contents": [{"videoRenderer": {
+            "videoId": "01234567890", "title": {"simpleText": "Real search result"},
+            "ownerText": {"simpleText": "SK channel"}
+        }}]}
+        class Response(FakeResponse):
+            def __init__(self, body, url):
+                super().__init__(body)
+                self.url = url
+            def geturl(self):
+                return self.url
+        def opener(req, timeout):
+            calls.append(req)
+            if len(calls) == 1:
+                return Response(b"<html>ytInitialData = {}</html>", req.full_url)
+            return Response(("ytInitialData = " + json.dumps(valid) + ";").encode(),
+                            req.full_url)
+        items = mod.public_home_videos(opener=opener)
+        self.assertEqual([x["video_id"] for x in items], ["01234567890"])
+        self.assertEqual(len(calls), 2)
+        self.assertIn("search_query=", calls[1].full_url)
+        for request in calls:
+            self.assertNotIn("Authorization", request.headers)
+            self.assertNotIn("key=", request.full_url)
+
+    def test_anonymous_categories_use_real_public_search_without_account(self):
+        mod = load()
+        urls = []
+        data = {"contents": [{"videoRenderer": {
+            "videoId": "abcdefghijk", "title": {"simpleText": "Music video"}
+        }}]}
+        def opener(req, timeout):
+            urls.append(req.full_url)
+            return FakeResponse(("ytInitialData = " + json.dumps(data) + ";").encode())
+        items = mod.public_category_videos("10", opener=opener)
+        self.assertEqual(items[0]["title"], "Music video")
+        self.assertEqual(len(urls), 1)
+        self.assertIn("search_query=", urls[0])
+        self.assertIn("youtube.com/results", urls[0])
+        with self.assertRaises(mod.SearchError):
+            mod.public_category_videos("999", opener=opener)
+        self.assertEqual(len(urls), 1)
+
+
 if __name__ == "__main__":
     unittest.main()
