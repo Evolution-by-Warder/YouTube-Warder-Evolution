@@ -159,6 +159,8 @@ class WarderYouTubeHome(Screen):
         self._popular_next_page_token = ""
         self._popular_total_results = None
         self._popular_more_loading = False
+        self._popular_pending_advance = False
+        self._popular_empty_followups = 0
         self._category_index = 0
         self._category_cursor = 0
         self._category_offset = 0
@@ -880,6 +882,8 @@ class WarderYouTubeHome(Screen):
         self._popular_requested = True
         self._popular_loading = True
         self._popular_more_loading = False
+        self._popular_pending_advance = False
+        self._popular_empty_followups = 0
         self._popular_request_epoch += 1
         request_epoch = self._popular_request_epoch
         if use_api and not refresh:
@@ -960,8 +964,12 @@ class WarderYouTubeHome(Screen):
                                "YouTube category videos are temporarily unavailable.")
         self._render_categories()
 
-    def _request_more_popular(self):
-        if (self.index != 0 or self._disposed or self._popular_more_loading
+    def _request_more_popular(self, advance=True):
+        if self._popular_more_loading:
+            if advance:
+                self._popular_pending_advance = True
+            return True
+        if (self.index != 0 or self._disposed
                 or self._selected_home_chip()["kind"] not in ("all", "general")
                 or not self._popular_next_page_token):
             return False
@@ -970,6 +978,7 @@ class WarderYouTubeHome(Screen):
         request_epoch = self._popular_request_epoch
         next_page = self.page_index + 1
         self._popular_more_loading = True
+        self._popular_pending_advance = bool(advance)
         self["status"].setText(_("Loading more videos…"))
         try:
             job = (deferToThread(popular_videos_page, get_api_key(),
@@ -990,7 +999,7 @@ class WarderYouTubeHome(Screen):
         if not isinstance(response, dict):
             self._more_popular_failed(request_epoch)
             return
-        old_ids = {video.get("video_id") for video in self._popular_cache}
+        old_ids = {video.get("video_id") for video in (self._popular_cache or [])}
         new_items = [
             v for v in response.get("items", []) if isinstance(v, dict)
             and v.get("video_id") not in old_ids
@@ -1007,9 +1016,15 @@ class WarderYouTubeHome(Screen):
         if type(new_total) is int and new_total > 0:
             self._popular_total_results = new_total
         self._store_chart_cache()
+        if not new_items and self._popular_next_page_token and self._popular_empty_followups < 3:
+            self._popular_empty_followups += 1
+            self._popular_more_loading = False
+            return self._request_more_popular(advance=self._popular_pending_advance)
+        if new_items:
+            self._popular_empty_followups = 0
         if (self.index == 0 and self._selected_home_chip()["kind"] in ("all", "general")
                 and self._popular_cache):
-            if next_page * VISIBLE_TILES < len(self._popular_cache):
+            if self._popular_pending_advance and next_page * VISIBLE_TILES < len(self._popular_cache):
                 self.page_index = next_page
             self._show_tiles(self._chart_items_for_display(), self._selected_chart_title())
             self._render_categories()
@@ -1349,6 +1364,9 @@ class WarderYouTubeHome(Screen):
         self.page_index = new_page
         self._show_tiles(self._section_items, self._section_subtitle)
         self._update_tile_focus()
+        if (delta > 0 and self.index == 0 and new_page == max_page
+                and self._popular_next_page_token):
+            self._request_more_popular(advance=False)
         return True
 
     def _enter_tiles(self):
