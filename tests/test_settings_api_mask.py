@@ -130,11 +130,20 @@ class PlayerModeSettingsTests(unittest.TestCase):
             self.assertEqual(cfgfile.saves, 3)
             self.assertFalse(hasattr(screen, '_advanced'))
 
-    def test_missing_serviceapp_offers_only_auto(self):
+    def test_missing_serviceapp_allows_preference_with_explicit_auto_fallback(self):
         with environment(advanced=False) as (mod, screen, session, key, cfgfile, *_):
             with patch.object(mod, "available_player_modes", return_value=("auto",)):
                 screen.toggle_player()
-            self.assertEqual(mod.get_player_mode(), "auto")
+                self.assertEqual(mod.get_player_mode(), "gst")
+                self.assertIn("gstplayer", screen["resolver_state"].text)
+                self.assertIn("Unavailable; using Automatic", screen["resolver_state"].text)
+                screen.toggle_player()
+                self.assertEqual(mod.get_player_mode(), "exte")
+                self.assertIn("exteplayer3", screen["resolver_state"].text)
+                screen.toggle_player()
+                self.assertEqual(mod.get_player_mode(), "auto")
+                self.assertNotIn("Unavailable; using Automatic", screen["resolver_state"].text)
+            self.assertEqual(cfgfile.saves, 3)
 
 class HiddenLegacyKeyTests(unittest.TestCase):
     OLD = "AIza" + "x" * 35
