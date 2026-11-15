@@ -190,6 +190,7 @@ class WarderYouTubeHome(Screen):
         self._subscription_video_cache = {}
         self._subscription_batch_index = {}
         self._subscription_more_loading = False
+        self._subscription_more_chip = ""
         self._subscription_pending_advance = False
         self._inline_tv_login = None
         self._auth_maybe_changed = False
@@ -706,6 +707,8 @@ class WarderYouTubeHome(Screen):
         chip = self._selected_subscription_chip()
         if not chip or chip.get("kind") != "recent" or not self._home_channels:
             return False
+        if self._subscription_more_loading and self._subscription_more_chip != chip["id"]:
+            self._subscription_more_loading = False
         if self._subscription_more_loading:
             if advance:
                 self._subscription_pending_advance = True
@@ -715,6 +718,7 @@ class WarderYouTubeHome(Screen):
         if not batches or batch >= batches * 67:
             return False
         self._subscription_more_loading = True
+        self._subscription_more_chip = chip["id"]
         self._subscription_pending_advance = bool(advance)
         self._subscription_batch_index[chip["id"]] = batch
         epoch = self._personal_video_epoch
@@ -761,6 +765,7 @@ class WarderYouTubeHome(Screen):
         if self._disposed or epoch != self._personal_video_epoch:
             return
         self._subscription_more_loading = False
+        self._subscription_batch_index[chip_id] = max(0, self._subscription_batch_index.get(chip_id, 1) - 1)
         self["status"].setText(_("Could not load more subscribed videos."))
 
     def _show_selected_subscription_chip(self):
