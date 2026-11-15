@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test69",
-    "tag": "youtube-warder-v0.0.8-test69",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test69/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test69_all.ipk",
-    "sha256": "be9e957d72646292e5b838604a87c61a36426131f86577bd43a55484c6605053",
-    "bytes": 602252,
-    "notes": "Test69: oprava pravého okraja systémovej klávesnice v Hľadať. Presná šírka 14 stĺpcov bez 12 px nevyužitého pásika napravo od hornej šípky; rozloženie klávesov a systémový jazyk ostávajú zachované."
+    "version": "0.0.8~test70",
+    "tag": "youtube-warder-v0.0.8-test70",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test70/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test70_all.ipk",
+    "sha256": "7e688b227ff46bda5fc97979783d523ef1c9ce79be9e00475fac4cb529ca8c6b",
+    "bytes": 602332,
+    "notes": "Test70: Dostupná nová verzia; potvrdenie aktualizácie nad voľbami Áno (vľavo) / Nie (vpravo), aj s funkčným prehodením šípok. Pomocný text presunutý na spodok pravého panela. Zachované štandardné grafické prvky a bezpečné overenie SHA256."
   }
 }
