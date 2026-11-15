@@ -8,6 +8,10 @@ import os
 
 MESSAGES = {
     "en": {
+        "Updates are checked only on request.": "Updates are checked only on request.",
+        "Press OK to check updates.": "Press OK to check for updates.",
+        "Update failed": "Update failed",
+        "Installation completed.": "Installation completed.",
         "You are up to date.": "You are up to date.",
         "Download finished: 100%": "Download finished: 100%",
         "Nová verzia: ": "New version: ",
@@ -140,6 +144,10 @@ MESSAGES = {
         "Waiting for Google account authorization…": "Waiting for Google account authorization…",
     },
     "sk": {
+        "Updates are checked only on request.": "Aktualizácie sa kontrolujú iba na vyžiadanie.",
+        "Press OK to check updates.": "Stlač OK na kontrolu aktualizácií.",
+        "Update failed": "Aktualizácia zlyhala",
+        "Installation completed.": "Inštalácia dokončená.",
         "You are up to date.": "Používaš najnovšiu verziu.",
         "Download finished: 100%": "Sťahovanie dokončené: 100 %",
         "Nová verzia: ": "Nová verzia: ",
@@ -440,6 +448,11 @@ MESSAGES = {
         "Google account connected.": "Google účet pripojený.",
     },
     "cs": {
+        "Updates are checked only on request.": "Aktualizace se kontrolují pouze na vyžádání.",
+        "Press OK to check updates.": "Stiskni OK pro kontrolu aktualizací.",
+        "Update failed": "Aktualizace selhala",
+        "Installation completed.": "Instalace dokončena.",
+        "Installed": "Nainstalováno",
         "You are up to date.": "Používáš nejnovější verzi.",
         "Download finished: 100%": "Stahování dokončeno: 100 %",
         "Nová verzia: ": "Nová verze: ",
@@ -734,6 +747,11 @@ MESSAGES = {
         "Google account connected.": "Google účet připojen.",
     },
     "de": {
+        "Updates are checked only on request.": "Updates werden nur auf Anfrage geprüft.",
+        "Press OK to check updates.": "OK drücken, um nach Updates zu suchen.",
+        "Update failed": "Update fehlgeschlagen",
+        "Installation completed.": "Installation abgeschlossen.",
+        "Installed": "Installiert",
         "You are up to date.": "Du verwendest die neueste Version.",
         "Download finished: 100%": "Download abgeschlossen: 100 %",
         "Nová verzia: ": "Neue Version: ",
