@@ -64,12 +64,17 @@ class SystemKeyboardPane:
         cols = int(getattr(backend, "keyboardWidth", 0) or 0)
         if not (3 <= rows <= 9 and 10 <= cols <= 20):
             return
-        width = int(getattr(backend, "width", 45) or 45) * max(14, cols) + 12
+        # The original +12 horizontal padding exposed an extra dark strip to
+        # the right of the final Backspace key on OpenATV 8.1. The firmware's
+        # rendered columns already occupy their exact key-width footprint:
+        # do not expose any unused listbox pixels beyond the last column.
+        width = int(getattr(backend, "width", 45) or 45) * max(14, cols)
         height = int(getattr(backend, "height", 45) or 45) * rows + 12
         if not (480 <= width <= 1350 and 150 <= height <= 525):
             return
         # Home right panel: x 394..1884, y 173..978.
-        x = 1138 - width // 2
+        # Preserve the previously approved left edge; trim only the right.
+        x = 1138 - (width + 12) // 2
         y = 355 + max(0, (435 - height) // 2)
         try:
             from enigma import ePoint, eSize
