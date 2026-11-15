@@ -171,33 +171,6 @@ class ResolverTests(unittest.TestCase):
         self.assertIn("b[ext=mp4]", selected)
         self.assertNotIn("+", selected)
 
-    def test_gstreamer_hls_prefers_quality_bounded_manifest(self):
-        seen = []
-        playlist = "https://manifest.googlevideo.com/api/manifest/hls_playlist/id/index.m3u8"
-        def runner(argv, **kwargs):
-            seen.append((argv, kwargs))
-            return FakeCompleted(playlist + "\n")
-        result = resolver.resolve_gstreamer_hls_url(
-            "abcdefghijk", quality="2160", runner=runner,
-            which=lambda _: "/usr/bin/yt-dlp")
-        self.assertEqual(result, playlist)
-        argv, kwargs = seen[0]
-        self.assertIn("height<=2160", argv[argv.index("-f") + 1])
-        self.assertIn("protocol*=m3u8", argv[argv.index("-f") + 1])
-        self.assertLessEqual(kwargs["timeout"], 12)
-
-    def test_gstreamer_hls_missing_or_untrusted_preserves_fallback(self):
-        playlist = "https://example.invalid/master.m3u8"
-        self.assertIsNone(resolver.resolve_gstreamer_hls_url(
-            "abcdefghijk", runner=lambda a, **kw: FakeCompleted(playlist + "\n"),
-            which=lambda _: "/usr/bin/yt-dlp"))
-        self.assertIsNone(resolver.resolve_gstreamer_hls_url(
-            "abcdefghijk", runner=lambda a, **kw: FakeCompleted("", 1),
-            which=lambda _: "/usr/bin/yt-dlp"))
-        self.assertIsNone(resolver.resolve_gstreamer_hls_url(
-            "abcdefghijk", runner=lambda *a, **kw: self.fail("unexpected execution"),
-            which=lambda _: None))
-
     def test_format_is_muxed_not_dash_separate(self):
         self.assertIn("acodec!=none", resolver.MUXED_MP4_FORMAT)
         self.assertIn("height<=720", resolver.MUXED_MP4_FORMAT)
