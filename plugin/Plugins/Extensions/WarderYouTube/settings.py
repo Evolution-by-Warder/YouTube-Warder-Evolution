@@ -104,11 +104,11 @@ class WarderYouTubeSettings(Screen):
             _("Maximum video quality") + ": %sp" % get_quality())
         available = available_player_modes()
         selected = get_player_mode()
-        effective = selected if selected in available else "auto"
+        unavailable = selected != "auto" and selected not in available
         self["resolver_state"].setText(
-            _("Player") + ": " + _(PLAYER_LABELS[effective]) +
+            _("Player") + ": " + _(PLAYER_LABELS[selected]) +
             (" (" + _("Unavailable; using Automatic") + ")"
-             if selected != effective else "") + "\n" +
+             if unavailable else "") + "\n" +
             ("yt-dlp: " + (_("Available") if is_available()
                           else _("Not installed")))
         )
@@ -128,10 +128,10 @@ class WarderYouTubeSettings(Screen):
         self.close()
 
     def toggle_player(self):
-        choices = available_player_modes()
+        # Let users choose a preferred backend even on images whose ServiceApp
+        # detection is incomplete. Playback safely uses Automatic if missing.
+        choices = PLAYER_VALUES
         current = get_player_mode()
-        if current not in choices:
-            current = "auto"
         setting = config.plugins.warderyoutube.player_mode
         setting.value = choices[(choices.index(current) + 1) % len(choices)]
         setting.save()
