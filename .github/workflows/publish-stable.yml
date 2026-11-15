@@ -1,0 +1,73 @@
+name: Publish stable YouTube Warder Evolution
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'plugin/**'
+      - 'packaging/**'
+      - 'scripts/build_ipk.py'
+      - '.github/workflows/publish-stable.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: youtube-warder-stable-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Build and validate stable IPK
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/build_ipk.py
+          python3 - <<'PY'
+          import hashlib, importlib.util, json, pathlib, py_compile
+          root = pathlib.Path.cwd()
+          pkg = root/'plugin/Plugins/Extensions/WarderYouTube'
+          for p in pkg.rglob('*.py'):
+              py_compile.compile(str(p), doraise=True, cfile='/tmp/'+p.name+'.pyc')
+          spec=importlib.util.spec_from_file_location('update_core',pkg/'update_core.py')
+          up=importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(up)
+          path=next(root.glob('enigma2-plugin-extensions-youtube-warder-evolution_*.ipk'))
+          version=(root/'packaging/CONTROL/control').read_text().split('Version: ',1)[1].splitlines()[0]
+          digest=hashlib.sha256(path.read_bytes()).hexdigest()
+          up.validate_ipk(path, {'version':version,'bytes':path.stat().st_size,'sha256':digest})
+          (root/'release_meta.json').write_text(json.dumps({'version':version,'sha256':digest,'bytes':path.stat().st_size,'file':path.name}))
+          PY
+      - name: Publish release asset and stable manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION=$(python3 -c 'import json;print(json.load(open("release_meta.json"))["version"])')
+          ASSET=$(python3 -c 'import json;print(json.load(open("release_meta.json"))["file"])')
+          TAG="youtube-warder-v${VERSION}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release exists; no binary overwrite"
+          else
+            gh release create "$TAG" "$ASSET" --target "$GITHUB_SHA" --title "YouTube Warder Evolution ${VERSION}" --notes-file RELEASE_NOTES_1.0.0.md --latest
+          fi
+          python3 - <<'PY'
+          import json,pathlib
+          root=pathlib.Path.cwd(); meta=json.loads((root/'release_meta.json').read_text())
+          base="https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v"+meta['version']+"/"
+          doc={'schema':1,'product':'YouTube Warder Evolution','channel':'stable',
+               'release':{'version':meta['version'],'tag':'youtube-warder-v'+meta['version'],
+               'url':base+meta['file'],'sha256':meta['sha256'],'bytes':meta['bytes'],
+               'notes':'Stable YouTube Warder Evolution '+meta['version']}}
+          (root/'update/stable.json').write_text(json.dumps(doc,indent=2)+'\n')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add update/stable.json
+          if ! git diff --cached --quiet; then
+            git commit -m "release: publish stable manifest ${VERSION}"
+            git push origin HEAD:main
+          fi

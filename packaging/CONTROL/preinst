@@ -1,0 +1,7 @@
+#!/bin/sh
+printf '%s\n' \
+'************************************************************' \
+'*             YouTube - Warder Evolution                   *' \
+'************************************************************' \
+'[Warder YouTube] Preparing installation or upgrade...'
+exit 0

@@ -1,0 +1,13 @@
+#!/bin/sh
+case "${1:-}" in
+    remove|purge)
+        printf '%s\n' \
+        '************************************************************' \
+        'Removing: YouTube - Warder Evolution' \
+        '************************************************************'
+        ;;
+    upgrade|deconfigure)
+        echo '[Warder YouTube] Preparing package upgrade...'
+        ;;
+esac
+exit 0

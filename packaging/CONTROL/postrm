@@ -1,0 +1,13 @@
+#!/bin/sh
+# Old versions may invoke postrm during an upgrade: do not claim removal.
+case "${1:-}" in
+    remove|purge)
+        printf '%s\n' \
+        '************************************************************' \
+        'Removal finished: YouTube - Warder Evolution' \
+        'Saved Enigma2 settings and external components were left intact.' \
+        'Please restart GUI to activate changes.' \
+        '************************************************************'
+        ;;
+esac
+exit 0

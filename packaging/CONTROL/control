@@ -1,0 +1,8 @@
+Package: enigma2-plugin-extensions-youtube-warder-evolution
+Version: 1.0.0
+Architecture: all
+Section: extra
+Priority: optional
+Maintainer: Evolution by Warder
+Depends: enigma2-plugin-systemplugins-serviceapp, exteplayer3
+Description: YouTube Warder Evolution - native Enigma2 YouTube UI and player (stable release)

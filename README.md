@@ -26,11 +26,11 @@ Logs: `/tmp/warder-youtube-deps.log`. An Internet connection and working feeds a
 ### Release package
 `enigma2-plugin-extensions-youtube-warder-evolution_1.0.0_all.ipk`
 
-SHA-256: `cb04ded085350681937a1c59d3af893be13dadc8dcaad77bfa26922f2e2b64cd`
+SHA-256: `a327cb501ae6a16cba0600f695fc0897c07eac91bd5802a2ea9f19e4848cc5e4`
 
 Release notes: [RELEASE_NOTES_1.0.0.md](RELEASE_NOTES_1.0.0.md).
 
-**Repository note:** Parts of this repository still contain the earlier development scaffold. The binary artifact and full current source tree are not yet uploaded to the repository. Do not mistake older development sources here for the exact source tree of the 1.0.0 release package.
+**Repository note:** Parts of this repository still contain the earlier development scaffold. The current stable source tree is synchronized in the main branch; release binaries are built and attached by GitHub Actions after the release workflow succeeds. Do not mistake older development sources here for the exact source tree of the 1.0.0 release package.
 
 ### Background
 The UI uses a lightweight blue style, native Enigma2 controls, and a 1920×1080 layout. Third-party component licenses and attributions must be preserved.
