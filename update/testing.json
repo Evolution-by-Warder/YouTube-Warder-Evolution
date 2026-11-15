@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test74",
-    "tag": "youtube-warder-v0.0.8-test74",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test74/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test74_all.ipk",
-    "sha256": "5ded42b221f29dec2a13489219efee9d3547ccb2a5c763a7c9ba4d1187b85f3b",
-    "bytes": 602766,
-    "notes": "Test74: oprava presvitania ikon hlavného menu na starších Enigma2/OpenATV 7.6. Iba ikony: režim blend a nepriehľadné podkladové vrstvy. Domov a ďalšie funkcie nezmenené."
+    "version": "0.0.8~test75",
+    "tag": "youtube-warder-v0.0.8-test75",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test75/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test75_all.ipk",
+    "sha256": "4bc78d3ee9ca21344810eb0b4b09fd636776cd85c7a81c72187ba27deee4a93d",
+    "bytes": 603330,
+    "notes": "Test75: verejný Domov bez prihlásenia. Ak anonymná úvodná stránka nevráti videá, skúsi skutočné verejné výsledky vyhľadávania. Verejné kategórie dostupné bez účtu, oprava ikon OpenATV 7.6 zachovaná."
   }
 }
