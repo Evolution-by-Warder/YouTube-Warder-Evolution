@@ -19,7 +19,7 @@ from .data_auth import can_use_data_api, account_available
 from .update_core import CURRENT_VERSION
 from .grid_model import move_index
 from .system_keyboard_pane import SystemKeyboardPane
-from .home_feed import popular_videos_page, public_home_videos, public_category_videos
+from .home_feed import popular_videos_page, public_home_videos, public_category_videos, public_category_page
 from .home_personalization import VISIBLE_CHIPS, build_home_chips, dedupe_videos
 from .home_subscription_rail import subscription_chips
 from .chip_layout import layout_chips
@@ -894,9 +894,7 @@ class WarderYouTubeHome(Screen):
         try:
             work = (deferToThread(popular_videos_page, key,
                                   category_id=category_id)
-                    if use_api else deferToThread(public_home_videos)
-                    if category_id == "0" else
-                    deferToThread(public_category_videos, category_id))
+                    if use_api else deferToThread(public_category_page, category_id))
             work.addCallbacks(
                 lambda payload: self._popular_loaded(payload, request_epoch),
                 lambda failure: self._popular_failed(failure, request_epoch))
@@ -961,7 +959,7 @@ class WarderYouTubeHome(Screen):
     def _request_more_popular(self):
         if (self.index != 0 or self._disposed or self._popular_more_loading
                 or self._selected_home_chip()["kind"] not in ("all", "general")
-                or not self._popular_next_page_token or not can_use_data_api(get_api_key())):
+                or not self._popular_next_page_token):
             return False
         token = self._popular_next_page_token
         category_id = self._popular_category_id
@@ -970,8 +968,10 @@ class WarderYouTubeHome(Screen):
         self._popular_more_loading = True
         self["status"].setText(_("Loading more videos…"))
         try:
-            job = deferToThread(popular_videos_page, get_api_key(),
-                                category_id=category_id, page_token=token)
+            job = (deferToThread(popular_videos_page, get_api_key(),
+                                 category_id=category_id, page_token=token)
+                   if self._popular_source == "api" else
+                   deferToThread(public_category_page, category_id, page_token=token))
             job.addCallbacks(
                 lambda response: self._more_popular_ready(response, request_epoch, next_page),
                 lambda failure: self._more_popular_failed(request_epoch))
