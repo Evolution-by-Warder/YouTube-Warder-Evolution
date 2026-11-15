@@ -2,5 +2,12 @@
   "schema": 1,
   "product": "YouTube Warder Evolution",
   "channel": "stable",
-  "release": null
+  "release": {
+    "version": "1.0.0",
+    "tag": "youtube-warder-v1.0.0",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v1.0.0/enigma2-plugin-extensions-youtube-warder-evolution_1.0.0_all.ipk",
+    "sha256": "c01a9e054d745c51b93fac0fb63cb18ad365f48e68804e4ae3ea513ccc1fcaee",
+    "bytes": 909652,
+    "notes": "Stable YouTube Warder Evolution 1.0.0"
+  }
 }
