@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test77",
-    "tag": "youtube-warder-v0.0.8-test77",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test77/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test77_all.ipk",
-    "sha256": "4198faba549bb21b78acb1bea99afc09f8d1cea9971c840209188d91d7044d79",
-    "bytes": 604906,
-    "notes": "Test77: kontrola pokračovania všetkých 14 kategórií bez účtu; oddelené pokračovanie Všetko (browse) a ostatných tém (search). Viditeľný dôvod, ak YouTube nevráti ďalšiu stránku. Vzhľad a oprava ikon nezmenené."
+    "version": "0.0.8~test78",
+    "tag": "youtube-warder-v0.0.8-test78",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test78/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test78_all.ipk",
+    "sha256": "96b77441c0c60601af613c7ea64d4ac7175be4cfbb8baecca72c54ee01f8d3ec",
+    "bytes": 605604,
+    "notes": "Test78: pokračovanie verejného Domov vo všetkých 14 kategóriách. Pri chýbajúcom tokenu YouTube získa ďalšie skutočné videá z príbuzných tém, filtruje duplicity, ponecháva obmedzenú cache a schválený dizajn."
   }
 }
