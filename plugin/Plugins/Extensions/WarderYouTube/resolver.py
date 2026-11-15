@@ -143,50 +143,6 @@ def resolve_video_url(video_id, runner=subprocess.run, which=shutil.which,
     return validate_stream_url(lines[0])
 
 
-def resolve_gstreamer_hls_url(video_id, quality="720",
-                              runner=subprocess.run, which=shutil.which,
-                              timeout=12):
-    """Find one real HLS candidate for native GStreamer without DASH suburi.
-
-    This is optional. Some YouTube VOD videos expose no HLS and must retain
-    the existing MP4 fallback. Never show or log signed stream URLs.
-    """
-    watch_url = video_page_url(video_id)
-    if quality not in QUALITY_HEIGHTS:
-        raise ResolverError("Unsupported playback quality setting.")
-    executable = which("yt-dlp")
-    if not executable:
-        return None
-    height = QUALITY_HEIGHTS[quality]
-    argv = [
-        executable, "--ignore-config", "--no-playlist", "--no-warnings",
-        "--no-progress", "--no-cache-dir", "--socket-timeout", "8",
-        "--retries", "1", "--extractor-retries", "1",
-        "-f", "b[protocol*=m3u8][height<=%d]" % height,
-        "--get-url", "--", watch_url
-    ]
-    try:
-        result = runner(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                        text=True, timeout=timeout, check=False)
-    except (subprocess.TimeoutExpired, OSError):
-        return None
-    if result.returncode or not isinstance(result.stdout, str):
-        return None
-    if len(result.stdout) > MAX_STDOUT_CHARS:
-        return None
-    lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
-    if len(lines) != 1:
-        return None
-    try:
-        url = validate_stream_url(lines[0])
-    except ResolverError:
-        return None
-    # Require an HLS playlist rather than accepting a renamed MP4.
-    if ".m3u8" not in urlsplit(url).path.lower():
-        return None
-    return url
-
-
 def resolve_video_streams(video_id, quality="720", dash=False, player_mode="auto"):
     """Reuse our Radio resolver's bounded multiple-stream playback policy.
 
@@ -202,26 +158,21 @@ def resolve_video_streams(video_id, quality="720", dash=False, player_mode="auto
         candidates = extract_candidates(video_id, quality=quality, dash=bool(dash))
     except Exception:
         pass
-    native_gstreamer = player_mode == "gst" or (player_mode == "auto" and not dash)
-    if native_gstreamer and QUALITY_HEIGHTS[quality] >= 720:
-        # A real HLS playlist can expose a higher-quality synchronized A/V
-        # stream to GStreamer. Try this even if the original resolver found
-        # only progressive SD MP4. Do not produce a fake DASH playlist.
-        existing_hls = any(
-            ".m3u8" in urlsplit(item.get("url", "")).path.lower()
-            for item in candidates if isinstance(item, dict))
-        if not existing_hls:
-            hls = resolve_gstreamer_hls_url(video_id, quality=quality)
-            if hls:
-                candidates.insert(0, {"url": hls, "service_type": 4097})
     if candidates:
-        if native_gstreamer:
-            # Preserve any genuine HLS master/variant ahead of progressive MP4
-            # for native GStreamer, while never passing DASH suburi to it.
-            candidates.sort(key=lambda item: 0 if (
-                isinstance(item, dict) and
-                ".m3u8" in urlsplit(item.get("url", "")).path.lower()
-            ) else 1)
+        # On OpenATV 7.6 the newly preferred HLS URL opened a black
+        # MoviePlayer and then returned to Home. Do not promote an unverified
+        # HLS playlist over the working progressive A/V stream on GStreamer.
+        native_gst = player_mode == "gst" or (player_mode == "auto" and not dash)
+        if native_gst:
+            progressive = [item for item in candidates
+                           if isinstance(item, dict) and
+                           item.get("service_type") == 4097 and
+                           "&suburi=" not in item.get("url", "") and
+                           ".m3u8" not in urlsplit(item.get("url", "")).path.lower()]
+            if progressive:
+                return progressive[:8]
+            # A real HLS stream may be the only source for a live event;
+            # retain it in that case without claiming HD/4K compatibility.
         return candidates[:8]
     # Original safe progressive MP4 fallback.
     try:
