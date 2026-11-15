@@ -2,7 +2,7 @@ name: Publish test66 for in-plugin updater test
 on:
   push:
     branches: [feature/native-search-v002]
-    paths: [.github/workflows/publish-test66-word-focus.yml]
+    paths: [.github/workflows/publish-test66-update-status.yml]
   workflow_dispatch:
 
 permissions:
