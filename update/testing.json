@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test83",
-    "tag": "youtube-warder-v0.0.8-test83",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test83/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test83_all.ipk",
-    "sha256": "2a89c22e8b1ecbd37159d61dc1d6fc07171fdb175321204eff9a5cc851e29fc5",
-    "bytes": 606910,
-    "notes": "Test83: GStreamer 4097 aj gstplayer 5001 skusia vysokokvalitný HLS stream YouTube, ak je dostupný; inak zostáva pôvodný MP4/SD fallback. Exteplayer3 nie je potrebný. Domov a vzhľad nezmenené."
+    "version": "0.0.8~test84",
+    "tag": "youtube-warder-v0.0.8-test84",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test84/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test84_all.ipk",
+    "sha256": "d42973ade5837a59782cccb054e22886ace308b9beb4938bf5f61117869afd98",
+    "bytes": 607252,
+    "notes": "Test84: Najnovsie v Odberoch uz nekonci po 24 videach; dalsie videa sa nacitavaju pri listovani v davkach cez odoberane kanaly a starsie nahravky. Funkcne prehravanie z test82 obnovene, verejny Domov a dizajn zachovane."
   }
 }
