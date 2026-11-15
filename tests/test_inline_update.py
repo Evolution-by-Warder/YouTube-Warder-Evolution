@@ -31,7 +31,7 @@ class Home:
         self._busy = False
         self.details = []
         self.items = {k: Label() for k in ("key_green", "key_yellow",
-                                          "key_blue", "key_red", "version",
+                                          "key_blue", "key_red", "version", "status",
                                           "update_progress", "update_no", "update_yes",
                                           "update_no_focus", "update_yes_focus")}
         self.session = Session()
@@ -158,11 +158,35 @@ class InlineUpdateTests(unittest.TestCase):
         self.assertTrue(controller.confirming)
         self.assertFalse(controller.confirm_yes)
         self.assertTrue(home["update_no_focus"].visible)
+        self.assertIn("Confirm update:", home.details[3])
+        self.assertEqual(home.details[5], "")
+        self.assertIn("Arrows: select", home["status"].value)
         self.assertFalse(home["update_no"].visible)
         self.assertTrue(home["update_yes"].visible)
         controller.answer(False)
         self.assertEqual(len(jobs), 1)
         self.assertFalse(home._busy)
+
+    def test_confirmation_text_order_and_status_clear_when_cancelled(self):
+        mod, jobs, fakes = load()
+        home = Home()
+        controller = mod.InlineUpdater(home)
+        controller.release = release()
+        controller.confirm()
+        self.assertEqual(home.details[2], "New version available")
+        self.assertEqual(home.details[3],
+                         "Confirm update: 0.0.8~test60")
+        self.assertEqual(home.details[5], "")
+        self.assertEqual(home["status"].value,
+                         "Arrows: select · OK: confirm · EXIT: cancel")
+        self.assertTrue(home["update_no_focus"].visible)
+        self.assertFalse(home["update_yes_focus"].visible)
+        controller.select(True)
+        self.assertTrue(home["update_yes_focus"].visible)
+        controller.answer(False)
+        self.assertEqual(home["status"].value, "")
+        self.assertFalse(controller.installing)
+        self.assertEqual(jobs, [])
 
     def test_checked_without_release_reports_up_to_date_and_retry_resets(self):
         mod, jobs, fakes = load()
@@ -185,7 +209,7 @@ class InlineUpdateTests(unittest.TestCase):
         controller.check()
         jobs[2][3].success(("0.0.8~test65", release()))
         self.assertTrue(controller.checked)
-        self.assertIn("Update found", home.details[2])
+        self.assertIn("New version available", home.details[2])
 
     def test_install_updates_in_place_then_gui_only_restart(self):
         mod, jobs, fakes = load()
