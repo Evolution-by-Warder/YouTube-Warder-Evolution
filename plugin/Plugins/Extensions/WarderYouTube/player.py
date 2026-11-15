@@ -12,28 +12,33 @@ from Screens.InfoBar import MoviePlayer
 
 
 def service_player_available(mode):
-    """Only offer installed, registered ServiceApp backends."""
-    specs = {"gst": (5001, "gstplayer"), "exte": (5002, "exteplayer3")}
-    if mode not in specs:
+    """Check Enigma2 ServiceApp and installed backend, including .pyc images.
+
+    OpenATV 7.6 may ship only plugin.pyc + serviceapp.so. Its GStreamer
+    executable is gstplayer2, NOT gstplayer. A generic service.info probe
+    may be None even when the factory works, so installation is a second
+    indicator. A binary by itself is not proof ServiceApp is installed.
+    """
+    if mode not in ("gst", "exte"):
         return False
-    kind, binary = specs[mode]
+    base = "/usr/lib/enigma2/python/Plugins/SystemPlugins/ServiceApp"
+    installed = (
+        any(os.path.isfile(os.path.join(base, filename)) for filename in (
+            "plugin.py", "plugin.pyc", "plugin.pyo"))
+        and os.path.isfile(os.path.join(base, "serviceapp.so"))
+    )
     try:
         center = enigma.eServiceCenter.getInstance()
-        if center is None:
-            return False
-        registered = center.info(
-            eServiceReference(kind, 0, "https://www.youtube.com/")) is not None
-        serviceapp_plugin = os.path.isfile(
-            "/usr/lib/enigma2/python/Plugins/SystemPlugins/ServiceApp/plugin.py")
-        # Older images can have ServiceApp registered even if the probe URL
-        # produces no service information. An installed plugin is a useful
-        # second signal; do not rely on an unrelated binary alone.
-        if mode == "gst":
-            return registered or serviceapp_plugin
-        # ExtePlayer3 additionally needs its external executable.
-        return bool(shutil.which(binary)) and (registered or serviceapp_plugin)
+        kind = 5001 if mode == "gst" else 5002
+        registered = bool(center is not None and center.info(
+            eServiceReference(kind, 0, "https://www.youtube.com/")) is not None)
     except (AttributeError, RuntimeError, TypeError, OSError):
-        return False
+        registered = False
+    if mode == "gst":
+        # The ServiceApp gstplayer2 backend can also be built into its
+        # shared library on some images; never require a fictitious gstplayer.
+        return installed or registered
+    return bool(shutil.which("exteplayer3")) and (installed or registered)
 
 
 def prepare_player_streams(streams, mode="auto"):
