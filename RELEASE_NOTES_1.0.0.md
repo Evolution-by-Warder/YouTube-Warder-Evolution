@@ -22,6 +22,6 @@ opkg install /tmp/enigma2-plugin-extensions-youtube-warder-evolution_1.0.0_all.i
 ```
 Restart Enigma2 GUI after installation. Dependency provisioning runs after the opkg transaction finishes. Check `/tmp/warder-youtube-deps.log` if needed.
 
-SHA-256 of local release package: `a327cb501ae6a16cba0600f695fc0897c07eac91bd5802a2ea9f19e4848cc5e4`.
+SHA-256 of local release package: `7cb78fb54d053e70c7de08c75bbabafa43c8106e8808bd91bdaf743e29d92e2c`.
 
 **Publication status:** The release workflow builds the IPK from the checked-in sources, uploads it to a stable GitHub Release, and publishes the verified update manifest after successful publication.
