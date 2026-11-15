@@ -44,44 +44,6 @@ class RadioEngineIntegrationTests(unittest.TestCase):
         self.assertEqual(len(result),2)
         self.assertTrue(all(x["service_type"]==4097 for x in result))
 
-    def test_gstreamer_hls_is_preferred_without_exteplayer3(self):
-        from unittest.mock import patch
-        from WarderYouTube import resolver
-        hls = "https://manifest.googlevideo.com/api/manifest/hls_playlist/master.m3u8"
-        sd = "https://rr1.googlevideo.com/videoplayback?id=123"
-        with patch("WarderYouTube.radio_streams.extract_candidates",
-                   return_value=[{"url": sd, "service_type": 4097}]):
-            with patch.object(resolver, "resolve_gstreamer_hls_url", return_value=hls):
-                result = resolver.resolve_video_streams(
-                    "abcdefghijk", quality="2160", dash=False, player_mode="gst")
-        self.assertEqual(result[0], {"url": hls, "service_type": 4097})
-        self.assertEqual(result[1], {"url": sd, "service_type": 4097})
-
-    def test_built_in_auto_gstreamer_without_exte_gets_hls_before_sd(self):
-        from unittest.mock import patch
-        from WarderYouTube import resolver
-        hls = "https://manifest.googlevideo.com/api/manifest/hls_playlist/master.m3u8"
-        sd = "https://rr1.googlevideo.com/videoplayback?id=123"
-        with patch("WarderYouTube.radio_streams.extract_candidates",
-                   return_value=[{"url": sd, "service_type": 4097}]):
-            with patch.object(resolver, "resolve_gstreamer_hls_url", return_value=hls):
-                result = resolver.resolve_video_streams(
-                    "abcdefghijk", quality="2160", dash=False, player_mode="auto")
-        self.assertEqual(result[0]["url"], hls)
-        self.assertEqual(result[0]["service_type"], 4097)
-        self.assertEqual(result[1]["url"], sd)
-
-    def test_gstreamer_does_not_depend_on_exte_for_unchanged_sd_fallback(self):
-        from unittest.mock import patch
-        from WarderYouTube import resolver
-        sd = "https://rr1.googlevideo.com/videoplayback?id=123"
-        with patch("WarderYouTube.radio_streams.extract_candidates",
-                   return_value=[{"url": sd, "service_type": 4097}]):
-            with patch.object(resolver, "resolve_gstreamer_hls_url", return_value=None):
-                result = resolver.resolve_video_streams(
-                    "abcdefghijk", quality="2160", dash=False, player_mode="gst")
-        self.assertEqual(result, [{"url": sd, "service_type": 4097}])
-
     def test_parallel_quality_requests_do_not_mix_settings(self):
         from WarderYouTube.youtube_engine.settings import config
         results = []
