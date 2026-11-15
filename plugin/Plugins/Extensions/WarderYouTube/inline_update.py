@@ -22,6 +22,7 @@ class InlineUpdater:
         self.home = home
         self.generation = 0
         self.checking = False
+        self.checked = False
         self.installing = False
         self.confirming = False
         self.confirm_yes = False
@@ -109,6 +110,8 @@ class InlineUpdater:
             return _("Checking updates")
         if self.release:
             return _("Update found")
+        if self.checked:
+            return _("You are up to date.")
         return _("Press OK to check updates.")
 
     def _note(self):
@@ -141,6 +144,7 @@ class InlineUpdater:
         self.error = ""
         self.release = None
         self.details = False
+        self.checked = False
         self.checking = True
         self.show()
         try:
@@ -154,6 +158,7 @@ class InlineUpdater:
         if self.home is None or token != self.generation:
             return
         self.checking = False
+        self.checked = True
         self.installed, self.release = data
         self.home.installed_version = self.installed
         self.home["version"].setText(self.installed + "  •  Enigma2")
@@ -163,6 +168,7 @@ class InlineUpdater:
         if self.home is None or token != self.generation:
             return
         self.checking = False
+        self.checked = False
         self.error = _("Kontrola aktualizácie zlyhala.")
         self.show()
 
