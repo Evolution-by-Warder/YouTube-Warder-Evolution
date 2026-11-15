@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test75",
-    "tag": "youtube-warder-v0.0.8-test75",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test75/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test75_all.ipk",
-    "sha256": "4bc78d3ee9ca21344810eb0b4b09fd636776cd85c7a81c72187ba27deee4a93d",
-    "bytes": 603330,
-    "notes": "Test75: verejný Domov bez prihlásenia. Ak anonymná úvodná stránka nevráti videá, skúsi skutočné verejné výsledky vyhľadávania. Verejné kategórie dostupné bez účtu, oprava ikon OpenATV 7.6 zachovaná."
+    "version": "0.0.8~test76",
+    "tag": "youtube-warder-v0.0.8-test76",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test76/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test76_all.ipk",
+    "sha256": "3c55fd2a2ef8c7b1119bb9fee93d33285aa4d03d6fee8bf947992c9a5d31caab",
+    "bytes": 604402,
+    "notes": "Test76: ďalšie verejné videá bez prihlásenia sa načítavajú automaticky na konci poslednej stránky cez skutočné pokračovanie YouTube. Náhľady ostávajú v obmedzenej cache, staré dočasné obrázky sa čistia. Ikony a vzhľad nezmenené."
   }
 }
