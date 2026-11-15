@@ -26,7 +26,7 @@ Logs: `/tmp/warder-youtube-deps.log`. An Internet connection and working feeds a
 ### Release package
 `enigma2-plugin-extensions-youtube-warder-evolution_1.0.0_all.ipk`
 
-SHA-256: `a327cb501ae6a16cba0600f695fc0897c07eac91bd5802a2ea9f19e4848cc5e4`
+SHA-256: `7cb78fb54d053e70c7de08c75bbabafa43c8106e8808bd91bdaf743e29d92e2c`
 
 Release notes: [RELEASE_NOTES_1.0.0.md](RELEASE_NOTES_1.0.0.md).
 
