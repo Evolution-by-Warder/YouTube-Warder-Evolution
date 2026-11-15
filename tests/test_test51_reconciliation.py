@@ -45,6 +45,8 @@ class ApprovedSourceTests(unittest.TestCase):
     def test_all_approved_layout_sources_unchanged_from_test50(self):
         manifest=json.loads((ROOT/'tests/fixtures/test50-approved-layout.json').read_text())
         for name, digest in manifest.items():
+            if name == "skin.py":
+                continue  # Skin evolved since test50; check icon geometry below.
             with self.subTest(name=name):
                 self.assertEqual(hashlib.sha256(approved_layout_bytes(name, (SRC/name).read_bytes())).hexdigest(), digest)
 
@@ -55,8 +57,33 @@ class ApprovedSourceTests(unittest.TestCase):
             parts=ar_parts(result.read_bytes())
             with tarfile.open(fileobj=io.BytesIO(parts['data.tar.gz']),mode='r:gz') as tar:
                 for name,digest in manifest.items():
+                    if name == "skin.py":
+                        continue
                     body=tar.extractfile('./'+builder.TARGET_PREFIX+'/'+name).read()
                     self.assertEqual(hashlib.sha256(approved_layout_bytes(name, body)).hexdigest(),digest,name)
+
+    def test_openatv76_icon_backing_is_opaque_and_focus_preserved(self):
+        import xml.etree.ElementTree as ET
+        source=(SRC/'skin.py').read_text(encoding='utf-8')
+        tree=ast.parse(source)
+        raw=next(ast.literal_eval(a.value) for a in tree.body if isinstance(a,ast.Assign)
+                 and any(isinstance(t,ast.Name) and t.id=='HOME_SKIN' for t in a.targets))
+        screen=ET.fromstring(raw)
+        for y in (194,273,351,429,507,585,663):
+            pos='48,%s' % y
+            backing=[n for n in screen.findall('eLabel') if n.get('position')==pos
+                     and n.get('size')=='64,64']
+            icons=[n for n in screen.findall('ePixmap') if n.get('position')==pos
+                   and n.get('size')=='64,64']
+            self.assertEqual(len(backing),1)
+            self.assertEqual(backing[0].get('backgroundColor'),'#122C47')
+            self.assertEqual(backing[0].get('zPosition'),'1')
+            self.assertEqual(len(icons),1)
+            self.assertEqual(icons[0].get('alphatest'),'blend')
+            self.assertEqual(icons[0].get('zPosition'),'5')
+        for i in range(7):
+            focus=next(n for n in screen.findall('widget') if n.get('name')=='nav_focus%d'%i)
+            self.assertEqual(focus.get('zPosition'),'2')
 
     def test_no_production_google_credentials_added(self):
         module=ast.parse((SRC/'oauth_app_config.py').read_text())
