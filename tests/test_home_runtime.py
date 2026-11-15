@@ -357,6 +357,31 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(instance.point[0] + instance.size[0],
                          1138 + (57 * 14 - 12) // 2)
 
+    def test_confirmation_remote_left_is_yes_right_is_no(self):
+        mod, key, saved, jobs = load()
+        screen, session = ready(mod)
+        chosen = []
+        actions = []
+        screen.index = 6
+        screen._inline_updater = types.SimpleNamespace(
+            confirming=True, confirm_yes=False,
+            select=lambda yes: chosen.append(yes),
+            answer=lambda answer: actions.append(answer),
+            is_busy=lambda: True
+        )
+        screen.left()
+        screen.right()
+        self.assertEqual(chosen, [True, False])
+        screen._inline_updater.confirm_yes = True
+        screen.activate()
+        self.assertEqual(actions, [True])
+        screen._inline_updater.confirm_yes = False
+        screen.activate()
+        self.assertEqual(actions, [True, False])
+        screen.back()
+        self.assertEqual(actions, [True, False, False])
+        self.assertEqual(session.opens, [])
+
     def test_search_keyboard_appears_inline_on_highlight_without_modal(self):
         mod, key, saved, jobs = load()
         screen, session = ready(mod)
