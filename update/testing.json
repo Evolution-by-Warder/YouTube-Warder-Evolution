@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test79",
-    "tag": "youtube-warder-v0.0.8-test79",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test79/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test79_all.ipk",
-    "sha256": "0ea953d3a778859b5c840d694800024f347b55805c71fb0a194fcd9ca7d47f48",
-    "bytes": 605754,
-    "notes": "Test79: dalsie verejne videa sa nacitaju uz pri vstupe na poslednu stranku v kazdej kategorii; prazdne alebo duplicitne davky sa preskocia s obmedzenym poctom pokusov. Aktualna stranka a schvaleny dizajn zostavaju zachovane."
+    "version": "0.0.8~test80",
+    "tag": "youtube-warder-v0.0.8-test80",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test80/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test80_all.ipk",
+    "sha256": "92e03e9e1029dc6c906a0a3890170e805af778afb7352b41636f42d86a7c7dec",
+    "bytes": 605900,
+    "notes": "Test80: ked YouTube odmietne anonymny pokracovaci token, plugin skusi dalsie verejne videa z rovnakej tematickej kategorie. Zachovane nacitavanie test79, ikony OpenATV 7.6 a schvaleny dizajn."
   }
 }
