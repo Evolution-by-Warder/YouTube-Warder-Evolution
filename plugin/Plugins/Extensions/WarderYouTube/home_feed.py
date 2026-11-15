@@ -201,30 +201,64 @@ def parse_public_home(html_text):
     return results
 
 
-def public_home_videos(opener=urlopen, timeout=8):
-    """Anonymous public browsing, never personalized and never signed in."""
-    request = Request(
-        PUBLIC_HOME_URL,
-        headers={
-            "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) "
-                           "AppleWebKit/537.36 Chrome/130.0 Safari/537.36"),
-            "Accept-Language": "sk-SK,sk;q=0.9,en;q=0.5",
-            "Accept": "text/html",
-        }
-    )
+# Search pages normally contain public results even when an unsigned Home page
+# has no recommended feed. These are search topics, not a personalized chart.
+PUBLIC_QUERIES = {
+    "0": "Slovensko videá",
+    "1": "film animácia", "10": "hudba music",
+    "15": "zvieratá", "17": "šport", "19": "cestovanie",
+    "20": "gaming hry", "22": "ľudia vlog", "23": "komédia",
+    "24": "zábava", "25": "správy Slovensko", "26": "návody životný štýl",
+    "27": "vzdelávanie", "28": "technológie",
+}
+PUBLIC_SEARCH_URL = "https://www.youtube.com/results?"
+
+
+def _read_public_page(url, opener, timeout):
+    request = Request(url, headers={
+        "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) "
+                       "AppleWebKit/537.36 Chrome/130.0 Safari/537.36"),
+        "Accept-Language": "sk-SK,sk;q=0.9,en;q=0.5",
+        "Accept": "text/html",
+    })
     try:
         response = opener(request, timeout=timeout)
         try:
-            final_url = response.geturl() if hasattr(response, "geturl") else PUBLIC_HOME_URL
+            final_url = response.geturl() if hasattr(response, "geturl") else url
             if not isinstance(final_url, str) or not final_url.startswith(
                 ("https://www.youtube.com/", "https://youtube.com/")
             ):
-                raise SearchError("Public YouTube home redirected elsewhere.")
+                raise SearchError("Public YouTube page redirected elsewhere.")
             body = response.read(PUBLIC_MAX_HTML + 1)
         finally:
             response.close()
-        if len(body) > PUBLIC_MAX_HTML:
-            raise SearchError("Public YouTube home response is too large.")
-        return parse_public_home(body.decode("utf-8", "replace"))
     except (HTTPError, URLError, OSError):
-        raise SearchError("Public YouTube home is temporarily unavailable.")
+        raise SearchError("Public YouTube page is temporarily unavailable.") from None
+    if len(body) > PUBLIC_MAX_HTML:
+        raise SearchError("Public YouTube response is too large.")
+    return parse_public_home(body.decode("utf-8", "replace"))
+
+
+def public_category_videos(category_id="0", opener=urlopen, timeout=8):
+    """Real, anonymous YouTube video cards, no account or Data API key.
+
+    For All, attempt the unsigned Home once; its recommendation rail is often
+    empty for new/anonymous sessions, so fall back to an actual search page.
+    Category chips use public topic searches, NOT the official popularity chart.
+    Every request remains size-bounded and runs in the calling worker thread.
+    """
+    if category_id not in PUBLIC_QUERIES:
+        raise SearchError("Unsupported public YouTube category.")
+    if category_id == "0":
+        try:
+            return _read_public_page(PUBLIC_HOME_URL, opener, timeout)
+        except SearchError:
+            pass
+    search = urlencode({"search_query": PUBLIC_QUERIES[category_id],
+                        "hl": "sk", "gl": "SK"})
+    return _read_public_page(PUBLIC_SEARCH_URL + search, opener, timeout)
+
+
+def public_home_videos(opener=urlopen, timeout=8):
+    """Backward-compatible anonymous Home worker entrypoint."""
+    return public_category_videos("0", opener=opener, timeout=timeout)
