@@ -176,6 +176,72 @@ class PublicFeedTests(unittest.TestCase):
         self.assertIn("/youtubei/v1/search", requests[1].full_url)
         self.assertNotIn("Authorization", requests[1].headers)
 
+    def test_every_home_category_can_load_first_and_next_anonymous_page(self):
+        """All 14 category identifiers, including All, use the same cursor."""
+        mod = load()
+        from _warder_public.home_categories import CATEGORY_IDS
+        self.assertEqual(set(mod.PUBLIC_QUERIES), set(CATEGORY_IDS))
+        self.assertEqual(len(CATEGORY_IDS), 14)
+        key = "B" * 39
+        for category_id in sorted(CATEGORY_IDS):
+            with self.subTest(category=category_id):
+                html = ('ytcfg.set({"INNERTUBE_API_KEY":"' + key +
+                        '","INNERTUBE_CLIENT_VERSION":"2.20261115.00.00"});' +
+                        'var ytInitialData = ' + json.dumps({"contents": [
+                            {"videoRenderer": {
+                                "videoId": "abcdefghijk",
+                                "title": {"simpleText": "First video"}}},
+                            {"continuationItemRenderer": {"continuationEndpoint": {
+                                "continuationCommand": {"token": "NEXTTOKEN"}}}}
+                        ]}) + ';')
+                follow = {"onResponseReceivedCommands": [{
+                    "appendContinuationItemsAction": {"continuationItems": [
+                        {"videoRenderer": {
+                            "videoId": "01234567890",
+                            "title": {"simpleText": "Second video"}}}
+                    ]}}]}
+                class Response(FakeResponse):
+                    def __init__(self, data, url):
+                        super().__init__(data)
+                        self.url = url
+                    def geturl(self):
+                        return self.url
+                calls = []
+                def opener(request, timeout):
+                    calls.append(request)
+                    if category_id == "0" and len(calls) == 1:
+                        # Anonymous Home can be empty; fallback to public search.
+                        return Response(b"ytInitialData = {};", request.full_url)
+                    if request.data is None:
+                        return Response(html.encode(), request.full_url)
+                    return Response(json.dumps(follow).encode(), request.full_url)
+                first = mod.public_category_page(category_id, opener=opener)
+                self.assertEqual(first["pagination_state"], "ready")
+                self.assertTrue(first["next_page_token"])
+                nxt = mod.public_category_page(
+                    category_id, page_token=first["next_page_token"],
+                    opener=opener)
+                self.assertEqual(nxt["items"][0]["video_id"], "01234567890")
+                self.assertEqual(json.loads(calls[-1].data)["continuation"],
+                                 "NEXTTOKEN")
+                self.assertTrue(all(
+                    "Authorization" not in call.headers for call in calls))
+
+    def test_missing_pagination_metadata_is_reported_not_claimed_as_end(self):
+        mod = load()
+        initial = {"contents": [
+            {"videoRenderer": {"videoId": "abcdefghijk",
+                               "title": {"simpleText": "First"}}},
+            {"continuationItemRenderer": {"continuationEndpoint": {
+                "continuationCommand": {"token": "MORE"}}}}
+        ]}
+        page = ("ytInitialData = " + json.dumps(initial) + ";").encode()
+        first = mod.public_category_page(
+            "25", opener=lambda req, timeout: FakeResponse(page))
+        self.assertEqual(len(first["items"]), 1)
+        self.assertEqual(first["next_page_token"], "")
+        self.assertEqual(first["pagination_state"], "missing_web_client")
+
     def test_unsafe_public_page_cursor_rejected_without_network(self):
         mod = load()
         def forbidden(*args, **kwargs):
