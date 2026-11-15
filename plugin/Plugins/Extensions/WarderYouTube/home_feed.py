@@ -134,12 +134,7 @@ def _rendered_text(node):
     return ""
 
 
-def parse_public_home(html_text):
-    """Extract only actual public videos from YouTube's anonymous home page.
-
-    Missing initial data, login/consent pages and changed layouts are expected
-    possibilities; they are never treated as successful empty recommendations.
-    """
+def _initial_data(html_text):
     if not isinstance(html_text, str) or len(html_text) > PUBLIC_MAX_HTML:
         raise SearchError("Public YouTube home response is invalid.")
     match = INITIAL_DATA.search(html_text)
@@ -147,18 +142,30 @@ def parse_public_home(html_text):
         raise SearchError("Public YouTube home list is unavailable.")
     try:
         data, unused = json.JSONDecoder().raw_decode(
-            html_text[match.end():].lstrip()
-        )
+            html_text[match.end():].lstrip())
     except (ValueError, TypeError):
-        raise SearchError("Public YouTube home list is unavailable.")
+        raise SearchError("Public YouTube home list is unavailable.") from None
     if not isinstance(data, dict):
         raise SearchError("Public YouTube home list is invalid.")
+    return data
 
-    results, used, stack, visited = [], set(), [data], 0
-    while stack and len(results) < MAX_RESULTS and visited < 14000:
+
+def _public_results(data):
+    """Walk only a bounded portion of real YouTube renderer data."""
+    if not isinstance(data, dict):
+        raise SearchError("Public YouTube response is invalid.")
+    results, used, stack, visited, continuation = [], set(), [data], 0, ""
+    while stack and visited < 18000:
         node = stack.pop()
         visited += 1
         if isinstance(node, dict):
+            if not continuation:
+                command = (node.get("continuationCommand") or
+                           node.get("nextContinuationData"))
+                if isinstance(command, dict):
+                    candidate = command.get("token") or command.get("continuation")
+                    if isinstance(candidate, str) and 0 < len(candidate) <= 3000:
+                        continuation = candidate
             renderer = (node.get("videoRenderer")
                         or node.get("gridVideoRenderer")
                         or node.get("compactVideoRenderer"))
@@ -179,16 +186,14 @@ def parse_public_home(html_text):
             else:
                 video_id = None
             if (isinstance(video_id, str) and VIDEO_ID.fullmatch(video_id)
-                    and title and video_id not in used):
+                    and title and video_id not in used
+                    and len(results) < PUBLIC_PAGE_LIMIT):
                 used.add(video_id)
                 results.append({
-                    "video_id": video_id,
-                    "title": title[:200],
-                    "channel": channel[:120],
-                    "published_at": "",
+                    "video_id": video_id, "title": title[:200],
+                    "channel": channel[:120], "published_at": "",
                     "thumbnail_url": ("https://i.ytimg.com/vi/%s/mqdefault.jpg"
-                                      % video_id),
-                })
+                                      % video_id)})
             for child in reversed(list(node.values())):
                 if isinstance(child, (dict, list)):
                     stack.append(child)
@@ -197,8 +202,93 @@ def parse_public_home(html_text):
                 if isinstance(child, (dict, list)):
                     stack.append(child)
     if not results:
-        raise SearchError("Public YouTube home did not return usable videos.")
-    return results
+        raise SearchError("Public YouTube page did not return usable videos.")
+    return results, continuation
+
+
+def parse_public_home(html_text):
+    """Compatibility: return only real video cards from a public page."""
+    return _public_results(_initial_data(html_text))[0]
+
+
+def _web_config(html_text):
+    key = WEB_KEY.search(html_text)
+    version = WEB_VERSION.search(html_text)
+    visitor = WEB_VISITOR.search(html_text)
+    return {"key": key.group(1) if key else "",
+            "version": version.group(1) if version else "",
+            "visitor": visitor.group(1) if visitor else ""}
+
+
+def _pack_continuation(token, config):
+    if not token or not config.get("key") or not config.get("version"):
+        return ""
+    packed = json.dumps({"continuation": token, "key": config["key"],
+                         "version": config["version"],
+                         "visitor": config.get("visitor", "")},
+                        separators=(",", ":"))
+    return packed if len(packed) <= MAX_PAGE_TOKEN else ""
+
+
+def _unpack_continuation(value):
+    if not isinstance(value, str) or not 0 < len(value) <= MAX_PAGE_TOKEN:
+        raise SearchError("Invalid public video page.")
+    try:
+        info = json.loads(value)
+    except ValueError:
+        raise SearchError("Invalid public video page.") from None
+    if not isinstance(info, dict):
+        raise SearchError("Invalid public video page.")
+    token, key, version = (info.get("continuation"),
+                           info.get("key"), info.get("version"))
+    visitor = info.get("visitor", "")
+    if (not isinstance(token, str) or not 0 < len(token) <= 3000
+            or any(ord(ch) < 33 or ord(ch) > 126 for ch in token)
+            or not isinstance(key, str) or not re.fullmatch(r"[A-Za-z0-9_-]{12,80}", key)
+            or not isinstance(version, str) or not re.fullmatch(r"[A-Za-z0-9._-]{4,80}", version)
+            or not isinstance(visitor, str) or len(visitor) > 300
+            or not re.fullmatch(r"[A-Za-z0-9_%=-]*", visitor)):
+        raise SearchError("Invalid public video page.")
+    return info
+
+
+def _continuation_page(page_token, opener, timeout):
+    info = _unpack_continuation(page_token)
+    url = CONTINUATION_URL + urlencode({"prettyPrint": "false", "key": info["key"]})
+    payload = {"context": {"client": {
+        "clientName": "WEB", "clientVersion": info["version"],
+        "hl": "sk", "gl": "SK"}},
+        "continuation": info["continuation"]}
+    headers = {"User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) "
+                              "AppleWebKit/537.36 Chrome/130.0 Safari/537.36"),
+               "Content-Type": "application/json", "Accept": "application/json",
+               "Origin": "https://www.youtube.com"}
+    if info["visitor"]:
+        headers["X-Goog-Visitor-Id"] = info["visitor"]
+    req = Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
+    try:
+        response = opener(req, timeout=timeout)
+        try:
+            final = response.geturl() if hasattr(response, "geturl") else url
+            if not isinstance(final, str) or not final.startswith(
+                    ("https://www.youtube.com/youtubei/", "https://youtube.com/youtubei/")):
+                raise SearchError("Public video page redirected elsewhere.")
+            raw = response.read(PUBLIC_MAX_HTML + 1)
+        finally:
+            response.close()
+    except (HTTPError, URLError, OSError):
+        raise SearchError("More public YouTube videos are unavailable.") from None
+    if len(raw) > PUBLIC_MAX_HTML:
+        raise SearchError("Public YouTube response is too large.")
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except (UnicodeError, ValueError):
+        raise SearchError("Public YouTube returned invalid page data.") from None
+    videos, continuation = _public_results(data)
+    next_token = _pack_continuation(continuation, info)
+    return {"items": videos,
+            "next_page_token": next_token if continuation != info["continuation"] else "",
+            "total_results": None}
 
 
 # Search pages normally contain public results even when an unsigned Home page
@@ -214,7 +304,7 @@ PUBLIC_QUERIES = {
 PUBLIC_SEARCH_URL = "https://www.youtube.com/results?"
 
 
-def _read_public_page(url, opener, timeout):
+def _read_public_page(url, opener, timeout, as_page=False):
     request = Request(url, headers={
         "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) "
                        "AppleWebKit/537.36 Chrome/130.0 Safari/537.36"),
@@ -236,7 +326,13 @@ def _read_public_page(url, opener, timeout):
         raise SearchError("Public YouTube page is temporarily unavailable.") from None
     if len(body) > PUBLIC_MAX_HTML:
         raise SearchError("Public YouTube response is too large.")
-    return parse_public_home(body.decode("utf-8", "replace"))
+    content = body.decode("utf-8", "replace")
+    if not as_page:
+        return parse_public_home(content)
+    videos, continuation = _public_results(_initial_data(content))
+    return {"items": videos,
+            "next_page_token": _pack_continuation(continuation, _web_config(content)),
+            "total_results": None}
 
 
 def public_category_videos(category_id="0", opener=urlopen, timeout=8):
@@ -257,6 +353,23 @@ def public_category_videos(category_id="0", opener=urlopen, timeout=8):
     search = urlencode({"search_query": PUBLIC_QUERIES[category_id],
                         "hl": "sk", "gl": "SK"})
     return _read_public_page(PUBLIC_SEARCH_URL + search, opener, timeout)
+
+
+def public_category_page(category_id="0", page_token="", opener=urlopen, timeout=8):
+    """Fetch an actual public page; continue only with YouTube's real cursor."""
+    if category_id not in PUBLIC_QUERIES:
+        raise SearchError("Unsupported public YouTube category.")
+    if page_token:
+        return _continuation_page(page_token, opener, timeout)
+    if category_id == "0":
+        try:
+            return _read_public_page(PUBLIC_HOME_URL, opener, timeout, as_page=True)
+        except SearchError:
+            pass
+    search = urlencode({"search_query": PUBLIC_QUERIES[category_id],
+                        "hl": "sk", "gl": "SK"})
+    return _read_public_page(PUBLIC_SEARCH_URL + search, opener, timeout,
+                             as_page=True)
 
 
 def public_home_videos(opener=urlopen, timeout=8):
