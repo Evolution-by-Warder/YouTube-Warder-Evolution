@@ -450,7 +450,17 @@ def public_category_page(category_id="0", page_token="", opener=urlopen, timeout
             return _discovery_request(category_id, info["stage"], opener, timeout)
         if not isinstance(info, dict) or info.get("category") != category_id:
             raise SearchError("Invalid public video page.")
-        return _continuation_page(page_token, opener, timeout)
+        # The anonymous YouTube webpage may advertise a continuation but
+        # reject it on another request (client/visitor/session mismatch).
+        # Fall back only for a structurally valid category-bound token.
+        verified = _unpack_continuation(page_token)
+        try:
+            return _continuation_page(page_token, opener, timeout)
+        except SearchError:
+            next_stage = verified["stage"] + 1
+            if 0 <= next_stage < DISCOVERY_STAGE_LIMIT:
+                return _discovery_request(category_id, next_stage, opener, timeout)
+            raise
     if category_id == "0":
         try:
             return _read_public_page(PUBLIC_HOME_URL, opener, timeout, as_page=True,
