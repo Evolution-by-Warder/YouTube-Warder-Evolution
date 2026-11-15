@@ -38,7 +38,7 @@ class FakeResponse(io.BytesIO):
 
 class UpdateCoreTests(unittest.TestCase):
     def test_tilde_versions_and_github_normalized_asset_url(self):
-        self.assertEqual(u.CURRENT_VERSION, "1.0.0")
+        self.assertEqual(u.CURRENT_VERSION, "1.0.1")
         self.assertEqual(u.channel_for_version(u.CURRENT_VERSION), "stable")
         self.assertLess(u.version_key("0.0.8~test6"), u.version_key("0.0.8~test7"))
         self.assertLess(u.version_key("0.0.8~test7"), u.version_key("0.0.8"))

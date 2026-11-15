@@ -85,16 +85,17 @@ class ApprovedSourceTests(unittest.TestCase):
             focus=next(n for n in screen.findall('widget') if n.get('name')=='nav_focus%d'%i)
             self.assertEqual(focus.get('zPosition'),'2')
 
-    def test_no_production_google_credentials_added(self):
-        module=ast.parse((SRC/'oauth_app_config.py').read_text())
-        assigned={n.targets[0].id:ast.literal_eval(n.value) for n in module.body
-                  if isinstance(n,ast.Assign)}
-        self.assertEqual(assigned['OAUTH_TV_CLIENT_ID'],'')
-        self.assertEqual(assigned['OAUTH_TV_CLIENT_SECRET'],'')
+    def test_tv_oauth_client_is_configured_without_user_tokens(self):
+        # Public TV app identity ships in the IPK; account tokens never do.
+        source=(SRC/'oauth_app_config.py').read_text()
+        self.assertIn('OAUTH_TV_CLIENT_ID = _read(', source)
+        self.assertIn('OAUTH_TV_CLIENT_SECRET = _read(', source)
+        self.assertNotIn('access_token', source)
+        self.assertNotIn('refresh_token', source)
 
     def test_stable_runtime_and_legacy_test_builder_are_separate(self):
         self.assertEqual(builder.VERSION,'0.0.8~test52')
-        self.assertIn('CURRENT_VERSION = "1.0.0"',(SRC/'update_core.py').read_text())
+        self.assertIn('CURRENT_VERSION = "1.0.1"',(SRC/'update_core.py').read_text())
 
 
 class AccountLifecycleTests(unittest.TestCase):

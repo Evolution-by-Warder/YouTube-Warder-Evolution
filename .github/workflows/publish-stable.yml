@@ -31,6 +31,12 @@ jobs:
           pkg = root/'plugin/Plugins/Extensions/WarderYouTube'
           for p in pkg.rglob('*.py'):
               py_compile.compile(str(p), doraise=True, cfile='/tmp/'+p.name+'.pyc')
+          oauth_spec=importlib.util.spec_from_file_location('oauth_app',pkg/'oauth_app_config.py')
+          oauth=importlib.util.module_from_spec(oauth_spec)
+          oauth_spec.loader.exec_module(oauth)
+          import re
+          assert re.fullmatch(r'[0-9A-Za-z._-]{8,200}\.apps\.googleusercontent\.com',oauth.OAUTH_TV_CLIENT_ID), 'Missing TV OAuth client'
+          assert isinstance(oauth.OAUTH_TV_CLIENT_SECRET,str) and bool(oauth.OAUTH_TV_CLIENT_SECRET), 'Missing TV OAuth client secret'
           spec=importlib.util.spec_from_file_location('update_core',pkg/'update_core.py')
           up=importlib.util.module_from_spec(spec)
           spec.loader.exec_module(up)
@@ -50,9 +56,9 @@ jobs:
           ASSET=$(python3 -c 'import json;print(json.load(open("release_meta.json"))["file"])')
           TAG="youtube-warder-v${VERSION}"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "$ASSET" --clobber
+            echo "ERROR: Release $TAG already exists. Bump Version before publishing." >&2; exit 1
           else
-            gh release create "$TAG" "$ASSET" --target "$GITHUB_SHA" --title "YouTube Warder Evolution ${VERSION}" --notes-file RELEASE_NOTES_1.0.0.md --latest
+            gh release create "$TAG" "$ASSET" --target "$GITHUB_SHA" --title "YouTube Warder Evolution ${VERSION}" --notes-file "RELEASE_NOTES_${VERSION}.md" --latest
           fi
           python3 - <<'PY'
           import json,pathlib

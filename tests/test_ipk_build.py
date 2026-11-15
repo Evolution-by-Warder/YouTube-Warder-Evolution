@@ -130,7 +130,7 @@ class PackagingTests(unittest.TestCase):
             and any(isinstance(target, Name) and target.id == "CURRENT_VERSION"
                     for target in node.targets)
         ]
-        self.assertEqual(values, ["1.0.0"])
+        self.assertEqual(values, ["1.0.1"])
 
     def test_hooks_are_non_destructive(self):
         for name, script in m.control_scripts().items():
