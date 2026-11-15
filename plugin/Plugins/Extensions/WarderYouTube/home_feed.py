@@ -123,6 +123,7 @@ WEB_KEY = re.compile(r'"INNERTUBE_API_KEY"\s*:\s*"([A-Za-z0-9_-]{12,80})"')
 WEB_VERSION = re.compile(r'"INNERTUBE_CLIENT_VERSION"\s*:\s*"([A-Za-z0-9._-]{4,80})"')
 WEB_VISITOR = re.compile(r'"VISITOR_DATA"\s*:\s*"([A-Za-z0-9_%=-]{1,300})"')
 CONTINUATION_URL = "https://www.youtube.com/youtubei/v1/search?"
+BROWSE_CONTINUATION_URL = "https://www.youtube.com/youtubei/v1/browse?"
 PUBLIC_PAGE_LIMIT = 50
 MAX_PAGE_TOKEN = 4096
 
@@ -237,10 +238,12 @@ def _web_config(html_text):
             "visitor": field(WEB_VISITOR)}
 
 
-def _pack_continuation(token, config):
-    if not token or not config.get("key") or not config.get("version"):
+def _pack_continuation(token, config, endpoint="search"):
+    if (endpoint not in ("search", "browse") or not token
+            or not config.get("key") or not config.get("version")):
         return ""
-    packed = json.dumps({"continuation": token, "key": config["key"],
+    packed = json.dumps({"continuation": token, "endpoint": endpoint,
+                         "key": config["key"],
                          "version": config["version"],
                          "visitor": config.get("visitor", "")},
                         separators=(",", ":"))
@@ -259,7 +262,9 @@ def _unpack_continuation(value):
     token, key, version = (info.get("continuation"),
                            info.get("key"), info.get("version"))
     visitor = info.get("visitor", "")
-    if (not isinstance(token, str) or not 0 < len(token) <= 3000
+    endpoint = info.get("endpoint", "search")
+    if (endpoint not in ("search", "browse")
+            or not isinstance(token, str) or not 0 < len(token) <= 3000
             or any(ord(ch) < 33 or ord(ch) > 126 for ch in token)
             or not isinstance(key, str) or not re.fullmatch(r"[A-Za-z0-9_-]{12,80}", key)
             or not isinstance(version, str) or not re.fullmatch(r"[A-Za-z0-9._-]{4,80}", version)
@@ -271,7 +276,9 @@ def _unpack_continuation(value):
 
 def _continuation_page(page_token, opener, timeout):
     info = _unpack_continuation(page_token)
-    url = CONTINUATION_URL + urlencode({"prettyPrint": "false", "key": info["key"]})
+    base = (BROWSE_CONTINUATION_URL if info["endpoint"] == "browse"
+            else CONTINUATION_URL)
+    url = base + urlencode({"prettyPrint": "false", "key": info["key"]})
     payload = {"context": {"client": {
         "clientName": "WEB", "clientVersion": info["version"],
         "hl": "sk", "gl": "SK"}},
@@ -302,7 +309,7 @@ def _continuation_page(page_token, opener, timeout):
     except (UnicodeError, ValueError):
         raise SearchError("Public YouTube returned invalid page data.") from None
     videos, continuation = _public_results(data)
-    next_token = _pack_continuation(continuation, info)
+    next_token = _pack_continuation(continuation, info, info["endpoint"])
     return {"items": videos,
             "next_page_token": next_token if continuation != info["continuation"] else "",
             "total_results": None}
@@ -321,7 +328,8 @@ PUBLIC_QUERIES = {
 PUBLIC_SEARCH_URL = "https://www.youtube.com/results?"
 
 
-def _read_public_page(url, opener, timeout, as_page=False):
+def _read_public_page(url, opener, timeout, as_page=False,
+                      endpoint="search"):
     request = Request(url, headers={
         "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) "
                        "AppleWebKit/537.36 Chrome/130.0 Safari/537.36"),
@@ -348,7 +356,7 @@ def _read_public_page(url, opener, timeout, as_page=False):
         return parse_public_home(content)
     videos, continuation = _public_results(_initial_data(content))
     config = _web_config(content)
-    cursor = _pack_continuation(continuation, config)
+    cursor = _pack_continuation(continuation, config, endpoint)
     return {"items": videos, "next_page_token": cursor,
             "total_results": None,
             "pagination_state": ("ready" if cursor else
@@ -385,7 +393,8 @@ def public_category_page(category_id="0", page_token="", opener=urlopen, timeout
         return _continuation_page(page_token, opener, timeout)
     if category_id == "0":
         try:
-            return _read_public_page(PUBLIC_HOME_URL, opener, timeout, as_page=True)
+            return _read_public_page(PUBLIC_HOME_URL, opener, timeout, as_page=True,
+                                     endpoint="browse")
         except SearchError:
             pass
     search = urlencode({"search_query": PUBLIC_QUERIES[category_id],
