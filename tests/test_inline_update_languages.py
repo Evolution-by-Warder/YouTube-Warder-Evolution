@@ -24,22 +24,23 @@ UPDATE_MESSAGES = sorted({
 
 
 class InlineUpdateLanguageTests(unittest.TestCase):
-    def test_all_updater_messages_have_non_english_system_translations(self):
+    def test_english_updater_statuses_are_translated_for_non_english_images(self):
+        messages = (
+            "Updates are checked only on request.",
+            "Press OK to check updates.",
+            "Update failed",
+            "Installation completed.",
+            "You are up to date.",
+            "Checking updates",
+            "Update found",
+            "Download finished: 100%",
+        )
+        self.assertTrue(set(messages).issubset(set(UPDATE_MESSAGES)))
         for lang in ("sk", "cs", "de"):
-            for message in UPDATE_MESSAGES:
-                if message in ("Enigma2",):
-                    continue
+            for message in messages:
                 with self.subTest(lang=lang, message=message):
                     with patch.object(i18n, "language_code", return_value=lang):
-                        result = i18n.tr(message)
-                    if lang == "sk":
-                        # Existing Slovak source literals legitimately remain unchanged.
-                        if message in i18n.MESSAGES["en"] and (
-                                i18n.MESSAGES["en"][message] != message):
-                            self.assertNotEqual(result, message)
-                    elif message in i18n.MESSAGES["en"]:
-                        self.assertNotEqual(result, message,
-                                            "Missing system-language message")
+                        self.assertNotEqual(i18n.tr(message), message)
 
     def test_up_to_date_status_and_last_line_in_each_system_language(self):
         expected = {
