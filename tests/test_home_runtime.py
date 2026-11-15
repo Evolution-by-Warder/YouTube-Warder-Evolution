@@ -202,7 +202,10 @@ def load(key="", history=None, fav=None):
                 "items": [], "next_page_token": "", "total_results": None
             },
             public_home_videos=lambda: [],
-            public_category_videos=lambda category_id: []),
+            public_category_videos=lambda category_id: [],
+            public_category_page=lambda category_id, page_token="": {
+                "items": [], "next_page_token": "", "total_results": None
+            }),
         "_warder_home.home_live_chips": fake(
             "_warder_home.home_live_chips", live_home=lambda token: {},
             live_category_videos=lambda chip, token: []),
@@ -321,7 +324,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         # Odbery now discovers the read-only account in the right pane; it
         # does not open a full-screen dialog.
         self.assertEqual(len(jobs), 2)
-        self.assertEqual(jobs[0][0], (mod.public_home_videos,))
+        self.assertEqual(jobs[0][0], (mod.public_category_page, "0"))
         self.assertEqual(jobs[1][0][0].__name__, "_discover_home_subscriptions")
 
     def test_native_keyboard_viewport_crops_only_unused_rightmost_strip(self):
@@ -472,7 +475,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         mod, key, saved, jobs = load()
         screen, session = ready(mod)
         self.assertEqual(len(jobs), 1)
-        self.assertIs(jobs[0][0][0], mod.public_home_videos)
+        self.assertEqual(jobs[0][0], (mod.public_category_page, "0"))
         self.assertEqual(screen["subtitle"].text, "Recently played (offline)")
         jobs[0][2].success([video(4)])
         self.assertEqual(screen["subtitle"].text,
@@ -482,6 +485,29 @@ class HomeLivePreviewTests(unittest.TestCase):
         screen.up()
         self.assertEqual(len(jobs), 1)
         self.assertEqual(len(screen.video_items), 1)
+
+    def test_anonymous_more_pages_load_on_scroll_and_preserve_back_navigation(self):
+        mod, key, saved, jobs = load(history=[], fav=[])
+        screen, session = ready(mod)
+        first=[video(i) for i in range(6)]
+        jobs[0][2].success({"items": first, "next_page_token": "anonymous-cursor",
+                            "total_results": None})
+        screen.right()
+        self.assertEqual(screen.focus_area, "tiles")
+        screen.tile_index = 5
+        screen.right()  # End of loaded page requests next real continuation.
+        self.assertEqual(len(jobs), 2)
+        self.assertEqual(jobs[-1][0], (mod.public_category_page, "0"))
+        self.assertEqual(jobs[-1][1].get("page_token"), "anonymous-cursor")
+        self.assertEqual(screen.page_index, 0)
+        second=[video(i) for i in range(6,12)]
+        jobs[-1][2].success({"items": second, "next_page_token": "",
+                              "total_results": None})
+        self.assertEqual(screen.page_index, 1)
+        self.assertEqual(screen.video_items[0]["video_id"], second[0]["video_id"])
+        screen._switch_page(-1)
+        self.assertEqual(screen.page_index, 0)
+        self.assertEqual(screen.video_items[0]["video_id"], first[0]["video_id"])
 
     def test_public_feed_failure_keeps_local_videos(self):
         mod, key, saved, jobs = load()
