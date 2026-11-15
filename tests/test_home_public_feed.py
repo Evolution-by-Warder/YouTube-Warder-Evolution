@@ -273,8 +273,9 @@ class PublicFeedTests(unittest.TestCase):
         first = mod.public_category_page(
             "25", opener=lambda req, timeout: FakeResponse(page))
         self.assertEqual(len(first["items"]), 1)
-        self.assertEqual(first["next_page_token"], "")
-        self.assertEqual(first["pagination_state"], "missing_web_client")
+        self.assertTrue(first["next_page_token"])
+        self.assertEqual(first["pagination_state"], "ready")
+        self.assertEqual(json.loads(first["next_page_token"])["kind"], "public_discovery")
 
     def test_all_categories_continue_when_youtube_omits_web_cursor(self):
         mod = load()
@@ -303,8 +304,7 @@ class PublicFeedTests(unittest.TestCase):
                 first = mod.public_category_page(category, opener=opener)
                 self.assertEqual(len(first["items"]), 1)
                 self.assertTrue(first["next_page_token"])
-                self.assertIn(first["pagination_state"],
-                              ("missing_continuation", "missing_web_client"))
+                self.assertEqual(first["pagination_state"], "ready")
                 second = mod.public_category_page(
                     category, page_token=first["next_page_token"], opener=opener)
                 self.assertEqual(len(second["items"]), 1)
