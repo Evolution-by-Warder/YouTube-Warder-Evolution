@@ -1263,7 +1263,7 @@ class WarderYouTubeHome(Screen):
 
     def left(self):
         if self._inline_confirming():
-            self._inline_updater.select(False)
+            self._inline_updater.select(True)
             return
         if self.focus_area == "categories":
             if self.index == 2 and self._subscription_chips:
@@ -1293,7 +1293,7 @@ class WarderYouTubeHome(Screen):
 
     def right(self):
         if self._inline_confirming():
-            self._inline_updater.select(True)
+            self._inline_updater.select(False)
             return
         if self.focus_area == "categories":
             if self.index == 2 and self._subscription_chips:
