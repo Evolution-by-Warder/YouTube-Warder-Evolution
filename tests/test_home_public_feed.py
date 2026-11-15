@@ -133,5 +133,58 @@ class PublicFeedTests(unittest.TestCase):
         self.assertEqual(len(urls), 1)
 
 
+    def test_public_continuation_loads_actual_next_page_without_account(self):
+        mod = load()
+        key = "A" * 39
+        initial = {"contents": [
+            {"videoRenderer": {"videoId": "abcdefghijk", "title": {"simpleText": "First"}}},
+            {"continuationItemRenderer": {"continuationEndpoint": {
+                "continuationCommand": {"token": "first-page-cursor"}}}
+        ]}
+        html = ('<script>ytcfg.set({"INNERTUBE_API_KEY":"' + key +
+                '","INNERTUBE_CLIENT_VERSION":"2.20261115.00.00"});</script>' +
+                '<script>var ytInitialData = ' + json.dumps(initial) + ';</script>')
+        next_payload = {"onResponseReceivedCommands": [{
+            "appendContinuationItemsAction": {"continuationItems": [
+                {"videoRenderer": {"videoId": "01234567890",
+                                   "title": {"simpleText": "Second"}}},
+                {"continuationItemRenderer": {"continuationEndpoint": {
+                    "continuationCommand": {"token": "second-page-cursor"}}}
+            ]}}]}
+        class Response(FakeResponse):
+            def __init__(self, body, url):
+                super().__init__(body)
+                self.url = url
+            def geturl(self):
+                return self.url
+        requests = []
+        def opener(req, timeout):
+            requests.append(req)
+            if len(requests) == 1:
+                return Response(html.encode(), req.full_url)
+            return Response(json.dumps(next_payload).encode(), req.full_url)
+        first = mod.public_category_page("25", opener=opener)
+        self.assertEqual([x["title"] for x in first["items"]], ["First"])
+        self.assertTrue(first["next_page_token"])
+        second = mod.public_category_page("25", page_token=first["next_page_token"],
+                                          opener=opener)
+        self.assertEqual([x["title"] for x in second["items"]], ["Second"])
+        self.assertTrue(second["next_page_token"])
+        body = json.loads(requests[1].data.decode())
+        self.assertEqual(body["continuation"], "first-page-cursor")
+        self.assertEqual(body["context"]["client"]["clientName"], "WEB")
+        self.assertIn("/youtubei/v1/search", requests[1].full_url)
+        self.assertNotIn("Authorization", requests[1].headers)
+
+    def test_unsafe_public_page_cursor_rejected_without_network(self):
+        mod = load()
+        def forbidden(*args, **kwargs):
+            self.fail("Invalid page cursor must not call the network")
+        for token in ("bad", "{}", '{"continuation":"x","key":"x","version":"x"}'):
+            with self.subTest(token=token):
+                with self.assertRaises(mod.SearchError):
+                    mod.public_category_page("25", page_token=token, opener=forbidden)
+
+
 if __name__ == "__main__":
     unittest.main()
