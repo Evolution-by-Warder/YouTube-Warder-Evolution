@@ -1796,7 +1796,8 @@ class WarderYouTubeHome(Screen):
             player_mode = getattr(_settings, "get_player_mode", lambda: "auto")()
             task = deferToThread(
                 resolve_video_streams, video["video_id"],
-                quality=get_quality(), dash=(dash_available() and player_mode != "gst")
+                quality=get_quality(), dash=(dash_available() and player_mode != "gst"),
+                player_mode=player_mode
             )
             task.addCallbacks(
                 lambda streams: self._play_ready(token, video, streams),
