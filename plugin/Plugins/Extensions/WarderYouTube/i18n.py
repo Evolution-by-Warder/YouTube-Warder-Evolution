@@ -8,6 +8,7 @@ import os
 
 MESSAGES = {
     "en": {
+        "New version available": "New version available",
         "Updates are checked only on request.": "Updates are checked only on request.",
         "Press OK to check updates.": "Press OK to check for updates.",
         "Update failed": "Update failed",
@@ -144,6 +145,7 @@ MESSAGES = {
         "Waiting for Google account authorization…": "Waiting for Google account authorization…",
     },
     "sk": {
+        "New version available": "Dostupná nová verzia",
         "Updates are checked only on request.": "Aktualizácie sa kontrolujú iba na vyžiadanie.",
         "Press OK to check updates.": "Stlač OK na kontrolu aktualizácií.",
         "Update failed": "Aktualizácia zlyhala",
@@ -448,6 +450,7 @@ MESSAGES = {
         "Google account connected.": "Google účet pripojený.",
     },
     "cs": {
+        "New version available": "Dostupná nová verze",
         "Updates are checked only on request.": "Aktualizace se kontrolují pouze na vyžádání.",
         "Press OK to check updates.": "Stiskni OK pro kontrolu aktualizací.",
         "Update failed": "Aktualizace selhala",
@@ -747,6 +750,7 @@ MESSAGES = {
         "Google account connected.": "Google účet připojen.",
     },
     "de": {
+        "New version available": "Neue Version verfügbar",
         "Updates are checked only on request.": "Updates werden nur auf Anfrage geprüft.",
         "Press OK to check updates.": "OK drücken, um nach Updates zu suchen.",
         "Update failed": "Update fehlgeschlagen",
