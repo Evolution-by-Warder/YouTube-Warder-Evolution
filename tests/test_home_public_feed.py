@@ -179,11 +179,12 @@ class PublicFeedTests(unittest.TestCase):
     def test_every_home_category_can_load_first_and_next_anonymous_page(self):
         """All 14 category identifiers, including All, use the same cursor."""
         mod = load()
-        from _warder_public.home_categories import CATEGORY_IDS
-        self.assertEqual(set(mod.PUBLIC_QUERIES), set(CATEGORY_IDS))
-        self.assertEqual(len(CATEGORY_IDS), 14)
+        category_ids = {"0", "1", "10", "15", "17", "19", "20",
+                        "22", "23", "24", "25", "26", "27", "28"}
+        self.assertEqual(set(mod.PUBLIC_QUERIES), category_ids)
+        self.assertEqual(len(category_ids), 14)
         key = "B" * 39
-        for category_id in sorted(CATEGORY_IDS):
+        for category_id in sorted(category_ids):
             with self.subTest(category=category_id):
                 html = ('ytcfg.set({"INNERTUBE_API_KEY":"' + key +
                         '","INNERTUBE_CLIENT_VERSION":"2.20261115.00.00"});' +
