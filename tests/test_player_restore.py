@@ -99,6 +99,17 @@ class RadioPlaybackTests(unittest.TestCase):
         s.player.leavePlayerOnExit()
         self.assertIs(s.nav.current,external)
 
+    def test_registered_gstplayer_without_separate_binary_is_detected(self):
+        m = load()
+        center = types.SimpleNamespace(info=lambda ref: object())
+        with patch.object(m.enigma.eServiceCenter, "getInstance", return_value=center):
+            with patch.object(m.shutil, "which", return_value=None):
+                self.assertTrue(m.service_player_available("gst"))
+                self.assertFalse(m.service_player_available("exte"))
+            with patch.object(m.shutil, "which", return_value="/usr/bin/exteplayer3"):
+                self.assertTrue(m.service_player_available("exte"))
+        self.assertFalse(m.service_player_available("unknown"))
+
     def test_choose_gstplayer_when_registered(self):
         m=load();s=Session()
         with patch.object(m,"service_player_available",side_effect=lambda v:v=="gst"):
