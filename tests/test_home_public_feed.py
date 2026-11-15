@@ -276,6 +276,50 @@ class PublicFeedTests(unittest.TestCase):
         self.assertEqual(first["next_page_token"], "")
         self.assertEqual(first["pagination_state"], "missing_web_client")
 
+    def test_all_categories_continue_when_youtube_omits_web_cursor(self):
+        mod = load()
+        self.assertEqual(len(mod.PUBLIC_QUERIES), 14)
+        for category in sorted(mod.PUBLIC_QUERIES):
+            with self.subTest(category=category):
+                requests = []
+                class Response(FakeResponse):
+                    def __init__(self, data, target):
+                        super().__init__(data)
+                        self.target = target
+                    def geturl(self):
+                        return self.target
+                def opener(req, timeout):
+                    requests.append(req)
+                    # First anonymous Home response is empty; search is real.
+                    if category == "0" and len(requests) == 1:
+                        return Response(b"ytInitialData = {};", req.full_url)
+                    video = ("abcdefghijk" if len(requests) <=
+                             (2 if category == "0" else 1) else "01234567890")
+                    data = {"contents": [{"videoRenderer": {
+                        "videoId": video,
+                        "title": {"simpleText": "Real public video"}}}]}
+                    body = ("ytInitialData = " + json.dumps(data) + ";").encode()
+                    return Response(body, req.full_url)
+                first = mod.public_category_page(category, opener=opener)
+                self.assertEqual(len(first["items"]), 1)
+                self.assertTrue(first["next_page_token"])
+                self.assertIn(first["pagination_state"],
+                              ("missing_continuation", "missing_web_client"))
+                second = mod.public_category_page(
+                    category, page_token=first["next_page_token"], opener=opener)
+                self.assertEqual(len(second["items"]), 1)
+                self.assertEqual(second["items"][0]["video_id"], "01234567890")
+                self.assertIn("search_query=", requests[-1].full_url)
+                self.assertTrue(all("Authorization" not in req.headers
+                                    for req in requests))
+
+    def test_discovery_cursor_stays_in_its_original_category(self):
+        mod = load()
+        token = mod._discovery_cursor("25", 1)
+        with self.assertRaises(mod.SearchError):
+            mod.public_category_page("10", page_token=token,
+                                     opener=lambda *args: self.fail("no network"))
+
     def test_unsafe_public_page_cursor_rejected_without_network(self):
         mod = load()
         def forbidden(*args, **kwargs):
