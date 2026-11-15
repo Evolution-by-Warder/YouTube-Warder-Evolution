@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test80",
-    "tag": "youtube-warder-v0.0.8-test80",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test80/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test80_all.ipk",
-    "sha256": "92e03e9e1029dc6c906a0a3890170e805af778afb7352b41636f42d86a7c7dec",
-    "bytes": 605900,
-    "notes": "Test80: ked YouTube odmietne anonymny pokracovaci token, plugin skusi dalsie verejne videa z rovnakej tematickej kategorie. Zachovane nacitavanie test79, ikony OpenATV 7.6 a schvaleny dizajn."
+    "version": "0.0.8~test81",
+    "tag": "youtube-warder-v0.0.8-test81",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test81/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test81_all.ipk",
+    "sha256": "5e91791c8cf5e291c50b98ec7b2c30363adad0432956f7001ab2a64cd2a18926",
+    "bytes": 606286,
+    "notes": "Test81: žlté tlačidlo prepína Automaticky/gstplayer/exteplayer3 aj na starších images; nedostupný prehrávač sa bezpečne nahradí automatickým. Detekcia ServiceApp rozšírená, pri dostupnom ExtePlayer3 prednosť HD DASH pred SD. Domov a ikony bez zmien."
   }
 }
