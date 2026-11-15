@@ -119,6 +119,14 @@ PUBLIC_MAX_HTML = 4 * 1024 * 1024
 INITIAL_DATA = re.compile(r"(?:var\s+)?ytInitialData\s*=\s*")
 
 
+WEB_KEY = re.compile(r'"INNERTUBE_API_KEY"\\s*:\\s*"([A-Za-z0-9_-]{12,80})"')
+WEB_VERSION = re.compile(r'"INNERTUBE_CLIENT_VERSION"\\s*:\\s*"([A-Za-z0-9._-]{4,80})"')
+WEB_VISITOR = re.compile(r'"VISITOR_DATA"\\s*:\\s*"([A-Za-z0-9_%=-]{1,300})"')
+CONTINUATION_URL = "https://www.youtube.com/youtubei/v1/search?"
+PUBLIC_PAGE_LIMIT = 50
+MAX_PAGE_TOKEN = 4096
+
+
 def _rendered_text(node):
     if isinstance(node, str):
         return html.unescape(node)
