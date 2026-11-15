@@ -130,4 +130,9 @@ def extract_candidates(video_id, quality="720", dash=False,
             break
     if not result:
         raise ValueError("No safe playable YouTube stream was found")
+    # With a verified ServiceApp exteplayer3, try separate video+audio DASH
+    # ahead of legacy muxed 360p; retain all safe MP4/HLS fallbacks.
+    # Without DASH support the existing 4097 order is unchanged.
+    if dash and QUALITY_HEIGHTS[quality] >= 720:
+        result.sort(key=lambda item: 0 if item["service_type"] == 5002 else 1)
     return result
