@@ -68,8 +68,11 @@ class InlineUpdater:
             (("%d%%" % self.percent) if self.phase in ("", "download") else
              _("Download finished: 100%") if self.phase in ("verify", "install", "complete") else "")
             if self.installing or self.completed else "",
-            self._note()
+            "" if self.confirming else self._note()
         ])
+        # Instructions belong on the low status line, not between the
+        # confirmation prompt and the yes/no choices.
+        h["status"].setText(self._note() if self.confirming else "")
         if hasattr(h, "_hide_update_widgets"):
             h._hide_update_widgets()
         if self.confirming:
@@ -109,7 +112,7 @@ class InlineUpdater:
         if self.checking:
             return _("Checking updates")
         if self.release:
-            return _("Update found")
+            return _("New version available")
         if self.checked:
             return _("You are up to date.")
         return _("Press OK to check updates.")
