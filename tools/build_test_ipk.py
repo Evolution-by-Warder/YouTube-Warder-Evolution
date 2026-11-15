@@ -30,7 +30,7 @@ exit 0
         "postinst": """#!/bin/sh
 echo '[Warder YouTube] Kontrola automaticky instalovanych prehravacov:'
 # Recommended packages are installed by opkg as part of the same
-# transaction. Do not start a nested opkg install from postinst.
+# transaction. Do not invoke the package manager recursively.
 if opkg list-installed 2>/dev/null | grep -q '^enigma2-plugin-systemplugins-serviceapp - '; then
     echo '[Warder YouTube] ServiceApp: OK.'
 else
