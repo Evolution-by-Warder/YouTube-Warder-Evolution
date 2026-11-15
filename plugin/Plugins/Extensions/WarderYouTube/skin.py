@@ -140,7 +140,7 @@ HOME_SKIN = """
   <!-- Search system keyboard is rendered inside Home; no modal/overlay. -->
   <!-- Reuse system VirtualKeyBoard eListboxPythonMultiContent + Input, NOT Warder-made letter buttons. -->
   <widget name="kb_system_input" position="479,264" size="1325,59" font="Regular;32" foregroundColor="#FFFFFF" backgroundColor="#0C2038" transparent="0" zPosition="6"/>
-  <widget name="kb_system_list" position="780,372" size="718,405" scrollbarMode="showNever" transparent="1" zPosition="6"/>
+  <widget name="kb_system_list" position="780,372" size="718,405" scrollbarMode="showNever" backgroundColor="#10263E" transparent="0" zPosition="6"/>
   <widget name="kb_hint" position="480,780" size="1340,42" font="Regular;24" foregroundColor="#76CFF2" transparent="1" zPosition="6"/>
   <widget name="kb_feedback" position="480,838" size="1340,42" font="Regular;23" foregroundColor="#55DEFF" transparent="1" zPosition="6"/>
 </screen>
