@@ -228,6 +228,39 @@ class PublicFeedTests(unittest.TestCase):
                 self.assertTrue(all(
                     "Authorization" not in call.headers for call in calls))
 
+    def test_all_home_recommendations_use_browse_continuation(self):
+        mod = load()
+        data = {"contents": [
+            {"videoRenderer": {"videoId": "abcdefghijk",
+                               "title": {"simpleText": "From Home"}}},
+            {"continuationItemRenderer": {"continuationEndpoint": {
+                "continuationCommand": {"token": "HOME_NEXT"}}}}
+        ]}
+        html = ('ytcfg.set({"INNERTUBE_API_KEY":"' + "A" * 39 +
+                '","INNERTUBE_CLIENT_VERSION":"2.20261115.00.00"});' +
+                'var ytInitialData = ' + json.dumps(data) + ';')
+        requests = []
+        class Response(FakeResponse):
+            def __init__(self, raw, target):
+                super().__init__(raw)
+                self.target = target
+            def geturl(self):
+                return self.target
+        def opener(req, timeout):
+            requests.append(req)
+            if len(requests) == 1:
+                return Response(html.encode(), req.full_url)
+            return Response(json.dumps({"contents": [
+                {"videoRenderer": {"videoId": "01234567890",
+                                   "title": {"simpleText": "Further Home"}}}
+            ]}).encode(), req.full_url)
+        first = mod.public_category_page("0", opener=opener)
+        self.assertEqual(first["pagination_state"], "ready")
+        second = mod.public_category_page("0", page_token=first["next_page_token"],
+                                          opener=opener)
+        self.assertIn("/youtubei/v1/browse", requests[-1].full_url)
+        self.assertEqual(second["items"][0]["title"], "Further Home")
+
     def test_missing_pagination_metadata_is_reported_not_claimed_as_end(self):
         mod = load()
         initial = {"contents": [
