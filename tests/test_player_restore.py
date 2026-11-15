@@ -121,6 +121,30 @@ class RadioPlaybackTests(unittest.TestCase):
                 with patch.object(m.shutil, "which", return_value=None):
                     self.assertFalse(m.service_player_available("exte"))
 
+    def test_openatv76_pyc_only_serviceapp_and_exteplayer3_installed(self):
+        m = load()
+        center = types.SimpleNamespace(info=lambda ref: None)
+        existing = {"plugin.pyc", "serviceapp.so", "serviceapp_client.pyc"}
+        def isfile(path):
+            return path.rsplit("/", 1)[-1] in existing
+        with patch.object(m.enigma.eServiceCenter, "getInstance", return_value=center):
+            with patch.object(m.os.path, "isfile", side_effect=isfile):
+                with patch.object(m.shutil, "which", side_effect=lambda n:
+                                  "/usr/bin/exteplayer3" if n == "exteplayer3" else None):
+                    self.assertTrue(m.service_player_available("gst"))
+                    self.assertTrue(m.service_player_available("exte"))
+                    self.assertTrue(m.dash_available())
+                    self.assertEqual(m.prepare_player_streams([item(1)], "gst")[0]["service_type"], 5001)
+                    self.assertEqual(m.prepare_player_streams([item(1)], "exte")[0]["service_type"], 5002)
+
+    def test_exte_binary_alone_is_not_proof_of_serviceapp(self):
+        m = load()
+        with patch.object(m.enigma.eServiceCenter, "getInstance", return_value=None):
+            with patch.object(m.os.path, "isfile", return_value=False):
+                with patch.object(m.shutil, "which", return_value="/usr/bin/exteplayer3"):
+                    self.assertFalse(m.service_player_available("exte"))
+                    self.assertFalse(m.service_player_available("gst"))
+
     def test_choose_gstplayer_when_registered(self):
         m=load();s=Session()
         with patch.object(m,"service_player_available",side_effect=lambda v:v=="gst"):
