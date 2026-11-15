@@ -176,7 +176,7 @@ class ResolverTests(unittest.TestCase):
         playlist = "https://manifest.googlevideo.com/api/manifest/hls_playlist/id/index.m3u8"
         def runner(argv, **kwargs):
             seen.append((argv, kwargs))
-            return FakeCompleted(playlist + "\\n")
+            return FakeCompleted(playlist + "\n")
         result = resolver.resolve_gstreamer_hls_url(
             "abcdefghijk", quality="2160", runner=runner,
             which=lambda _: "/usr/bin/yt-dlp")
@@ -189,7 +189,7 @@ class ResolverTests(unittest.TestCase):
     def test_gstreamer_hls_missing_or_untrusted_preserves_fallback(self):
         playlist = "https://example.invalid/master.m3u8"
         self.assertIsNone(resolver.resolve_gstreamer_hls_url(
-            "abcdefghijk", runner=lambda a, **kw: FakeCompleted(playlist + "\\n"),
+            "abcdefghijk", runner=lambda a, **kw: FakeCompleted(playlist + "\n"),
             which=lambda _: "/usr/bin/yt-dlp"))
         self.assertIsNone(resolver.resolve_gstreamer_hls_url(
             "abcdefghijk", runner=lambda a, **kw: FakeCompleted("", 1),
