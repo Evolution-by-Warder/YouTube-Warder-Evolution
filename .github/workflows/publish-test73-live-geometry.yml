@@ -2,7 +2,7 @@ name: Publish test74 for in-plugin updater test
 on:
   push:
     branches: [feature/native-search-v002]
-    paths: [.github/workflows/publish-test74-live-geometry.yml]
+    paths: [.github/workflows/publish-test73-live-geometry.yml]
   workflow_dispatch:
 
 permissions:
