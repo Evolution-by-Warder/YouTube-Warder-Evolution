@@ -139,7 +139,7 @@ class PublicFeedTests(unittest.TestCase):
         initial = {"contents": [
             {"videoRenderer": {"videoId": "abcdefghijk", "title": {"simpleText": "First"}}},
             {"continuationItemRenderer": {"continuationEndpoint": {
-                "continuationCommand": {"token": "first-page-cursor"}}}
+                "continuationCommand": {"token": "first-page-cursor"}}}}
         ]}
         html = ('<script>ytcfg.set({"INNERTUBE_API_KEY":"' + key +
                 '","INNERTUBE_CLIENT_VERSION":"2.20261115.00.00"});</script>' +
@@ -149,7 +149,7 @@ class PublicFeedTests(unittest.TestCase):
                 {"videoRenderer": {"videoId": "01234567890",
                                    "title": {"simpleText": "Second"}}},
                 {"continuationItemRenderer": {"continuationEndpoint": {
-                    "continuationCommand": {"token": "second-page-cursor"}}}
+                    "continuationCommand": {"token": "second-page-cursor"}}}}
             ]}}]}
         class Response(FakeResponse):
             def __init__(self, body, url):
