@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test66",
-    "tag": "youtube-warder-v0.0.8-test66",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test66/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test66_all.ipk",
-    "sha256": "0716361cdf6458c1802fb077d5ad3f8e749c661dd6f7f9abc8dd3078814c30a9",
-    "bytes": 601786,
-    "notes": "Test66: výsledok kontroly aktualizácií jasne rozlišuje novú verziu, stav Máš najnovšiu verziu a chybu servera. Bez zmien schváleného dizajnu; zachované potvrdenie Áno/Nie v pravom paneli."
+    "version": "0.0.8~test68",
+    "tag": "youtube-warder-v0.0.8-test68",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test68/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test68_all.ipk",
+    "sha256": "b90f491dacb46520e9ac7d7ac7592f5b79c9d43e0a2ad48a7ccaee87a885b460",
+    "bytes": 602070,
+    "notes": "Test68: všetky texty aktualizácií v jazyku Enigma2 (SK/CS/EN/DE) a opravený priesvitný fragment na pravom okraji systémovej klávesnice v Hľadať. Zachované natívne klávesy, rozloženie a vzhľad ostatných panelov."
   }
 }
