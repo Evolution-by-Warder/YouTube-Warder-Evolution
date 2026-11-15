@@ -220,12 +220,21 @@ def parse_public_home(html_text):
 
 
 def _web_config(html_text):
-    key = WEB_KEY.search(html_text)
-    version = WEB_VERSION.search(html_text)
-    visitor = WEB_VISITOR.search(html_text)
-    return {"key": key.group(1) if key else "",
-            "version": version.group(1) if version else "",
-            "visitor": visitor.group(1) if visitor else ""}
+    """Read YouTube's *public webpage* client metadata, never a user's key.
+
+    Some page variants HTML-escape quotes or escape their config inside a
+    script. Only accept tightly validated fields from the returned page.
+    """
+    candidates = (html_text, html.unescape(html_text),
+                  html_text.replace('\\\\"', '"'))
+    def field(pattern):
+        for candidate in candidates:
+            match = pattern.search(candidate)
+            if match:
+                return match.group(1)
+        return ""
+    return {"key": field(WEB_KEY), "version": field(WEB_VERSION),
+            "visitor": field(WEB_VISITOR)}
 
 
 def _pack_continuation(token, config):
@@ -338,9 +347,14 @@ def _read_public_page(url, opener, timeout, as_page=False):
     if not as_page:
         return parse_public_home(content)
     videos, continuation = _public_results(_initial_data(content))
-    return {"items": videos,
-            "next_page_token": _pack_continuation(continuation, _web_config(content)),
-            "total_results": None}
+    config = _web_config(content)
+    cursor = _pack_continuation(continuation, config)
+    return {"items": videos, "next_page_token": cursor,
+            "total_results": None,
+            "pagination_state": ("ready" if cursor else
+                                 "missing_continuation" if not continuation else
+                                 "missing_web_client")}
+
 
 
 def public_category_videos(category_id="0", opener=urlopen, timeout=8):
