@@ -43,6 +43,12 @@ class PackagingTests(unittest.TestCase):
                 self.assertEqual(names["./postrm"].mode, 0o755)
                 control = tar.extractfile("./control").read().decode("utf-8")
                 self.assertIn("Version: " + m.VERSION, control)
+                self.assertIn("Recommends: enigma2-plugin-systemplugins-serviceapp, exteplayer3", control)
+                postinst = tar.extractfile("./postinst").read().decode("utf-8")
+                self.assertIn("Kontrola automaticky instalovanych prehravacov", postinst)
+                self.assertIn("opkg list-installed", postinst)
+                self.assertNotIn("opkg install", postinst)
+                self.assertNotIn("opkg update", postinst)
             with tarfile.open(fileobj=io.BytesIO(parts["data.tar.gz"]), mode="r:gz") as tar:
                 members = tar.getmembers()
                 self.assertGreaterEqual(len(members), 10)
