@@ -19,7 +19,7 @@ from .data_auth import can_use_data_api, account_available
 from .update_core import CURRENT_VERSION
 from .grid_model import move_index
 from .system_keyboard_pane import SystemKeyboardPane
-from .home_feed import popular_videos_page, public_home_videos
+from .home_feed import popular_videos_page, public_home_videos, public_category_videos
 from .home_personalization import VISIBLE_CHIPS, build_home_chips, dedupe_videos
 from .home_subscription_rail import subscription_chips
 from .chip_layout import layout_chips
@@ -563,7 +563,7 @@ class WarderYouTubeHome(Screen):
         chip = self._selected_home_chip()
         if chip["kind"] == "all":
             return ("Popular in Slovakia" if self._popular_source == "api"
-                    else "Public YouTube selection (no API key)")
+                    else "Public YouTube selection")
         return chip["label"]
 
     def _store_chart_cache(self):
@@ -615,8 +615,6 @@ class WarderYouTubeHome(Screen):
                 self._fallback_home()
             else:
                 self._show_message("Loading popular videos for Slovakia…")
-        elif self._popular_error and category_id != "0" and not can_use_data_api(get_api_key()):
-            self._show_message("Sign in to YouTube for video categories. A personal API key is optional.")
         elif self._popular_error:
             if category_id == "0":
                 self._fallback_home()
@@ -876,11 +874,6 @@ class WarderYouTubeHome(Screen):
         category_id = self._selected_home_chip()["category_id"]
         use_api = can_use_data_api(key)
         self._popular_source = "api" if use_api else "public"
-        if not use_api and category_id != "0":
-            self._popular_error = True
-            self._show_message("Sign in to YouTube for video categories. A personal API key is optional.")
-            self._render_categories()
-            return
         self._popular_requested = True
         self._popular_loading = True
         self._popular_more_loading = False
@@ -888,6 +881,9 @@ class WarderYouTubeHome(Screen):
         request_epoch = self._popular_request_epoch
         if use_api and not refresh:
             self._show_message("Loading popular videos for Slovakia…")
+            self._render_categories()
+        elif not use_api and category_id != "0" and not refresh:
+            self._show_message("Loading public YouTube videos…")
             self._render_categories()
         elif refresh:
             self["status"].setText(_("Refreshing real YouTube videos…"))
@@ -898,7 +894,9 @@ class WarderYouTubeHome(Screen):
         try:
             work = (deferToThread(popular_videos_page, key,
                                   category_id=category_id)
-                    if use_api else deferToThread(public_home_videos))
+                    if use_api else deferToThread(public_home_videos)
+                    if category_id == "0" else
+                    deferToThread(public_category_videos, category_id))
             work.addCallbacks(
                 lambda payload: self._popular_loaded(payload, request_epoch),
                 lambda failure: self._popular_failed(failure, request_epoch))
@@ -955,7 +953,9 @@ class WarderYouTubeHome(Screen):
                 _("Popular videos are temporarily unavailable.") if self._popular_source == "api"
                 else _("Public YouTube list unavailable; showing local videos."))
         else:
-            self._show_message("YouTube category videos are temporarily unavailable.")
+            self._show_message("Public YouTube category is temporarily unavailable."
+                               if self._popular_source == "public" else
+                               "YouTube category videos are temporarily unavailable.")
         self._render_categories()
 
     def _request_more_popular(self):
