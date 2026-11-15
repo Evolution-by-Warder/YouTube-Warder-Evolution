@@ -201,7 +201,8 @@ def load(key="", history=None, fav=None):
             popular_videos_page=lambda key, **kwargs: {
                 "items": [], "next_page_token": "", "total_results": None
             },
-            public_home_videos=lambda: []),
+            public_home_videos=lambda: [],
+            public_category_videos=lambda category_id: []),
         "_warder_home.home_live_chips": fake(
             "_warder_home.home_live_chips", live_home=lambda token: {},
             live_category_videos=lambda chip, token: []),
@@ -475,7 +476,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(screen["subtitle"].text, "Recently played (offline)")
         jobs[0][2].success([video(4)])
         self.assertEqual(screen["subtitle"].text,
-                         "Public YouTube selection (no API key)")
+                         "Public YouTube selection")
         self.assertEqual(screen.video_items[0]["video_id"], video(4)["video_id"])
         screen.down()
         screen.up()
