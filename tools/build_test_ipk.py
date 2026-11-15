@@ -28,9 +28,21 @@ echo '[Warder YouTube] Priprava instalacie / aktualizacie testovacieho balika...
 exit 0
 """,
         "postinst": """#!/bin/sh
+echo '[Warder YouTube] Kontrola automaticky instalovanych prehravacov:'
+# Recommended packages are installed by opkg as part of the same
+# transaction. Do not start a nested opkg install from postinst.
+if opkg list-installed 2>/dev/null | grep -q '^enigma2-plugin-systemplugins-serviceapp - '; then
+    echo '[Warder YouTube] ServiceApp: OK.'
+else
+    echo '[Warder YouTube] ServiceApp: automaticka instalacia nebola dostupna.'
+fi
+if opkg list-installed 2>/dev/null | grep -q '^exteplayer3 - '; then
+    echo '[Warder YouTube] ExtePlayer3: OK.'
+else
+    echo '[Warder YouTube] ExtePlayer3: automaticka instalacia nebola dostupna.'
+fi
 echo '[Warder YouTube] Instalacia/aktualizacia dokoncena (testovacia verzia).'
 echo '[Warder YouTube] Po instalacii obnovte GUI Enigma2. Prijimac neresetujeme automaticky.'
-echo '[Warder YouTube] Prihlaseny ucet nepotrebuje vlastny API kluc. Volitelny kluc: Nastavenia - Rozsirene.'
 exit 0
 """,
         "prerm": """#!/bin/sh
@@ -153,6 +165,7 @@ def build(output_dir):
     control_text = (
         "Package: %s\nVersion: %s\nArchitecture: all\n"
         "Section: extra\nPriority: optional\nMaintainer: Evolution by Warder\n"
+        "Recommends: enigma2-plugin-systemplugins-serviceapp, exteplayer3\n"
         "Description: TEST ONLY - native blue Enigma2 YouTube UI and experimental video player\n"
     ) % (PACKAGE, VERSION)
     control_files = [("control", control_text.encode("utf-8"), False)]
