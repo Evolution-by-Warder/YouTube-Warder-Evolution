@@ -509,6 +509,36 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertEqual(screen.page_index, 0)
         self.assertEqual(screen.video_items[0]["video_id"], first[0]["video_id"])
 
+    def test_latest_subscription_loads_next_batch_without_24_video_ceiling(self):
+        mod, key, saved, jobs = load()
+        screen, session = ready(mod)
+        channel_id = "UC" + "a" * 22
+        chip = {"id": "latest", "kind": "recent", "title": "Najnovšie"}
+        screen.index = 2
+        screen._subscriptions_connected = True
+        screen._subscription_chips = [chip]
+        screen._subscription_index = 0
+        screen._home_channels = [{"channel_id": channel_id}]
+        initial = [video(i) for i in range(24)]
+        screen._subscription_video_cache["latest"] = initial
+        screen._show_tiles(initial, chip["title"])
+        screen._switch_page(1)
+        screen._switch_page(1)
+        self.assertEqual(len(screen._section_items), 24)
+        screen._switch_page(1)
+        self.assertEqual(screen.page_index, 3)
+        self.assertTrue(screen._subscription_more_loading)
+        req = jobs[-1]
+        self.assertIs(req[0][0], mod._load_personal_channel_videos)
+        self.assertEqual(req[1]["batch_index"], 1)
+        screen._switch_page(1)
+        req[2].success([video(i) for i in range(24, 30)])
+        self.assertEqual(screen.page_index, 4)
+        self.assertEqual(len(screen._section_items), 30)
+        self.assertEqual(screen.video_items[0]["video_id"], video(24)["video_id"])
+        screen._switch_page(-1)
+        self.assertEqual(screen.page_index, 3)
+
     def test_public_feed_failure_keeps_local_videos(self):
         mod, key, saved, jobs = load()
         screen, session = ready(mod)
