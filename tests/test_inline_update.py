@@ -138,6 +138,26 @@ class InlineConfirmationAppearanceTests(unittest.TestCase):
             self.assertEqual(widget["foregroundColor"], "#32DFFF")
             self.assertNotIn("backgroundColor", widget)
 
+    def test_confirmation_yes_left_no_right_below_prompt_above_footer(self):
+        import ast
+        import xml.etree.ElementTree as ET
+        source = (PATH.parent / "skin.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        skin = next(ast.literal_eval(assign.value) for assign in tree.body
+                    if isinstance(assign, ast.Assign)
+                    and any(isinstance(t, ast.Name) and t.id == "HOME_SKIN"
+                            for t in assign.targets))
+        widgets = {w.get("name"): w for w in ET.fromstring(skin).findall("widget")}
+        for name in ("update_yes", "update_yes_focus"):
+            self.assertEqual(widgets[name].get("position"), "483,665")
+        for name in ("update_no", "update_no_focus"):
+            self.assertEqual(widgets[name].get("position"), "1088,665")
+        prompt_top = int(widgets["detail3"].get("position").split(",")[1])
+        options_top = int(widgets["update_yes"].get("position").split(",")[1])
+        hint_top = int(widgets["status"].get("position").split(",")[1])
+        self.assertLess(prompt_top, options_top)
+        self.assertLess(options_top, hint_top)
+
 
 class InlineUpdateTests(unittest.TestCase):
     def test_check_rendered_in_right_pane_and_no_install_without_confirmation(self):
