@@ -30,14 +30,22 @@ HOME_SKIN = """
   <widget name="nav5" position="120,590" size="234,55" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
   <widget name="nav_focus6" position="35,659" size="328,72" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_focus.png" alphatest="on" zPosition="2"/>
   <widget name="nav6" position="120,668" size="234,55" font="Regular;30" foregroundColor="#FFFFFF" backgroundColor="#122C47" transparent="1" zPosition="3"/>
+  <!-- Opaque icon backing avoids video-plane bleed-through on older non-GLES Enigma2. -->
+  <eLabel position="48,194" size="64,64" backgroundColor="#122C47" zPosition="1"/>
+  <eLabel position="48,273" size="64,64" backgroundColor="#122C47" zPosition="1"/>
+  <eLabel position="48,351" size="64,64" backgroundColor="#122C47" zPosition="1"/>
+  <eLabel position="48,429" size="64,64" backgroundColor="#122C47" zPosition="1"/>
+  <eLabel position="48,507" size="64,64" backgroundColor="#122C47" zPosition="1"/>
+  <eLabel position="48,585" size="64,64" backgroundColor="#122C47" zPosition="1"/>
+  <eLabel position="48,663" size="64,64" backgroundColor="#122C47" zPosition="1"/>
   <!-- Seven navigation icons; no placeholder Playlist item. -->
-  <ePixmap position="48,194" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_0.png" alphatest="on" zPosition="5"/>
-  <ePixmap position="48,273" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_1.png" alphatest="on" zPosition="5"/>
-  <ePixmap position="48,351" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_2.png" alphatest="on" zPosition="5"/>
-  <ePixmap position="48,429" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_3.png" alphatest="on" zPosition="5"/>
-  <ePixmap position="48,507" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_5.png" alphatest="on" zPosition="5"/>
-  <ePixmap position="48,585" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_6.png" alphatest="on" zPosition="5"/>
-  <ePixmap position="48,663" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_7.png" alphatest="on" zPosition="5"/>
+  <ePixmap position="48,194" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_0.png" alphatest="blend" zPosition="5"/>
+  <ePixmap position="48,273" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_1.png" alphatest="blend" zPosition="5"/>
+  <ePixmap position="48,351" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_2.png" alphatest="blend" zPosition="5"/>
+  <ePixmap position="48,429" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_3.png" alphatest="blend" zPosition="5"/>
+  <ePixmap position="48,507" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_5.png" alphatest="blend" zPosition="5"/>
+  <ePixmap position="48,585" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_6.png" alphatest="blend" zPosition="5"/>
+  <ePixmap position="48,663" size="64,64" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/images/nav_7.png" alphatest="blend" zPosition="5"/>
   <eLabel position="394,173" size="1490,805" backgroundColor="#10263E"/>
   <eLabel position="394,173" size="1490,5" backgroundColor="#087EC7"/>
   <widget name="heading" position="0,0" size="1,1" font="Regular;45" foregroundColor="#FFFFFF" transparent="1" zPosition="4"/>
