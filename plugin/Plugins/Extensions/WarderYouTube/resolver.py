@@ -145,7 +145,7 @@ def resolve_video_url(video_id, runner=subprocess.run, which=shutil.which,
 
 def resolve_gstreamer_hls_url(video_id, quality="720",
                               runner=subprocess.run, which=shutil.which,
-                              timeout=TIMEOUT_SECONDS):
+                              timeout=12):
     """Find one real HLS candidate for native GStreamer without DASH suburi.
 
     This is optional. Some YouTube VOD videos expose no HLS and must retain
@@ -214,6 +214,13 @@ def resolve_video_streams(video_id, quality="720", dash=False, player_mode="auto
             if hls:
                 candidates.insert(0, {"url": hls, "service_type": 4097})
     if candidates:
+        if player_mode == "gst":
+            # Preserve any genuine HLS master/variant ahead of progressive MP4
+            # for native GStreamer, while never passing DASH suburi to it.
+            candidates.sort(key=lambda item: 0 if (
+                isinstance(item, dict) and
+                ".m3u8" in urlsplit(item.get("url", "")).path.lower()
+            ) else 1)
         return candidates[:8]
     # Original safe progressive MP4 fallback.
     try:
