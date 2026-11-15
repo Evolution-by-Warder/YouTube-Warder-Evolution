@@ -16,12 +16,21 @@ def service_player_available(mode):
     if mode not in specs:
         return False
     kind, binary = specs[mode]
-    if not shutil.which(binary):
-        return False
     try:
         center = enigma.eServiceCenter.getInstance()
-        return center.info(eServiceReference(kind, 0, "https://www.youtube.com/")) is not None
-    except (AttributeError, RuntimeError, TypeError):
+        if center is None:
+            return False
+        registered = center.info(
+            eServiceReference(kind, 0, "https://www.youtube.com/")) is not None
+        if not registered:
+            return False
+        # ServiceApp's GStreamer backend (5001) is frequently loaded as an
+        # Enigma2 service factory, not a separate binary on older images.
+        if mode == "gst":
+            return True
+        # exteplayer3 (5002) needs the actual external helper as well.
+        return bool(shutil.which(binary))
+    except (AttributeError, RuntimeError, TypeError, OSError):
         return False
 
 
