@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test82",
-    "tag": "youtube-warder-v0.0.8-test82",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test82/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test82_all.ipk",
-    "sha256": "673dd52723e215d58505a2a830c2c08e6f45bb192c9e347a25e5bf0678da5435",
-    "bytes": 606346,
-    "notes": "Test82: rozpoznáva ServiceApp nainštalovaný len ako plugin.pyc spolu so serviceapp.so a exteplayer3 na OpenATV 7.6. Obidva prehrávače sa správne ponúkajú a DASH HD preferencia z test81 ostáva. Domov a vzhľad bez zmien."
+    "version": "0.0.8~test83",
+    "tag": "youtube-warder-v0.0.8-test83",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test83/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test83_all.ipk",
+    "sha256": "2a89c22e8b1ecbd37159d61dc1d6fc07171fdb175321204eff9a5cc851e29fc5",
+    "bytes": 606910,
+    "notes": "Test83: GStreamer 4097 aj gstplayer 5001 skusia vysokokvalitný HLS stream YouTube, ak je dostupný; inak zostáva pôvodný MP4/SD fallback. Exteplayer3 nie je potrebný. Domov a vzhľad nezmenené."
   }
 }
