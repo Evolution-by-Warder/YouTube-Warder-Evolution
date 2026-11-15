@@ -238,13 +238,17 @@ def _web_config(html_text):
             "visitor": field(WEB_VISITOR)}
 
 
-def _pack_continuation(token, config, endpoint="search"):
-    if (endpoint not in ("search", "browse") or not token
+def _pack_continuation(token, config, endpoint="search", category_id="", discovery_stage=0):
+    if (category_id not in PUBLIC_QUERIES or not isinstance(stage, int)
+            or not -1 <= stage < DISCOVERY_STAGE_LIMIT
+            or endpoint not in ("search", "browse") or not token
             or not config.get("key") or not config.get("version")):
         return ""
     packed = json.dumps({"continuation": token, "endpoint": endpoint,
                          "key": config["key"],
                          "version": config["version"],
+                         "category": category_id,
+                         "stage": discovery_stage,
                          "visitor": config.get("visitor", "")},
                         separators=(",", ":"))
     return packed if len(packed) <= MAX_PAGE_TOKEN else ""
@@ -263,6 +267,8 @@ def _unpack_continuation(value):
                            info.get("key"), info.get("version"))
     visitor = info.get("visitor", "")
     endpoint = info.get("endpoint", "search")
+    category_id = info.get("category", "")
+    stage = info.get("stage", 0)
     if (endpoint not in ("search", "browse")
             or not isinstance(token, str) or not 0 < len(token) <= 3000
             or any(ord(ch) < 33 or ord(ch) > 126 for ch in token)
@@ -309,9 +315,11 @@ def _continuation_page(page_token, opener, timeout):
     except (UnicodeError, ValueError):
         raise SearchError("Public YouTube returned invalid page data.") from None
     videos, continuation = _public_results(data)
-    next_token = _pack_continuation(continuation, info, info["endpoint"])
-    return {"items": videos,
-            "next_page_token": next_token if continuation != info["continuation"] else "",
+    next_token = _pack_continuation(continuation, info, info["endpoint"],
+                                    info["category"], info["stage"])
+    if not next_token or continuation == info["continuation"]:
+        next_token = _discovery_cursor(info["category"], info["stage"] + 1)
+    return {"items": videos, "next_page_token": next_token,
             "total_results": None}
 
 
@@ -327,9 +335,46 @@ PUBLIC_QUERIES = {
 }
 PUBLIC_SEARCH_URL = "https://www.youtube.com/results?"
 
+# Related public topic searches are a fallback when unsigned YouTube search/Home
+# does not expose a continuation. These are real results, not a fabricated page
+# token or a personalized recommendation. Use bounded server requests.
+PUBLIC_DISCOVERY_TERMS = (
+    "", "novinky", "najnovšie", "2026", "slovensky", "zaujímavosti",
+    "reportáž", "dokument", "najlepšie", "rozhovor", "prehľad",
+    "video", "2025", "2024", "krátke videá", "populárne",
+    "slovensko", "vysvetlenie", "ukážky", "top", "inšpirácia",
+    "dnes", "zaujímavé", "nové", "trendy", "2023", "archív",
+    "výber", "tipy", "príbeh", "témy", "recenzia"
+)
+DISCOVERY_STAGE_LIMIT = len(PUBLIC_DISCOVERY_TERMS)
+
+
+def _discovery_cursor(category_id, stage):
+    if (category_id not in PUBLIC_QUERIES or not isinstance(stage, int)
+            or stage < 0 or stage >= DISCOVERY_STAGE_LIMIT):
+        return ""
+    return json.dumps({"kind": "public_discovery",
+                       "category": category_id, "stage": stage},
+                      separators=(",", ":"))
+
+
+def _discovery_request(category_id, stage, opener, timeout):
+    if category_id not in PUBLIC_QUERIES or not 0 <= stage < DISCOVERY_STAGE_LIMIT:
+        raise SearchError("No more public discovery searches in this category.")
+    base = PUBLIC_QUERIES[category_id]
+    suffix = PUBLIC_DISCOVERY_TERMS[stage]
+    query = (base + " " + suffix).strip()
+    url = PUBLIC_SEARCH_URL + urlencode({"search_query": query,
+                                         "hl": "sk", "gl": "SK"})
+    page = _read_public_page(url, opener, timeout, as_page=True,
+                             endpoint="search", category_id=category_id,
+                             discovery_stage=stage)
+    return page
+
+
 
 def _read_public_page(url, opener, timeout, as_page=False,
-                      endpoint="search"):
+                      endpoint="search", category_id="", discovery_stage=0):
     request = Request(url, headers={
         "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) "
                        "AppleWebKit/537.36 Chrome/130.0 Safari/537.36"),
@@ -356,7 +401,10 @@ def _read_public_page(url, opener, timeout, as_page=False,
         return parse_public_home(content)
     videos, continuation = _public_results(_initial_data(content))
     config = _web_config(content)
-    cursor = _pack_continuation(continuation, config, endpoint)
+    cursor = _pack_continuation(continuation, config, endpoint,
+                                category_id, discovery_stage)
+    if not cursor:
+        cursor = _discovery_cursor(category_id, discovery_stage + 1)
     return {"items": videos, "next_page_token": cursor,
             "total_results": None,
             "pagination_state": ("ready" if cursor else
@@ -390,17 +438,29 @@ def public_category_page(category_id="0", page_token="", opener=urlopen, timeout
     if category_id not in PUBLIC_QUERIES:
         raise SearchError("Unsupported public YouTube category.")
     if page_token:
+        try:
+            info = json.loads(page_token)
+        except (ValueError, TypeError):
+            raise SearchError("Invalid public video page.") from None
+        if isinstance(info, dict) and info.get("kind") == "public_discovery":
+            if info.get("category") != category_id or type(info.get("stage")) is not int:
+                raise SearchError("Invalid public video page.")
+            return _discovery_request(category_id, info["stage"], opener, timeout)
+        if not isinstance(info, dict) or info.get("category") != category_id:
+            raise SearchError("Invalid public video page.")
         return _continuation_page(page_token, opener, timeout)
     if category_id == "0":
         try:
             return _read_public_page(PUBLIC_HOME_URL, opener, timeout, as_page=True,
-                                     endpoint="browse")
+                                     endpoint="browse", category_id=category_id,
+                                     discovery_stage=-1)
         except SearchError:
             pass
     search = urlencode({"search_query": PUBLIC_QUERIES[category_id],
                         "hl": "sk", "gl": "SK"})
     return _read_public_page(PUBLIC_SEARCH_URL + search, opener, timeout,
-                             as_page=True)
+                             as_page=True, category_id=category_id,
+                             discovery_stage=0)
 
 
 def public_home_videos(opener=urlopen, timeout=8):
