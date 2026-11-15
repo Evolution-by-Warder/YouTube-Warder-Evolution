@@ -202,7 +202,8 @@ def resolve_video_streams(video_id, quality="720", dash=False, player_mode="auto
         candidates = extract_candidates(video_id, quality=quality, dash=bool(dash))
     except Exception:
         pass
-    if player_mode == "gst" and QUALITY_HEIGHTS[quality] >= 720:
+    native_gstreamer = player_mode == "gst" or (player_mode == "auto" and not dash)
+    if native_gstreamer and QUALITY_HEIGHTS[quality] >= 720:
         # A real HLS playlist can expose a higher-quality synchronized A/V
         # stream to GStreamer. Try this even if the original resolver found
         # only progressive SD MP4. Do not produce a fake DASH playlist.
@@ -214,7 +215,7 @@ def resolve_video_streams(video_id, quality="720", dash=False, player_mode="auto
             if hls:
                 candidates.insert(0, {"url": hls, "service_type": 4097})
     if candidates:
-        if player_mode == "gst":
+        if native_gstreamer:
             # Preserve any genuine HLS master/variant ahead of progressive MP4
             # for native GStreamer, while never passing DASH suburi to it.
             candidates.sort(key=lambda item: 0 if (
