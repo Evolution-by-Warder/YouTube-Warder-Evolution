@@ -804,9 +804,10 @@ class HomeLivePreviewTests(unittest.TestCase):
         for _ in range(7):
             screen.down()
         self.assertEqual(screen.page_index, 3)
-        self.assertEqual(len(jobs), 1)  # navigate local cached four pages
-        screen.down()
-        self.assertEqual(len(jobs), 2)
+        self.assertEqual(len(jobs), 2)  # prefetch immediately on the last local page
+        self.assertEqual(jobs[1][1]["page_token"], "yt-token-A")
+        screen.down()  # user requests next page while background prefetch is running
+        self.assertEqual(len(jobs), 2)  # no duplicate concurrent request
         self.assertEqual(jobs[1][1]["page_token"], "yt-token-A")
         self.assertEqual(jobs[1][1]["category_id"], "0")
         jobs[1][2].success({
@@ -818,6 +819,43 @@ class HomeLivePreviewTests(unittest.TestCase):
         self.assertIn("5 / 9", screen["page_info"].text)
         self.assertEqual(len(screen._popular_cache), 48)
         self.assertEqual(screen.page_scroll.pages, 9)
+
+    def test_last_page_prefetch_does_not_advance_unless_user_requests_it(self):
+        mod, key, saved, jobs = load(history=[], fav=[])
+        screen, session = ready(mod)
+        first = [video(i) for i in range(12)]
+        jobs[0][2].success({"items": first, "next_page_token": "cursor-A"})
+        screen.right()
+        screen._switch_page(1)  # enters final available page
+        self.assertEqual(screen.page_index, 1)
+        self.assertEqual(len(jobs), 2)
+        self.assertEqual(jobs[1][1]["page_token"], "cursor-A")
+        jobs[1][2].success({"items": [video(i) for i in range(12,18)],
+                            "next_page_token": "cursor-B"})
+        self.assertEqual(screen.page_index, 1)
+        self.assertEqual(len(screen._popular_cache), 18)
+        screen._switch_page(1)
+        self.assertEqual(screen.page_index, 2)
+        self.assertEqual(len(jobs), 3)  # prefetch the following page
+        self.assertEqual(jobs[2][1]["page_token"], "cursor-B")
+
+    def test_duplicate_only_response_advances_discovery_without_losing_position(self):
+        mod, key, saved, jobs = load(history=[], fav=[])
+        screen, session = ready(mod)
+        first = [video(i) for i in range(6)]
+        jobs[0][2].success({"items": first, "next_page_token": "cursor-A"})
+        screen.right()
+        screen.tile_index = 5
+        screen.right()
+        self.assertEqual(len(jobs), 2)
+        jobs[1][2].success({"items": first,
+                            "next_page_token": "cursor-B"})
+        self.assertEqual(len(jobs), 3)
+        self.assertEqual(jobs[2][1]["page_token"], "cursor-B")
+        self.assertEqual(screen.page_index, 0)
+        jobs[2][2].success({"items": [video(6)], "next_page_token": ""})
+        self.assertEqual(screen.page_index, 1)
+        self.assertEqual(len(screen._popular_cache), 7)
 
     def test_live_home_pages_through_all_youtube_results_not_fixed_six(self):
         mod, key, saved, jobs = load(key="configured-api-key")
