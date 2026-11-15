@@ -33,9 +33,10 @@ class RadioEngineIntegrationTests(unittest.TestCase):
     def test_4097_and_registered_5002_candidates(self):
         result=radio_streams.extract_candidates("abcdefghijk",quality="720",dash=True,
                           resolver_factory=FakeResolver,transport_factory=FakeNetwork)
-        self.assertEqual([x["service_type"] for x in result],[4097,5002,4097])
+        self.assertEqual([x["service_type"] for x in result],[5002,4097,4097])
         self.assertEqual(len(result),3)
         self.assertFalse(any("attacker" in x["url"] for x in result))
+        self.assertIn("&suburi=", result[0]["url"])
 
     def test_dash_never_leaks_without_backend(self):
         result=radio_streams.extract_candidates("abcdefghijk",quality="360",dash=False,
