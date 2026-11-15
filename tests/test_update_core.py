@@ -38,8 +38,8 @@ class FakeResponse(io.BytesIO):
 
 class UpdateCoreTests(unittest.TestCase):
     def test_tilde_versions_and_github_normalized_asset_url(self):
-        self.assertEqual(u.CURRENT_VERSION, "0.0.8~test52")
-        self.assertEqual(u.channel_for_version(u.CURRENT_VERSION), "testing")
+        self.assertEqual(u.CURRENT_VERSION, "1.0.0")
+        self.assertEqual(u.channel_for_version(u.CURRENT_VERSION), "stable")
         self.assertLess(u.version_key("0.0.8~test6"), u.version_key("0.0.8~test7"))
         self.assertLess(u.version_key("0.0.8~test7"), u.version_key("0.0.8"))
         self.assertIn("/youtube-warder-v0.0.8-test7/", u.expected_url("0.0.8~test7"))
@@ -47,10 +47,10 @@ class UpdateCoreTests(unittest.TestCase):
 
     def test_no_release_and_reject_unsigned(self):
         base = {"schema": 1, "product": u.PRODUCT, "channel": "testing", "release": None}
-        self.assertIsNone(u.parse_manifest(json.dumps(base).encode(), u.CURRENT_VERSION))
+        self.assertIsNone(u.parse_manifest(json.dumps(base).encode(), "0.0.8~test52"))
         base["release"] = {"version": "0.0.8~test8"}
         with self.assertRaises(u.UpdateError):
-            u.parse_manifest(json.dumps(base).encode(), u.CURRENT_VERSION)
+            u.parse_manifest(json.dumps(base).encode(), "0.0.8~test52")
 
     def test_published_testing_manifest_matches_real_github_asset(self):
         feed = json.loads((ROOT / "update/testing.json").read_text(encoding="utf-8"))
@@ -64,8 +64,8 @@ class UpdateCoreTests(unittest.TestCase):
         self.assertEqual(rel["url"], u.expected_url(rel["version"]))
         self.assertEqual(len(rel["sha256"]), 64)
         self.assertGreater(rel["bytes"], 0)
-        self.assertEqual(u.parse_manifest(json.dumps(feed).encode(), u.CURRENT_VERSION)["version"], "0.0.8~test84")
-        self.assertGreater(u.version_key(rel["version"]), u.version_key(u.CURRENT_VERSION))
+        self.assertEqual(u.parse_manifest(json.dumps(feed).encode(), "0.0.8~test52")["version"], "0.0.8~test84")
+        self.assertGreater(u.version_key(rel["version"]), u.version_key("0.0.8~test52"))
 
     def test_installed_test6_is_offered_test7_for_opt_in_update(self):
         candidate = valid_manifest("0.0.8~test7")
@@ -76,7 +76,7 @@ class UpdateCoreTests(unittest.TestCase):
 
     def test_future_testing_update_is_offered_with_dotted_download_url(self):
         future = valid_manifest("0.0.8~test53")
-        release = u.parse_manifest(json.dumps(future).encode(), u.CURRENT_VERSION)
+        release = u.parse_manifest(json.dumps(future).encode(), "0.0.8~test52")
         self.assertEqual(release["version"], "0.0.8~test53")
         self.assertEqual(release["url"], u.expected_url("0.0.8~test53"))
         self.assertTrue(release["url"].endswith("_0.0.8.test53_all.ipk"))
@@ -93,7 +93,7 @@ class UpdateCoreTests(unittest.TestCase):
                 bad = valid_manifest("0.0.8~test8")
                 bad["release"][change] = value
                 with self.assertRaises(u.UpdateError):
-                    u.parse_manifest(json.dumps(bad).encode(), u.CURRENT_VERSION)
+                    u.parse_manifest(json.dumps(bad).encode(), "0.0.8~test52")
 
     def test_check_update_uses_testing_feed_and_no_auto_install(self):
         requested = []
@@ -101,7 +101,7 @@ class UpdateCoreTests(unittest.TestCase):
         def fake_open(url, timeout):
             requested.append((url, timeout))
             return FakeResponse(future)
-        result = u.check_update(u.CURRENT_VERSION, opener=fake_open)
+        result = u.check_update("0.0.8~test52", opener=fake_open)
         self.assertEqual(result["version"], "0.0.8~test53")
         self.assertEqual(requested, [(u.FEED_TESTING, 8)])
 
