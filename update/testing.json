@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test72",
-    "tag": "youtube-warder-v0.0.8-test72",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test72/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test72_all.ipk",
-    "sha256": "73b56b7463ca4f9ca4c07fe10dcf5c1b5fe6df823fdaa2bfb274b81a5017f87b",
-    "bytes": 602674,
-    "notes": "Test72: oprava skutočných polôh potvrdenia aktualizácie na Enigma2. Áno vľavo, Nie vpravo, otázka nad voľbami, text šípok naspodku. Polohy sa aplikujú priamo na živé GUI komponenty a nevyžadujú obnovenie starej skin cache."
+    "version": "0.0.8~test73",
+    "tag": "youtube-warder-v0.0.8-test73",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test73/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test73_all.ipk",
+    "sha256": "bb6f1c2d184831876999285ed4ee06abd4245c479d3baf352b3abeb03548e2c7",
+    "bytes": 602670,
+    "notes": "Test73: opätovné zostavenie upraveného potvrdenia aktualizácie na prijímači. Áno vľavo, Nie vpravo, výzva nad voľbami a nápoveda naspodku. Stabilný kanál nezmenený."
   }
 }
