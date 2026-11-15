@@ -8,6 +8,7 @@ import os
 
 MESSAGES = {
     "en": {
+        "You are up to date.": "You are up to date.",
         "Download finished: 100%": "Download finished: 100%",
         "Nová verzia: ": "New version: ",
         "Príprava overenej aktualizácie...": "Preparing verified update...",
@@ -139,6 +140,7 @@ MESSAGES = {
         "Waiting for Google account authorization…": "Waiting for Google account authorization…",
     },
     "sk": {
+        "You are up to date.": "Používaš najnovšiu verziu.",
         "Download finished: 100%": "Sťahovanie dokončené: 100 %",
         "Nová verzia: ": "Nová verzia: ",
         "Príprava overenej aktualizácie...": "Príprava overenej aktualizácie...",
@@ -438,6 +440,7 @@ MESSAGES = {
         "Google account connected.": "Google účet pripojený.",
     },
     "cs": {
+        "You are up to date.": "Používáš nejnovější verzi.",
         "Download finished: 100%": "Stahování dokončeno: 100 %",
         "Nová verzia: ": "Nová verze: ",
         "Príprava overenej aktualizácie...": "Příprava ověřené aktualizace...",
@@ -731,6 +734,7 @@ MESSAGES = {
         "Google account connected.": "Google účet připojen.",
     },
     "de": {
+        "You are up to date.": "Du verwendest die neueste Version.",
         "Download finished: 100%": "Download abgeschlossen: 100 %",
         "Nová verzia: ": "Neue Version: ",
         "Príprava overenej aktualizácie...": "Verifiziertes Update wird vorbereitet...",
