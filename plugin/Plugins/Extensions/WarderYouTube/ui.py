@@ -154,6 +154,7 @@ class WarderYouTubeHome(Screen):
         self._popular_category_id = "0"
         self._popular_error = False
         self._popular_source = "api"
+        self._popular_pagination_state = ""
         self._popular_request_epoch = 0
         self._popular_next_page_token = ""
         self._popular_total_results = None
@@ -574,6 +575,7 @@ class WarderYouTubeHome(Screen):
             "next": self._popular_next_page_token,
             "total": self._popular_total_results,
             "source": self._popular_source,
+            "pagination_state": self._popular_pagination_state,
             "fetched": self._popular_fetched_at,
         }
         # We expose only seven topics per Home session, keep bounded memory.
@@ -599,6 +601,7 @@ class WarderYouTubeHome(Screen):
             self._popular_total_results = previous["total"] if previous else None
             self._popular_fetched_at = previous["fetched"] if previous else 0
             self._popular_source = previous["source"] if previous else "api"
+            self._popular_pagination_state = previous.get("pagination_state", "") if previous else ""
         if (category_id == "0" and self._popular_source == "public"
                 and can_use_data_api(get_api_key())):
             # Account connected or optional key entered since public Home was displayed.
@@ -914,6 +917,7 @@ class WarderYouTubeHome(Screen):
             videos, token, total = payload, "", None
         self._popular_cache = videos[:50] if isinstance(videos, list) else []
         self._popular_next_page_token = token if isinstance(token, str) else ""
+        self._popular_pagination_state = payload.get("pagination_state", "") if isinstance(payload, dict) else ""
         self._popular_total_results = total if type(total) is int and total > 0 else None
         self._popular_fetched_at = monotonic()
         self._popular_error = False
@@ -1336,6 +1340,11 @@ class WarderYouTubeHome(Screen):
         if new_page < 0 or new_page > max_page:
             if delta > 0 and self._request_more_popular():
                 return True
+            if (delta > 0 and self.index == 0 and self._popular_source == "public"):
+                message = ("YouTube neposkytol údaje pre ďalšiu stránku." if
+                           self._popular_pagination_state == "missing_web_client" else
+                           "YouTube neposkytol pokračovanie tejto kategórie.")
+                self["status"].setText(_(message))
             return False
         self.page_index = new_page
         self._show_tiles(self._section_items, self._section_subtitle)
