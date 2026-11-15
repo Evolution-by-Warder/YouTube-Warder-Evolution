@@ -320,6 +320,37 @@ class PublicFeedTests(unittest.TestCase):
             mod.public_category_page("10", page_token=token,
                                      opener=lambda *args: self.fail("no network"))
 
+    def test_expired_real_web_cursor_uses_public_topic_fallback(self):
+        mod = load()
+        from urllib.error import HTTPError
+        token = mod._pack_continuation(
+            "valid-cursor", {"key": "A" * 39,
+                             "version": "2.20261115.00.00"},
+            "browse", "0", -1)
+        self.assertTrue(token)
+        calls = []
+        class Response(FakeResponse):
+            def __init__(self, body, url):
+                super().__init__(body)
+                self.url = url
+            def geturl(self):
+                return self.url
+        def opener(request, timeout):
+            calls.append(request)
+            if len(calls) == 1:
+                raise HTTPError(request.full_url, 403, "denied", None, None)
+            data = {"contents": [{"videoRenderer": {
+                "videoId": "01234567890",
+                "title": {"simpleText": "Public fallback video"}}}]}
+            return Response(("ytInitialData = " + json.dumps(data) + ";").encode(),
+                            request.full_url)
+        result = mod.public_category_page("0", page_token=token, opener=opener)
+        self.assertEqual(len(calls), 2)
+        self.assertIn("/youtubei/v1/browse", calls[0].full_url)
+        self.assertIn("search_query=", calls[1].full_url)
+        self.assertEqual(result["items"][0]["video_id"], "01234567890")
+        self.assertTrue(result["next_page_token"])
+
     def test_unsafe_public_page_cursor_rejected_without_network(self):
         mod = load()
         def forbidden(*args, **kwargs):
