@@ -77,7 +77,7 @@ def _discover_home_subscriptions():
             "truncated": bool(response.get("truncated"))}
 
 
-def _load_personal_channel_videos(chip, all_channels=()):
+def _load_personal_channel_videos(chip, all_channels=(), batch_index=0):
     """Retrieve real uploads in one worker without repeating account discovery.
 
     Recent uses a rotating sample from the full account, NEVER claims a full
@@ -90,17 +90,26 @@ def _load_personal_channel_videos(chip, all_channels=()):
     token = access_token()
     recent = chip.get("kind") == "recent"
     if recent:
+        # One bounded request at a time. Visit all followed channels in groups
+        # of twelve, then walk back for older uploads in groups of three.
+        # Nothing is downloaded until the user reaches the final visible page.
         from datetime import date
         available = [item.get("channel_id") for item in all_channels
                      if isinstance(item, dict) and item.get("channel_id")]
-        if available:
-            first = (date.today().toordinal() * 12) % len(available)
-            identifiers = [available[(first + j) % len(available)]
-                           for j in range(min(12, len(available)))]
-        else:
-            identifiers = []
+        if not available:
+            return []
+        batches = (len(available) + 11) // 12
+        depth, group = divmod(max(0, int(batch_index)), batches)
+        if depth >= 67:  # Official playlist reader bounds each channel at 200.
+            return []
+        first = (date.today().toordinal() * 12) % len(available)
+        start_at = group * 12
+        identifiers = [available[(first + j) % len(available)]
+                       for j in range(start_at, min(start_at + 12, len(available)))]
+        lower, upper = depth * 3, min(200, (depth + 1) * 3)
     else:
         identifiers = list(chip.get("channels") or ())[:8]
+        lower, upper = 0, 100 if chip.get("kind") == "channel" else 10
     if not identifiers:
         return []
     playlists = uploads_playlists(identifiers, token)
@@ -110,15 +119,13 @@ def _load_personal_channel_videos(chip, all_channels=()):
         if not playlist:
             continue
         try:
-            items = playlist_videos(
-                playlist, token, limit=3 if recent else
-                (100 if chip.get("kind") == "channel" else 10))
-            videos.extend(items)
+            items = playlist_videos(playlist, token, limit=upper)
+            videos.extend(items[lower:upper] if recent else items)
         except SubscriptionsApiError:
             continue
     videos.sort(key=lambda v: (v.get("published_at") or "",
                               v.get("video_id") or ""), reverse=True)
-    return dedupe_videos(videos, limit=24 if recent else 96)
+    return dedupe_videos(videos, limit=max(96, len(videos)))
 
 
 class WarderYouTubeHome(Screen):
@@ -181,6 +188,9 @@ class WarderYouTubeHome(Screen):
         self._personal_video_epoch = 0
         self._personal_video_cache = {}
         self._subscription_video_cache = {}
+        self._subscription_batch_index = {}
+        self._subscription_more_loading = False
+        self._subscription_pending_advance = False
         self._inline_tv_login = None
         self._auth_maybe_changed = False
         self._account_login_requested = False
@@ -513,6 +523,7 @@ class WarderYouTubeHome(Screen):
             self._home_channels = list(data.get("channels") or [])[:500]
             # A successful refresh may return the same channels with NEW uploads.
             self._subscription_video_cache.clear()
+            self._subscription_batch_index.clear()
             self._personal_video_epoch += 1
         self._subscription_truncated = bool(data.get("truncated"))
 
@@ -655,7 +666,8 @@ class WarderYouTubeHome(Screen):
     def _personal_videos_ready(self, chip_id, videos, epoch, subscribed=False):
         if self._disposed or epoch != self._personal_video_epoch:
             return
-        rows = dedupe_videos(videos if isinstance(videos, list) else [])
+        rows = dedupe_videos(videos if isinstance(videos, list) else [],
+                            limit=max(96, len(videos)) if isinstance(videos, list) else 96)
         cache = (self._subscription_video_cache if subscribed
                  else self._personal_video_cache)
         cache[chip_id] = rows
@@ -686,6 +698,70 @@ class WarderYouTubeHome(Screen):
                 if not subscribed else
                 "YouTube subscriptions are temporarily unavailable.")
             self._render_categories()
+
+    def _request_more_subscription_videos(self, advance=True):
+        """Load another bounded batch of real uploads for Najnovšie."""
+        if self.index != 2 or self._disposed:
+            return False
+        chip = self._selected_subscription_chip()
+        if not chip or chip.get("kind") != "recent" or not self._home_channels:
+            return False
+        if self._subscription_more_loading:
+            if advance:
+                self._subscription_pending_advance = True
+            return True
+        batches = (len(self._home_channels) + 11) // 12
+        batch = self._subscription_batch_index.get(chip["id"], 0) + 1
+        if not batches or batch >= batches * 67:
+            return False
+        self._subscription_more_loading = True
+        self._subscription_pending_advance = bool(advance)
+        self._subscription_batch_index[chip["id"]] = batch
+        epoch = self._personal_video_epoch
+        target_page = self.page_index + 1
+        self["status"].setText(_("Loading more subscribed videos…"))
+        try:
+            job = deferToThread(_load_personal_channel_videos, dict(chip),
+                                tuple(self._home_channels), batch_index=batch)
+            job.addCallbacks(
+                lambda rows: self._more_subscription_videos_ready(
+                    chip["id"], epoch, target_page, rows),
+                lambda failure: self._more_subscription_videos_failed(
+                    chip["id"], epoch))
+        except Exception:
+            self._more_subscription_videos_failed(chip["id"], epoch)
+        return True
+
+    def _more_subscription_videos_ready(self, chip_id, epoch, target_page, rows):
+        if self._disposed or epoch != self._personal_video_epoch:
+            return
+        self._subscription_more_loading = False
+        if not isinstance(rows, list):
+            self._more_subscription_videos_failed(chip_id, epoch)
+            return
+        existing = self._subscription_video_cache.get(chip_id, [])
+        seen = {item.get("video_id") for item in existing}
+        fresh = [item for item in rows if isinstance(item, dict)
+                 and item.get("video_id") not in seen]
+        existing.extend(fresh)
+        self._subscription_video_cache[chip_id] = existing
+        chip = self._selected_subscription_chip()
+        if self.index != 2 or chip is None or chip["id"] != chip_id:
+            return
+        if fresh:
+            if (self._subscription_pending_advance and
+                    target_page * VISIBLE_TILES < len(existing)):
+                self.page_index = target_page
+            self._show_tiles(existing, chip["title"])
+            self._render_categories()
+        self["status"].setText(_("More subscribed videos loaded.") if fresh
+                               else _("No new videos in this batch. Continue to try more."))
+
+    def _more_subscription_videos_failed(self, chip_id, epoch):
+        if self._disposed or epoch != self._personal_video_epoch:
+            return
+        self._subscription_more_loading = False
+        self["status"].setText(_("Could not load more subscribed videos."))
 
     def _show_selected_subscription_chip(self):
         """Odbery are displayed in the same right pane, never a new Screen."""
@@ -1353,6 +1429,8 @@ class WarderYouTubeHome(Screen):
         max_page = (len(self._section_items) - 1) // VISIBLE_TILES
         new_page = self.page_index + delta
         if new_page < 0 or new_page > max_page:
+            if delta > 0 and self._request_more_subscription_videos(advance=True):
+                return True
             if delta > 0 and self._request_more_popular():
                 return True
             if (delta > 0 and self.index == 0 and self._popular_source == "public"):
@@ -1364,6 +1442,8 @@ class WarderYouTubeHome(Screen):
         self.page_index = new_page
         self._show_tiles(self._section_items, self._section_subtitle)
         self._update_tile_focus()
+        if (delta > 0 and self.index == 2 and new_page == max_page):
+            self._request_more_subscription_videos(advance=False)
         if (delta > 0 and self.index == 0 and new_page == max_page
                 and self._popular_next_page_token):
             self._request_more_popular(advance=False)
