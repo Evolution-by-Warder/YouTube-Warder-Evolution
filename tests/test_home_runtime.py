@@ -513,7 +513,7 @@ class HomeLivePreviewTests(unittest.TestCase):
         mod, key, saved, jobs = load()
         screen, session = ready(mod)
         channel_id = "UC" + "a" * 22
-        chip = {"id": "latest", "kind": "recent", "title": "Najnovšie"}
+        chip = {"id": "latest", "kind": "recent", "title": "Najnovšie", "label": "Najnovšie"}
         screen.index = 2
         screen._subscriptions_connected = True
         screen._subscription_chips = [chip]
