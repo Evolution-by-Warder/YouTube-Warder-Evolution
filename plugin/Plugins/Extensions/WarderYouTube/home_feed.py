@@ -239,8 +239,8 @@ def _web_config(html_text):
 
 
 def _pack_continuation(token, config, endpoint="search", category_id="", discovery_stage=0):
-    if (category_id not in PUBLIC_QUERIES or not isinstance(stage, int)
-            or not -1 <= stage < DISCOVERY_STAGE_LIMIT
+    if (category_id not in PUBLIC_QUERIES or type(discovery_stage) is not int
+            or not -1 <= discovery_stage < DISCOVERY_STAGE_LIMIT
             or endpoint not in ("search", "browse") or not token
             or not config.get("key") or not config.get("version")):
         return ""
@@ -269,7 +269,9 @@ def _unpack_continuation(value):
     endpoint = info.get("endpoint", "search")
     category_id = info.get("category", "")
     stage = info.get("stage", 0)
-    if (endpoint not in ("search", "browse")
+    if (category_id not in PUBLIC_QUERIES or type(stage) is not int
+            or not -1 <= stage < DISCOVERY_STAGE_LIMIT
+            or endpoint not in ("search", "browse")
             or not isinstance(token, str) or not 0 < len(token) <= 3000
             or any(ord(ch) < 33 or ord(ch) > 126 for ch in token)
             or not isinstance(key, str) or not re.fullmatch(r"[A-Za-z0-9_-]{12,80}", key)
