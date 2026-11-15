@@ -32,7 +32,7 @@ class InlineUpdateLanguageTests(unittest.TestCase):
             "Installation completed.",
             "You are up to date.",
             "Checking updates",
-            "Update found",
+            "New version available",
             "Download finished: 100%",
         )
         self.assertTrue(set(messages).issubset(set(UPDATE_MESSAGES)))
