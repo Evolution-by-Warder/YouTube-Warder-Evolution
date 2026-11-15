@@ -187,6 +187,38 @@ class InlineUpdateTests(unittest.TestCase):
         self.assertEqual(len(jobs), 1)
         self.assertFalse(home._busy)
 
+    def test_actual_enigma_widgets_move_not_just_skin_xml(self):
+        mod, jobs, fakes = load()
+        home = Home()
+        class Native:
+            def __init__(self):
+                self.point = None
+            def move(self, point):
+                self.point = (point.x, point.y)
+        class Point:
+            def __init__(self, x, y):
+                self.x, self.y = x, y
+        for name in ("detail3", "update_yes", "update_yes_focus",
+                     "update_no", "update_no_focus", "status"):
+            if name not in home.items:
+                home.items[name] = Label()
+            home.items[name].instance = Native()
+        controller = mod.InlineUpdater(home)
+        controller.release = release()
+        with patch.object(fakes["enigma"], "ePoint", Point, create=True):
+            controller.confirm()
+        self.assertEqual(home["detail3"].instance.point, (449, 565))
+        self.assertEqual(home["update_yes"].instance.point, (483, 665))
+        self.assertEqual(home["update_yes_focus"].instance.point, (483, 665))
+        self.assertEqual(home["update_no"].instance.point, (1088, 665))
+        self.assertEqual(home["update_no_focus"].instance.point, (1088, 665))
+        self.assertEqual(home["status"].instance.point, (427, 939))
+        self.assertTrue(home["update_no_focus"].visible)
+        self.assertFalse(home["update_yes_focus"].visible)
+        controller.select(True)
+        self.assertTrue(home["update_yes_focus"].visible)
+        self.assertFalse(home["update_no_focus"].visible)
+
     def test_confirmation_text_order_and_status_clear_when_cancelled(self):
         mod, jobs, fakes = load()
         home = Home()
