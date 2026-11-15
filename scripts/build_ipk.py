@@ -52,7 +52,7 @@ def main():
         dest = (base / rel).as_posix()
         if p.is_dir():
             files.append((dest, None, True, False))
-        elif p.is_file() and "__pycache__" not in rel.parts and p.suffix not in (".pyc", ".pyo"):
+        elif (p.is_file() and rel.as_posix() != "images/warder_skull.png" and "__pycache__" not in rel.parts and p.suffix not in (".pyc", ".pyo")):
             files.append((dest, p, False, p.name == "install_deps.sh"))
     binary = tar_gz(files)
     output = ROOT / (PACKAGE + "_" + fields["Version"] + "_all.ipk")

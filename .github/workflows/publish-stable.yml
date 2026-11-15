@@ -50,7 +50,7 @@ jobs:
           ASSET=$(python3 -c 'import json;print(json.load(open("release_meta.json"))["file"])')
           TAG="youtube-warder-v${VERSION}"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Release exists; no binary overwrite"
+            gh release upload "$TAG" "$ASSET" --clobber
           else
             gh release create "$TAG" "$ASSET" --target "$GITHUB_SHA" --title "YouTube Warder Evolution ${VERSION}" --notes-file RELEASE_NOTES_1.0.0.md --latest
           fi
