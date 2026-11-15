@@ -56,6 +56,37 @@ class InlineUpdater:
             self.generation += 1
             self.checking = False
 
+    def _position_confirmation_widgets(self):
+        """Enforce actual Enigma2 widget geometry, even with a stale skin cache.
+
+        On the receiver the previous build displayed current text/status but
+        positions from the prior skin: No-left and Yes-right above the prompt.
+        The packaged XML was correct, so move the four native widgets
+        explicitly after GUI construction. No new overlay or renderer.
+        """
+        if self.home is None:
+            return
+        try:
+            from enigma import ePoint
+        except (ImportError, AttributeError):
+            return
+        positions = {
+            "detail3": (449, 565),
+            "update_yes": (483, 665),
+            "update_yes_focus": (483, 665),
+            "update_no": (1088, 665),
+            "update_no_focus": (1088, 665),
+            "status": (427, 939),
+        }
+        for name, (x, y) in positions.items():
+            widget = self.home[name]
+            instance = getattr(widget, "instance", None)
+            if instance is not None:
+                try:
+                    instance.move(ePoint(x, y))
+                except (AttributeError, RuntimeError, TypeError):
+                    pass
+
     def show(self):
         h = self.home
         if h is None or h.index != 6:
@@ -76,6 +107,7 @@ class InlineUpdater:
         if hasattr(h, "_hide_update_widgets"):
             h._hide_update_widgets()
         if self.confirming:
+            self._position_confirmation_widgets()
             h["update_no"].setText(_("No"))
             h["update_yes"].setText(_("Yes"))
             # Only the selected word changes colour, never a filled rectangle.
