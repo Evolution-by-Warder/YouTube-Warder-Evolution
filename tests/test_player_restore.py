@@ -110,6 +110,17 @@ class RadioPlaybackTests(unittest.TestCase):
                 self.assertTrue(m.service_player_available("exte"))
         self.assertFalse(m.service_player_available("unknown"))
 
+    def test_old_serviceapp_installed_can_be_detected_without_url_info(self):
+        m = load()
+        center = types.SimpleNamespace(info=lambda ref: None)
+        with patch.object(m.enigma.eServiceCenter, "getInstance", return_value=center):
+            with patch.object(m.os.path, "isfile", return_value=True):
+                with patch.object(m.shutil, "which", return_value="/usr/bin/exteplayer3"):
+                    self.assertTrue(m.service_player_available("gst"))
+                    self.assertTrue(m.service_player_available("exte"))
+                with patch.object(m.shutil, "which", return_value=None):
+                    self.assertFalse(m.service_player_available("exte"))
+
     def test_choose_gstplayer_when_registered(self):
         m=load();s=Session()
         with patch.object(m,"service_player_available",side_effect=lambda v:v=="gst"):
