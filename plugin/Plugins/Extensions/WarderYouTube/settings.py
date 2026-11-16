@@ -3,7 +3,8 @@
 from .header_ui import add_header
 from Components.ActionMap import ActionMap
 from Components.Label import Label
-from Components.config import ConfigSelection, ConfigSubsection, ConfigText, config, configfile
+from Components.MenuList import MenuList
+from Components.config import ConfigSelection, ConfigSubsection, ConfigText, ConfigYesNo, config, configfile
 from Screens.Screen import Screen
 
 from .skin import SETTINGS_SKIN
@@ -11,6 +12,7 @@ from .resolver import is_available
 from .i18n import tr as _
 from .api_key_file import read_manual_key
 from .data_auth import account_available
+from .menu_compat import selected_index
 
 QUALITY_VALUES = ("360", "480", "720", "1080", "1440", "2160")
 PLAYER_VALUES = ("auto", "gst", "exte")
@@ -31,6 +33,10 @@ if not hasattr(config.plugins.warderyoutube, "player_mode"):
         choices=[("auto", "Automaticky"), ("gst", "gstplayer"), ("exte", "exteplayer3")],
         default="auto"
     )
+
+
+if not hasattr(config.plugins.warderyoutube, "show_main_menu"):
+    config.plugins.warderyoutube.show_main_menu = ConfigYesNo(default=False)
 
 
 def get_player_mode():
@@ -61,89 +67,112 @@ def get_quality():
 
 
 class WarderYouTubeSettings(Screen):
-    """Account-first, simple settings: no personal API-key editor in the UI."""
+    """Native Enigma2 list with the same menu semantics as Warder Radio."""
     skin = SETTINGS_SKIN
 
     def __init__(self, session):
         Screen.__init__(self, session)
         add_header(self)
         self["title"] = Label("YouTube Warder Evolution / " + _("Settings"))
-        self["section_search"] = Label(_("YouTube account").upper())
-        self["section_playback"] = Label(_("Playback").upper())
-        self["section_privacy"] = Label(_("Privacy").upper())
-        self["description"] = Label(
-            _("About settings") + "\n" + _("Language from Enigma2")
-        )
-        self["key_state"] = Label("")
-        self["quality"] = Label("")
-        self["resolver_state"] = Label("")
-        self["warning"] = Label("")
+        self["description"] = Label(_("Choose a setting and press OK to change it."))
+        self["options"] = MenuList([])
+        # Retain legacy status labels, but put values in the actual list.
+        for name in ("section_search", "section_playback", "section_privacy",
+                     "key_state", "quality", "resolver_state", "warning", "footer"):
+            self[name] = Label("")
         self["status"] = Label("")
-        self["footer"] = Label("")
         self["key_red"] = Label(_("Back"))
-        self["key_green"] = Label(_("Manage account"))
+        self["key_green"] = Label(_("Select"))
         self["key_yellow"] = Label(_("Player"))
         self["key_blue"] = Label(_("Change quality"))
+        self._notice = ""
         self["actions"] = ActionMap(
-            ["OkCancelActions", "ColorActions"],
+            ["OkCancelActions", "ColorActions", "DirectionActions"],
             {"ok": self.primary_action, "green": self.primary_action,
              "yellow": self.toggle_player, "blue": self.toggle_quality,
-             "red": self.back, "cancel": self.back},
-            -1
-        )
+             "up": self.up, "down": self.down,
+             "red": self.back, "cancel": self.back}, -1)
         self.refresh()
 
+    def _index(self):
+        index = selected_index(self["options"])
+        return min(3, max(0, index))
+
     def refresh(self):
-        connected = account_available()
-        self["key_green"].setText(
-            _("Manage account") if connected else _("Sign in to YouTube"))
-        self["key_state"].setText(
-            _("Signed in") + "\n" + _("Your YouTube subscriptions are available.")
-            if connected else _("Not signed in") + "\n" + _("Sign in using a TV code."))
-        self["quality"].setText(
-            _("Maximum video quality") + ": %sp" % get_quality())
-        available = available_player_modes()
-        selected = get_player_mode()
-        unavailable = selected != "auto" and selected not in available
+        index = self._index()
+        signed_in = account_available()
+        mode = get_player_mode()
+        enabled = config.plugins.warderyoutube.show_main_menu.value is True
+        self["options"].setList([
+            _("YouTube account") + ": " + (_("Signed in") if signed_in else _("Not signed in")),
+            _("Player") + ": " + _(PLAYER_LABELS[mode]),
+            _("Maximum video quality") + ": " + get_quality() + "p",
+            _("Show in Enigma2 main menu") + ": " + (_("Yes") if enabled else _("No")),
+        ])
+        self["options"].moveToIndex(index)
+        self["key_state"].setText(_("Signed in") if signed_in else _("Not signed in"))
+        self["quality"].setText(_("Maximum video quality") + ": " + get_quality() + "p")
+        unavailable = mode != "auto" and mode not in available_player_modes()
         self["resolver_state"].setText(
-            _("Player") + ": " + _(PLAYER_LABELS[selected]) +
-            (" (" + _("Unavailable; using Automatic") + ")"
-             if unavailable else "") + "\n" +
-            ("yt-dlp: " + (_("Available") if is_available()
-                          else _("Not installed")))
-        )
+            _("Player") + ": " + _(PLAYER_LABELS[mode]) +
+            (" (" + _("Unavailable; using Automatic") + ")" if unavailable else "") +
+            "\n" + "yt-dlp: " + (_("Available") if is_available() else _("Not installed")))
         self["warning"].setText(
-            _("Your Google password is never entered in this plugin.") + "\n" +
-            _("Account access is stored locally on this receiver."))
+            _("Your Google password is never entered in this plugin.") +
+            "\n" + _("Account access is stored locally on this receiver."))
+        self["footer"].setText(_("OK/Green: select  Yellow: player  Blue: quality  Exit: back"))
+        self.show_notice()
+
+    def show_notice(self):
         self["status"].setText(
-            _("Playback settings apply to all video sections."))
-        self["footer"].setText(
-            _("OK/Green: account   Yellow: player   Blue: quality   Exit: back"))
+            self._notice or _("OK/Green: select  Yellow: player  Blue: quality  Exit: back"))
+
+    def up(self):
+        self["options"].up()
+        self._notice = ""
+        self.show_notice()
+
+    def down(self):
+        self["options"].down()
+        self._notice = ""
+        self.show_notice()
 
     def primary_action(self):
-        # Home will switch to the account management in the Odbery pane.
-        self.close("account")
+        index = self._index()
+        if index == 0:
+            self.close("account")
+        elif index == 1:
+            self.toggle_player()
+        elif index == 2:
+            self.toggle_quality()
+        else:
+            self.toggle_main_menu()
 
-    def back(self):
-        self.close()
-
-    def toggle_player(self):
-        # Let users choose a preferred backend even on images whose ServiceApp
-        # detection is incomplete. Playback safely uses Automatic if missing.
-        choices = PLAYER_VALUES
-        current = get_player_mode()
-        setting = config.plugins.warderyoutube.player_mode
-        setting.value = choices[(choices.index(current) + 1) % len(choices)]
+    def toggle_main_menu(self):
+        setting = config.plugins.warderyoutube.show_main_menu
+        setting.value = not (setting.value is True)
         setting.save()
         configfile.save()
+        self._notice = _("Restart GUI to apply main menu change.")
+        self.refresh()
+
+    def toggle_player(self):
+        current = get_player_mode()
+        setting = config.plugins.warderyoutube.player_mode
+        setting.value = PLAYER_VALUES[(PLAYER_VALUES.index(current) + 1) % len(PLAYER_VALUES)]
+        setting.save()
+        configfile.save()
+        self._notice = ""
         self.refresh()
 
     def toggle_quality(self):
-        setting = config.plugins.warderyoutube.max_quality
         current = get_quality()
-        setting.value = QUALITY_VALUES[
-            (QUALITY_VALUES.index(current) + 1) % len(QUALITY_VALUES)
-        ]
+        setting = config.plugins.warderyoutube.max_quality
+        setting.value = QUALITY_VALUES[(QUALITY_VALUES.index(current) + 1) % len(QUALITY_VALUES)]
         setting.save()
         configfile.save()
+        self._notice = ""
         self.refresh()
+
+    def back(self):
+        self.close()
