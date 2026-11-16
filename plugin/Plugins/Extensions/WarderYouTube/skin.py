@@ -220,24 +220,24 @@ SETTINGS_SKIN = """
   <widget name="status" position="80,782" size="1710,75" font="Regular;25" foregroundColor="#A4CDE7" transparent="1" zPosition="4"/>
 
   <!-- Compatibility labels remain non-visible: native list carries all settings. -->
-  <widget name="section_search" position="0,0" size="1,1" font="Regular;1" transparent="1"/>
-  <widget name="section_playback" position="0,0" size="1,1" font="Regular;1" transparent="1"/>
-  <widget name="section_privacy" position="0,0" size="1,1" font="Regular;1" transparent="1"/>
-  <widget name="key_state" position="0,0" size="1,1" font="Regular;1" transparent="1"/>
-  <widget name="quality" position="0,0" size="1,1" font="Regular;1" transparent="1"/>
-  <widget name="resolver_state" position="0,0" size="1,1" font="Regular;1" transparent="1"/>
-  <widget name="warning" position="0,0" size="1,1" font="Regular;1" transparent="1"/>
-  <widget name="footer" position="0,0" size="1,1" font="Regular;1" transparent="1"/>
+  <widget name="section_search" position="0,0" size="1,1" font="Regular;1" backgroundColor="#08182D" transparent="1" zPosition="2"/>
+  <widget name="section_playback" position="0,0" size="1,1" font="Regular;1" backgroundColor="#08182D" transparent="1" zPosition="2"/>
+  <widget name="section_privacy" position="0,0" size="1,1" font="Regular;1" backgroundColor="#08182D" transparent="1" zPosition="2"/>
+  <widget name="key_state" position="0,0" size="1,1" font="Regular;1" backgroundColor="#08182D" transparent="1" zPosition="2"/>
+  <widget name="quality" position="0,0" size="1,1" font="Regular;1" backgroundColor="#08182D" transparent="1" zPosition="2"/>
+  <widget name="resolver_state" position="0,0" size="1,1" font="Regular;1" backgroundColor="#08182D" transparent="1" zPosition="2"/>
+  <widget name="warning" position="0,0" size="1,1" font="Regular;1" backgroundColor="#08182D" transparent="1" zPosition="2"/>
+  <widget name="footer" position="0,0" size="1,1" font="Regular;1" backgroundColor="#08182D" transparent="1" zPosition="2"/>
 
   <eLabel position="0,993" size="1920,87" backgroundColor="#08182D"/>
   <eLabel position="150,1070" size="195,3" backgroundColor="#FF526A" zPosition="5"/>
-  <widget name="key_red" position="56,1020" size="381,45" font="Regular;29" foregroundColor="#FE637D" transparent="1" zPosition="6" halign="center"/>
+  <widget name="key_red" position="56,1020" size="381,45" font="Regular;29" foregroundColor="#FE637D" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="620,1070" size="195,3" backgroundColor="#36E884" zPosition="5"/>
-  <widget name="key_green" position="526,1020" size="381,45" font="Regular;29" foregroundColor="#4CE58B" transparent="1" zPosition="6" halign="center"/>
+  <widget name="key_green" position="526,1020" size="381,45" font="Regular;29" foregroundColor="#4CE58B" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1090,1070" size="195,3" backgroundColor="#FFE065" zPosition="5"/>
-  <widget name="key_yellow" position="996,1020" size="381,45" font="Regular;29" foregroundColor="#FFD367" transparent="1" zPosition="6" halign="center"/>
+  <widget name="key_yellow" position="996,1020" size="381,45" font="Regular;29" foregroundColor="#FFD367" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
   <eLabel position="1560,1070" size="195,3" backgroundColor="#60BCFF" zPosition="5"/>
-  <widget name="key_blue" position="1466,1020" size="381,45" font="Regular;29" foregroundColor="#5EBEFF" transparent="1" zPosition="6" halign="center"/>
+  <widget name="key_blue" position="1466,1020" size="381,45" font="Regular;29" foregroundColor="#5EBEFF" backgroundColor="#08182D" transparent="1" zPosition="6" halign="center"/>
 </screen>
 """
 
