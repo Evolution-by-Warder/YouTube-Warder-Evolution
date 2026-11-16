@@ -52,20 +52,12 @@ class UpdateCoreTests(unittest.TestCase):
         with self.assertRaises(u.UpdateError):
             u.parse_manifest(json.dumps(base).encode(), "0.0.8~test52")
 
-    def test_published_testing_manifest_matches_real_github_asset(self):
-        feed = json.loads((ROOT / "update/testing.json").read_text(encoding="utf-8"))
-        rel = feed["release"]
-        # Pinned, independently verified GitHub prerelease in the testing feed.
-        # When publishing the next test candidate, update these values only
-        # after its actual release asset and SHA256 have been verified.
-        self.assertEqual(rel["version"], "0.0.8~test84")
-        self.assertEqual(rel["sha256"], "d42973ade5837a59782cccb054e22886ace308b9beb4938bf5f61117869afd98")
-        self.assertEqual(rel["bytes"], 607252)
-        self.assertEqual(rel["url"], u.expected_url(rel["version"]))
-        self.assertEqual(len(rel["sha256"]), 64)
-        self.assertGreater(rel["bytes"], 0)
-        self.assertEqual(u.parse_manifest(json.dumps(feed).encode(), "0.0.8~test52")["version"], "0.0.8~test84")
-        self.assertGreater(u.version_key(rel["version"]), u.version_key("0.0.8~test52"))
+    def test_retired_testing_manifest_offers_no_update(self):
+        feed = (ROOT / "update/testing.json").read_bytes()
+        self.assertIsNone(json.loads(feed)["release"])
+        for version in ("0.0.8~test52", "0.0.8~test85"):
+            with self.subTest(version=version):
+                self.assertIsNone(u.parse_manifest(feed, version))
 
     def test_installed_test6_is_offered_test7_for_opt_in_update(self):
         candidate = valid_manifest("0.0.8~test7")
