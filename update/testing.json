@@ -2,12 +2,5 @@
   "schema": 1,
   "product": "YouTube Warder Evolution",
   "channel": "testing",
-  "release": {
-    "version": "0.0.8~test85",
-    "tag": "youtube-warder-v0.0.8-test85",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test85/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test85_all.ipk",
-    "sha256": "70ca571ecb0998ffa3d4174b787f2d709d9acea34520869c9e152b7da41e715c",
-    "bytes": 607438,
-    "notes": "Test85: IPK odporuca ServiceApp a ExtePlayer3 ako opkg zavislosti na automaticku instalaciu, ak su dostupne vo feede a nie je vypnuta instalacia odporucanych balikov. Zakladny GStreamer funguje aj bez nich; zachovane funkcie test84."
-  }
+  "release": null
 }
