@@ -3,11 +3,11 @@
   "product": "YouTube Warder Evolution",
   "channel": "testing",
   "release": {
-    "version": "0.0.8~test84",
-    "tag": "youtube-warder-v0.0.8-test84",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test84/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test84_all.ipk",
-    "sha256": "d42973ade5837a59782cccb054e22886ace308b9beb4938bf5f61117869afd98",
-    "bytes": 607252,
-    "notes": "Test84: Najnovsie v Odberoch uz nekonci po 24 videach; dalsie videa sa nacitavaju pri listovani v davkach cez odoberane kanaly a starsie nahravky. Funkcne prehravanie z test82 obnovene, verejny Domov a dizajn zachovane."
+    "version": "0.0.8~test85",
+    "tag": "youtube-warder-v0.0.8-test85",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v0.0.8-test85/enigma2-plugin-extensions-youtube-warder-evolution_0.0.8.test85_all.ipk",
+    "sha256": "70ca571ecb0998ffa3d4174b787f2d709d9acea34520869c9e152b7da41e715c",
+    "bytes": 607438,
+    "notes": "Inštalátor odporúča ServiceApp a ExtePlayer3. Ak chýbajú, pokúsi sa ich doinštalovať z aktualizačného zdroja prijímača. Prehrávač funguje aj bez nich."
   }
 }
