@@ -95,7 +95,7 @@ class ApprovedSourceTests(unittest.TestCase):
 
     def test_stable_runtime_and_legacy_test_builder_are_separate(self):
         self.assertEqual(builder.VERSION,'1.0.2~test1')
-        self.assertIn('CURRENT_VERSION = "1.0.1"',(SRC/'update_core.py').read_text())
+        self.assertIn('CURRENT_VERSION = "1.0.2"',(SRC/'update_core.py').read_text())
 
 
 class AccountLifecycleTests(unittest.TestCase):

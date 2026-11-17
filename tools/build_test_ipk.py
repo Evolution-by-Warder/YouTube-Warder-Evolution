@@ -103,7 +103,7 @@ def build(output_dir):
         if source.name == "update_core.py":
             # Candidate must display its actual installed opkg version.
             # Leave the production source constant on main untouched.
-            stable_marker = b'CURRENT_VERSION = "1.0.1"'
+            stable_marker = b'CURRENT_VERSION = "1.0.2"'
             if content.count(stable_marker) != 1:
                 raise ValueError("Unexpected WarderYouTube version source")
             content = content.replace(
