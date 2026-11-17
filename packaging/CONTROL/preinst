@@ -1,7 +1,16 @@
 #!/bin/sh
-printf '%s\n' \
-'************************************************************' \
-'*             YouTube - Warder Evolution                   *' \
-'************************************************************' \
-'[Warder YouTube] Preparing installation or upgrade...'
+# Installation messages only. No changes to receiver data.
+echo "******************************************************************"
+echo "                    YouTube Warder Evolution"
+echo "******************************************************************"
+case "${1:-}" in
+    upgrade)
+        echo "Preparing YouTube Warder Evolution upgrade/reinstall..."
+        ;;
+    *)
+        echo "Preparing YouTube Warder Evolution installation/reinstall..."
+        ;;
+esac
+echo "Existing settings, favourites and history will be preserved."
+echo "******************************************************************"
 exit 0

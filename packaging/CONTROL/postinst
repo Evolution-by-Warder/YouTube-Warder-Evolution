@@ -1,21 +1,19 @@
 #!/bin/sh
-# opkg holds its lock during postinst; helper checks dependencies after it exits.
+# opkg holds its lock during postinst; the helper checks components afterwards.
 WORKER=/usr/lib/enigma2/python/Plugins/Extensions/WarderYouTube/install_deps.sh
 if [ ! -f "$WORKER" ]; then
-    printf '%s\n' \
-        '************************************************************' \
-        'ERROR: YouTube - Warder Evolution dependency helper missing.' \
-        '************************************************************'
+    echo "******************************************************************"
+    echo "ERROR: YouTube Warder Evolution dependency helper missing."
+    echo "******************************************************************"
     exit 1
 fi
 nohup /bin/sh "$WORKER" "$PPID" </dev/null >/dev/null 2>&1 &
-printf '%s\n' \
-'************************************************************' \
-'Install/upgrade finished: YouTube - Warder Evolution' \
-'Existing YouTube Warder Evolution settings were preserved.' \
-'Automatic component check is running after opkg exits.' \
-'Components: ServiceApp, ExtePlayer3, Python modules, yt-dlp.' \
-'Check result: /tmp/warder-youtube-deps.log' \
-'Please restart GUI to activate changes.' \
-'************************************************************'
+echo "******************************************************************"
+echo "Install/upgrade/reinstall finished: YouTube Warder Evolution"
+echo "Existing YouTube settings, favourites and history were preserved."
+echo "Automatic component check continues after opkg exits."
+echo "Components: ServiceApp, ExtePlayer3, Python modules, yt-dlp."
+echo "Check result: /tmp/warder-youtube-deps.log"
+echo "Please restart GUI to activate changes."
+echo "******************************************************************"
 exit 0

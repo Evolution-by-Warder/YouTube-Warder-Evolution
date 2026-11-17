@@ -1,13 +1,13 @@
 #!/bin/sh
-# Old versions may invoke postrm during an upgrade: do not claim removal.
+# opkg may run this on upgrade; show removal only for remove/purge.
 case "${1:-}" in
     remove|purge)
-        printf '%s\n' \
-        '************************************************************' \
-        'Removal finished: YouTube - Warder Evolution' \
-        'Saved Enigma2 settings and external components were left intact.' \
-        'Please restart GUI to activate changes.' \
-        '************************************************************'
+        echo "******************************************************************"
+        echo "Removal finished: YouTube Warder Evolution"
+        echo "Saved Enigma2 settings, favourites and history were preserved."
+        echo "Other plugins and external components were left intact."
+        echo "Please restart GUI to activate changes."
+        echo "******************************************************************"
         ;;
 esac
 exit 0

@@ -1,13 +1,18 @@
 #!/bin/sh
+# Upgrade must not claim that the plugin was uninstalled.
 case "${1:-}" in
     remove|purge)
-        printf '%s\n' \
-        '************************************************************' \
-        'Removing: YouTube - Warder Evolution' \
-        '************************************************************'
+        echo "******************************************************************"
+        echo "                    YouTube Warder Evolution"
+        echo "******************************************************************"
+        echo "Removing YouTube Warder Evolution plugin files..."
+        echo "Saved settings, favourites and history will remain untouched."
+        echo "******************************************************************"
         ;;
     upgrade|deconfigure)
-        echo '[Warder YouTube] Preparing package upgrade...'
+        echo "******************************************************************"
+        echo "Preparing YouTube Warder Evolution upgrade/reinstall..."
+        echo "******************************************************************"
         ;;
 esac
 exit 0
