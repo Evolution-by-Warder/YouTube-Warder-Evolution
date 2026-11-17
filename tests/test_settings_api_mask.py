@@ -17,6 +17,22 @@ class Widget:
         self.text = text
 
 
+class MenuListStub:
+    def __init__(self, values=None):
+        self.list = list(values or [])
+        self.index = 0
+    def setList(self, values):
+        self.list = list(values)
+    def moveToIndex(self, index):
+        self.index = max(0, min(index, len(self.list) - 1))
+    def getSelectionIndex(self):
+        return self.index
+    def up(self):
+        self.moveToIndex(self.index - 1)
+    def down(self):
+        self.moveToIndex(self.index + 1)
+
+
 class ConfigValue:
     def __init__(self, value=""):
         self.value = value
@@ -97,9 +113,11 @@ def environment(configured="", file_key="", advanced=False):
         "Components.ActionMap": make_module(
             "Components.ActionMap", ActionMap=lambda *args, **kwargs: Widget()),
         "Components.Label": make_module("Components.Label", Label=Widget),
+        "Components.MenuList": make_module("Components.MenuList", MenuList=MenuListStub),
         "Components.config": make_module(
             "Components.config", ConfigSelection=lambda **kw: ConfigValue(kw["default"]),
             ConfigSubsection=lambda: SimpleNamespace(), ConfigText=lambda **kw: ConfigValue(),
+            ConfigYesNo=lambda **kw: ConfigValue(kw["default"]),
             config=cfg, configfile=cfgfile),
         "Screens": screens,
         "Screens.MessageBox": make_module("Screens.MessageBox", MessageBox=type("M", (), {})),
@@ -113,6 +131,40 @@ def environment(configured="", file_key="", advanced=False):
         session = FakeSession()
         screen = mod.WarderYouTubeSettings(session)
         yield mod, screen, session, api_key, cfgfile, fake_confirm, fake_system_keyboard
+
+
+class MenuListSettingsTests(unittest.TestCase):
+    def test_default_off_toggle_saved_and_selected_row_preserved(self):
+        with environment() as (mod, screen, session, key, cfgfile, *_):
+            self.assertEqual(len(screen["options"].list), 4)
+            self.assertIn("Show in Enigma2 main menu: No", screen["options"].list[3])
+            self.assertIs(mod.config.plugins.warderyoutube.show_main_menu.value, False)
+            screen["options"].moveToIndex(3)
+            screen.primary_action()
+            self.assertIs(mod.config.plugins.warderyoutube.show_main_menu.value, True)
+            self.assertIn("Show in Enigma2 main menu: Yes", screen["options"].list[3])
+            self.assertEqual(screen["options"].index, 3)
+            self.assertIn("Restart GUI", screen["status"].text)
+            self.assertEqual(cfgfile.saves, 1)
+            screen.primary_action()
+            self.assertIs(mod.config.plugins.warderyoutube.show_main_menu.value, False)
+            self.assertEqual(cfgfile.saves, 2)
+
+    def test_ok_uses_selected_action_and_arrows_move_through_list(self):
+        with environment() as (mod, screen, session, key, cfgfile, *_):
+            screen["options"].moveToIndex(1)
+            screen.primary_action()
+            self.assertEqual(mod.get_player_mode(), "gst")
+            self.assertIn("Player: gstplayer", screen["options"].list[1])
+            screen.down()
+            self.assertEqual(screen["options"].index, 2)
+            screen.primary_action()
+            self.assertEqual(mod.get_quality(), "1080")
+            account_actions = []
+            screen.close = lambda *args: account_actions.append(args)
+            screen["options"].moveToIndex(0)
+            screen.primary_action()
+            self.assertEqual(account_actions, [("account",)])
 
 
 class PlayerModeSettingsTests(unittest.TestCase):

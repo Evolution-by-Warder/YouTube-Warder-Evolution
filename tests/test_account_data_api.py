@@ -237,9 +237,9 @@ class AccountUiTests(unittest.TestCase):
             ui, screen, session, key = env[:4]
             with patch.object(ui, 'account_available', return_value=True):
                 screen.refresh()
-            self.assertEqual(screen['section_search'].text, 'YOUTUBE ACCOUNT')
-            self.assertIn('Your YouTube subscriptions are available.', screen['key_state'].text)
-            self.assertEqual(screen['key_green'].text, 'Manage account')
+            # The new native settings list keeps account status on its first row.
+            self.assertIn('YouTube account: Signed in', screen['options'].list[0])
+            self.assertEqual(screen['key_green'].text, 'Select')
             self.assertEqual(screen['key_yellow'].text, 'Player')
             self.assertNotIn('stored-backup-key', ' '.join(v.text for v in screen.values() if hasattr(v, 'text')))
             self.assertNotIn('********', screen['key_state'].text)

@@ -95,7 +95,7 @@ class Tests(unittest.TestCase):
 
     def test_readme_documents_stable_release(self):
         readme = (ROOT / "README.md").read_text().lower()
-        self.assertIn("stable release: 1.0.1", readme)
+        self.assertIn("stable release: 1.0.2", readme)
         self.assertIn("favourites", readme)
         self.assertIn("history", readme)
         self.assertIn("openpli", readme)

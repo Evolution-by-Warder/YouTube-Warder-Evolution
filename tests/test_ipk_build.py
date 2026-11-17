@@ -58,6 +58,13 @@ class PackagingTests(unittest.TestCase):
                 self.assertTrue(any(x.name.endswith("/youtube_engine/COPYING.GPLv2") for x in members))
                 self.assertEqual(len({x.name for x in members}), len(members))
                 self.assertTrue(any(x.name.endswith("/plugin.py") for x in members))
+                # Test candidate version shown in the header must equal opkg.
+                built_core = tar.extractfile(
+                    "./" + m.TARGET_PREFIX + "/update_core.py").read()
+                self.assertIn(
+                    ('CURRENT_VERSION = "%s"' % m.VERSION).encode("ascii"),
+                    built_core)
+
                 for icon, dimensions in (("plugin.png", (100, 60)), ("plugin_fhd.png", (150, 90))):
                     raw = tar.extractfile("./" + m.TARGET_PREFIX + "/images/" + icon).read()
                     self.assertTrue(raw.startswith(b"\x89PNG\r\n\x1a\n"))
@@ -130,7 +137,7 @@ class PackagingTests(unittest.TestCase):
             and any(isinstance(target, Name) and target.id == "CURRENT_VERSION"
                     for target in node.targets)
         ]
-        self.assertEqual(values, ["1.0.1"])
+        self.assertEqual(values, ["1.0.2"])
 
     def test_hooks_are_non_destructive(self):
         for name, script in m.control_scripts().items():

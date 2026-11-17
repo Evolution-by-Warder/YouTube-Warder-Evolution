@@ -16,3 +16,19 @@ jobs:
       - run: |
           python3 -m unittest discover -s tests -v
           python3 -m compileall -q plugin/Plugins/Extensions/WarderYouTube
+      - name: Build non-publishing receiver-test IPK
+        run: python3 tools/build_test_ipk.py --output dist
+      - name: Verify package SHA256 and archive
+        run: |
+          set -eu
+          cd dist
+          sha256sum -c *.sha256
+          ar t *.ipk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WarderYouTube-settings-mainmenu-test-IPK
+          path: |
+            dist/*.ipk
+            dist/*.sha256
+          retention-days: 14
+          if-no-files-found: error
