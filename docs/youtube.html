@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YouTube Warder Evolution — Enigma2 YouTube plugin</title><meta name="description" content="Official product website for YouTube Warder Evolution, an independent Enigma2 YouTube browser and player with optional read-only Google OAuth subscriptions.">
+<meta name="robots" content="index,follow"><link rel="stylesheet" href="style.css"></head><body>
+<header><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="index.html">WARDER EVOLUTION</a><div class="links"><a href="youtube.html">YouTube app</a><a href="privacy.html">Privacy / Súkromie</a><a href="terms.html">Terms / Podmienky</a><a href="https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution">GitHub</a></div></nav></div></header>
+<main class="wrap">
+<div class="eyebrow">Official Enigma2 application information</div><h1>YouTube Warder Evolution</h1>
+<p class="lead">An independent, community-developed YouTube browsing and playback plugin for compatible Enigma2 television receivers running systems such as OpenATV and OpenPLi.</p>
+<p lang="sk" class="muted">Nezávislý komunitný YouTube plugin pre prijímače Enigma2. Ponúka vyhľadávanie, prehrávanie videí, kategórie, obľúbené položky a voliteľné osobné odbery.</p>
+<div class="actions"><a class="btn" href="https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution">Public source code and releases</a><a class="btn secondary" href="privacy.html">Privacy Policy</a></div>
+<section class="grid" aria-label="Features">
+<article class="panel"><h2>Video discovery &amp; playback</h2><p>Browse video results and categories, search for videos, inspect details and play compatible videos directly on the receiver. Public features do not require connecting a Google account.</p></article>
+<article class="panel"><h2>Optional YouTube subscriptions</h2><p>Authorize access to your own YouTube account via Google's TV and limited-input device sign-in flow to view your subscriptions and related channel and video information on the receiver. OAuth is optional.</p></article>
+<article class="panel"><h2>Local favourites &amp; history</h2><p>Keep favourites and a recently opened video list in local files on the receiver, independently of your Google account.</p></article>
+</section>
+<section class="section"><h2>Why does the app request Google access?</h2>
+<p>Only users who choose account sign-in are sent to Google's official device authorization page. The app requests the OAuth permission <code>https://www.googleapis.com/auth/youtube.readonly</code>, which allows it to retrieve the signed-in user's YouTube subscriptions and related YouTube account data for displaying personal content on the television. It does <strong>not</strong> request permission to upload videos, delete content or modify your account.</p>
+<p>Google supplies the authorization code and token directly to the device-flow client. The app does not request your Google password. Access and refresh tokens are stored locally on your receiver with restricted file permissions; there is no developer-hosted account-token server. You can disconnect your account in the plugin and revoke permission in <a href="https://myaccount.google.com/connections">Google Account connections</a>.</p>
+<p lang="sk">Pre osobné odbery používa doplnok oficiálne prihlásenie Google pre TV zariadenia. Oprávnenie <code>youtube.readonly</code> slúži iba na čítanie údajov účtu. Tokeny zostávajú lokálne v prijímači; nie sú odosielané na server Warder Evolution.</p>
+<p><strong>Privacy information:</strong> <a href="privacy.html">YouTube Warder Evolution Privacy Policy</a> · <a href="terms.html">Terms of Use</a>.</p></section>
+<section class="section"><h2>Support &amp; contact</h2><p>Public source, issue reports and support are available at <a href="https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution">Evolution-by-Warder/YouTube-Warder-Evolution</a>. Do not disclose account credentials, access tokens or device verification codes in public GitHub Issues.</p></section>
+<p class="small muted">This is an independent third-party application. It is not made, endorsed or sponsored by Google or YouTube. YouTube and Google are trademarks of their respective owners.</p></main>
+<footer><div class="wrap"><span>© 2026 Warder Evolution — independent community project</span><span><a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms</a> · <a href="index.html">All Warder projects</a></span></div></footer></body></html>
