@@ -1,0 +1,17 @@
+:root{color-scheme:dark;--bg:#071322;--panel:#0f2139;--border:#244565;--fg:#e9f4ff;--muted:#b1c9dd;--cyan:#43d8ff;--blue:#2686ff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:radial-gradient(ellipse 90% 60% at 90% -10%,#12467d 0%,transparent 70%),var(--bg);color:var(--fg);line-height:1.7}
+a{color:#88e6ff;text-underline-offset:3px}a:hover{color:#e5f9ff}a:focus-visible{outline:3px solid var(--cyan);outline-offset:4px}
+.wrap{max-width:1000px;margin:auto;padding:0 28px}header{border-bottom:1px solid var(--border);background:rgba(3,15,33,.76)}
+nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:18px 0}nav .brand{font-weight:800;letter-spacing:.05em;text-decoration:none;font-size:1.12rem;color:white}
+nav .links{display:flex;flex-wrap:wrap;gap:22px;font-size:.95rem}nav .links a{text-decoration:none;color:var(--muted)}
+main{padding:52px 0 76px}.eyebrow{color:var(--cyan);letter-spacing:.15em;text-transform:uppercase;font-weight:700;font-size:.78rem}
+h1{font-size:clamp(2rem,5vw,3.6rem);line-height:1.14;margin:14px 0 18px}h2{font-size:1.55rem;margin:38px 0 12px}h3{font-size:1.12rem;margin:26px 0 8px}
+.lead{color:var(--muted);font-size:1.13rem;max-width:780px}p,li{max-width:88ch}.muted{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:18px;margin:34px 0}
+.panel{background:linear-gradient(160deg,#102944,#0b1d33);border:1px solid var(--border);border-radius:14px;padding:24px}.panel h2{font-size:1.19rem;margin:0 0 8px}.panel p{margin:0 0 14px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0}.btn{display:inline-block;text-decoration:none;background:linear-gradient(120deg,#1d8de4,#27c6e4);color:#061424;font-weight:750;padding:12px 20px;border-radius:8px}.btn.secondary{background:transparent;color:var(--fg);border:1px solid #4992be}
+.section{border-top:1px solid var(--border);margin-top:38px;padding-top:12px}
+footer{border-top:1px solid var(--border);padding:22px 0 36px;color:var(--muted);font-size:.91rem}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}ul{padding-left:24px}li+li{margin-top:8px}
+.small{font-size:.89rem}code{overflow-wrap:anywhere;color:#9febff}hr{border:0;border-top:1px solid var(--border);margin:35px 0}
+@media(max-width:650px){.wrap{padding:0 18px}main{padding-top:38px}nav{align-items:flex-start}nav .links{gap:12px}}
