@@ -57,7 +57,7 @@ The verification video must correspond to the same installed app and OAuth clien
 
 Record the user's actual consent workflow; do not splice in an unrelated Google app's consent screen. Avoid disclosing passwords, refresh/access tokens and unrelated personal data. Ensure the video is **Public or Unlisted**, not Private.
 
-A YouTube URL previously discussed in project conversations must not be assumed to be a compliant verification demo until its content and visibility have been checked. If the existing video fails steps 3–6, re-record and update the submitted link.
+**Owner-confirmed demonstration link:** https://youtu.be/-pAWMgy9leU (note the leading hyphen in the 11-character YouTube video ID). This is the existing intended video for the verification submission. Its actual content and Public/Unlisted visibility have **not** been independently inspected here; verify steps 3–6 and visibility before attesting that the Google reviewer checklist is complete. If the existing video fails these requirements, record a corrected demo and update the verification link.
 
 Google guidance:
 - https://support.google.com/cloud/answer/13804565
