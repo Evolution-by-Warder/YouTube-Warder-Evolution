@@ -57,7 +57,18 @@ The verification video must correspond to the same installed app and OAuth clien
 
 Record the user's actual consent workflow; do not splice in an unrelated Google app's consent screen. Avoid disclosing passwords, refresh/access tokens and unrelated personal data. Ensure the video is **Public or Unlisted**, not Private.
 
-**Owner-confirmed demonstration link:** https://youtu.be/-pAWMgy9leU (note the leading hyphen in the 11-character YouTube video ID). This is the existing intended video for the verification submission. Its actual content and Public/Unlisted visibility have **not** been independently inspected here; verify steps 3–6 and visibility before attesting that the Google reviewer checklist is complete. If the existing video fails these requirements, record a corrected demo and update the verification link.
+**Owner-confirmed existing tutorial link:** https://youtu.be/-pAWMgy9leU (the first character of the video ID is a hyphen). The owner supplied the MP4 source `Warder_Evolution_OAuth_Step_by_Step_FINAL(1).mp4` for review on 21 November 2026. This file was inspected: 116 seconds, 1600×900, 24 fps, silent, with **11 illustrated slides/steps**, rather than an uninterrupted live screen capture.
+
+**Review outcome — useful tutorial but not sufficient as sole compliance evidence:**
+- Intro explicitly describes the presentation as an *illustrated step-by-step sign-in flow*.
+- Slides 1–7 explain the Enigma2 and Google device-code path; slide 8 illustrates a Google OAuth consent screen containing the read-only YouTube account permission.
+- The consent slide shows **“See access details”** collapsed; there is no expanded service/scope detail in the movie.
+- Slides 9–11 show a success example, a subscription gallery and signed-in settings, but as static example screens, not independently observable execution of the OAuth flow and YouTube API response.
+- Real-time functioning, a fresh user consent interaction, exact configured scope and OAuth client identity are **not proven by the video**. The YouTube hosting visibility (Public/Unlisted) was not checked from the local file.
+
+**Action:** Keep this video as a separate user guide, but for verification record a new *real TV/device flow* with live app navigation, Google's English consent screen and expanded services/permission details, explicit approval, the resulting live subscriptions display, and optionally the connected-account state. Record only a test account; mask secrets and other personal information. Upload the verified live demo as Public or Unlisted and use that URL in the Google submission. Do not label the existing illustrated tutorial as a fully compliant live demo.
+
+Official requirement: https://support.google.com/cloud/answer/13804565
 
 Google guidance:
 - https://support.google.com/cloud/answer/13804565
