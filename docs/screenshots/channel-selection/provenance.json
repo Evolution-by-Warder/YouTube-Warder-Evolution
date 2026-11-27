@@ -1,0 +1,1002 @@
+{
+  "schema": 1,
+  "source": "vyber kanalov.ZIP + two selected owner follow-up captures",
+  "source_count": 48,
+  "duplicates": {
+    "41.jpg": "40.jpg"
+  },
+  "items": [
+    {
+      "source": "1.jpg",
+      "sk": "Predvolené",
+      "en": "Default",
+      "width": 412,
+      "height": 187,
+      "full": "screenshots/channel-selection/01-full.webp",
+      "full_git_blob": "63204b861fe0db16d3ce7d8525c4bc9e5f4bbc4a",
+      "thumb": "screenshots/channel-selection/01-thumb.webp",
+      "thumb_git_blob": "63204b861fe0db16d3ce7d8525c4bc9e5f4bbc4a",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        811
+      ]
+    },
+    {
+      "source": "2.jpg",
+      "sk": "G17 viacero prog.",
+      "en": "G17 multiple programmes",
+      "width": 412,
+      "height": 184,
+      "full": "screenshots/channel-selection/02-full.webp",
+      "full_git_blob": "fa153fbaf5415db1a37c3c0b0b5a525c2867499e",
+      "thumb": "screenshots/channel-selection/02-thumb.webp",
+      "thumb_git_blob": "fa153fbaf5415db1a37c3c0b0b5a525c2867499e",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        808
+      ]
+    },
+    {
+      "source": "3.jpg",
+      "sk": "G17 viacero prog. 2",
+      "en": "G17 multiple programmes 2",
+      "width": 412,
+      "height": 185,
+      "full": "screenshots/channel-selection/03-full.webp",
+      "full_git_blob": "5dcfb0ecf4e5c6edd459267f778b75494c9f0836",
+      "thumb": "screenshots/channel-selection/03-thumb.webp",
+      "thumb_git_blob": "5dcfb0ecf4e5c6edd459267f778b75494c9f0836",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        809
+      ]
+    },
+    {
+      "source": "4.jpg",
+      "sk": "G17 viacero prog. 3",
+      "en": "G17 multiple programmes 3",
+      "width": 412,
+      "height": 184,
+      "full": "screenshots/channel-selection/04-full.webp",
+      "full_git_blob": "0acbb861aa87034bd78c174906e476c6623f73cf",
+      "thumb": "screenshots/channel-selection/04-thumb.webp",
+      "thumb_git_blob": "0acbb861aa87034bd78c174906e476c6623f73cf",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        808
+      ]
+    },
+    {
+      "source": "5.jpg",
+      "sk": "G17 viacero prog. 4",
+      "en": "G17 multiple programmes 4",
+      "width": 412,
+      "height": 186,
+      "full": "screenshots/channel-selection/05-full.webp",
+      "full_git_blob": "af49588b645639c0721420c07529f94005f22e79",
+      "thumb": "screenshots/channel-selection/05-thumb.webp",
+      "thumb_git_blob": "af49588b645639c0721420c07529f94005f22e79",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        810
+      ]
+    },
+    {
+      "source": "6.jpg",
+      "sk": "G17 viacero prog. 5",
+      "en": "G17 multiple programmes 5",
+      "width": 412,
+      "height": 186,
+      "full": "screenshots/channel-selection/06-full.webp",
+      "full_git_blob": "90fc02e22b21e644c31f635e2c7e9297f9d92ec7",
+      "thumb": "screenshots/channel-selection/06-thumb.webp",
+      "thumb_git_blob": "90fc02e22b21e644c31f635e2c7e9297f9d92ec7",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        810
+      ]
+    },
+    {
+      "source": "7.jpg",
+      "sk": "G17 viacero prog. 6",
+      "en": "G17 multiple programmes 6",
+      "width": 412,
+      "height": 186,
+      "full": "screenshots/channel-selection/07-full.webp",
+      "full_git_blob": "1fb77fd43bb89c3a0dcf26711076a44842b2fde8",
+      "thumb": "screenshots/channel-selection/07-thumb.webp",
+      "thumb_git_blob": "1fb77fd43bb89c3a0dcf26711076a44842b2fde8",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        810
+      ]
+    },
+    {
+      "source": "8.jpg",
+      "sk": "Veľké ikony 1",
+      "en": "Large icons 1",
+      "width": 412,
+      "height": 193,
+      "full": "screenshots/channel-selection/08-full.webp",
+      "full_git_blob": "6c0c6dacec79708ccfa94edc57ac6d0ac73b2d84",
+      "thumb": "screenshots/channel-selection/08-thumb.webp",
+      "thumb_git_blob": "6c0c6dacec79708ccfa94edc57ac6d0ac73b2d84",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        817
+      ]
+    },
+    {
+      "source": "9.jpg",
+      "sk": "Veľké ikony 2",
+      "en": "Large icons 2",
+      "width": 412,
+      "height": 192,
+      "full": "screenshots/channel-selection/09-full.webp",
+      "full_git_blob": "8573969ff3e5340ed7f563c39e4cefaccd9d9928",
+      "thumb": "screenshots/channel-selection/09-thumb.webp",
+      "thumb_git_blob": "8573969ff3e5340ed7f563c39e4cefaccd9d9928",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        816
+      ]
+    },
+    {
+      "source": "10.jpg",
+      "sk": "Plagát",
+      "en": "Poster",
+      "width": 412,
+      "height": 187,
+      "full": "screenshots/channel-selection/10-full.webp",
+      "full_git_blob": "68821260cc09257efb0cc02a58603e0facd46dec",
+      "thumb": "screenshots/channel-selection/10-thumb.webp",
+      "thumb_git_blob": "68821260cc09257efb0cc02a58603e0facd46dec",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        811
+      ]
+    },
+    {
+      "source": "11.jpg",
+      "sk": "Plagát 2",
+      "en": "Poster 2",
+      "width": 412,
+      "height": 192,
+      "full": "screenshots/channel-selection/11-full.webp",
+      "full_git_blob": "ed51c660166816090dbaa8c2b29e2cc688c22545",
+      "thumb": "screenshots/channel-selection/11-thumb.webp",
+      "thumb_git_blob": "ed51c660166816090dbaa8c2b29e2cc688c22545",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        816
+      ]
+    },
+    {
+      "source": "12.jpg",
+      "sk": "PIG + PIP 1",
+      "en": "PIG + PIP 1",
+      "width": 412,
+      "height": 185,
+      "full": "screenshots/channel-selection/12-full.webp",
+      "full_git_blob": "8ea868224cdf61b9f6247206dbf80e546551597f",
+      "thumb": "screenshots/channel-selection/12-thumb.webp",
+      "thumb_git_blob": "8ea868224cdf61b9f6247206dbf80e546551597f",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        809
+      ]
+    },
+    {
+      "source": "13.jpg",
+      "sk": "PIG + PIP 2",
+      "en": "PIG + PIP 2",
+      "width": 412,
+      "height": 186,
+      "full": "screenshots/channel-selection/13-full.webp",
+      "full_git_blob": "a1008563d5e61cec1dad6e2ba8658a9336a5abea",
+      "thumb": "screenshots/channel-selection/13-thumb.webp",
+      "thumb_git_blob": "a1008563d5e61cec1dad6e2ba8658a9336a5abea",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        810
+      ]
+    },
+    {
+      "source": "14.jpg",
+      "sk": "PIG + PIP 5",
+      "en": "PIG + PIP 5",
+      "width": 412,
+      "height": 189,
+      "full": "screenshots/channel-selection/14-full.webp",
+      "full_git_blob": "88c674a353a6239d384eeba5c9eb112e00cab1b6",
+      "thumb": "screenshots/channel-selection/14-thumb.webp",
+      "thumb_git_blob": "88c674a353a6239d384eeba5c9eb112e00cab1b6",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        813
+      ]
+    },
+    {
+      "source": "15.jpg",
+      "sk": "PIG + PIP 6",
+      "en": "PIG + PIP 6",
+      "width": 412,
+      "height": 189,
+      "full": "screenshots/channel-selection/15-full.webp",
+      "full_git_blob": "040020153b754bd48fe8f5042290309704479afa",
+      "thumb": "screenshots/channel-selection/15-thumb.webp",
+      "thumb_git_blob": "040020153b754bd48fe8f5042290309704479afa",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        813
+      ]
+    },
+    {
+      "source": "16.jpg",
+      "sk": "PIP 4",
+      "en": "PIP 4",
+      "width": 412,
+      "height": 185,
+      "full": "screenshots/channel-selection/16-full.webp",
+      "full_git_blob": "64cf71b73c26115d758e95c1845f4eb6506504da",
+      "thumb": "screenshots/channel-selection/16-thumb.webp",
+      "thumb_git_blob": "64cf71b73c26115d758e95c1845f4eb6506504da",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        809
+      ]
+    },
+    {
+      "source": "17.jpg",
+      "sk": "PIP 5",
+      "en": "PIP 5",
+      "width": 412,
+      "height": 193,
+      "full": "screenshots/channel-selection/17-full.webp",
+      "full_git_blob": "fb3e1529ce38ace01699590415a82e6c9ddea6f2",
+      "thumb": "screenshots/channel-selection/17-thumb.webp",
+      "thumb_git_blob": "fb3e1529ce38ace01699590415a82e6c9ddea6f2",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        817
+      ]
+    },
+    {
+      "source": "18.jpg",
+      "sk": "Glass17",
+      "en": "Glass17",
+      "width": 429,
+      "height": 193,
+      "full": "screenshots/channel-selection/18-full.webp",
+      "full_git_blob": "1c8e37b8ee0f78ac6f3724318291382d2a74485e",
+      "thumb": "screenshots/channel-selection/18-thumb.webp",
+      "thumb_git_blob": "1c8e37b8ee0f78ac6f3724318291382d2a74485e",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        716,
+        620,
+        1145,
+        813
+      ]
+    },
+    {
+      "source": "19.jpg",
+      "sk": "Glass17(+ďalší program)",
+      "en": "Glass17 (next programme)",
+      "width": 423,
+      "height": 188,
+      "full": "screenshots/channel-selection/19-full.webp",
+      "full_git_blob": "eff67345694a4de883e4a520cd6ccac562e42a38",
+      "thumb": "screenshots/channel-selection/19-thumb.webp",
+      "thumb_git_blob": "eff67345694a4de883e4a520cd6ccac562e42a38",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        736,
+        627,
+        1159,
+        815
+      ]
+    },
+    {
+      "source": "20.jpg",
+      "sk": "with PIG(+ďalší program)",
+      "en": "With PIG (next programme)",
+      "width": 421,
+      "height": 179,
+      "full": "screenshots/channel-selection/20-full.webp",
+      "full_git_blob": "f1bb42738e1a5c4208416c9491ea1e387be17c29",
+      "thumb": "screenshots/channel-selection/20-thumb.webp",
+      "thumb_git_blob": "f1bb42738e1a5c4208416c9491ea1e387be17c29",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        736,
+        627,
+        1157,
+        806
+      ]
+    },
+    {
+      "source": "21.jpg",
+      "sk": "Glass17(+ďalší program, dátum)",
+      "en": "Glass17 (next programme, date)",
+      "width": 414,
+      "height": 190,
+      "full": "screenshots/channel-selection/21-full.webp",
+      "full_git_blob": "68b954063c8a93962f56d159fbbc4f4bc1d3b1b4",
+      "thumb": "screenshots/channel-selection/21-thumb.webp",
+      "thumb_git_blob": "68b954063c8a93962f56d159fbbc4f4bc1d3b1b4",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1145,
+        814
+      ]
+    },
+    {
+      "source": "22.jpg",
+      "sk": "Nový štýl",
+      "en": "New style",
+      "width": 412,
+      "height": 194,
+      "full": "screenshots/channel-selection/22-full.webp",
+      "full_git_blob": "2ca7278af0d82574cb6189e842c01ce8f3986a5e",
+      "thumb": "screenshots/channel-selection/22-thumb.webp",
+      "thumb_git_blob": "2ca7278af0d82574cb6189e842c01ce8f3986a5e",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        818
+      ]
+    },
+    {
+      "source": "23.jpg",
+      "sk": "Nový štýl 2",
+      "en": "New style 2",
+      "width": 412,
+      "height": 186,
+      "full": "screenshots/channel-selection/23-full.webp",
+      "full_git_blob": "ab441c36722e94cc2efa2d12a03ec2e044656e67",
+      "thumb": "screenshots/channel-selection/23-thumb.webp",
+      "thumb_git_blob": "ab441c36722e94cc2efa2d12a03ec2e044656e67",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        810
+      ]
+    },
+    {
+      "source": "24.jpg",
+      "sk": "Nový štýl s PIG",
+      "en": "New style with PIG",
+      "width": 412,
+      "height": 190,
+      "full": "screenshots/channel-selection/24-full.webp",
+      "full_git_blob": "047e4c092435c67eca3c4deb142a13729646fba9",
+      "thumb": "screenshots/channel-selection/24-thumb.webp",
+      "thumb_git_blob": "047e4c092435c67eca3c4deb142a13729646fba9",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        814
+      ]
+    },
+    {
+      "source": "25.jpg",
+      "sk": "PIG(+ďalší program,vľavo)",
+      "en": "PIG (next programme, left)",
+      "width": 412,
+      "height": 184,
+      "full": "screenshots/channel-selection/25-full.webp",
+      "full_git_blob": "db1da08306fafa47637fc19e893a5899fd1915e1",
+      "thumb": "screenshots/channel-selection/25-thumb.webp",
+      "thumb_git_blob": "db1da08306fafa47637fc19e893a5899fd1915e1",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        808
+      ]
+    },
+    {
+      "source": "26.jpg",
+      "sk": "PIG(+aktuálny program,vľavo)",
+      "en": "PIG (current programme, left)",
+      "width": 412,
+      "height": 184,
+      "full": "screenshots/channel-selection/26-full.webp",
+      "full_git_blob": "a730d58e5acb7e6477f4d13d34b874de16938431",
+      "thumb": "screenshots/channel-selection/26-thumb.webp",
+      "thumb_git_blob": "a730d58e5acb7e6477f4d13d34b874de16938431",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        808
+      ]
+    },
+    {
+      "source": "27.jpg",
+      "sk": "Klasicky",
+      "en": "Classic",
+      "width": 414,
+      "height": 194,
+      "full": "screenshots/channel-selection/27-full.webp",
+      "full_git_blob": "47a541c6629828dee0f5a12ce9db7a02ca0b9087",
+      "thumb": "screenshots/channel-selection/27-thumb.webp",
+      "thumb_git_blob": "47a541c6629828dee0f5a12ce9db7a02ca0b9087",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        730,
+        624,
+        1144,
+        818
+      ]
+    },
+    {
+      "source": "28.jpg",
+      "sk": "Klasicky 2",
+      "en": "Classic 2",
+      "width": 412,
+      "height": 197,
+      "full": "screenshots/channel-selection/28-full.webp",
+      "full_git_blob": "1466fe0d78b82251927cd9b598d9361e672829a2",
+      "thumb": "screenshots/channel-selection/28-thumb.webp",
+      "thumb_git_blob": "1466fe0d78b82251927cd9b598d9361e672829a2",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        621,
+        1143,
+        818
+      ]
+    },
+    {
+      "source": "29.jpg",
+      "sk": "Core 88",
+      "en": "Core 88",
+      "width": 412,
+      "height": 192,
+      "full": "screenshots/channel-selection/29-full.webp",
+      "full_git_blob": "a1a97ac9263ee958788528aa3e4ff9228203a0c5",
+      "thumb": "screenshots/channel-selection/29-thumb.webp",
+      "thumb_git_blob": "a1a97ac9263ee958788528aa3e4ff9228203a0c5",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        816
+      ]
+    },
+    {
+      "source": "30.jpg",
+      "sk": "Core 88 2",
+      "en": "Core 88 2",
+      "width": 412,
+      "height": 195,
+      "full": "screenshots/channel-selection/30-full.webp",
+      "full_git_blob": "c1bc99a213696555b3a344b219cac5083b8279cf",
+      "thumb": "screenshots/channel-selection/30-thumb.webp",
+      "thumb_git_blob": "c1bc99a213696555b3a344b219cac5083b8279cf",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        623,
+        1143,
+        818
+      ]
+    },
+    {
+      "source": "31.jpg",
+      "sk": "PIG(+viacero ďalších prog.)",
+      "en": "PIG (multiple upcoming programmes)",
+      "width": 412,
+      "height": 183,
+      "full": "screenshots/channel-selection/31-full.webp",
+      "full_git_blob": "1c300428de32d9d29d6a0233414827f4d9b32010",
+      "thumb": "screenshots/channel-selection/31-thumb.webp",
+      "thumb_git_blob": "1c300428de32d9d29d6a0233414827f4d9b32010",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        807
+      ]
+    },
+    {
+      "source": "32.jpg",
+      "sk": "G17(+viacero ďalších prog.)",
+      "en": "G17 (multiple upcoming programmes)",
+      "width": 413,
+      "height": 187,
+      "full": "screenshots/channel-selection/32-full.webp",
+      "full_git_blob": "9adfad5b8c4f190aba635e1190bc22d0eddeefba",
+      "thumb": "screenshots/channel-selection/32-thumb.webp",
+      "thumb_git_blob": "9adfad5b8c4f190aba635e1190bc22d0eddeefba",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        623,
+        1144,
+        810
+      ]
+    },
+    {
+      "source": "33.jpg",
+      "sk": "G17(+viacero ďalších prog.) 2",
+      "en": "G17 (multiple upcoming programmes) 2",
+      "width": 412,
+      "height": 183,
+      "full": "screenshots/channel-selection/33-full.webp",
+      "full_git_blob": "3bda47f4f41ae12009c200ce4b56a8973af0b5f0",
+      "thumb": "screenshots/channel-selection/33-thumb.webp",
+      "thumb_git_blob": "3bda47f4f41ae12009c200ce4b56a8973af0b5f0",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        807
+      ]
+    },
+    {
+      "source": "34.jpg",
+      "sk": "G17(+viacero ďalších prog.) 3",
+      "en": "G17 (multiple upcoming programmes) 3",
+      "width": 412,
+      "height": 186,
+      "full": "screenshots/channel-selection/34-full.webp",
+      "full_git_blob": "0cbb8d5b97a8f7d23a986f153075e36a2f9117bf",
+      "thumb": "screenshots/channel-selection/34-thumb.webp",
+      "thumb_git_blob": "0cbb8d5b97a8f7d23a986f153075e36a2f9117bf",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        810
+      ]
+    },
+    {
+      "source": "35.jpg",
+      "sk": "G17(+viacero ďalších prog.) 4",
+      "en": "G17 (multiple upcoming programmes) 4",
+      "width": 413,
+      "height": 193,
+      "full": "screenshots/channel-selection/35-full.webp",
+      "full_git_blob": "5bcf6cb1b5cb44b20138da5aeb7f16589abf1b2d",
+      "thumb": "screenshots/channel-selection/35-thumb.webp",
+      "thumb_git_blob": "5bcf6cb1b5cb44b20138da5aeb7f16589abf1b2d",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        730,
+        624,
+        1143,
+        817
+      ]
+    },
+    {
+      "source": "36.jpg",
+      "sk": "Nový štýl(+viacero ďalších prog.)",
+      "en": "New style (multiple upcoming programmes)",
+      "width": 412,
+      "height": 194,
+      "full": "screenshots/channel-selection/36-full.webp",
+      "full_git_blob": "728dcd3233eadb22fb21d6b94e82c139a158c6ea",
+      "thumb": "screenshots/channel-selection/36-thumb.webp",
+      "thumb_git_blob": "728dcd3233eadb22fb21d6b94e82c139a158c6ea",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        818
+      ]
+    },
+    {
+      "source": "37.jpg",
+      "sk": "PIG(+akt.,viacero ďalších prog.,vľavo)",
+      "en": "PIG (current and upcoming programmes, left)",
+      "width": 412,
+      "height": 183,
+      "full": "screenshots/channel-selection/37-full.webp",
+      "full_git_blob": "1d75f79f8de7886c07cd0255ed08f23b01c316c0",
+      "thumb": "screenshots/channel-selection/37-thumb.webp",
+      "thumb_git_blob": "1d75f79f8de7886c07cd0255ed08f23b01c316c0",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        807
+      ]
+    },
+    {
+      "source": "38.jpg",
+      "sk": "PIG(+akt.,viacero ďalších prog.,vľavo) 2",
+      "en": "PIG (current and upcoming programmes, left) 2",
+      "width": 412,
+      "height": 187,
+      "full": "screenshots/channel-selection/38-full.webp",
+      "full_git_blob": "e25a23eef7b5104d5261b91b1007149f553fbfce",
+      "thumb": "screenshots/channel-selection/38-thumb.webp",
+      "thumb_git_blob": "e25a23eef7b5104d5261b91b1007149f553fbfce",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        811
+      ]
+    },
+    {
+      "source": "39.jpg",
+      "sk": "PIG(+akt.,viacero ďalších prog.,vľavo) 3",
+      "en": "PIG (current and upcoming programmes, left) 3",
+      "width": 412,
+      "height": 187,
+      "full": "screenshots/channel-selection/39-full.webp",
+      "full_git_blob": "dcb0d963a325846e5e560a17290d015cab6f1e8a",
+      "thumb": "screenshots/channel-selection/39-thumb.webp",
+      "thumb_git_blob": "dcb0d963a325846e5e560a17290d015cab6f1e8a",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        811
+      ]
+    },
+    {
+      "source": "40.jpg",
+      "sk": "s PIG",
+      "en": "With PIG",
+      "width": 428,
+      "height": 185,
+      "full": "screenshots/channel-selection/40-full.webp",
+      "full_git_blob": "32e47358562d4d0be77789abca6c3616e0b1fc47",
+      "thumb": "screenshots/channel-selection/40-thumb.webp",
+      "thumb_git_blob": "32e47358562d4d0be77789abca6c3616e0b1fc47",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        724,
+        619,
+        1152,
+        804
+      ]
+    },
+    {
+      "source": "follow-up/43.jpg",
+      "sk": "s PIG 2",
+      "en": "With PIG 2",
+      "width": 412,
+      "height": 184,
+      "full": "screenshots/channel-selection/41-full.webp",
+      "full_git_blob": "cd80a03ac86a8d53abad198fa24c80a9dff0ddaa",
+      "thumb": "screenshots/channel-selection/41-thumb.webp",
+      "thumb_git_blob": "cd80a03ac86a8d53abad198fa24c80a9dff0ddaa",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        808
+      ]
+    },
+    {
+      "source": "42.jpg",
+      "sk": "s PIG 3",
+      "en": "With PIG 3",
+      "width": 412,
+      "height": 183,
+      "full": "screenshots/channel-selection/42-full.webp",
+      "full_git_blob": "db3f8714adbbc0953128f1c74b8d1be787e71e1e",
+      "thumb": "screenshots/channel-selection/42-thumb.webp",
+      "thumb_git_blob": "db3f8714adbbc0953128f1c74b8d1be787e71e1e",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        807
+      ]
+    },
+    {
+      "source": "43.jpg",
+      "sk": "s PIG 4",
+      "en": "With PIG 4",
+      "width": 412,
+      "height": 186,
+      "full": "screenshots/channel-selection/43-full.webp",
+      "full_git_blob": "862808d1f9986fb8af2e3e868d4f4ba6404ac593",
+      "thumb": "screenshots/channel-selection/43-thumb.webp",
+      "thumb_git_blob": "862808d1f9986fb8af2e3e868d4f4ba6404ac593",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        810
+      ]
+    },
+    {
+      "source": "follow-up/46.jpg",
+      "sk": "s PIG 5",
+      "en": "With PIG 5",
+      "width": 412,
+      "height": 193,
+      "full": "screenshots/channel-selection/44-full.webp",
+      "full_git_blob": "ad29c62c9406d6d20469c8efa8a30340fdb2624b",
+      "thumb": "screenshots/channel-selection/44-thumb.webp",
+      "thumb_git_blob": "ad29c62c9406d6d20469c8efa8a30340fdb2624b",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        817
+      ]
+    },
+    {
+      "source": "44.jpg",
+      "sk": "s PIG 6",
+      "en": "With PIG 6",
+      "width": 412,
+      "height": 193,
+      "full": "screenshots/channel-selection/45-full.webp",
+      "full_git_blob": "45dd93bc24f5a8ac5060f45ba6f7569dd995f8ca",
+      "thumb": "screenshots/channel-selection/45-thumb.webp",
+      "thumb_git_blob": "45dd93bc24f5a8ac5060f45ba6f7569dd995f8ca",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        817
+      ]
+    },
+    {
+      "source": "45.jpg",
+      "sk": "s picon 400x240",
+      "en": "With picon 400x240",
+      "width": 412,
+      "height": 189,
+      "full": "screenshots/channel-selection/46-full.webp",
+      "full_git_blob": "19f240205127ecc2cf04ea3007d4b6d792382215",
+      "thumb": "screenshots/channel-selection/46-thumb.webp",
+      "thumb_git_blob": "19f240205127ecc2cf04ea3007d4b6d792382215",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        624,
+        1143,
+        813
+      ]
+    },
+    {
+      "source": "46.jpg",
+      "sk": "s ZZPicon",
+      "en": "With ZZPicon",
+      "width": 412,
+      "height": 189,
+      "full": "screenshots/channel-selection/47-full.webp",
+      "full_git_blob": "625b74c3775ec563ca1d9ccdaeb98de57e98de0d",
+      "thumb": "screenshots/channel-selection/47-thumb.webp",
+      "thumb_git_blob": "625b74c3775ec563ca1d9ccdaeb98de57e98de0d",
+      "original_size": [
+        1920,
+        1080
+      ],
+      "crop": [
+        731,
+        625,
+        1143,
+        814
+      ]
+    }
+  ],
+  "follow_up_used": [
+    "43.jpg",
+    "46.jpg"
+  ],
+  "presentation": "Lossless native-pixel crop of the original channel-selection preview rectangle; both existing image URLs serve the same crop. No generated or enhanced pixels."
+}

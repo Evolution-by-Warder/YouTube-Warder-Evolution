@@ -1,0 +1,788 @@
+{
+  "schema": 1,
+  "source": "infobary.ZIP + owner follow-up capture 38.jpg",
+  "source_count": 78,
+  "missing_type": null,
+  "items": [
+    {
+      "type": 1,
+      "source": "1.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/01-full.webp",
+      "thumb": "screenshots/infobars/01-thumb.webp",
+      "full_git_blob": "79f63c8ce8a520ffea826bef0f8416b6653e7848",
+      "thumb_git_blob": "41831cd2833f08e970d524a8ca51e01291b8f764"
+    },
+    {
+      "type": 2,
+      "source": "2.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/02-full.webp",
+      "thumb": "screenshots/infobars/02-thumb.webp",
+      "full_git_blob": "2cec3c9b41fcd7e76317d98abc073b59b3472d3f",
+      "thumb_git_blob": "d82ea290a82193070ffe5798e11ac874a3699cb9"
+    },
+    {
+      "type": 3,
+      "source": "3.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/03-full.webp",
+      "thumb": "screenshots/infobars/03-thumb.webp",
+      "full_git_blob": "ef01c09e3f18f685a184a27873251902d1ef6b02",
+      "thumb_git_blob": "2d57f47e866dac6d697278b69f3cdaf3c2d1fc29"
+    },
+    {
+      "type": 4,
+      "source": "4.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/04-full.webp",
+      "thumb": "screenshots/infobars/04-thumb.webp",
+      "full_git_blob": "ad4b4096219f6bffbbf81372f85026b4f8a4af25",
+      "thumb_git_blob": "d8c34ee05e221b0e8fe92d10392d5b11be87f4c0"
+    },
+    {
+      "type": 5,
+      "source": "5.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/05-full.webp",
+      "thumb": "screenshots/infobars/05-thumb.webp",
+      "full_git_blob": "04c475eee9b66366b5bf8a4ea8f0efedf4a72e8a",
+      "thumb_git_blob": "1435a138977ce4f1bf12c356340e55f255f1a8d8"
+    },
+    {
+      "type": 6,
+      "source": "6.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/06-full.webp",
+      "thumb": "screenshots/infobars/06-thumb.webp",
+      "full_git_blob": "61bb316623d68c14aadec1629029f1cdc03ade39",
+      "thumb_git_blob": "9798b9a84aa74ffa21cc21bf1d299360a3eeb803"
+    },
+    {
+      "type": 7,
+      "source": "7.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/07-full.webp",
+      "thumb": "screenshots/infobars/07-thumb.webp",
+      "full_git_blob": "b4ed504ab7a83e1bc07d5975550f0af8af104b85",
+      "thumb_git_blob": "d31a880fb12a0e694c97bb293e16e3d24a4f3d35"
+    },
+    {
+      "type": 8,
+      "source": "8.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/08-full.webp",
+      "thumb": "screenshots/infobars/08-thumb.webp",
+      "full_git_blob": "6e3171911bb03f7c36d1bb8e3aed2994c03e7c9a",
+      "thumb_git_blob": "a2c6e9db0e0d406cfb1c1ee6f926d7742964764a"
+    },
+    {
+      "type": 9,
+      "source": "9.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/09-full.webp",
+      "thumb": "screenshots/infobars/09-thumb.webp",
+      "full_git_blob": "129bed7c9d797b242f62471afd748779056a9cae",
+      "thumb_git_blob": "d99bc6cc1d9c0a7bac545819c3452d30edb7f852"
+    },
+    {
+      "type": 10,
+      "source": "10.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/10-full.webp",
+      "thumb": "screenshots/infobars/10-thumb.webp",
+      "full_git_blob": "5877b391e6e8176daf197a6b71cb268830cf6471",
+      "thumb_git_blob": "bc26496c49dd1559fccdf52705356b6ed3396d9f"
+    },
+    {
+      "type": 11,
+      "source": "11.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/11-full.webp",
+      "thumb": "screenshots/infobars/11-thumb.webp",
+      "full_git_blob": "649ced50803e73280baf703ff608f68a08594ded",
+      "thumb_git_blob": "3591dc5a6191cc0e5cbf6152592092d3652b397e"
+    },
+    {
+      "type": 12,
+      "source": "12.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/12-full.webp",
+      "thumb": "screenshots/infobars/12-thumb.webp",
+      "full_git_blob": "c2362413c4fb3d18ab614ff334c98bde32cdf86c",
+      "thumb_git_blob": "40409fc53a4a8392cd0a927906f92e351e1ecf59"
+    },
+    {
+      "type": 13,
+      "source": "13.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/13-full.webp",
+      "thumb": "screenshots/infobars/13-thumb.webp",
+      "full_git_blob": "c309c90e11f744fa1c8811b2e082996578045d4b",
+      "thumb_git_blob": "9e075d3482d9fda50f0e2938efab179bded8a62a"
+    },
+    {
+      "type": 14,
+      "source": "14.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/14-full.webp",
+      "thumb": "screenshots/infobars/14-thumb.webp",
+      "full_git_blob": "2143b253a2ff37aa25608a2a929123805e8c5e84",
+      "thumb_git_blob": "f862a8aba8dfd492136207b161c31797a728445c"
+    },
+    {
+      "type": 15,
+      "source": "15.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/15-full.webp",
+      "thumb": "screenshots/infobars/15-thumb.webp",
+      "full_git_blob": "f37fb818890fc5fe9f4d16ac62a6abd729e5650a",
+      "thumb_git_blob": "faa56c1c1e234bfb0ad5226fc2f1989003b71882"
+    },
+    {
+      "type": 16,
+      "source": "16.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/16-full.webp",
+      "thumb": "screenshots/infobars/16-thumb.webp",
+      "full_git_blob": "75418fa92a3f0d7370af3b3430481e360050785b",
+      "thumb_git_blob": "f3c3c9d68a7df50eabddcb2e021bf599289721d8"
+    },
+    {
+      "type": 17,
+      "source": "17.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/17-full.webp",
+      "thumb": "screenshots/infobars/17-thumb.webp",
+      "full_git_blob": "eb7dfd3ba7804475525151932f8eecb5ccaef91e",
+      "thumb_git_blob": "de133db8e1c835cb23d1ce03c8dea5cc56bde29b"
+    },
+    {
+      "type": 18,
+      "source": "18.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/18-full.webp",
+      "thumb": "screenshots/infobars/18-thumb.webp",
+      "full_git_blob": "3749982dea303cc0cc16c55455b23ef2dc01a71b",
+      "thumb_git_blob": "40e0c92cba7e4c1dedc65098f4d2652057bb0137"
+    },
+    {
+      "type": 19,
+      "source": "19.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/19-full.webp",
+      "thumb": "screenshots/infobars/19-thumb.webp",
+      "full_git_blob": "b5365ebbf7452173111fdc3ee3ada970439e002e",
+      "thumb_git_blob": "8eaf63a5c2f37022b2bdcc618c5945efd87799c3"
+    },
+    {
+      "type": 20,
+      "source": "20.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/20-full.webp",
+      "thumb": "screenshots/infobars/20-thumb.webp",
+      "full_git_blob": "0be57df5d1262b76dc1a174dffc5b3364cd2013b",
+      "thumb_git_blob": "e8dca59784b71e31cc5cd7a9da3da3aa1e33bbdc"
+    },
+    {
+      "type": 21,
+      "source": "21.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/21-full.webp",
+      "thumb": "screenshots/infobars/21-thumb.webp",
+      "full_git_blob": "3cde78363adae920add6a78c326b3c5e35eaeb9c",
+      "thumb_git_blob": "2ae9e0a2fbceef3436b54751d3255664ed59a478"
+    },
+    {
+      "type": 22,
+      "source": "22.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/22-full.webp",
+      "thumb": "screenshots/infobars/22-thumb.webp",
+      "full_git_blob": "9fb3e722451015cbb320ed772a04b1c10e6baf2c",
+      "thumb_git_blob": "f98edd3b8a769afe6c790cf2eca3f00b3ef4515d"
+    },
+    {
+      "type": 23,
+      "source": "23.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/23-full.webp",
+      "thumb": "screenshots/infobars/23-thumb.webp",
+      "full_git_blob": "f5faff45f2d48c34e4cc8ce887d681b32459fd1a",
+      "thumb_git_blob": "1515d933070b4f34a95f06f662b73bee89398053"
+    },
+    {
+      "type": 24,
+      "source": "24.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/24-full.webp",
+      "thumb": "screenshots/infobars/24-thumb.webp",
+      "full_git_blob": "6a54b654f0258b798d945e179d88e57ad9527ac7",
+      "thumb_git_blob": "f5a26a7c517b14a589582be36ec800f3b604dffe"
+    },
+    {
+      "type": 25,
+      "source": "25.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/25-full.webp",
+      "thumb": "screenshots/infobars/25-thumb.webp",
+      "full_git_blob": "9fff9bff3f883184a56eeb54e9301826ab376caa",
+      "thumb_git_blob": "8ce4d50fbd06182cd3b710f5039840c0446d6909"
+    },
+    {
+      "type": 26,
+      "source": "26.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/26-full.webp",
+      "thumb": "screenshots/infobars/26-thumb.webp",
+      "full_git_blob": "2c5c1d8cbf9c14d985e8d8845772f551790b800f",
+      "thumb_git_blob": "6cf056d2d57090e896955b3a01453a4b0c0514c9"
+    },
+    {
+      "type": 27,
+      "source": "27.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/27-full.webp",
+      "thumb": "screenshots/infobars/27-thumb.webp",
+      "full_git_blob": "2be6675f0e9e83738cb7a86290a0ad18a6081994",
+      "thumb_git_blob": "c6ccc02be10ce9e4da386843a75a9c2160f4bc5c"
+    },
+    {
+      "type": 28,
+      "source": "28.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/28-full.webp",
+      "thumb": "screenshots/infobars/28-thumb.webp",
+      "full_git_blob": "8ed7478fc1d9a2d610f71d7c52ea637f6ed936fc",
+      "thumb_git_blob": "bdf866fe5bde679996d151419b0843f270863d36"
+    },
+    {
+      "type": 29,
+      "source": "29.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/29-full.webp",
+      "thumb": "screenshots/infobars/29-thumb.webp",
+      "full_git_blob": "f208994fb9cbe6b48472adaf18e30e589ea6070c",
+      "thumb_git_blob": "4df19e5611bd654842aecd0223516d9009017f0a"
+    },
+    {
+      "type": 30,
+      "source": "30.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/30-full.webp",
+      "thumb": "screenshots/infobars/30-thumb.webp",
+      "full_git_blob": "41c1a22dcfa1c92a19f1309e1ffd8218b71d7985",
+      "thumb_git_blob": "31a2f6fe9688bc5af0fa23e2804393d39f703d26"
+    },
+    {
+      "type": 31,
+      "source": "31.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/31-full.webp",
+      "thumb": "screenshots/infobars/31-thumb.webp",
+      "full_git_blob": "7413c13213dc78395ccfba2322303e3484539100",
+      "thumb_git_blob": "5af3bef9107b97f095e07f5ea48e6b3cafd698b0"
+    },
+    {
+      "type": 32,
+      "source": "32.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/32-full.webp",
+      "thumb": "screenshots/infobars/32-thumb.webp",
+      "full_git_blob": "a20c6538a8103f1f30963b4700b65228bce23bd3",
+      "thumb_git_blob": "670abf96218e9e8cfae32fc3d7e6f0b795693431"
+    },
+    {
+      "type": 33,
+      "source": "33.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/33-full.webp",
+      "thumb": "screenshots/infobars/33-thumb.webp",
+      "full_git_blob": "5c76f829cac434afe9af35385be32560db77a731",
+      "thumb_git_blob": "146dc9e155f53fc673b93dffca886346478dbd9f"
+    },
+    {
+      "type": 34,
+      "source": "34.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/34-full.webp",
+      "thumb": "screenshots/infobars/34-thumb.webp",
+      "full_git_blob": "21057222844426c408b28d48c52ee63ed4b08dbb",
+      "thumb_git_blob": "b92e5fecfed1ea5d1fae63894aa009e498c0ef12"
+    },
+    {
+      "type": 35,
+      "source": "35.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/35-full.webp",
+      "thumb": "screenshots/infobars/35-thumb.webp",
+      "full_git_blob": "71d38377f2eb3da883afe46e230fee7db3aef74a",
+      "thumb_git_blob": "6c75622e27f4087e74de190ca954f936978baf9c"
+    },
+    {
+      "type": 36,
+      "source": "36.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/36-full.webp",
+      "thumb": "screenshots/infobars/36-thumb.webp",
+      "full_git_blob": "1428a599a42d193b16f8fccaa6c6afe697242ffa",
+      "thumb_git_blob": "df60f2d80d8328f1a9376f28cd38068f14b43fdb"
+    },
+    {
+      "type": 37,
+      "source": "follow-up/38.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/37-full.webp",
+      "thumb": "screenshots/infobars/37-thumb.webp",
+      "full_git_blob": "c78088c52cf2f03a4d69e8e1bbe6b3ca3c770ab2",
+      "thumb_git_blob": "7bdad26898979eec3850c16894846bbe29e82957"
+    },
+    {
+      "type": 38,
+      "source": "37.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/38-full.webp",
+      "thumb": "screenshots/infobars/38-thumb.webp",
+      "full_git_blob": "f7caef8ae102932cd3c1635364eb5b0e1836e918",
+      "thumb_git_blob": "ef1d3a0c9209a7c31f5045723f583dd7641c98af"
+    },
+    {
+      "type": 39,
+      "source": "39.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/39-full.webp",
+      "thumb": "screenshots/infobars/39-thumb.webp",
+      "full_git_blob": "2e6cb4efa70f84d9fa68893d5e1dcfa2e408794a",
+      "thumb_git_blob": "b6171426dce97de504ff2670291187fe4ff455e8"
+    },
+    {
+      "type": 40,
+      "source": "40.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/40-full.webp",
+      "thumb": "screenshots/infobars/40-thumb.webp",
+      "full_git_blob": "9da14d443aab1ae8bd2de13bed2be1e4ba785dc9",
+      "thumb_git_blob": "e5b8f7f5d7d18483987a2c16cffa483d5e909fc8"
+    },
+    {
+      "type": 41,
+      "source": "41.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/41-full.webp",
+      "thumb": "screenshots/infobars/41-thumb.webp",
+      "full_git_blob": "b851a291c165f6e18d89481663cc8c40a39955b1",
+      "thumb_git_blob": "b07864775508319c687d1e4209b1867cdb3c5714"
+    },
+    {
+      "type": 42,
+      "source": "42.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/42-full.webp",
+      "thumb": "screenshots/infobars/42-thumb.webp",
+      "full_git_blob": "43b6295537411bfda4952ad2f181b98a73cbf4bd",
+      "thumb_git_blob": "8bcacfa4ecc33492d909beea593cc711e629241e"
+    },
+    {
+      "type": 43,
+      "source": "43.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/43-full.webp",
+      "thumb": "screenshots/infobars/43-thumb.webp",
+      "full_git_blob": "8fb9a1e03d3cd0f772c0c963d600df94c098875f",
+      "thumb_git_blob": "7b6a63915bb5ee3e456508c21232e992b4cbdf5b"
+    },
+    {
+      "type": 44,
+      "source": "44.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/44-full.webp",
+      "thumb": "screenshots/infobars/44-thumb.webp",
+      "full_git_blob": "58995e0f51c0101f21ba8e780b972ae91c071c8a",
+      "thumb_git_blob": "c5899f81f97e861475a3e94a5ab90610da7bf096"
+    },
+    {
+      "type": 45,
+      "source": "45.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/45-full.webp",
+      "thumb": "screenshots/infobars/45-thumb.webp",
+      "full_git_blob": "dfbf127cf22a4c7610e0527d49215df8947dcbd0",
+      "thumb_git_blob": "59c7e865f1c5f0d4342ce82580f09ae30b4c8e91"
+    },
+    {
+      "type": 46,
+      "source": "46.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/46-full.webp",
+      "thumb": "screenshots/infobars/46-thumb.webp",
+      "full_git_blob": "a9ba45d489a6638cafb0889bce4a73f222259bf7",
+      "thumb_git_blob": "ab980aec159254687a59ff285c8a53702a7165a1"
+    },
+    {
+      "type": 47,
+      "source": "47.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/47-full.webp",
+      "thumb": "screenshots/infobars/47-thumb.webp",
+      "full_git_blob": "5a5cf074dd730bdac491079c375449f1cb54521f",
+      "thumb_git_blob": "4b8ec8c37505c51600902a5a966688d78a4f3b9a"
+    },
+    {
+      "type": 48,
+      "source": "48.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/48-full.webp",
+      "thumb": "screenshots/infobars/48-thumb.webp",
+      "full_git_blob": "89b81cc52bac77177f4d44594fe1dbd50794792a",
+      "thumb_git_blob": "9676a6e0aaa74b3753b8d57858079f4065a5409c"
+    },
+    {
+      "type": 49,
+      "source": "49.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/49-full.webp",
+      "thumb": "screenshots/infobars/49-thumb.webp",
+      "full_git_blob": "d92a983acdd1ca26cd9b5751105aa0e0180f31bf",
+      "thumb_git_blob": "aab28b1bfa70def82c1bf6a9a9e22db1066ed4df"
+    },
+    {
+      "type": 50,
+      "source": "50.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/50-full.webp",
+      "thumb": "screenshots/infobars/50-thumb.webp",
+      "full_git_blob": "a3bee917334f78c25ceb2142474444096aa6757e",
+      "thumb_git_blob": "904305e910e0ff20108c184414d155dad5a666ae"
+    },
+    {
+      "type": 51,
+      "source": "51.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/51-full.webp",
+      "thumb": "screenshots/infobars/51-thumb.webp",
+      "full_git_blob": "8162baea962a69f27874f94d76634fb4b09f3cd2",
+      "thumb_git_blob": "1f7f286b95e9df8862ce3249510805c134088d2c"
+    },
+    {
+      "type": 52,
+      "source": "52.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/52-full.webp",
+      "thumb": "screenshots/infobars/52-thumb.webp",
+      "full_git_blob": "7dc5b245144608bb46b254e1b07ea3c57f46ff86",
+      "thumb_git_blob": "9850ccdc3a9211901dc24dee20b68c0255353063"
+    },
+    {
+      "type": 53,
+      "source": "53.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/53-full.webp",
+      "thumb": "screenshots/infobars/53-thumb.webp",
+      "full_git_blob": "5d6a63426e7e65c79571ee745d8cfb0a4fb2f2d6",
+      "thumb_git_blob": "95f70d8aecd6b1c73d1e377d1f15a3b4f1579fa6"
+    },
+    {
+      "type": 54,
+      "source": "54.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/54-full.webp",
+      "thumb": "screenshots/infobars/54-thumb.webp",
+      "full_git_blob": "94992355347e200ea889a7f775512c52889133a5",
+      "thumb_git_blob": "3b8e1261ae857499adc13120615329d41f18dc2d"
+    },
+    {
+      "type": 55,
+      "source": "55.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/55-full.webp",
+      "thumb": "screenshots/infobars/55-thumb.webp",
+      "full_git_blob": "1237a2895c6b1a17dea866820d325a49a8bf91dd",
+      "thumb_git_blob": "e40a88dc39a4abc25084789d02ab39df1adadfc9"
+    },
+    {
+      "type": 56,
+      "source": "56.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/56-full.webp",
+      "thumb": "screenshots/infobars/56-thumb.webp",
+      "full_git_blob": "458e00088e6e97ea777f6199851b206d6134c156",
+      "thumb_git_blob": "ad1dbeeb3719bd023e0c8da5c471e76cd6109634"
+    },
+    {
+      "type": 57,
+      "source": "57.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/57-full.webp",
+      "thumb": "screenshots/infobars/57-thumb.webp",
+      "full_git_blob": "95879fdefe95dad54469c59a75ba8a99d8987617",
+      "thumb_git_blob": "089384c633547244b0e341e8d34c6690949c447f"
+    },
+    {
+      "type": 58,
+      "source": "58.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/58-full.webp",
+      "thumb": "screenshots/infobars/58-thumb.webp",
+      "full_git_blob": "fd01a57d91cfb1accfd9e955237c4c1c710a132c",
+      "thumb_git_blob": "6b360d95c9b2fe7f5f29a84483766df0782d328c"
+    },
+    {
+      "type": 59,
+      "source": "59.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/59-full.webp",
+      "thumb": "screenshots/infobars/59-thumb.webp",
+      "full_git_blob": "b6d293dd705102f122546d7f8d98f15bbea62217",
+      "thumb_git_blob": "6683130b36b8ab8c2d1cdfddb4ac5859cad25cb4"
+    },
+    {
+      "type": 60,
+      "source": "60.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/60-full.webp",
+      "thumb": "screenshots/infobars/60-thumb.webp",
+      "full_git_blob": "a35aac296c01228d66cda23045908040b6d8737c",
+      "thumb_git_blob": "11cc037ca9645724fc802eb22b4ef0d0af098505"
+    },
+    {
+      "type": 61,
+      "source": "61.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/61-full.webp",
+      "thumb": "screenshots/infobars/61-thumb.webp",
+      "full_git_blob": "0b4eb2e1cb908cfed04cdc86d2d4d0812cd5752a",
+      "thumb_git_blob": "b11db904a09e8a499f9728254874e7de38b9a887"
+    },
+    {
+      "type": 62,
+      "source": "62.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/62-full.webp",
+      "thumb": "screenshots/infobars/62-thumb.webp",
+      "full_git_blob": "bb42ca0194a7880952acf56ca5714586a57ffcf3",
+      "thumb_git_blob": "3273bbf808b5633e3672c6a7f4eaf3f4c50605b2"
+    },
+    {
+      "type": 63,
+      "source": "63.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/63-full.webp",
+      "thumb": "screenshots/infobars/63-thumb.webp",
+      "full_git_blob": "4a5444bc689fd33254a6d9897d7646ae8c8879ba",
+      "thumb_git_blob": "59950dc535a7dc141f5fffd298fe26d9f1249958"
+    },
+    {
+      "type": 64,
+      "source": "64.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/64-full.webp",
+      "thumb": "screenshots/infobars/64-thumb.webp",
+      "full_git_blob": "f67a805eba6906845c34bf6ae829289f9abfa59a",
+      "thumb_git_blob": "d0b4473585d8d6cf0b745321258712b98d89719e"
+    },
+    {
+      "type": 65,
+      "source": "65.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/65-full.webp",
+      "thumb": "screenshots/infobars/65-thumb.webp",
+      "full_git_blob": "689822a49dc4d6f4dca008bef7960b1b37be0a65",
+      "thumb_git_blob": "899c72e886a107f3bf3d2e299a421dc8d4ca78db"
+    },
+    {
+      "type": 70,
+      "source": "66.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/70-full.webp",
+      "thumb": "screenshots/infobars/70-thumb.webp",
+      "full_git_blob": "31deb48f6faa2ae65b5c4f49a90eb2fe9da39956",
+      "thumb_git_blob": "77b09f004b014f05974628d31f3aa667d3598ad0"
+    },
+    {
+      "type": 71,
+      "source": "67.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/71-full.webp",
+      "thumb": "screenshots/infobars/71-thumb.webp",
+      "full_git_blob": "da0d93330e8edcfcac913714211dd01c87603c2d",
+      "thumb_git_blob": "0adb985adf68d60a73ea3699c6fcfbda346bd014"
+    },
+    {
+      "type": 72,
+      "source": "68.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/72-full.webp",
+      "thumb": "screenshots/infobars/72-thumb.webp",
+      "full_git_blob": "2a29c9bddf571b0471993274f6d91b6bc1f4440b",
+      "thumb_git_blob": "c86775bf8b83780c039a1b94e048261505f634d5"
+    },
+    {
+      "type": 73,
+      "source": "69.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/73-full.webp",
+      "thumb": "screenshots/infobars/73-thumb.webp",
+      "full_git_blob": "dfdc8541ceb57246035ab6e75c614565da7fdbef",
+      "thumb_git_blob": "8d121bb700ec883adb5cd52636a7bc642f0156a1"
+    },
+    {
+      "type": 74,
+      "source": "70.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/74-full.webp",
+      "thumb": "screenshots/infobars/74-thumb.webp",
+      "full_git_blob": "d82d929f9a7ff757067e9d6aff7804260e5464fd",
+      "thumb_git_blob": "a62ddf558a67c5292d292bba243d6a9583004d62"
+    },
+    {
+      "type": 75,
+      "source": "71.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/75-full.webp",
+      "thumb": "screenshots/infobars/75-thumb.webp",
+      "full_git_blob": "0e3fa7def9073f5c0f299643995f489042532871",
+      "thumb_git_blob": "e855efcf1ec256704e26f78f067e3c60e9388a5c"
+    },
+    {
+      "type": 76,
+      "source": "72.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/76-full.webp",
+      "thumb": "screenshots/infobars/76-thumb.webp",
+      "full_git_blob": "42efc9bc5842ab09d63e646b761201f7c44c7c26",
+      "thumb_git_blob": "77da1cea4ca25d8c5872d309d579d1c09c5e57b2"
+    },
+    {
+      "type": 77,
+      "source": "73.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/77-full.webp",
+      "thumb": "screenshots/infobars/77-thumb.webp",
+      "full_git_blob": "18781344a2c7582a34cf70e66d9f46acdbdb1a0a",
+      "thumb_git_blob": "0a43d24e7bbd5132a84e996660c8c84fd7cc3a01"
+    },
+    {
+      "type": 87,
+      "source": "74.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/87-full.webp",
+      "thumb": "screenshots/infobars/87-thumb.webp",
+      "full_git_blob": "e6e76b14d0d6a9a0137c65a9d2f257de03a52112",
+      "thumb_git_blob": "1b2dae77ade23b74f10caf0a046aec70bc545811"
+    },
+    {
+      "type": 88,
+      "source": "75.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/88-full.webp",
+      "thumb": "screenshots/infobars/88-thumb.webp",
+      "full_git_blob": "a03530fdb0c7bb1b2116689df92a6dacdac9850e",
+      "thumb_git_blob": "749241300effe5d062e23c880958cd988136c9dd"
+    },
+    {
+      "type": 89,
+      "source": "76.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/89-full.webp",
+      "thumb": "screenshots/infobars/89-thumb.webp",
+      "full_git_blob": "75f8c28fd7d146a72e0f0216c00bbe5fb2410fc1",
+      "thumb_git_blob": "95a3b30ae8f2d761eb25dead539fb7ac2e7ef7f1"
+    },
+    {
+      "type": 98,
+      "source": "77.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/98-full.webp",
+      "thumb": "screenshots/infobars/98-thumb.webp",
+      "full_git_blob": "bec24c7b4296f493da9ed329322698c07b78bb1c",
+      "thumb_git_blob": "385fb17ca39edd6b237924cf57ffc3771bcfc475"
+    },
+    {
+      "type": 99,
+      "source": "78.jpg",
+      "width": 1920,
+      "height": 1080,
+      "full": "screenshots/infobars/99-full.webp",
+      "thumb": "screenshots/infobars/99-thumb.webp",
+      "full_git_blob": "0a83ef2c67614f0e0a17a590a7f2fa8425091e90",
+      "thumb_git_blob": "aae89b1327b65d84faad568f33eeb5c5ad0ed9f1"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+/* Warder Evolution — editable orbit animation and planet appearance. */
+.hero-visual{--orbit-period:38s;min-width:0;container-type:inline-size}
+.hero-visual.orbit-ready .o1{inset:13%;animation-duration:var(--orbit-period)}
+.hero-visual.orbit-ready .o2{inset:20%}
+.hero-visual.orbit-ready .o3{inset:5%;transform:none}
+/* Center emblem: identical geometry for the homepage image and detail home link. */
+.skull-home{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:83%;height:83%;display:block;border-radius:50%;z-index:2}
+.hero-visual.orbit-ready .skull,.hero-visual.orbit-ready .skull-home{width:58%;height:58%}
+.hero-visual .skull-home .skull{position:static;transform:none;width:100%;height:100%;display:block}
+.hero-visual.orbit-ready .c1,.hero-visual.orbit-ready .c2{top:0}
+.hero-visual .coord{pointer-events:none}
+.planet-track{position:absolute;inset:13%;z-index:3;pointer-events:none;animation:warder-orbit var(--orbit-period) linear infinite}
+.planet-anchor{position:absolute;left:var(--x);top:var(--y);width:min(20%,calc(112% / var(--planet-count)));aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
+.planet-counter{width:100%;height:100%;animation:warder-orbit var(--orbit-period) linear infinite reverse;pointer-events:none}
+.planet-link{position:relative;display:grid;place-items:center;width:100%;height:100%;border-radius:50%;isolation:isolate;color:#edfaff;pointer-events:auto;text-decoration:none;background:radial-gradient(ellipse at 35% 18%,#e6fbffbb 0%,transparent 20%),radial-gradient(circle at 35% 30%,#436e91 0%,#142d46 32%,#071322 64%,#020711 100%);border:1px solid var(--planet-accent);box-shadow:inset 0 0 0 2px #b0deff35,inset 0 -5px 10px #0009,0 0 9px var(--planet-accent),0 0 24px #238aff55;outline-offset:4px}
+.planet-link::before{content:"";position:absolute;inset:8%;border-radius:50%;border:1px solid #99d9ff4d;box-shadow:inset 0 0 9px #139eff35;z-index:-1}
+.planet-link::after{content:"";position:absolute;width:127%;height:40%;border:1px solid var(--planet-accent);border-top-color:#bdefff40;border-radius:50%;transform:rotate(-15deg);box-shadow:0 2px 6px #1289ff77;z-index:-1;pointer-events:none}
+.planet-symbol{display:grid;place-items:center;width:48%;height:48%;margin-top:-12%;color:var(--planet-accent);filter:drop-shadow(0 0 4px var(--planet-accent));font-size:clamp(9px,4.4cqi,23px);font-weight:850;line-height:1}
+.planet-symbol svg{width:100%;height:100%;display:block}
+.planet-name{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);max-width:148%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 4px;border-radius:4px;background:linear-gradient(#17334bee,#071320f5);border:1px solid #7fb3d866;color:#f4fbff;font-size:clamp(6px,2.05cqi,12px);font-weight:800;line-height:1.12;letter-spacing:-.035em;text-shadow:0 1px 2px #000}
+.planet-link:is(:hover,:focus-visible){border-color:#fff;box-shadow:0 0 0 2px #e3f8ff,0 0 20px var(--planet-accent)}
+.orbit-toggle{position:absolute;bottom:0;right:0;z-index:5;width:28px;height:28px;display:grid;place-items:center;padding:0;border:1px solid #4d7798;border-radius:50%;color:#d4f3ff;background:#091a2c;font-size:13px;line-height:1}
+.orbit-toggle[hidden],.planet-track[hidden]{display:none}
+.hero-visual:is(.orbit-paused,.orbit-info-open,:has(.planet-link:hover),:has(.planet-link:focus-visible)) :is(.planet-track,.planet-counter,.orbit){animation-play-state:paused}
+.hero-visual.orbit-rebuilding :is(.planet-track,.planet-counter){animation:none!important}
+@keyframes warder-orbit{from{transform:rotate(0turn)}to{transform:rotate(1turn)}}
+@media(max-width:650px){.orbit-toggle{width:24px;height:24px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.orbit-toggle{display:none}.planet-track,.planet-counter{animation:none!important}}
+
+/* Single-product planets are buttons rather than navigation links. */
+button.planet-link{padding:0;font:inherit;cursor:pointer}
+
+/* Native compact product information bubble, kept above the animated showroom. */
+.planet-info{position:fixed;inset:auto;margin:0;width:min(320px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:19px 20px 18px;border-radius:15px;border:1px solid var(--planet-accent);background:linear-gradient(150deg,#102941,#07101f 80%);color:#eaf7ff;box-shadow:0 0 22px #249bff40,0 16px 48px #0009;font:14px/1.5 system-ui,sans-serif;text-align:left}
+.planet-info::backdrop{background:#02071255}
+.planet-info h2{margin:0 28px 5px 0;color:var(--planet-accent);font-size:19px;line-height:1.25}
+.planet-info-close{position:absolute;top:9px;right:9px;width:32px;height:32px;padding:0;border:1px solid #45627c;border-radius:50%;background:#0b1c30;color:#eaf7ff;font-size:23px;line-height:1}
+.planet-info-version{margin:0 0 10px;color:#a9d7ef;font-size:12px;font-weight:700}
+.planet-info-description{margin:0 0 10px}
+.planet-info ul{margin:0;padding-left:18px;color:#c7e4f4;font-size:13px}
+.planet-info li+li{margin-top:3px}
+
+/* Smaller independent community destinations fill unused orbital positions. */
+.planet-anchor.community-anchor{width:min(13%,calc(75% / var(--planet-count)))}
+.community-planet .planet-symbol{font-size:clamp(8px,3.2cqi,16px);width:75%;margin-top:-8%}
+.community-planet .planet-name{font-size:clamp(6px,1.8cqi,10px);max-width:190%;padding:1px 3px}

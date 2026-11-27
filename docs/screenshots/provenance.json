@@ -1,0 +1,415 @@
+{
+  "schema": 1,
+  "products": {
+    "glass": [
+      {
+        "en": "Infobar",
+        "sk": "Informačná lišta",
+        "full": "screenshots/glass/01-full.webp",
+        "thumb": "screenshots/glass/01-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "71da029f8cb554acb38db8adddf9dae81f9bc093",
+        "thumb_git_blob": "1878e3c2598b9bf936fc80f059efb0c50046b593"
+      },
+      {
+        "en": "Channel selection and EPG",
+        "sk": "Výber kanálov a EPG",
+        "full": "screenshots/glass/02-full.webp",
+        "thumb": "screenshots/glass/02-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "61cc9dd0cc383c15115c90ae45dd4889733bab7a",
+        "thumb_git_blob": "941a2c430acec745f5ff06c6cde0deb8cf2b0174"
+      },
+      {
+        "en": "Skin configuration",
+        "sk": "Konfigurácia skinu",
+        "full": "screenshots/glass/03-full.webp",
+        "thumb": "screenshots/glass/03-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "41d975acfbf937a41254b76c41102771b0b43ad3",
+        "thumb_git_blob": "35f969bca64796e85fcdcbcf6ce4bf8bad4b8377"
+      },
+      {
+        "en": "Picon download menu",
+        "sk": "Ponuka sťahovania piconov",
+        "full": "screenshots/glass/04-full.webp",
+        "thumb": "screenshots/glass/04-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "662af55cc619d12ac741f660169cdce306f0e669",
+        "thumb_git_blob": "68c9f166fe90e04000859f63b6cbe4dcac6562af"
+      },
+      {
+        "en": "Channel list settings",
+        "sk": "Nastavenia výberu kanálov",
+        "full": "screenshots/glass/05-full.webp",
+        "thumb": "screenshots/glass/05-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "dfbae8057b27c3c8e5bb9f05f3bfcce5f56af425",
+        "thumb_git_blob": "530459020c31801c614fc4dc64e61699c0baf207"
+      },
+      {
+        "sk": "Multi EPG",
+        "en": "Multi EPG",
+        "width": 1920,
+        "height": 1080,
+        "full": "screenshots/glass/06-full.webp",
+        "full_git_blob": "29073a024d7b72266706c2edb3c5141a5ed917f8",
+        "thumb": "screenshots/glass/06-thumb.webp",
+        "thumb_git_blob": "436823a32d476465f1ef4bed72eec55ed20a6bd6"
+      },
+      {
+        "sk": "Detail programu a hodnotenie TMDB",
+        "en": "Programme details and TMDB rating",
+        "width": 1920,
+        "height": 1080,
+        "full": "screenshots/glass/07-full.webp",
+        "full_git_blob": "8b0b61ab9e8af212ac893272f35fd2bb7bb8cf97",
+        "thumb": "screenshots/glass/07-thumb.webp",
+        "thumb_git_blob": "3c55acae472736cd70842f9d49be50ab4b6a0b24"
+      },
+      {
+        "sk": "Počasie v informačnej lište",
+        "en": "Weather in the infobar",
+        "width": 1920,
+        "height": 1080,
+        "full": "screenshots/glass/08-full.webp",
+        "full_git_blob": "32fd423beeedee9e022bacd05be3be90bdbffff6",
+        "thumb": "screenshots/glass/08-thumb.webp",
+        "thumb_git_blob": "bbe0ccecf3a20a74c78bd8cea537df876119f88e"
+      },
+      {
+        "sk": "Rozšírená predpoveď počasia",
+        "en": "Extended weather forecast",
+        "width": 1920,
+        "height": 1080,
+        "full": "screenshots/glass/09-full.webp",
+        "full_git_blob": "49f9f62fa746a8134677e4d276b661722c0c5f4c",
+        "thumb": "screenshots/glass/09-thumb.webp",
+        "thumb_git_blob": "34fc662467469c17b4a64697a69ed392e8bc848a"
+      },
+      {
+        "sk": "Režim rádia – IPTV",
+        "en": "Radio mode – IPTV",
+        "width": 1920,
+        "height": 1080,
+        "full": "screenshots/glass/10-full.webp",
+        "full_git_blob": "dc6989364c22b90d73d5f386e838d8f956101120",
+        "thumb": "screenshots/glass/10-thumb.webp",
+        "thumb_git_blob": "56546bfae6444f3aaf8668e9442d9f4bbfd9b016"
+      },
+      {
+        "sk": "Režim rádia – DVB-S s RDS/RT+",
+        "en": "Radio mode – DVB-S with RDS/RT+",
+        "width": 1920,
+        "height": 1080,
+        "full": "screenshots/glass/11-full.webp",
+        "full_git_blob": "662784f3a0f688b3ac08b587883d7e08a7b9c5bb",
+        "thumb": "screenshots/glass/11-thumb.webp",
+        "thumb_git_blob": "d443c2710f96609c44dac83a8dd667666b290cb5"
+      },
+      {
+        "sk": "Režim rádia – DAB",
+        "en": "Radio mode – DAB",
+        "width": 1920,
+        "height": 1080,
+        "full": "screenshots/glass/12-full.webp",
+        "full_git_blob": "d8060d1fd5edfc556a624bae1e3d06cf54a8e2bb",
+        "thumb": "screenshots/glass/12-thumb.webp",
+        "thumb_git_blob": "2f2fa341804f84c16b61bb923814ab60648397df"
+      }
+    ],
+    "picon": [
+      {
+        "en": "Profiles and picon preview",
+        "sk": "Profily a náhľad piconu",
+        "full": "screenshots/picon/01-full.webp",
+        "thumb": "screenshots/picon/01-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "3403120f1c984edbdff380f560e5ffc8d8377bfa",
+        "thumb_git_blob": "73ce059e66d2278d59737351efb42506a183ea98"
+      },
+      {
+        "en": "Download in progress",
+        "sk": "Priebeh sťahovania",
+        "full": "screenshots/picon/02-full.webp",
+        "thumb": "screenshots/picon/02-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "e3b3ff924439e460a56b69657388efb135138fae",
+        "thumb_git_blob": "5797e6e65f5f79691cb6ffcf5f331f6f2cb1e1c0"
+      },
+      {
+        "en": "Update completed",
+        "sk": "Dokončená aktualizácia",
+        "full": "screenshots/picon/03-full.webp",
+        "thumb": "screenshots/picon/03-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "b64780c9e3a18311b20839d6cd652ea695e4d6b2",
+        "thumb_git_blob": "d0d05260f7ba655b657e96a840e09dc335f6c809"
+      }
+    ],
+    "gsu": [
+      {
+        "en": "Main menu",
+        "sk": "Hlavné menu",
+        "full": "screenshots/gsu/01-full.webp",
+        "thumb": "screenshots/gsu/01-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "4438969daef10cb9e40b9d5318abdf9b8f405946",
+        "thumb_git_blob": "3f80e1c3226b0b50128e860c18ddf93a72da2c87"
+      },
+      {
+        "en": "System information",
+        "sk": "Informácie o systéme",
+        "full": "screenshots/gsu/02-full.webp",
+        "thumb": "screenshots/gsu/02-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "f939732b1097d074fc626e61221fabf02a168625",
+        "thumb_git_blob": "3caa97ba79d24ead341538934fa16f1765250b52"
+      },
+      {
+        "en": "Channel diagnostics",
+        "sk": "Diagnostika kanála",
+        "full": "screenshots/gsu/03-full.webp",
+        "thumb": "screenshots/gsu/03-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "8b64b2ea0bf1b847297834240f16903e8e848ccc",
+        "thumb_git_blob": "b3a1adeccd4f368a88d103932b318514d3c7feb5"
+      },
+      {
+        "en": "OSCam overview",
+        "sk": "Prehľad OSCam",
+        "full": "screenshots/gsu/04-full.webp",
+        "thumb": "screenshots/gsu/04-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "eaef7e7abdb481ad4ccba778f3fa703f6b76245a",
+        "thumb_git_blob": "5d8cedd6cfe040109ccfeeb5b0bdb524f551b289"
+      },
+      {
+        "en": "OSCam summary",
+        "sk": "Súhrnné informácie OSCam",
+        "full": "screenshots/gsu/05-full.webp",
+        "thumb": "screenshots/gsu/05-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "7e0f58bc52bfc630b2f234cc11dcda5416bc9959",
+        "thumb_git_blob": "c2a0a9c0f94f81f89614659e50cc1cf34a1c00d3"
+      },
+      {
+        "en": "ECM information",
+        "sk": "Informácie ECM",
+        "full": "screenshots/gsu/06-full.webp",
+        "thumb": "screenshots/gsu/06-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "22694d97acf1d8bee80822b206c6a09231d82ea1",
+        "thumb_git_blob": "1d87508879fb146eb9355f883f5e99ece6deda22"
+      },
+      {
+        "en": "CAM manager",
+        "sk": "Správca CAM/SRV",
+        "full": "screenshots/gsu/07-full.webp",
+        "thumb": "screenshots/gsu/07-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "de91b8358d1af79fe6ab7d4ea291ef5e61b34a0f",
+        "thumb_git_blob": "334f5842aeb12e036cc42e0e78ebd7cc73f08328"
+      }
+    ],
+    "radio": [
+      {
+        "en": "Live radio and artwork",
+        "sk": "Živé rádio a obaly",
+        "full": "screenshots/radio/01-full.webp",
+        "thumb": "screenshots/radio/01-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "b8d25d31b004cbd52f936be630da9697be1d127c",
+        "thumb_git_blob": "2ae893f0b98a9ffcdbe0bfc8983056eb9fa59201"
+      },
+      {
+        "en": "Country selection",
+        "sk": "Výber krajiny",
+        "full": "screenshots/radio/02-full.webp",
+        "thumb": "screenshots/radio/02-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "6ef07dfcbf643001b1822ee1d26188ccf8d64ac0",
+        "thumb_git_blob": "84c13a33979b3d524335e37c2d75df4bef757d76"
+      },
+      {
+        "en": "Genre subscriptions",
+        "sk": "Odbery podľa žánru",
+        "full": "screenshots/radio/03-full.webp",
+        "thumb": "screenshots/radio/03-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "b840c846a05a2f00139f0381dbb7f45ceb35b717",
+        "thumb_git_blob": "3afd0d4d1c53411dad1cde8433fd75c905159bc7"
+      },
+      {
+        "en": "Favourites",
+        "sk": "Obľúbené",
+        "full": "screenshots/radio/04-full.webp",
+        "thumb": "screenshots/radio/04-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "ee633e00565ad2948b0579ee111ae450ab400339",
+        "thumb_git_blob": "520d37813f00df1905642329bfeabd28304a548a"
+      },
+      {
+        "en": "Listening history",
+        "sk": "História počúvania",
+        "full": "screenshots/radio/05-full.webp",
+        "thumb": "screenshots/radio/05-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "93f69b8bfdb148ffd93b6f3f7a31cbead0878668",
+        "thumb_git_blob": "4e83a8369fe0ace04e26681c655ce95bdeb02806"
+      },
+      {
+        "en": "Song lyrics",
+        "sk": "Text skladby",
+        "full": "screenshots/radio/06-full.webp",
+        "thumb": "screenshots/radio/06-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "f27218851b06ca7df4b226a3e00cad1d04838370",
+        "thumb_git_blob": "8987a0e032c1d0f5f9f33f8bd69c663f935133cc"
+      },
+      {
+        "en": "Track information",
+        "sk": "Informácie o skladbe",
+        "full": "screenshots/radio/07-full.webp",
+        "thumb": "screenshots/radio/07-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "1cfdca8db539892b9a24e3c82a3ab0288a9248c4",
+        "thumb_git_blob": "cd56e7ece0a305e5348f419fc3b39dd3a4634700"
+      },
+      {
+        "en": "Artist information",
+        "sk": "Informácie o interpretovi",
+        "full": "screenshots/radio/08-full.webp",
+        "thumb": "screenshots/radio/08-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "079f73c309aa34ee739dc82e83e660eceb1f23c0",
+        "thumb_git_blob": "c9901eb573be3956563641c98d84bd0614a30a5b"
+      },
+      {
+        "en": "YouTube video of the currently playing track",
+        "sk": "YouTube videoklip práve hranej skladby",
+        "full": "screenshots/radio/09-full.webp",
+        "thumb": "screenshots/radio/09-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "7dc6617cec115bee91cad7668755b9a0b40a0aec",
+        "thumb_git_blob": "19164265ad11c9afcf68b05f8ae205431d743f8e"
+      },
+      {
+        "en": "Playback of the song's YouTube video",
+        "sk": "Prehrávanie videoklipu skladby na YouTube",
+        "full": "screenshots/radio/10-full.webp",
+        "thumb": "screenshots/radio/10-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "d064e20c9f398d1ac9ad8ddede49b0c162dbac60",
+        "thumb_git_blob": "fb10b8652741a100879390eaa839f90a9d669cc5"
+      }
+    ],
+    "youtube": [
+      {
+        "en": "Home and categories",
+        "sk": "Domov a kategórie",
+        "full": "screenshots/youtube/01-full.webp",
+        "thumb": "screenshots/youtube/01-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "f72a74bfa07f0613e9a6f89ff3de88db43399c02",
+        "thumb_git_blob": "daebd5d5123eba292dd88494edd4ff4e214cdf09"
+      },
+      {
+        "en": "Search keyboard",
+        "sk": "Klávesnica vyhľadávania",
+        "full": "screenshots/youtube/02-full.webp",
+        "thumb": "screenshots/youtube/02-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "d6ae96abe671f831a56bc3b0fb55041b78c9f399",
+        "thumb_git_blob": "e5e6d478de95c35601c6c7337a13ef1cbe77db3e"
+      },
+      {
+        "en": "Video search results",
+        "sk": "Výsledky vyhľadávania videí",
+        "full": "screenshots/youtube/03-full.webp",
+        "thumb": "screenshots/youtube/03-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "3936494ad40c5aee2d73ab46c9e6fe3f0ee4a574",
+        "thumb_git_blob": "1253cb52d345815b823754d2ef0f61143964b4ce"
+      },
+      {
+        "en": "Native video playback",
+        "sk": "Natívne prehrávanie videa",
+        "full": "screenshots/youtube/04-full.webp",
+        "thumb": "screenshots/youtube/04-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "0dd7032b39abb2afb496d4d4f0656301717e11fd",
+        "thumb_git_blob": "bb2feec4584ebec7aaf307edd3c1c12896c8e7aa"
+      },
+      {
+        "en": "Subscriptions",
+        "sk": "Odbery",
+        "full": "screenshots/youtube/05-full.webp",
+        "thumb": "screenshots/youtube/05-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "9aafc91a4e13accf26bf57dc52c15b96ce1bdaf1",
+        "thumb_git_blob": "00d0480c22a32cb9d0c914fcc4d00fdfef9e81ab"
+      },
+      {
+        "en": "Playback history",
+        "sk": "História prehrávania",
+        "full": "screenshots/youtube/06-full.webp",
+        "thumb": "screenshots/youtube/06-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "21df517360fcfc39ebef44dcb92cc5e6405a7fe0",
+        "thumb_git_blob": "618b7cdd4c8af42d81700f760a7e0e31d7fa1002"
+      },
+      {
+        "en": "Favourites",
+        "sk": "Obľúbené",
+        "full": "screenshots/youtube/07-full.webp",
+        "thumb": "screenshots/youtube/07-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "252b0bffe3a814819f10af6044d124141963e0fc",
+        "thumb_git_blob": "ae7b833d24eed60db2a1d4074b323b8422a14ec3"
+      },
+      {
+        "en": "Settings",
+        "sk": "Nastavenia",
+        "full": "screenshots/youtube/08-full.webp",
+        "thumb": "screenshots/youtube/08-thumb.webp",
+        "width": 1920,
+        "height": 1080,
+        "full_git_blob": "ca3485926fae3392b03957893254a4b80173da2a",
+        "thumb_git_blob": "349bbcb8ffc49eee72d929dd7f545114336a0e4f"
+      }
+    ]
+  }
+}
