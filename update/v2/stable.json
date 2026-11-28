@@ -2,16 +2,5 @@
   "schema": 1,
   "product": "YouTube Warder Evolution",
   "channel": "stable",
-  "release": {
-    "version": "1.0.7",
-    "tag": "youtube-warder-v1.0.7",
-    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v1.0.7/enigma2-plugin-extensions-youtube-warder-evolution_1.0.7_all.ipk",
-    "sha256": "83a0a5f55efcb6f9c2af5e970d77f5d714b4bd33f5ae00a6f118acc512fa0a15",
-    "warder_signature": {
-      "manifest_b64": "eyJiYWxpayI6ImVuaWdtYTItcGx1Z2luLWV4dGVuc2lvbnMteW91dHViZS13YXJkZXItZXZvbHV0aW9uIiwiY29tbWl0IjoiZDhiNDNmMzUxM2Q5NGM1NWU4ZGIwY2Y0Njg5YmYwMDM1MGZkMmE5MyIsImthbmFsIjoic3RhYmxlIiwicHJvamVrdCI6IkV2b2x1dGlvbi1ieS1XYXJkZXIvWW91VHViZS1XYXJkZXItRXZvbHV0aW9uIiwic2NoZW1hIjoxLCJzaGEyNTYiOiI4M2EwYTVmNTVlZmNiNmY5YzJhZjVlOTcwZDc3ZjVkNzE0YjRiZDMzZjVhZTAwYTZmMTE4YWNjNTEyZmEwYTE1IiwidmVyemlhIjoiMS4wLjciLCJ2ZXJ6aWFfYmFsaWthIjoiMS4wLjcifQo=",
-      "podpis_b64": "rmfElOZvcOpPbt8EGe9VKDoJDwz4Dy1GzRCdLeS9pLRgpXK/0PFe9+R7GbhAA+YWGvCr35yNnyq1Cw05BJp/DQ=="
-    },
-    "bytes": 11649460,
-    "notes": "Natívna ochrana modulov pre šesť architektúr prijímačov."
-  }
+  "release": null
 }
