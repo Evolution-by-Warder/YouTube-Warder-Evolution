@@ -2,5 +2,16 @@
   "schema": 1,
   "product": "YouTube Warder Evolution",
   "channel": "stable",
-  "release": null
+  "release": {
+    "version": "1.0.8",
+    "tag": "youtube-warder-v1.0.8",
+    "url": "https://github.com/Evolution-by-Warder/YouTube-Warder-Evolution/releases/download/youtube-warder-v1.0.8/enigma2-plugin-extensions-youtube-warder-evolution_1.0.8_all.ipk",
+    "sha256": "ab154d551427855495f88de15a23bbc61f09fd7191abd7f8e0419154a8de7b20",
+    "warder_signature": {
+      "manifest_b64": "eyJiYWxpayI6ImVuaWdtYTItcGx1Z2luLWV4dGVuc2lvbnMteW91dHViZS13YXJkZXItZXZvbHV0aW9uIiwiY29tbWl0IjoiOGExMWQxYjM3NDNlYmRlZjlhMmI3ZTg4ZDg4NTA4MzlhMDMwZmE5NyIsImthbmFsIjoic3RhYmxlIiwicHJvamVrdCI6IkV2b2x1dGlvbi1ieS1XYXJkZXIvWW91VHViZS1XYXJkZXItRXZvbHV0aW9uIiwic2NoZW1hIjoxLCJzaGEyNTYiOiJhYjE1NGQ1NTE0Mjc4NTU0OTVmODhkZTE1YTIzYmJjNjFmMDlmZDcxOTFhYmQ3ZjhlMDQxOTE1NGE4ZGU3YjIwIiwidmVyemlhIjoiMS4wLjgiLCJ2ZXJ6aWFfYmFsaWthIjoiMS4wLjgifQo=",
+      "podpis_b64": "RvQ5n3nGwYtzMjPO2xEr4hoealWOvXcDUl2fKLafnC4J39sbEjo7PoXpHa7K3AjJL83HWJJSCNf7UngyDENGCw=="
+    },
+    "bytes": 11455640,
+    "notes": "Fixed compatibility with MIPS32 receivers."
+  }
 }
